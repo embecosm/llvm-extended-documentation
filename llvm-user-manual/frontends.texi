@@ -1,0 +1,61 @@
+@c Copyright *C( 2015 Embecosm Limited
+@c Copyright (C) 1988-2015 Free Software Foundation, Inc.
+@c This is part of the LLVM manual, a derivative of the GCC manual.
+@c For copying conditions, see the file llvm.texi.
+
+@node Clang and LLVM
+@chapter Programming Languages Supported by Clang/LLVM
+
+@cindex LLVM
+@cindex Clang
+@cindex Low Level Virtual Machine
+@cindex C
+@cindex C++
+@cindex Objective-C
+@cindex Objective-C++
+LLVM originally stood for ``Low Level Virtual Machine''.  However,
+this acronym proved very confusing, since LLVM is used for much more
+than virtual machines.  LLVM is now a name covering a generic compiler
+infrastructure supporting a wide range of languages and targets.
+
+The @dfn{language-independent} component of LLVM includes the majority
+of the optimizers, as well as the ``back ends'' that generate machine
+code for various processors.
+
+The part of a compiler that is specific to a particular language is
+called the ``front end''.  Clang is the LLVM front end for C, C++,
+ObjectiveC and ObjectiveC++ which is documented in this manual.  The
+terms LLVM and Clang are often used interchangably to refer to the
+entire compiler, but this manual will use the explicit distinction.
+The front-end typically provides the driver for all the tool chain
+components (preprocessr, assembler, linker etc), so in this manual the
+@command{clang} command is used to invoke all the examples.
+
+@cindex Ada
+@cindex GNAT
+@cindex D
+@cindex Fortran
+
+There are a wide range of other front ends, including the GCC front
+end of the DragonEgg project (see @url{http://dragonegg.llvm.org/}),
+providing support for all the languages supported by GCC.  These
+front-ends are not documented here.
+
+In addition to the front ends that form part of the official LLVM
+project, there are many other front ends that are maintained
+separately.
+
+Most of the compilers for languages other than C sometimes have their
+own names.  For example the DragonEgg Ada compiler is GNAT, and so on.
+When we talk about compiling one of those languages, we might refer to
+that compiler by its own name, or as LLVM@.  Either is correct.
+
+@cindex compiler compared to C++ preprocessor
+@cindex intermediate C version, nonexistent
+@cindex C intermediate output, nonexistent
+Historically, compilers for many languages, including C++ and Fortran,
+have been implemented as ``preprocessors'' which emit another high
+level language such as C@.  Clang/LLVM is not implemented this way; it
+generates machine code directly.  This sort of preprocessor should not
+be confused with the @dfn{C preprocessor}, which is an integral
+feature of the C, C++ and Objective-C languages.

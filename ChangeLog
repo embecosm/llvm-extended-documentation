@@ -1,0 +1,189 @@
+2015-03-26  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	Update Warning Options
+
+	* llvm-user-manual/invoke.texi (node Option Summary): Update
+	summary for Warning Options.
+	(node Warning Options): Update for LLVM.
+	* llvm-user-manual/llvm.info: Regenerated.
+	* llvm-user-manual/llvm.info-1: Regenerated.
+	* llvm-user-manual/llvm.info-2: Regenerated.
+	* llvm-user-manual/llvm.info-3: Regenerated.
+	* llvm-user-manual/llvm.info-4: Regenerated.
+	* llvm-user-manual/llvm.info-5: Regenerated.
+	* llvm-user-manual/llvm.info-6: Regenerated.
+
+2015-03-20  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	Add ObjectiveC/ObjectiveC++ and diagnostic messages
+
+	* llvm-user-manual/invoke.texi (node Option Summary): Update
+	summary for Objective-C and Objective-C++ Dialect Options and
+	Language Independent Options.
+	(node Objective-C and Objective-C++ Dialect Options): Update for
+	LLVM.
+	(node Language Independent Options): Likewise.
+	* llvm-user-manual/llvm.info: Regenerated.
+	* llvm-user-manual/llvm.info-1: Regenerated.
+	* llvm-user-manual/llvm.info-2: Regenerated.
+	* llvm-user-manual/llvm.info-3: Regenerated.
+	* llvm-user-manual/llvm.info-4: Regenerated.
+	* llvm-user-manual/llvm.info-5: Regenerated.
+	* llvm-user-manual/llvm.info-6: Regenerated.
+
+2015-03-20  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	Updates to description of front ends, standards and some options
+
+	* llvm-user-manual/Makefile.am: Remove at-file.texi, cppenv.texi
+	and cppopts.texi which are all now included in invoke.texi.
+	* llvm-user-manual/Makefile.in: Regenerated
+	* llvm-user-manual/extend.texi: Remove cross-references no longer
+	used.
+	* llvm-user-manual/frontends.texi: Improve description of
+	relationship between LLVM and Clang.
+	* llvm-user-manual/invoke.texi: Remove sections for Adapteva
+	Epiphany, ARC, AVR, Blackfin, C6X, CRIS, CR16, DEC Alpha, FR30,
+	FRV, H8/300, HPPA, IA-64, LM32, M32R/D, M32C, M680x0, MCore, MeP,
+	MicroBlaze, MMIX, MN10300, Moxie, NDS32, Nios II, PDP-11,
+	picoChip, RL78, RS/6000, RX, Score, SH, SPU, TILE-Gx, TILEPro,
+	V850, VAX, Visium, Xstormy16, Xtensa.
+	(node Invoking LLVM): Describe use of Clang/LLVM rather than GCC.
+	(node Option Summary): Update summary of Overall Options, C
+	Language Options and C++ Langauge Options.  Remove summaries for
+	Adapteva Epiphany, ARC, AVR, Blackfin, C6X, CRIS, CR16, DEC Alpha,
+	FR30, FRV, H8/300, HPPA, IA-64, LM32, M32R/D, M32C, M680x0, MCore,
+	MeP, MicroBlaze, MMIX, MN10300, Moxie, NDS32, Nios II, PDP-11,
+	picoChip, RL78, RS/6000, RX, Score, SH, SPU, TILE-Gx, TILEPro,
+	V850, VAX, Visium, Xstormy16, Xtensa.  Add summaries for Hexagon
+	and XCore.
+	(node C Dialect Options, node C++ Dialect Options): Update for LLVM.
+	* llvm-user-manual/llvm.info: Regenerated.
+	* llvm-user-manual/llvm.info-1: Regenerated.
+	* llvm-user-manual/llvm.info-2: Regenerated.
+	* llvm-user-manual/llvm.info-3: Regenerated.
+	* llvm-user-manual/llvm.info-4: Regenerated.
+	* llvm-user-manual/llvm.info-5: Regenerated.
+	* llvm-user-manual/llvm.info-6: Regenerated.
+	* llvm-user-manual/llvm.texi: Correct copyright header.
+	* llvm-user-manual/standards.texi: Update for Clang/LLVM.
+	* version-info: Regenerated.
+
+2015-03-17  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	Top level changes to refer so manual refers to LLVM.
+
+	* Makefile.in: Regenerated.
+	* configure: Regenerated.
+	* configure.ac: Add GCC_VERSION_DATE
+	* llvm-user-manual/Makefile.am: Make top level llvm.texi, remove
+	gcov.texi and gcov0tool.texi, add in GCC_VERSION_DATE to
+	llvm-vers.texi and make dependent on configure file.
+	* llvm-user-manual/Makefile.in: Regenerated
+	* llvm-user-manual/bugreport.texi: Replace gcc.texi by llvm.texi.
+	* llvm-user-manual/compat.texi: Replace gcc.texi by llvm.texi.
+	* llvm-user-manual/contrib.texi: Replace gcc.texi by llvm.texi.
+	* llvm-user-manual/contribute.texi: Replace gcc.texi by llvm.texi.
+	* llvm-user-manual/cppenv.texi: Replace gcc.texi by llvm.texi.
+	* llvm-user-manual/cppopts.texi: Replace gcc.texi by llvm.texi.
+	* llvm-user-manual/extend.texi: Replace gcc.texi by llvm.texi.
+	* llvm-user-manual/frontends.texi: Replace gcc.texi by llvm.texi.
+	* llvm-user-manual/gcc.info: Deleted.
+	* llvm-user-manual/gcc.info-1: Deleted.
+	* llvm-user-manual/gcc.info-2: Deleted.
+	* llvm-user-manual/gcc.info-3: Deleted.
+	* llvm-user-manual/gcc.info-4: Deleted.
+	* llvm-user-manual/gcc.info-5: Deleted.
+	* llvm-user-manual/gcc.info-6: Deleted.
+	* llvm-user-manual/gcc.info-7: Deleted.
+	* llvm-user-manual/gcc.info-8: Deleted.
+	* llvm-user-manual/gcc.texi: Renamed as llvm.texi.
+	* llvm-user-manual/gcov-tool.texi: Deleted.
+	* llvm-user-manual/gcov.texi: Deleted.
+	* llvm-user-manual/gnu.texi: Replace gcc.texi by llvm.texi.
+	* llvm-user-manual/implement-c.texi: Replace gcc.texi by llvm.texi.
+	* llvm-user-manual/implement-cxx.texi: Replace gcc.texi by llvm.texi.
+	* llvm-user-manual/include/gcc-common.texi: Replace gcc.texi by
+	llvm.texi.
+	* llvm-user-manual/invoke.texi:  Replace gcc.texi by llvm.texi,
+	remove cross-references to gcov.texi.
+	* llvm-user-manual/llvm.info: Generated.
+	* llvm-user-manual/llvm.info-1: Generated.
+	* llvm-user-manual/llvm.info-2: Generated.
+	* llvm-user-manual/llvm.info-3: Generated.
+	* llvm-user-manual/llvm.info-4: Generated.
+	* llvm-user-manual/llvm.info-5: Generated.
+	* llvm-user-manual/llvm.info-6: Generated.
+	* llvm-user-manual/llvm.info-7: Generated.
+	* llvm-user-manual/llvm.texi: Renamed from gcc.texi. Update text
+	throughout to refer to LLVM.
+	* llvm-user-manual/md.texi: Replace gcc.texi by llvm.texi.
+	* llvm-user-manual/objc.texi: Replace gcc.texi by llvm.texi.
+	* llvm-user-manual/service.texi: Replace gcc.texi by llvm.texi.
+	* llvm-user-manual/standards.texi: Replace gcc.texi by llvm.texi.
+	* llvm-user-manual/tm.texi.in: Replace gcc.texi by llvm.texi.
+	* llvm-user-manual/trouble.texi: Replace gcc.texi by llvm.texi.
+
+2015-03-16  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	Initialize the project based on GCC with minimal sanitization.
+
+	* .gitignore: Created.
+	* AUTHORS: Created.
+	* COPYING: Created.
+	* ChangeLog: Created.
+	* INSTALL: Created.
+	* Makefile.am: Created.
+	* Makefile.in: Generated.
+	* NEWS: Created.
+	* README: Created as symbolic link to README.md.
+	* README.md: Created.
+	* aclocal.m4: Generated.
+	* configure: Generated.
+	* configure.ac: Created.
+	* install-sh: Generated.
+	* llvm-user-manual/Makefile.am: Created.
+	* llvm-user-manual/Makefile.in: Generated.
+	* llvm-user-manual/aclocal.m4: Generated.
+	* llvm-user-manual/at-file.texi: Created.
+	* llvm-user-manual/avr-mmcu.texi: Created.
+	* llvm-user-manual/bugreport.texi: Created.
+	* llvm-user-manual/compat.texi: Created.
+	* llvm-user-manual/configure: Generated.
+	* llvm-user-manual/configure.ac: Created.
+	* llvm-user-manual/contrib.texi: Created.
+	* llvm-user-manual/contribute.texi: Created.
+	* llvm-user-manual/cppenv.texi: Created.
+	* llvm-user-manual/cppopts.texi: Created.
+	* llvm-user-manual/extend.texi: Created.
+	* llvm-user-manual/frontends.texi: Created.
+	* llvm-user-manual/gcc.info: Generated.
+	* llvm-user-manual/gcc.info-1: Generated.
+	* llvm-user-manual/gcc.info-2: Generated.
+	* llvm-user-manual/gcc.info-3: Generated.
+	* llvm-user-manual/gcc.info-4: Generated.
+	* llvm-user-manual/gcc.info-5: Generated.
+	* llvm-user-manual/gcc.info-6: Generated.
+	* llvm-user-manual/gcc.info-7: Generated.
+	* llvm-user-manual/gcc.info-8: Generated.
+	* llvm-user-manual/gcc.texi: Created.
+	* llvm-user-manual/gcov-tool.texi: Created.
+	* llvm-user-manual/gcov.texi: Created.
+	* llvm-user-manual/gnu.texi: Created.
+	* llvm-user-manual/implement-c.texi: Created.
+	* llvm-user-manual/implement-cxx.texi: Created.
+	* llvm-user-manual/include/fdl.texi: Created.
+	* llvm-user-manual/include/funding.texi: Created.
+	* llvm-user-manual/include/gcc-common.texi: Created.
+	* llvm-user-manual/include/gpl_v3.texi: Created.
+	* llvm-user-manual/include/texinfo.tex: Created.
+	* llvm-user-manual/install.texi2html: Created.
+	* llvm-user-manual/invoke.texi: Created.
+	* llvm-user-manual/md.texi: Created.
+	* llvm-user-manual/objc.texi: Created.
+	* llvm-user-manual/service.texi: Created.
+	* llvm-user-manual/standards.texi: Created.
+	* llvm-user-manual/tm.texi.in: Created.
+	* llvm-user-manual/trouble.texi: Created.
+	* missing: Generated.
+	* version-info: Generated.

@@ -1,0 +1,374 @@
+This is ../../llvm-user-manual/llvm.info, produced by makeinfo version
+4.13 from ../../llvm-user-manual/llvm.texi.
+
+Copyright (C) 2015 Embecosm Limited
+Copyright (C) 1988-2015 Free Software Foundation, Inc.
+
+ Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being "Funding Free Software", the Front-Cover Texts
+being (a, c) (see below), and with the Back-Cover Texts being (b, d)
+(see below).  A copy of the license is included in the section entitled
+"GNU Free Documentation License".
+
+ (a) The FSF's Front-Cover Text is:
+
+ A GNU Manual
+
+ (b) The FSF's Back-Cover Text is:
+
+ You have freedom to copy and modify this GNU Manual, like GNU
+software.  Copies published by the Free Software Foundation raise
+funds for GNU development.
+
+ (c) Embecosm's Front-Cover Text is:
+
+ Derivative Manual for LLVM
+
+ (d) Embecosm's Back-Cover Text is:
+
+ You have freedom to copy and modify this manual.  Copies
+published by Embecosm support introducing others to free and open
+source software and hardware.
+
+INFO-DIR-SECTION Software development
+START-INFO-DIR-ENTRY
+* llvm: (llvm).                The LLVM compiler
+END-INFO-DIR-ENTRY
+ This file documents the use of the LLVM compiler.
+
+ Copyright (C) 2015 Embecosm Limited
+Copyright (C) 1988-2015 Free Software Foundation, Inc.
+
+ Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being "Funding Free Software", the Front-Cover Texts
+being (a, c) (see below), and with the Back-Cover Texts being (b, d)
+(see below).  A copy of the license is included in the section entitled
+"GNU Free Documentation License".
+
+ (a) The FSF's Front-Cover Text is:
+
+ A GNU Manual
+
+ (b) The FSF's Back-Cover Text is:
+
+ You have freedom to copy and modify this GNU Manual, like GNU
+software.  Copies published by the Free Software Foundation raise
+funds for GNU development.
+
+ (c) Embecosm's Front-Cover Text is:
+
+ Derivative Manual for LLVM
+
+ (d) Embecosm's Back-Cover Text is:
+
+ You have freedom to copy and modify this manual.  Copies
+published by Embecosm support introducing others to free and open
+source software and hardware.
+
+
+
+Indirect:
+llvm.info-1: 2407
+llvm.info-2: 333543
+llvm.info-3: 632154
+llvm.info-4: 931621
+llvm.info-5: 1180040
+llvm.info-6: 1477764
+llvm.info-7: 1686378
+
+Tag Table:
+(Indirect)
+Node: Top2407
+Node: Clang and LLVM4245
+Node: Standards6432
+Node: Invoking LLVM19121
+Node: Option Summary23600
+Node: Overall Options53319
+Node: Invoking Clang/LLVM for C++61654
+Node: C Dialect Options63100
+Node: C++ Dialect Options77516
+Node: Objective-C and Objective-C++ Dialect Options92016
+Node: Language Independent Options99786
+Node: Warning Options104262
+Node: Debugging Options158195
+Node: Optimize Options181778
+Ref: Type-punning245063
+Node: Preprocessor Options333543
+Ref: op Wundef338178
+Ref: op Wno-endif-labels339199
+Ref: dashMF341976
+Ref: op nostdinc++347073
+Ref: fdollars-in-identifiers350683
+Node: Assembler Options359789
+Node: Link Options360484
+Ref: Link Options-Footnote-1374023
+Node: Directory Options374357
+Node: Spec Files380915
+Node: Target Options402818
+Node: Submodel Options403222
+Node: AArch64 Options404309
+Node: ARM Options409771
+Node: Darwin Options427200
+Node: Hexagon Options434644
+Node: GNU/Linux Options435192
+Node: MIPS Options436455
+Node: MSP430 Options470012
+Node: Nvidia PTX Options473522
+Node: PowerPC Options473913
+Node: RS/6000 and PowerPC Options474150
+Node: S/390 and zSeries Options514543
+Node: Solaris 2 Options523116
+Node: SPARC Options524660
+Node: System V Options537966
+Node: VMS Options538791
+Node: VxWorks Options539608
+Node: x86 Options540762
+Node: x86 Windows Options584061
+Node: XCore Options586859
+Node: zSeries Options587083
+Node: Code Gen Options587279
+Node: Environment Variables618122
+Node: Precompiled Headers626143
+Node: C Implementation632154
+Node: Translation implementation633845
+Node: Environment implementation634438
+Node: Identifiers implementation634994
+Node: Characters implementation636082
+Node: Integers implementation639734
+Node: Floating point implementation641621
+Node: Arrays and pointers implementation644687
+Ref: Arrays and pointers implementation-Footnote-1646147
+Node: Hints implementation646271
+Node: Structures unions enumerations and bit-fields implementation647759
+Node: Qualifiers implementation649985
+Node: Declarators implementation651766
+Node: Statements implementation652109
+Node: Preprocessing directives implementation652437
+Node: Library functions implementation654760
+Node: Architecture implementation655411
+Node: Locale-specific behavior implementation657054
+Node: C++ Implementation657360
+Node: Conditionally-supported behavior658643
+Node: Exception handling659262
+Node: C Extensions659672
+Node: Statement Exprs664831
+Node: Local Labels669308
+Node: Labels as Values672282
+Ref: Labels as Values-Footnote-1674808
+Node: Nested Functions674991
+Node: Constructing Calls678950
+Node: Typeof683669
+Node: Conditionals687598
+Node: __int128688489
+Node: Long Long689014
+Node: Complex690491
+Node: Floating Types693081
+Node: Half-Precision694202
+Node: Decimal Float696385
+Node: Hex Floats698241
+Node: Fixed-Point699278
+Node: Named Address Spaces702561
+Ref: AVR Named Address Spaces703243
+Node: Zero Length708449
+Node: Empty Structures711489
+Node: Variable Length711896
+Node: Variadic Macros714753
+Node: Escaped Newlines717132
+Node: Subscripting717994
+Node: Pointer Arith718721
+Node: Pointers to Arrays719296
+Node: Initializers720041
+Node: Compound Literals720543
+Node: Designated Inits723891
+Node: Case Ranges727630
+Node: Cast to Union728312
+Node: Mixed Declarations729404
+Node: Function Attributes729915
+Node: Label Attributes825138
+Node: Attribute Syntax826983
+Node: Function Prototypes837197
+Node: C++ Comments838979
+Node: Dollar Signs839499
+Node: Character Escapes839965
+Node: Variable Attributes840260
+Ref: AVR Variable Attributes853986
+Ref: MeP Variable Attributes857824
+Ref: x86 Variable Attributes860394
+Node: Type Attributes865431
+Ref: MeP Type Attributes880694
+Ref: PowerPC Type Attributes880968
+Ref: SPU Type Attributes881829
+Ref: x86 Type Attributes882120
+Node: Alignment882808
+Node: Inline884179
+Node: Volatiles889155
+Node: Using Assembly Language with C892056
+Node: Basic Asm893261
+Node: Extended Asm897396
+Ref: Volatile901194
+Ref: AssemblerTemplate905266
+Ref: OutputOperands909491
+Ref: InputOperands916393
+Ref: Clobbers920618
+Ref: GotoLabels923914
+Ref: x86Operandmodifiers926047
+Ref: x86floatingpointasmoperands928291
+Node: Constraints931621
+Node: Simple Constraints932728
+Node: Multi-Alternative940054
+Node: Modifiers942062
+Node: Machine Constraints945567
+Node: Asm Labels1001332
+Node: Explicit Reg Vars1003031
+Node: Global Reg Vars1004653
+Node: Local Reg Vars1009154
+Node: Size of an asm1012275
+Node: Alternate Keywords1013521
+Node: Incomplete Enums1015021
+Node: Function Names1015778
+Node: Return Address1017382
+Node: Vector Extensions1020890
+Node: Offsetof1028176
+Node: __sync Builtins1029018
+Node: __atomic Builtins1034493
+Node: Integer Overflow Builtins1046097
+Node: x86 specific memory model extensions for transactional memory1050228
+Node: Object Size Checking1051498
+Node: Pointer Bounds Checker builtins1057005
+Node: Cilk Plus Builtins1062825
+Node: Other Builtins1063716
+Node: Target Builtins1093361
+Node: AArch64 Built-in Functions1094854
+Node: Alpha Built-in Functions1095310
+Node: Altera Nios II Built-in Functions1098359
+Node: ARC Built-in Functions1102345
+Node: ARC SIMD Built-in Functions1107557
+Node: ARM iWMMXt Built-in Functions1116454
+Node: ARM C Language Extensions (ACLE)1123451
+Node: ARM Floating Point Status and Control Intrinsics1124729
+Node: AVR Built-in Functions1125206
+Node: Blackfin Built-in Functions1128306
+Node: FR-V Built-in Functions1128926
+Node: Argument Types1129793
+Node: Directly-mapped Integer Functions1131548
+Node: Directly-mapped Media Functions1132633
+Node: Raw read/write Functions1139668
+Node: Other Built-in Functions1140583
+Node: MIPS DSP Built-in Functions1141770
+Node: MIPS Paired-Single Support1154269
+Node: MIPS Loongson Built-in Functions1155769
+Node: Paired-Single Arithmetic1162290
+Node: Paired-Single Built-in Functions1163239
+Node: MIPS-3D Built-in Functions1165907
+Node: Other MIPS Built-in Functions1171285
+Node: MSP430 Built-in Functions1172291
+Node: NDS32 Built-in Functions1173693
+Node: picoChip Built-in Functions1174987
+Node: PowerPC Built-in Functions1176332
+Node: PowerPC AltiVec/VSX Built-in Functions1180040
+Node: PowerPC Hardware Transactional Memory Built-in Functions1319832
+Node: RX Built-in Functions1326374
+Node: S/390 System z Built-in Functions1330408
+Node: SH Built-in Functions1335646
+Node: SPARC VIS Built-in Functions1337375
+Node: SPU Built-in Functions1342980
+Node: TI C6X Built-in Functions1344797
+Node: TILE-Gx Built-in Functions1345822
+Node: TILEPro Built-in Functions1346940
+Node: x86 Built-in Functions1348039
+Node: x86 transactional memory intrinsics1407284
+Node: Target Format Checks1410505
+Node: Solaris Format Checks1410938
+Node: Darwin Format Checks1411365
+Node: Pragmas1412184
+Node: ARM Pragmas1412921
+Node: M32C Pragmas1413525
+Node: MeP Pragmas1414600
+Node: RS/6000 and PowerPC Pragmas1416670
+Node: Darwin Pragmas1417412
+Node: Solaris Pragmas1418480
+Node: Symbol-Renaming Pragmas1419642
+Node: Structure-Packing Pragmas1421257
+Node: Weak Pragmas1422907
+Node: Diagnostic Pragmas1423642
+Node: Visibility Pragmas1426750
+Node: Push/Pop Macro Pragmas1427436
+Node: Function Specific Option Pragmas1428409
+Node: Loop-Specific Pragmas1430255
+Node: Unnamed Fields1431346
+Node: Thread-Local1433545
+Node: C99 Thread-Local Edits1435651
+Node: C++98 Thread-Local Edits1437664
+Node: Binary constants1441109
+Node: C++ Extensions1441781
+Node: C++ Volatiles1443493
+Node: Restricted Pointers1445842
+Node: Vague Linkage1447434
+Node: C++ Interface1451059
+Ref: C++ Interface-Footnote-11454853
+Node: Template Instantiation1454989
+Node: Bound member functions1461576
+Node: C++ Attributes1463109
+Node: Function Multiversioning1466687
+Node: Namespace Association1468503
+Node: Type Traits1469884
+Node: Java Exceptions1476373
+Node: Deprecated Features1477764
+Node: Backwards Compatibility1480730
+Node: Objective-C1482083
+Node: GNU Objective-C runtime API1482693
+Node: Modern GNU Objective-C runtime API1483701
+Node: Traditional GNU Objective-C runtime API1486139
+Node: Executing code before main1486868
+Node: What you can and what you cannot do in +load1489611
+Node: Type encoding1491984
+Node: Legacy type encoding1497061
+Node: @encode1498153
+Node: Method signatures1498699
+Node: Garbage Collection1500695
+Node: Constant string objects1503385
+Node: compatibility_alias1505894
+Node: Exceptions1506621
+Node: Synchronization1509333
+Node: Fast enumeration1510518
+Node: Using fast enumeration1510831
+Node: c99-like fast enumeration syntax1512043
+Node: Fast enumeration details1512747
+Node: Fast enumeration protocol1515089
+Node: Messaging with the GNU Objective-C runtime1518242
+Node: Dynamically registering methods1519614
+Node: Forwarding hook1521306
+Node: Compatibility1524347
+Node: Trouble1530918
+Node: Actual Bugs1532340
+Node: Interoperation1532788
+Node: Incompatibilities1539681
+Node: Fixed Headers1547833
+Node: Standard Libraries1549497
+Node: Disappointments1550870
+Node: C++ Misunderstandings1555229
+Node: Static Definitions1556041
+Node: Name lookup1557095
+Ref: Name lookup-Footnote-11561874
+Node: Temporaries1562061
+Node: Copy Assignment1564038
+Node: Non-bugs1565846
+Node: Warnings and Errors1576354
+Node: Bugs1578117
+Node: Bug Criteria1578585
+Node: Bug Reporting1580796
+Node: Service1581004
+Node: Contributing1581824
+Node: Funding1582565
+Node: GNU Project1585055
+Node: Copying1585702
+Node: GNU Free Documentation License1623231
+Node: Contributors1648369
+Node: Option Index1686378
+Node: Keyword Index1816501
+
+End Tag Table
