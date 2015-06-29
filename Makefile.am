@@ -12,4 +12,4 @@
 ACLOCAL_AMFLAGS = -I m4
 
 # Common flags for all programs
-SUBDIRS = llvm-user-manual
+SUBDIRS = llvm-assembler-manual llvm-user-manual

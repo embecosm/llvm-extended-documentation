@@ -33,7 +33,8 @@ AC_SUBST(PKGVERSION)
 AC_SUBST(BUGURL_TEXI)
 
 # We want to create a Makefile
-AC_CONFIG_FILES([Makefile                   \
+AC_CONFIG_FILES([Makefile                       \
+	         llvm-assembler-manual/Makefile \
 	         llvm-user-manual/Makefile])
 
 # Put it all out.
