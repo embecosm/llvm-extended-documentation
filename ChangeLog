@@ -1,3 +1,21 @@
+2015-07-01  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	Work in progress on assembler manual, which now will build
+	correctly.
+
+	* Makefile.in: Regenerated.
+	* aclocal.m4: Regenerated.
+	* configure: Regenerated.
+	* configure.ac: Update LLVM and package version to 3.7.
+	* llvm-assembler-manual/Makefile.in: Generated.
+	* llvm-assembler-manual/llvm-assembler.texi: Complete version
+	which will build correctly.
+	* llvm-assembler-manual/c-aap.texi: Created.
+	* llvm-assembler-manual/llvm-assembler.info: Generated.
+	* llvm-user-manual/Makefile.in: Regenerated.
+	* llvm-user-manual/llvm.info: Regenerated.
+	* llvm-user-manual/llvm.info-1: Regenerated.
+
 2015-06-29  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* llvm-assembler-manual/llvm-assembler.texi: Work in progress

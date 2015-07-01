@@ -20,7 +20,7 @@
 #
 # Contributor Jeremy Bennett <jeremy.bennett@embecosm.com>
 #
-# This file is part of the LLVM User Manual based on GCC
+# This file is part of the LLVM Assembler Manual based on GAS
 #
 # This file is distributed under the University of Illinois Open Source
 # License. See COPYING for details.
@@ -58,8 +58,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-subdir = llvm-user-manual
-DIST_COMMON = $(llvm_TEXINFOS) $(srcdir)/Makefile.am \
+subdir = llvm-assembler-manual
+DIST_COMMON = $(llvm_assembler_TEXINFOS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -70,13 +70,13 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 SOURCES =
 DIST_SOURCES =
-INFO_DEPS = $(srcdir)/llvm.info
-am__TEXINFO_TEX_DIR = $(srcdir)/./include
-DVIS = llvm.dvi
-PDFS = llvm.pdf
-PSS = llvm.ps
-HTMLS = llvm.html
-TEXINFOS = llvm.texi
+INFO_DEPS = $(srcdir)/llvm-assembler.info
+am__TEXINFO_TEX_DIR = $(srcdir)/$(top_srcdir)/texinfo
+DVIS = llvm-assembler.dvi
+PDFS = llvm-assembler.pdf
+PSS = llvm-assembler.ps
+HTMLS = llvm-assembler.html
+TEXINFOS = llvm-assembler.texi
 TEXI2DVI = texi2dvi
 TEXI2PDF = $(TEXI2DVI) --pdf --batch
 MAKEINFOHTML = $(MAKEINFO) --html
@@ -192,32 +192,14 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-TEXINFO_TEX = ./include/texinfo.tex
+TEXINFO_TEX = $(top_srcdir)/texinfo/texinfo.tex
 AM_MAKEINFOFLAGS = -I . -I $(srcdir) -I $(srcdir)/include
-info_TEXINFOS = llvm.texi
+info_TEXINFOS = llvm-assembler.texi
 
 # Included files in the texinfo source
-llvm_TEXINFOS = include/gcc-common.texi \
-                llvm-vers.texi          \
-                frontends.texi          \
-                standards.texi          \
-                invoke.texi             \
-                extend.texi             \
-                md.texi                 \
-                objc.texi               \
-                trouble.texi            \
-                bugreport.texi          \
-                service.texi            \
-                contribute.texi         \
-                compat.texi             \
-                include/funding.texi    \
-                gnu.texi                \
-                include/gpl_v3.texi     \
-                include/fdl.texi        \
-                contrib.texi            \
-                avr-mmcu.texi           \
-                implement-c.texi        \
-                implement-cxx.texi
+llvm_assembler_TEXINFOS = llvm-assembler.texi \
+                          llvm-vers.texi         \
+                          fdl.texi
 
 all: all-am
 
@@ -232,9 +214,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu llvm-user-manual/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu llvm-assembler-manual/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu llvm-user-manual/Makefile
+	  $(AUTOMAKE) --gnu llvm-assembler-manual/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -299,10 +281,10 @@ $(am__aclocal_m4_deps):
 	    rm -rf $(@:.html=); else rm -Rf $(@:.html=.htp) $@; fi; \
 	  exit 1; \
 	fi
-$(srcdir)/llvm.info: llvm.texi $(llvm_TEXINFOS)
-llvm.dvi: llvm.texi $(llvm_TEXINFOS)
-llvm.pdf: llvm.texi $(llvm_TEXINFOS)
-llvm.html: llvm.texi $(llvm_TEXINFOS)
+$(srcdir)/llvm-assembler.info: llvm-assembler.texi $(llvm_assembler_TEXINFOS)
+llvm-assembler.dvi: llvm-assembler.texi $(llvm_assembler_TEXINFOS)
+llvm-assembler.pdf: llvm-assembler.texi $(llvm_assembler_TEXINFOS)
+llvm-assembler.html: llvm-assembler.texi $(llvm_assembler_TEXINFOS)
 .dvi.ps:
 	TEXINPUTS="$(am__TEXINFO_TEX_DIR)$(PATH_SEPARATOR)$$TEXINPUTS" \
 	$(DVIPS)  -o $@ $<
@@ -384,12 +366,17 @@ dist-info: $(INFO_DEPS)
 	done
 
 mostlyclean-aminfo:
-	-rm -rf llvm.aux llvm.cp llvm.cps llvm.fn llvm.ky llvm.log llvm.op llvm.ops \
-	  llvm.pg llvm.tmp llvm.toc llvm.tp llvm.vr
+	-rm -rf llvm-assembler.aux llvm-assembler.cp llvm-assembler.cps \
+	  llvm-assembler.fn llvm-assembler.fns llvm-assembler.ky \
+	  llvm-assembler.log llvm-assembler.pg llvm-assembler.pgs \
+	  llvm-assembler.tmp llvm-assembler.toc llvm-assembler.tp \
+	  llvm-assembler.tps llvm-assembler.vr llvm-assembler.vrs
 
 clean-aminfo:
-	-test -z "llvm.dvi llvm.pdf llvm.ps llvm.html" \
-	|| rm -rf llvm.dvi llvm.pdf llvm.ps llvm.html
+	-test -z "llvm-assembler.dvi llvm-assembler.pdf llvm-assembler.ps \
+	  llvm-assembler.html" \
+	|| rm -rf llvm-assembler.dvi llvm-assembler.pdf llvm-assembler.ps \
+	  llvm-assembler.html
 
 maintainer-clean-aminfo:
 	@list='$(INFO_DEPS)'; for i in $$list; do \

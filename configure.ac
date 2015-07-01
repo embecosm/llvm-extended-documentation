@@ -24,8 +24,8 @@ AC_PREREQ(2.69)
 
 # Set some variables.  We'll think about a better way to do this.
 GCC_VERSION_DATE="16 Mar 2015, commit ID 9dbe51a"
-LLVM_VERSION="3.5"
-PKGVERSION="3.5"
+LLVM_VERSION="3.7"
+PKGVERSION="3.7"
 BUGURL_TEXI="www.embecosm.com"
 AC_SUBST(GCC_VERSION_DATE)
 AC_SUBST(LLVM_VERSION)
