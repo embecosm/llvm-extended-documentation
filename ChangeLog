@@ -1,5 +1,12 @@
 2015-07-01  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
+	* llvm-assembler-manual/llvm-assembler.info: Regenerated.
+	* llvm-assembler-manual/llvm-assembler.texi: Remove all manual
+	page comments.
+	* llvm-user-manual/llvm.info-1: Regenerated.
+
+2015-07-01  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
 	Work in progress on assembler manual, which now will build
 	correctly.
 

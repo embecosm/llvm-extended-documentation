@@ -78,8 +78,8 @@ Introduction
 
 This manual documents how to use the Clang/LLVM compiler system as well
 as its features and incompatibilities, and how to report bugs.  It
-corresponds to Clang/LLVM version 3.5 as part of tool chain version
-3.5.
+corresponds to Clang/LLVM version 3.7 as part of tool chain version
+3.7.
 
  This manual is a derivative of the GNU Compiler Collection manual,
 prepared in compliance with the GNU Free Documentation License (GFDL).

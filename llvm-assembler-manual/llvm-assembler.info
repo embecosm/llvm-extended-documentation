@@ -4,16 +4,14 @@ makeinfo version 4.13 from
 
 INFO-DIR-SECTION Software development
 START-INFO-DIR-ENTRY
-* As: (as).                     The GNU assembler.
-* Gas: (as).                    The GNU assembler.
+* Clang: (clang).               The LLVM integrated assembler
 END-INFO-DIR-ENTRY
 
    This file documents the LLVM Integrated Assembler.
 
-   Copyright (C) 2015 Embecosm Limited
-Copyright (C) 1991-2015 Free Software Foundation, Inc.
-
-   Permission is granted to copy, distribute and/or modify this document
+   Copyright (C) 1991-2015 Free Software Foundation, Inc.  Copyright
+(C) 2015 Embecosm Limited
+Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
 any later version published by the Free Software Foundation; with no
 Invariant Sections, with no Front-Cover Texts, and with no Back-Cover
@@ -27,7 +25,7 @@ Using the LLVM integrated assembler
 ***********************************
 
 This file is a user guide to the LLVM integrated assembler
-3.5 version 3.5.
+3.7 version 3.7.
 
    This document is distributed under the terms of the GNU Free
 Documentation License.  A copy of the license is included in the
@@ -61,7 +59,7 @@ For details, see *note Command-Line Options: Invoking.
      clang [-a[cdghlns][=FILE]]
       [-|FILES ...]
 
-     _Target MIPS options:_
+     _Target AAP options:_
         [-O[OPTIMIZATION LEVEL]]
 
 `-a[cdghlmns]'
@@ -104,7 +102,7 @@ For details, see *note Command-Line Options: Invoking.
 
 
    The following options are available when the LLVM integrated
-assembler is configured for a MIPS processor.
+assembler is configured for a AAP processor.
 
 `-O OTPIMIZATION LEVEL'
      Set the optimization level.
@@ -4167,8 +4165,8 @@ Tag_compatibility (32)
      only be processed by other toolchains under some private
      arrangement indicated by the flag value and the vendor name.
 
-8.1.2 MIPS Attributes
----------------------
+8.1.2 AAP Attributes
+--------------------
 
 Tag_GNU_MIPS_ABI_FP (4)
      The floating-point ABI used by this object file.  The value will
@@ -5545,6 +5543,9 @@ bug fixes and configuration enhancements.
 
    Jon Beniston added support for the Lattice Mico32 architecture.
 
+   Jeremy Bennett of Embecosm created the version for the LLVM
+Integrated Assembler as a derived document of the GNU Assembler Manual.
+
    Many others have contributed large or small bugfixes and
 enhancements.  If you have contributed significant work and are not
 mentioned on this list, and want to be, let us know.  Some of the
@@ -6627,210 +6628,210 @@ AS Index
 
 
 Tag Table:
-Node: Top860
-Node: Overview1906
-Node: Manual3615
-Node: LLVM Assembler4611
-Node: Object Formats5999
-Node: Command Line6410
-Node: Input Files8212
-Ref: cc1as9660
-Node: Object10973
-Node: Errors12057
-Node: Invoking13377
-Node: codegen15154
-Node: mnoexecstack15362
-Node: mrelax-all15696
-Node: n16221
-Node: debug16378
-Node: compress-debug-sections16882
-Node: dwarf-debug-flags17091
-Node: dwarf-debug-producer17347
-Node: fdebug-compilation-dir17610
-Node: gdwarf-n17870
-Node: g18178
-Node: main-file-name18334
-Node: encoding18526
-Node: show-encoding18800
-Node: show-inst18993
-Node: include19181
-Node: information20158
-Node: help20411
-Node: version21112
-Node: llvm21462
-Node: output21715
-Node: filetype22025
-Node: output-asm-variant22706
-Node: o23016
-Node: symbol-options23293
-Node: target23637
-Node: target-abi23949
-Node: target-cpu24150
-Node: target-feature24377
-Node: triple24618
-Node: warnings24804
-Node: Syntax25050
-Node: Preprocessing25677
-Node: Whitespace27273
-Node: Comments27681
-Node: Symbol Intro29745
-Node: Statements30484
-Node: Constants32307
-Node: Characters32950
-Node: Strings33464
-Node: Chars35731
-Node: Numbers36518
-Node: Integers37091
-Node: Bignums37759
-Node: Flonums38127
-Node: Sections39958
-Node: Secs Background40348
-Node: Ld Sections44665
-Node: As Sections47070
-Node: Sub-Sections48054
-Node: bss51077
-Node: Symbols52039
-Node: Labels52725
-Node: Setting Symbols53166
-Node: Symbol Names53674
-Node: Dot59033
-Node: Symbol Attributes59513
-Node: Symbol Value60103
-Node: Symbol Type61172
-Node: Expressions61550
-Node: Empty Exprs62353
-Node: Integer Exprs62733
-Node: Arguments63140
-Node: Operators64279
-Node: Prefix Ops64626
-Node: Infix Ops64987
-Node: Pseudo Ops67389
-Node: Abort72557
-Node: Align72996
-Node: Altmacro75283
-Node: Ascii76624
-Node: Asciz76945
-Node: Balign77202
-Node: Bundle directives79090
-Node: Byte82031
-Node: CFI directives82302
-Node: Comm87943
-Ref: Comm-Footnote-189479
-Node: Data89847
-Node: Double90200
-Node: Eject90571
-Node: Else90758
-Node: Elseif91091
-Node: End91418
-Node: Endfunc91668
-Node: Endif91853
-Node: Equ92147
-Node: Equiv92406
-Node: Eqv92974
-Node: Err93350
-Node: Error93694
-Node: Exitm94151
-Node: Extern94332
-Node: Fail94626
-Node: File95125
-Node: Fill96508
-Node: Float97505
-Node: Func97879
-Node: Global98481
-Node: Gnu_attribute99051
-Node: Hidden99288
-Node: hword99886
-Node: Ident100226
-Node: If100833
-Node: Incbin103904
-Node: Include104611
-Node: Int105174
-Node: Internal105567
-Node: Irp106227
-Node: Irpc107118
-Node: Lcomm108047
-Node: Lflags108695
-Node: Line108922
-Node: Linkonce109470
-Node: List110711
-Node: Ln111331
-Node: Loc111493
-Node: Loc_mark_labels112891
-Node: Local113387
-Node: Long114011
-Node: Macro114201
-Node: Noaltmacro120163
-Node: Nolist120346
-Node: Octa120788
-Node: Offset121137
-Node: Org121476
-Node: P2align122815
-Node: PopSection124755
-Node: Previous125275
-Node: Print126700
-Node: Protected126962
-Node: Psize127621
-Node: Purgem128338
-Node: PushSection128571
-Node: Quad129326
-Node: Reloc129794
-Node: Rept130567
-Node: Sbttl130993
-Node: Section131374
-Node: Set136229
-Node: Short136734
-Node: Single137067
-Node: Size137444
-Node: Skip137938
-Node: Sleb128138272
-Node: Space138606
-Node: String138944
-Node: Struct139951
-Node: SubSection140688
-Node: Symver141263
-Node: Text143669
-Node: Title144027
-Node: Type144420
-Node: Uleb128146489
-Node: Version146829
-Node: VTableEntry147120
-Node: VTableInherit147422
-Node: Warning147884
-Node: Weak148130
-Node: Weakref148811
-Node: Word149788
-Node: Deprecated151709
-Node: Object Attributes151956
-Node: GNU Object Attributes153716
-Node: Defining New Object Attributes156955
-Node: Machine Dependencies157764
-Node: AAP-dependent158641
-Node: AAP Options160026
-Node: AAP Macros174798
-Ref: AAP Macros-Footnote-1177509
-Node: AAP Symbol Sizes177652
-Node: AAP Small Data179330
-Node: AAP ISA181496
-Node: AAP assembly options183300
-Node: AAP autoextend184436
-Node: AAP insn185171
-Node: AAP FP ABIs186529
-Node: AAP FP ABI History186983
-Node: AAP FP ABI Variants187749
-Node: AAP FP ABI Selection190305
-Node: AAP FP ABI Compatibility191375
-Node: AAP NaN Encodings192192
-Node: AAP Option Stack194175
-Node: AAP ASE Instruction Generation Overrides194965
-Node: AAP Floating-Point197676
-Node: AAP Syntax198587
-Node: AAP-Chars198853
-Node: Reporting Bugs199403
-Node: Bug Criteria200204
-Node: Bug Reporting201077
-Node: Acknowledgements208012
-Ref: Acknowledgements-Footnote-1212989
-Node: GNU Free Documentation License213015
-Node: AS Index238196
+Node: Top817
+Node: Overview1863
+Node: Manual3570
+Node: LLVM Assembler4566
+Node: Object Formats5954
+Node: Command Line6365
+Node: Input Files8167
+Ref: cc1as9615
+Node: Object10928
+Node: Errors12012
+Node: Invoking13332
+Node: codegen15109
+Node: mnoexecstack15317
+Node: mrelax-all15651
+Node: n16176
+Node: debug16333
+Node: compress-debug-sections16837
+Node: dwarf-debug-flags17046
+Node: dwarf-debug-producer17302
+Node: fdebug-compilation-dir17565
+Node: gdwarf-n17825
+Node: g18133
+Node: main-file-name18289
+Node: encoding18481
+Node: show-encoding18755
+Node: show-inst18948
+Node: include19136
+Node: information20113
+Node: help20366
+Node: version21067
+Node: llvm21417
+Node: output21670
+Node: filetype21980
+Node: output-asm-variant22661
+Node: o22971
+Node: symbol-options23248
+Node: target23592
+Node: target-abi23904
+Node: target-cpu24105
+Node: target-feature24332
+Node: triple24573
+Node: warnings24759
+Node: Syntax25005
+Node: Preprocessing25632
+Node: Whitespace27228
+Node: Comments27636
+Node: Symbol Intro29700
+Node: Statements30439
+Node: Constants32262
+Node: Characters32905
+Node: Strings33419
+Node: Chars35686
+Node: Numbers36473
+Node: Integers37046
+Node: Bignums37714
+Node: Flonums38082
+Node: Sections39913
+Node: Secs Background40303
+Node: Ld Sections44620
+Node: As Sections47025
+Node: Sub-Sections48009
+Node: bss51032
+Node: Symbols51994
+Node: Labels52680
+Node: Setting Symbols53121
+Node: Symbol Names53629
+Node: Dot58988
+Node: Symbol Attributes59468
+Node: Symbol Value60058
+Node: Symbol Type61127
+Node: Expressions61505
+Node: Empty Exprs62308
+Node: Integer Exprs62688
+Node: Arguments63095
+Node: Operators64234
+Node: Prefix Ops64581
+Node: Infix Ops64942
+Node: Pseudo Ops67344
+Node: Abort72512
+Node: Align72951
+Node: Altmacro75238
+Node: Ascii76579
+Node: Asciz76900
+Node: Balign77157
+Node: Bundle directives79045
+Node: Byte81986
+Node: CFI directives82257
+Node: Comm87898
+Ref: Comm-Footnote-189434
+Node: Data89802
+Node: Double90155
+Node: Eject90526
+Node: Else90713
+Node: Elseif91046
+Node: End91373
+Node: Endfunc91623
+Node: Endif91808
+Node: Equ92102
+Node: Equiv92361
+Node: Eqv92929
+Node: Err93305
+Node: Error93649
+Node: Exitm94106
+Node: Extern94287
+Node: Fail94581
+Node: File95080
+Node: Fill96463
+Node: Float97460
+Node: Func97834
+Node: Global98436
+Node: Gnu_attribute99006
+Node: Hidden99243
+Node: hword99841
+Node: Ident100181
+Node: If100788
+Node: Incbin103859
+Node: Include104566
+Node: Int105129
+Node: Internal105522
+Node: Irp106182
+Node: Irpc107073
+Node: Lcomm108002
+Node: Lflags108650
+Node: Line108877
+Node: Linkonce109425
+Node: List110666
+Node: Ln111286
+Node: Loc111448
+Node: Loc_mark_labels112846
+Node: Local113342
+Node: Long113966
+Node: Macro114156
+Node: Noaltmacro120118
+Node: Nolist120301
+Node: Octa120743
+Node: Offset121092
+Node: Org121431
+Node: P2align122770
+Node: PopSection124710
+Node: Previous125230
+Node: Print126655
+Node: Protected126917
+Node: Psize127576
+Node: Purgem128293
+Node: PushSection128526
+Node: Quad129281
+Node: Reloc129749
+Node: Rept130522
+Node: Sbttl130948
+Node: Section131329
+Node: Set136184
+Node: Short136689
+Node: Single137022
+Node: Size137399
+Node: Skip137893
+Node: Sleb128138227
+Node: Space138561
+Node: String138899
+Node: Struct139906
+Node: SubSection140643
+Node: Symver141218
+Node: Text143624
+Node: Title143982
+Node: Type144375
+Node: Uleb128146444
+Node: Version146784
+Node: VTableEntry147075
+Node: VTableInherit147377
+Node: Warning147839
+Node: Weak148085
+Node: Weakref148766
+Node: Word149743
+Node: Deprecated151664
+Node: Object Attributes151911
+Node: GNU Object Attributes153671
+Node: Defining New Object Attributes156908
+Node: Machine Dependencies157717
+Node: AAP-dependent158594
+Node: AAP Options159979
+Node: AAP Macros174751
+Ref: AAP Macros-Footnote-1177462
+Node: AAP Symbol Sizes177605
+Node: AAP Small Data179283
+Node: AAP ISA181449
+Node: AAP assembly options183253
+Node: AAP autoextend184389
+Node: AAP insn185124
+Node: AAP FP ABIs186482
+Node: AAP FP ABI History186936
+Node: AAP FP ABI Variants187702
+Node: AAP FP ABI Selection190258
+Node: AAP FP ABI Compatibility191328
+Node: AAP NaN Encodings192145
+Node: AAP Option Stack194128
+Node: AAP ASE Instruction Generation Overrides194918
+Node: AAP Floating-Point197629
+Node: AAP Syntax198540
+Node: AAP-Chars198806
+Node: Reporting Bugs199356
+Node: Bug Criteria200157
+Node: Bug Reporting201030
+Node: Acknowledgements207965
+Ref: Acknowledgements-Footnote-1213078
+Node: GNU Free Documentation License213104
+Node: AS Index238285
 
 End Tag Table

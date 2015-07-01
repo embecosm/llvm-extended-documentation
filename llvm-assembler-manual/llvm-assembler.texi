@@ -159,18 +159,11 @@ This manual is a user guide to the LLVM integrated assembler
 Here is a brief summary of how to invoke the LLVM integrated assembler.  For
 details, see @ref{Invoking,,Command-Line Options}.
 
-@c man title AS the portable GNU assembler.
-
-@ignore
-@c man begin SEEALSO
-clang(1), ld(1), and the Info entries for @file{binutils} and @file{ld}.
-@c man end
-@end ignore
+@c Command synopsis
 
 @c We don't use deffn and friends for the following because they seem
 @c to be limited to one line for the header.
 @example
-@c man begin SYNOPSIS
 clang [@b{-a}[@b{cdghlns}][=@var{file}]]
  [@b{--}|@var{files} @dots{}]
 @c
@@ -180,10 +173,9 @@ clang [@b{-a}[@b{cdghlns}][=@var{file}]]
 @emph{Target AAP options:}
    [@b{-O}[@var{optimization level}]]
 
-@c man end
 @end example
 
-@c man begin OPTIONS
+@c Command options
 
 @table @code
 
@@ -227,8 +219,8 @@ the last one.  By itself, @samp{-a} defaults to @samp{-ahls}.
 Standard input, or source files to assemble.
 
 @end table
-@c man end
 
+@c AAP specific options
 The following options are available when the LLVM integrated assembler is
 configured for a AAP processor.
 
@@ -237,8 +229,6 @@ configured for a AAP processor.
 Set the optimization level.
 
 @end table
-
-@c man end
 
 @menu
 * Manual::                      Structure of this Manual
@@ -297,8 +287,6 @@ computer-readable series of instructions.  Different versions of
 @node LLVM Assembler
 @section The LLVM Integrated Assembler
 
-@c man begin DESCRIPTION
-
 The LLVM integrated assembler is really a family of assemblers.
 If you use (or have used) the LLVM integrated assembler on one architecture, you
 should find a fairly similar environment when you use it on another
@@ -317,8 +305,6 @@ assembler for the same architecture.  Unlike the @sc{gnu} assembler the LLVM
 integrated assembler usually assembles directly from the internal LLVM
 Intermediate Represenation (IR) for the machine instructions, rather than from
 a separate textual file (although it can also do the latter).
-
-@c man end
 
 Unlike older assemblers, the LLVM integrated is designed to assemble a source
 program in one pass of the source file.  This has a subtle impact on the
@@ -393,7 +379,6 @@ the program input to one run of the LLVM integrated assembler.  The program may
 be in one or more files; how the source is partitioned into files doesn't
 change the meaning of the source.
 
-@c man begin DESCRIPTION
 Unlike the @sc{gnu} assembler, the LLVM integrated assembler will by default
 generate a fully linked executable, created by assembling each source file in
 turn and then linking them.  Supplying the @samp{-c} option will cause just the
@@ -432,8 +417,6 @@ to assemble.  It can also be used as a pipe:
 @example
 @var{arch}-cc -cc1as -triple @var{arch} -filetype obj < hello.s > hello.o
 @end example
-
-@c man end
 
 @subheading Filenames and Line-numbers
 
@@ -488,8 +471,6 @@ for the debugger.
 @node Errors
 @section Error and Warning Messages
 
-@c man begin DESCRIPTION
-
 @cindex error messages
 @cindex warning messages
 @cindex messages from assembler
@@ -499,8 +480,6 @@ Clang/LLVM compiler runs the integrated assembler automatically on assembler
 generated from C and C++ programs.  Warnings report an assumption made so that
 the assembler could keep assembling a flawed program; errors report a grave
 problem that stops the assembly.
-
-@c man end
 
 @cindex format of warning messages
 Warning messages have the format
@@ -538,8 +517,6 @@ versions of the @sc{gnu} assembler; see @ref{Machine Dependencies},
 for options specific
 to particular machine architectures.
 
-@c man begin DESCRIPTION
-
 If you are invoking the integrated assembler via the Clang/LLVM C/C++ compiler,
 you can use the @samp{-Wa} option to pass arguments through to the assembler.
 The assembler arguments must be separated from each other (and the @samp{-Wa})
@@ -561,8 +538,6 @@ options it passes to each compilation pass, including the assembler.)
 
 You never need to use @samp{-Wa} if you are invoking the assembler directly
 using @samp{-cc1as}.  Any options are assumed to be assembler options.
-
-@c man end
 
 @menu
 * codegen::         How the assembly code is generated
