@@ -1,5 +1,11 @@
 2015-07-03  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
+	* llvm-assembler-manual/llvm-assembler.info: Regenerated.
+	* llvm-assembler-manual/llvm-assembler.texi
+	(Assembler Directives): All reviewed.
+
+2015-07-03  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
 	* llvm-assembler-manual/llvm-assembler.info: Regenerated
 	* llvm-assembler-manual/llvm-assembler.texi (Overview): Simplify
 	introduction and command line description.

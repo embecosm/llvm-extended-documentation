@@ -140,7 +140,7 @@ section entitled ``GNU Free Documentation License''.
 * Reporting Bugs::              Reporting Bugs
 * Acknowledgements::            Who Did What
 * GNU Free Documentation License::  GNU Free Documentation License
-* AS Index::                    AS Index
+* AS Index::                    LLVM Integrated Assembler Index
 @end menu
 @end ifnottex
 
@@ -832,7 +832,7 @@ Causes all assembly warnings to be fatal.
 @cindex syntax, machine-independent
 This chapter describes the machine-independent syntax allowed in a source file.
 LLVM integrated assembler syntax is similar to what many other assemblers use;
-it is inspired by the GNU assembler, which in turns is inspired by the BSD 4.2
+it is inspired by the @sc{gnu} assembler, which in turns is inspired by the BSD 4.2
 VAX assembler.
 
 @menu
@@ -881,7 +881,7 @@ preprocessed.
 @cindex preprocessing, turning on and off
 @kindex #NO_APP
 @kindex #APP
-Unlike the GNU assembler, @code{#NO_APP} and @code{#APP} before the
+Unlike the @sc{gnu} assembler, @code{#NO_APP} and @code{#APP} before the
 text that may contain whitespace or comments, and putting a line that says
 @code{#NO_APP} after this text.  This feature is mainly intend to support
 @code{asm} statements in compilers whose output is otherwise free of comments
@@ -1551,16 +1551,14 @@ other programs that manipulate object files see no trace of them.
 They just see all your text subsections as a text section, and all your
 data subsections as a data section.
 
-To specify which subsection you want subsequent statements assembled
-into, use a numeric argument to specify it, in a @samp{.text
-@var{expression}} or a @samp{.data @var{expression}} statement.
-When generating ELF output, you
-can also use the @code{.subsection} directive (@pxref{SubSection})
-to specify a subsection: @samp{.subsection @var{expression}}.
-@var{Expression} should be an absolute expression
-(@pxref{Expressions}).  If you just say @samp{.text} then @samp{.text 0}
-is assumed.  Likewise @samp{.data} means @samp{.data 0}.  Assembly
-begins in @code{text 0}.  For instance:
+To specify which subsection you want subsequent statements assembled into, use
+a numeric argument to specify it, in a @samp{.text @var{expression}} or a
+@samp{.data @var{expression}} statement.  You can also use the
+@code{.subsection} directive (@pxref{SubSection}) to specify a subsection:
+@samp{.subsection @var{expression}}.  @var{Expression} should be an absolute
+expression (@pxref{Expressions}).  If you just say @samp{.text} then
+@samp{.text 0} is assumed.  Likewise @samp{.data} means @samp{.data 0}.
+Assembly begins in @code{text 0}.  For instance:
 @example
 .text 0     # The default subsection is text 0 anyway.
 .ascii "This lives in the first text subsection. *"
@@ -2139,52 +2137,30 @@ unsupported are listed at the end of this chapter. @xref{Unsupported}.
 * P2align::                     @code{.p2align @var{abs-expr}, @var{abs-expr}, @var{abs-expr}}
 * PopSection::                  @code{.popsection}
 * Previous::                    @code{.previous}
-
-* Print::			@code{.print @var{string}}
 * Protected::                   @code{.protected @var{names}}
-
-* Psize::                       @code{.psize @var{lines}, @var{columns}}
 * Purgem::			@code{.purgem @var{name}}
 * PushSection::                 @code{.pushsection @var{name}}
 
 * Quad::                        @code{.quad @var{bignums}}
-* Reloc::			@code{.reloc @var{offset}, @var{reloc_name}[, @var{expression}]}
 * Rept::			@code{.rept @var{count}}
-* Sbttl::                       @code{.sbttl "@var{subheading}"}
 * Section::                     @code{.section @var{name}[, @var{flags}]}
-
 * Set::                         @code{.set @var{symbol}, @var{expression}}
 * Short::                       @code{.short @var{expressions}}
 * Single::                      @code{.single @var{flonums}}
 * Size::                        @code{.size [@var{name} , @var{expression}]}
-@ifclear no-space-dir
 * Skip::                        @code{.skip @var{size} , @var{fill}}
-@end ifclear
-
 * Sleb128::			@code{.sleb128 @var{expressions}}
-@ifclear no-space-dir
 * Space::                       @code{.space @var{size} , @var{fill}}
-@end ifclear
-
-* String::                      @code{.string "@var{str}"}, @code{.string8 "@var{str}"}, @code{.string16 "@var{str}"}, @code{.string32 "@var{str}"}, @code{.string64 "@var{str}"}
-* Struct::			@code{.struct @var{expression}}
+* String::                      @code{.string "@var{str}"}
 * SubSection::                  @code{.subsection}
 * Symver::                      @code{.symver @var{name},@var{name2@@nodename}}
-
 * Text::                        @code{.text @var{subsection}}
-* Title::                       @code{.title "@var{heading}"}
 * Type::                        @code{.type <@var{int} | @var{name} , @var{type description}>}
-
 * Uleb128::                     @code{.uleb128 @var{expressions}}
-
 * Version::                     @code{.version "@var{string}"}
-* VTableEntry::                 @code{.vtable_entry @var{table}, @var{offset}}
-* VTableInherit::               @code{.vtable_inherit @var{child}, @var{parent}}
-
 * Warning::			@code{.warning @var{string}}
 * Weak::                        @code{.weak @var{names}}
 * Weakref::                     @code{.weakref @var{alias}, @var{symbol}}
-* Word::                        @code{.word @var{expressions}}
 * Deprecated::                  Deprecated Directives
 * Unsupported::                 Unsupported @sc{gnu} Assembler Directives
 @end menu
@@ -2596,8 +2572,8 @@ End the current macro definition.  @xref{Macro}.
 @section @code{.endr}
 @cindex @code{endr} directive
 @cindex @code{.endr}
-End the current @code{.irp} or @code{.irpc} definition.  @xref{Irp}.
-@xref{Irpc}.
+End the current @code{.irp}, @code{.irpc} or @code{.rept} definition.  @xref{Irp}.
+@xref{Irpc}.  @xref{Rept}.
 
 @node Equ
 @section @code{.equ @var{symbol}, @var{expression}}
@@ -3296,6 +3272,7 @@ absolute expression.  If the comma and @var{fill} are omitted,
 
 @cindex padding the location counter given a power of two
 @cindex @code{p2align} directive
+@cindex @code{.p2align}
 Pad the location counter (in the current subsection) to a particular
 storage boundary.  The first expression (which must be absolute) is the
 number of low-order zero bits the location counter must have after
@@ -3318,7 +3295,9 @@ required alignment; this can be useful if you want the alignment to be filled
 with no-op instructions when appropriate.
 
 @cindex @code{p2alignw} directive
+@cindex @code{.p2alignw}
 @cindex @code{p2alignl} directive
+@cindex @code{.p2alignl}
 The @code{.p2alignw} and @code{.p2alignl} directives are variants of the
 @code{.p2align} directive.  The @code{.p2alignw} directive treats the fill
 pattern as a two byte word value.  The @code{.p2alignl} directives treats the
@@ -3330,8 +3309,8 @@ undefined.
 
 @node PopSection
 @section @code{.popsection}
-
 @cindex @code{popsection} directive
+@cindex @code{.popsection}
 @cindex Section Stack
 This is one of the ELF section stack manipulation directives.  The others are
 @code{.section} (@pxref{Section}), @code{.subsection} (@pxref{SubSection}),
@@ -3344,8 +3323,8 @@ stack.
 
 @node Previous
 @section @code{.previous}
-
 @cindex @code{previous} directive
+@cindex @code{.previous}
 @cindex Section Stack
 This is one of the ELF section stack manipulation directives.  The others are
 @code{.section} (@pxref{Section}), @code{.subsection} (@pxref{SubSection}),
@@ -3393,17 +3372,10 @@ section B and 0x9abc into subsection 1 of section B.
 In terms of the section stack, this directive swaps the current section with
 the top section on the section stack.
 
-@node Print
-@section @code{.print @var{string}}
-
-@cindex @code{print} directive
-the LLVM integrated assembler will print @var{string} on the standard output during
-assembly.  You must put @var{string} in double quotes.
-
 @node Protected
 @section @code{.protected @var{names}}
-
 @cindex @code{protected} directive
+@cindex @code{.protected}
 @cindex visibility
 This is one of the ELF visibility directives.  The other two are
 @code{.hidden} (@pxref{Hidden}) and @code{.internal} (@pxref{Internal}).
@@ -3415,37 +3387,17 @@ components that defines them must be resolved to the definition in that
 component, even if a definition in another component would normally preempt
 this.
 
-@node Psize
-@section @code{.psize @var{lines} , @var{columns}}
-
-@cindex @code{psize} directive
-@cindex listing control: paper size
-@cindex paper size, for listings
-Use this directive to declare the number of lines---and, optionally, the
-number of columns---to use for each page, when generating listings.
-
-If you do not use @code{.psize}, listings use a default line-count
-of 60.  You may omit the comma and @var{columns} specification; the
-default width is 200 columns.
-
-the LLVM integrated assembler generates formfeeds whenever the specified number of
-lines is exceeded (or whenever you explicitly request one, using
-@code{.eject}).
-
-If you specify @var{lines} as @code{0}, no formfeeds are generated save
-those explicitly specified with @code{.eject}.
-
 @node Purgem
 @section @code{.purgem @var{name}}
-
 @cindex @code{purgem} directive
+@cindex @code{.purgem}
 Undefine the macro @var{name}, so that later uses of the string will not be
 expanded.  @xref{Macro}.
 
 @node PushSection
 @section @code{.pushsection @var{name} [, @var{subsection}] [, "@var{flags}"[, @@@var{type}[,@var{arguments}]]]}
-
 @cindex @code{pushsection} directive
+@cindex @code{.pushsection}
 @cindex Section Stack
 This is one of the ELF section stack manipulation directives.  The others are
 @code{.section} (@pxref{Section}), @code{.subsection} (@pxref{SubSection}),
@@ -3460,8 +3412,8 @@ as in the @code{.section} (@pxref{Section}) directive.
 
 @node Quad
 @section @code{.quad @var{bignums}}
-
 @cindex @code{quad} directive
+@cindex @code{.quad}
 @code{.quad} expects zero or more bignums, separated by commas.  For
 each bignum, it emits
 @ifclear bignum-16
@@ -3480,24 +3432,10 @@ warning message; and just takes the lowest order 16 bytes of the bignum.
 @cindex integer, 16-byte
 @end ifset
 
-@node Reloc
-@section @code{.reloc @var{offset}, @var{reloc_name}[, @var{expression}]}
-
-@cindex @code{reloc} directive
-Generate a relocation at @var{offset} of type @var{reloc_name} with value
-@var{expression}.  If @var{offset} is a number, the relocation is generated in
-the current section.  If @var{offset} is an expression that resolves to a
-symbol plus offset, the relocation is generated in the given symbol's section.
-@var{expression}, if present, must resolve to a symbol plus addend or to an
-absolute value, but note that not all targets support an addend.  e.g. ELF REL
-targets such as i386 store an addend in the section contents rather than in the
-relocation.  This low level interface does not support addends stored in the
-section.
-
 @node Rept
 @section @code{.rept @var{count}}
-
 @cindex @code{rept} directive
+@cindex @code{.rept}
 Repeat the sequence of lines between the @code{.rept} directive and the next
 @code{.endr} directive @var{count} times.
 
@@ -3517,21 +3455,8 @@ is equivalent to assembling
         .long   0
 @end example
 
-@node Sbttl
-@section @code{.sbttl "@var{subheading}"}
-
-@cindex @code{sbttl} directive
-@cindex subtitles for listings
-@cindex listing control: subtitle
-Use @var{subheading} as the title (third line, immediately after the
-title line) when generating assembly listings.
-
-This directive affects subsequent pages, as well as the current page if
-it appears within ten lines of the top of a page.
-
 @node Section
 @section @code{.section @var{name}}
-
 @cindex named section
 Use the @code{.section} directive to assemble the following code into a section
 named @var{name}.
@@ -3546,8 +3471,9 @@ This is one of the ELF section stack manipulation directives.  The others are
 (@pxref{PushSection}), @code{.popsection} (@pxref{PopSection}), and
 @code{.previous} (@pxref{Previous}).
 
-@cindex @code{section} directive (ELF version)
-For ELF targets, the @code{.section} directive is used like this:
+@cindex @code{section} directive
+@cindex @code{.section}
+The @code{.section} directive is used like this:
 
 @example
 .section @var{name} [, "@var{flags}"[, @@@var{type}[,@var{flag_specific_arguments}]]]
@@ -3575,6 +3501,9 @@ section is used for thread-local-storage
 @item ?
 section is a member of the previously-current section's group, if any
 @end table
+There may be further target dependent flags.  For example AAP supports the
+@samp{R} flag to indicate a section should not be relaxed when linking.
+@xref{Machine Dependencies}.
 
 The optional @var{type} argument may contain one of the following constants:
 @table @code
@@ -3594,9 +3523,9 @@ section contains an array of pointers to pre-init functions
 
 Many targets only support the first three section types.
 
-Note on targets where the @code{@@} character is the start of a comment (eg
-ARM) then another character is used instead.  For example the ARM port uses the
-@code{%} character.
+@emph{Note:} On targets where the @code{@@} character is the start of a comment
+(eg ARM) then another character is used instead.  For example the ARM port uses
+the @code{%} character.
 
 If @var{flags} contains the @code{M} symbol then the @var{type} argument must
 be specified as well as an extra argument---@var{entsize}---like this:
@@ -3631,8 +3560,8 @@ indicates that only one copy of this section should be retained
 an alias for comdat
 @end table
 
-Note: if both the @var{M} and @var{G} flags are present then the fields for
-the Merge flag should come first, like this:
+@emph{Note:} If both the @var{M} and @var{G} flags are present then the fields
+for the Merge flag should come first, like this:
 
 @example
 .section @var{name} , "@var{flags}"MG, @@@var{type}, @var{entsize}, @var{GroupName}[, @var{linkage}]
@@ -3650,14 +3579,14 @@ the section name is not recognized, the default will be for the section to have
 none of the above flags: it will not be allocated in memory, nor writable, nor
 executable.  The section will contain data.
 
-For ELF targets, the assembler supports another type of @code{.section}
-directive for compatibility with the Solaris assembler:
+The assembler supports another type of @code{.section} directive for
+compatibility with the Solaris assembler:
 
 @example
 .section "@var{name}"[, @var{flags}...]
 @end example
 
-Note that the section name is quoted.  There may be a sequence of comma
+@emph{Note:} The section name is quoted.  There may be a sequence of comma
 separated flags:
 @table @code
 @item #alloc
@@ -3672,10 +3601,9 @@ section is excluded from executable and shared library.
 section is used for thread local storage
 @end table
 
-This directive replaces the current section and subsection.  See the
-contents of the gas testsuite directory @code{gas/testsuite/gas/elf} for
-some examples of how this directive and the other section stack directives
-work.
+This directive replaces the current section and subsection.  The @sc{gnu}
+assembler testsuite directory @code{gas/testsuite/gas/elf} contains some
+examples of how this directive and the other section stack directives.
 
 @node Set
 @section @code{.set @var{symbol}, @var{expression}}
@@ -3694,18 +3622,16 @@ file is the last value stored into it.
 
 @node Short
 @section @code{.short @var{expressions}}
-
 @cindex @code{short} directive
-@code{.short} is normally the same as @samp{.word}.
-@xref{Word,,@code{.word}}.
-
-In some configurations, however, @code{.short} and @code{.word} generate
-numbers of different lengths.  @xref{Machine Dependencies}.
+@cindex @code{.short}
+Insert arguments into the output.  The meaning is target specific.  In
+particular there may be unusual behavior if the target has a 32-bit address
+space, but less than 32-bit addressing.  @xref{Machine Dependencies}.
 
 @node Single
 @section @code{.single @var{flonums}}
-
 @cindex @code{single} directive
+@cindex @code{.single}
 @cindex floating point numbers (single)
 This directive assembles zero or more flonums, separated by commas.  It
 has the same effect as @code{.float}.
@@ -3713,121 +3639,69 @@ The exact kind of floating point numbers emitted depends on how
 the LLVM integrated assembler is configured.  @xref{Machine Dependencies}.
 
 @node Size
-@section @code{.size}
-
-This directive is used to set the size associated with a symbol.
-
-@cindex @code{size} directive (ELF version)
-For ELF targets, the @code{.size} directive is used like this:
-
-@example
-.size @var{name} , @var{expression}
-@end example
-
+@section @code{.size @var{expression}}
+@cindex @code{size} directive
+@cindex @code{.size}
 This directive sets the size associated with a symbol @var{name}.
 The size in bytes is computed from @var{expression} which can make use of label
 arithmetic.  This directive is typically used to set the size of function
 symbols.
 
-@ifclear no-space-dir
 @node Skip
 @section @code{.skip @var{size} , @var{fill}}
-
 @cindex @code{skip} directive
+@cindex @code{.skip}
 @cindex filling memory
 This directive emits @var{size} bytes, each of value @var{fill}.  Both
 @var{size} and @var{fill} are absolute expressions.  If the comma and
 @var{fill} are omitted, @var{fill} is assumed to be zero.  This is the same as
 @samp{.space}.
-@end ifclear
 
 @node Sleb128
 @section @code{.sleb128 @var{expressions}}
-
 @cindex @code{sleb128} directive
+@cindex @code{.sleb128}
 @var{sleb128} stands for ``signed little endian base 128.''  This is a
 compact, variable length representation of numbers used by the DWARF
 symbolic debugging format.  @xref{Uleb128, ,@code{.uleb128}}.
 
-@ifclear no-space-dir
 @node Space
 @section @code{.space @var{size} , @var{fill}}
-
 @cindex @code{space} directive
+@cindex @code{.space}
 @cindex filling memory
 This directive emits @var{size} bytes, each of value @var{fill}.  Both
 @var{size} and @var{fill} are absolute expressions.  If the comma
 and @var{fill} are omitted, @var{fill} is assumed to be zero.  This is the same
 as @samp{.skip}.
-@end ifclear
 
 @node String
-@section @code{.string} "@var{str}", @code{.string8} "@var{str}", @code{.string16}
-"@var{str}", @code{.string32} "@var{str}", @code{.string64} "@var{str}"
-
+@section @code{.string} "@var{str}"
 @cindex string, copying to object file
-@cindex string8, copying to object file
-@cindex string16, copying to object file
-@cindex string32, copying to object file
-@cindex string64, copying to object file
 @cindex @code{string} directive
-@cindex @code{string8} directive
-@cindex @code{string16} directive
-@cindex @code{string32} directive
-@cindex @code{string64} directive
-
+@cindex @code{.string}
 Copy the characters in @var{str} to the object file.  You may specify more than
 one string to copy, separated by commas.  Unless otherwise specified for a
 particular machine, the assembler marks the end of each string with a 0 byte.
 You can use any of the escape sequences described in @ref{Strings,,Strings}.
 
-The variants @code{string16}, @code{string32} and @code{string64} differ from
-the @code{string} pseudo opcode in that each 8-bit character from @var{str} is
-copied and expanded to 16, 32 or 64 bits respectively.  The expanded characters
-are stored in target endianness byte order.
-
-Example:
-@example
-	.string32 "BYE"
-expands to:
-	.string   "B\0\0\0Y\0\0\0E\0\0\0"  /* On little endian targets.  */
-	.string   "\0\0\0B\0\0\0Y\0\0\0E"  /* On big endian targets.  */
-@end example
-
-
-@node Struct
-@section @code{.struct @var{expression}}
-
-@cindex @code{struct} directive
-Switch to the absolute section, and set the section offset to @var{expression},
-which must be an absolute expression.  You might use this as follows:
-@example
-        .struct 0
-field1:
-        .struct field1 + 4
-field2:
-        .struct field2 + 4
-field3:
-@end example
-This would define the symbol @code{field1} to have the value 0, the symbol
-@code{field2} to have the value 4, and the symbol @code{field3} to have the
-value 8.  Assembly would be left in the absolute section, and you would need to
-use a @code{.section} directive of some sort to change to some other section
-before further assembly.
+The @sc{gnu} assembler variants @code{.string8}, @code{.string16},
+@code{.string32} and @code{.string64} are not supported by the LLVM integrated
+assembler.  @xref{Unsupported}.
 
 @node SubSection
-@section @code{.subsection @var{name}}
-
+@section @code{.subsection @var{expression}}
 @cindex @code{subsection} directive
+@cindex @code{.subsection}
 @cindex Section Stack
 This is one of the ELF section stack manipulation directives.  The others are
 @code{.section} (@pxref{Section}), @code{.pushsection} (@pxref{PushSection}),
 @code{.popsection} (@pxref{PopSection}), and @code{.previous}
 (@pxref{Previous}).
 
-This directive replaces the current subsection with @code{name}.  The current
-section is not changed.  The replaced subsection is put onto the section stack
-in place of the then current top of stack subsection.
+This directive replaces the current subsection with @var{expression}.  The
+current section is not changed.  The replaced subsection is put onto the
+section stack in place of the then current top of stack subsection.
 
 @node Symver
 @section @code{.symver}
@@ -3841,7 +3715,7 @@ There are cases where it may make sense to use this in objects to be bound
 into an application itself so as to override a versioned symbol from a
 shared library.
 
-For ELF targets, the @code{.symver} directive can be used like this:
+The @code{.symver} directive can be used like this:
 @example
 .symver @var{name}, @var{name2@@nodename}
 @end example
@@ -3885,38 +3759,17 @@ name, @var{name}, will be changed to @var{name2@@@@nodename}.
 
 @node Text
 @section @code{.text @var{subsection}}
-
 @cindex @code{text} directive
-Tells the LLVM integrated assembler to assemble the following statements onto the end of
-the text subsection numbered @var{subsection}, which is an absolute
-expression.  If @var{subsection} is omitted, subsection number zero
-is used.
-
-@node Title
-@section @code{.title "@var{heading}"}
-
-@cindex @code{title} directive
-@cindex listing control: title line
-Use @var{heading} as the title (second line, immediately after the
-source file name and pagenumber) when generating assembly listings.
-
-This directive affects subsequent pages, as well as the current page if
-it appears within ten lines of the top of a page.
+@cindex @code{.text}
+Tells the LLVM integrated assembler to assemble the following statements onto
+the end of the text subsection numbered @var{subsection}, which is an absolute
+expression.  If @var{subsection} is omitted, subsection number zero is used.
 
 @node Type
-@section @code{.type}
-
-This directive is used to set the type of a symbol.
-
-@cindex ELF symbol type
-@cindex symbol type, ELF
-@cindex @code{type} directive (ELF version)
-For ELF targets, the @code{.type} directive is used like this:
-
-@example
-.type @var{name} , @var{type description}
-@end example
-
+@section @code{.type @var{name} , @var{type description}}
+@cindex symbol type
+@cindex @code{type} directive
+@cindex @code{.type}
 This sets the type of symbol @var{name} to be either a
 function symbol or an object symbol.  There are five different syntaxes
 supported for the @var{type description} field, in order to provide
@@ -3925,9 +3778,9 @@ compatibility with various other assemblers.
 Because some of the characters used in these syntaxes (such as @samp{@@} and
 @samp{#}) are comment characters for some architectures, some of the syntaxes
 below do not work on all architectures.  The first variant will be accepted by
-the GNU assembler on all architectures so that variant should be used for
-maximum portability, if you do not need to assemble your code with other
-assemblers.
+the LLVM integrated assembler on all architectures so that variant should be
+used for maximum portability, if you do not need to assemble your code with
+other assemblers.
 
 The syntaxes supported are:
 
@@ -3970,69 +3823,47 @@ Does not mark the symbol in any way.  It is supported just for completeness.
 @item gnu_unique_object
 Marks the symbol as being a globally unique data object.  The dynamic linker
 will make sure that in the entire process there is just one symbol with this
-name and type in use.  (This is only supported on assemblers targeting GNU
+name and type in use.  (This is only supported on assemblers targeting @sc{gnu}
 systems).
 
 @end table
 
-Note: Some targets support extra types in addition to those listed above.
+@emph{Note:} Some targets support extra types in addition to those listed
+above.  @xref{Machine Dependencies}.
 
 @node Uleb128
 @section @code{.uleb128 @var{expressions}}
-
 @cindex @code{uleb128} directive
+@cindex @code{.uleb128}
 @var{uleb128} stands for ``unsigned little endian base 128.''  This is a
 compact, variable length representation of numbers used by the DWARF
 symbolic debugging format.  @xref{Sleb128, ,@code{.sleb128}}.
 
 @node Version
 @section @code{.version "@var{string}"}
-
 @cindex @code{version} directive
+@cindex @code{.version}
 This directive creates a @code{.note} section and places into it an ELF
 formatted note of type NT_VERSION.  The note's name is set to @code{string}.
 
-@node VTableEntry
-@section @code{.vtable_entry @var{table}, @var{offset}}
-
-@cindex @code{vtable_entry} directive
-This directive finds or creates a symbol @code{table} and creates a
-@code{VTABLE_ENTRY} relocation for it with an addend of @code{offset}.
-
-@node VTableInherit
-@section @code{.vtable_inherit @var{child}, @var{parent}}
-
-@cindex @code{vtable_inherit} directive
-This directive finds the symbol @code{child} and finds or creates the symbol
-@code{parent} and then creates a @code{VTABLE_INHERIT} relocation for the
-parent whose addend is the value of the child symbol.  As a special case the
-parent name of @code{0} is treated as referring to the @code{*ABS*} section.
-
 @node Warning
 @section @code{.warning "@var{string}"}
-@cindex warning directive
+@cindex @code{warning} directive
+@cindex @code{.warning}
 Similar to the directive @code{.error}
 (@pxref{Error,,@code{.error "@var{string}"}}), but just emits a warning.
 
 @node Weak
 @section @code{.weak @var{names}}
-
 @cindex @code{weak} directive
+@cindex @code{.weak}
 This directive sets the weak attribute on the comma separated list of symbol
 @code{names}.  If the symbols do not already exist, they will be created.
 
-On COFF targets other than PE, weak symbols are a GNU extension.  This
-directive sets the weak attribute on the comma separated list of symbol
-@code{names}.  If the symbols do not already exist, they will be created.
-
-On the PE target, weak symbols are supported natively as weak aliases.
-When a weak symbol is created that is not an alias, GAS creates an
-alternate symbol to hold the default value.
-
 @node Weakref
 @section @code{.weakref @var{alias}, @var{target}}
-
 @cindex @code{weakref} directive
+@cindex @code{.weakref}
 This directive creates an alias to the target symbol that enables the symbol to
 be referenced with weak-symbol semantics, but without actually making it weak.
 If direct references or definitions of the symbol are present, then the symbol
@@ -4047,57 +3878,6 @@ had the references to the alias removed.
 
 The alias itself never makes to the symbol table, and is entirely handled
 within the assembler.
-
-@node Word
-@section @code{.word @var{expressions}}
-
-@cindex @code{word} directive
-This directive expects zero or more @var{expressions}, of any section,
-separated by commas.
-
-The size of the number emitted, and its byte order,
-depend on what target computer the assembly is for.
-
-@c on amd29k, i960, sparc the "special treatment to support compilers" doesn't
-@c happen---32-bit addressability, period; no long/short jumps.
-@cindex difference tables altered
-@cindex altered difference tables
-@quotation
-@emph{Warning: Special Treatment to support Compilers}
-@end quotation
-
-Machines with a 32-bit address space, but that do less than 32-bit
-addressing, require the following special treatment.  If the machine of
-interest to you does 32-bit addressing (or doesn't require it;
-@pxref{Machine Dependencies}), you can ignore this issue.
-
-In order to assemble compiler output into something that works,
-the LLVM integrated assembler occasionally does strange things to @samp{.word} directives.
-Directives of the form @samp{.word sym1-sym2} are often emitted by
-compilers as part of jump tables.  Therefore, when the LLVM integrated assembler assembles a
-directive of the form @samp{.word sym1-sym2}, and the difference between
-@code{sym1} and @code{sym2} does not fit in 16 bits, the LLVM integrated assembler
-creates a @dfn{secondary jump table}, immediately before the next label.
-This secondary jump table is preceded by a short-jump to the
-first byte after the secondary table.  This short-jump prevents the flow
-of control from accidentally falling into the new table.  Inside the
-table is a long-jump to @code{sym2}.  The original @samp{.word}
-contains @code{sym1} minus the address of the long-jump to
-@code{sym2}.
-
-If there were several occurrences of @samp{.word sym1-sym2} before the
-secondary jump table, all of them are adjusted.  If there was a
-@samp{.word sym3-sym4}, that also did not fit in sixteen bits, a
-long-jump to @code{sym4} is included in the secondary jump table,
-and the @code{.word} directives are adjusted to contain @code{sym3}
-minus the address of the long-jump to @code{sym4}; and so on, for as many
-entries in the original jump table as necessary.
-
-@ifset INTERNALS
-@emph{This feature may be disabled by compiling the LLVM integrated assembler with the
-@samp{-DWORKING_DOT_WORD} option.} This feature is likely to confuse
-assembly language programmers.
-@end ifset
 
 @node Deprecated
 @section Deprecated Directives
@@ -4147,9 +3927,9 @@ Encode value of label in output.
 @item .eject
 @cindex @code{eject} directive (unsupported)
 @cindex @code{.eject} (unsupported)
-@cindex new page, in listings
-@cindex page, in listings
-@cindex listing control: new page
+@cindex new page, in listings (unsupported)
+@cindex page, in listings (unsupported)
+@cindex listing control: new page (unsupported)
 Force a page break when generating listings.
 
 @item .endfunc
@@ -4180,9 +3960,9 @@ Record a @sc{gnu} object attribute for this file.
 @item .hword
 @cindex @code{hword} directive (unsupported)
 @cindex @code{.hword} (unsupported)
-@cindex integers, 16-bit
-@cindex numbers, 16-bit
-@cindex sixteen bit integers
+@cindex integers, 16-bit (unsupported)
+@cindex numbers, 16-bit (unsupported)
+@cindex sixteen bit integers (unsupported)
 Emit 16-bit numbers. A synonym for @samp{.short}; depending on the target
 architecture, it may also be a synonym for @samp{.word}.
 
@@ -4231,6 +4011,73 @@ Control whether or not assembly listings are generated.
 @cindex @code{.offset} (unsupported)
 Set the location counter in the absolute section.
 
+@item .print
+@cindex @code{print} directive (unsupported)
+@cindex @code{.print} (unsupported)
+Print string on standard output.
+
+@item .psize
+@cindex @code{psize} directive (unsupported)
+@cindex @code{.psize} (unsupported)
+@cindex listing control: paper size (unsupported)
+@cindex paper size, for listings (unsupported)
+Declare the number of lines and columns to use for each listing page
+
+@item .reloc
+@cindex @code{reloc} directive (unsupported)
+@cindex @code{.reloc} (unsupported)
+Generate a relocation.
+
+@item .sbttl
+@cindex @code{sbttl} directive (unsupported)
+@cindex @code{.sbttl} (unsupported)
+@cindex subtitles for listings (unsupported)
+@cindex listing control: subtitle (unsupported)
+Generate a subheadng in a listing.
+
+@item .string8
+@itemx .string16
+@itemx .string32
+@itemx .string64
+@cindex string8, copying to object file (unsupported)
+@cindex string16, copying to object file (unsupported)
+@cindex string32, copying to object file (unsupported)
+@cindex string64, copying to object file (unsupported)
+@cindex @code{string8} directive (unsupported)
+@cindex @code{.string8} (unsupported)
+@cindex @code{string16} directive (unsupported)
+@cindex @code{.string16} (unsupported)
+@cindex @code{string32} directive (unsupported)
+@cindex @code{.string32} (unsupported)
+@cindex @code{string64} directive (unsupported)
+@cindex @code{.string64} (unsupported)
+Directives to copy expanded string characters into the object file.
+
+@item .struct
+@cindex @code{struct} directive (unsupported)
+@cindex @code{.struct} (unsupported)
+Set offset symbol values.
+
+@item .title
+@cindex @code{title} directive (unsupported)
+@cindex @code{.title} (unsupported)
+@cindex listing control: title line (unsupported)
+Set a title for listing files.
+
+@item .vtableentry
+@cindex @code{vtable_entry} directive (unsupported)
+@cindex @code{.vtable_entry} (unsupported)
+Create VTABLE_ENTRY relocation.
+
+@item .vtableinherit
+@cindex @code{vtable_inherit} directive (unsupported)
+@cindex @code{.vtable_inherit} (unsupported)
+Create VTABLE_INHERIT relocation.
+
+@@item .word
+@cindex @code{word} directive (unsupported)
+@cindex @code{.word} (unsupported)
+Emit words in a machine dependent way.
 
 @end table
 
@@ -4571,7 +4418,7 @@ configuration enhancements.
 Jon Beniston added support for the Lattice Mico32 architecture.
 
 Jeremy Bennett of Embecosm created the version for the LLVM Integrated
-Assembler as a derived document of the GNU Assembler Manual.
+Assembler as a derived document of the @sc{gnu} Assembler Manual.
 
 Many others have contributed large or small bugfixes and enhancements.  If
 you have contributed significant work and are not mentioned on this list, and
@@ -4583,7 +4430,7 @@ intentionally leaving anyone out.
 @include fdl.texi
 
 @node AS Index
-@unnumbered AS Index
+@unnumbered LLVM Integrated Assembler Index
 
 @printindex cp
 

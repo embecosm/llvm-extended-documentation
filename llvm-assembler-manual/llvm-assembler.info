@@ -45,7 +45,7 @@ section entitled "GNU Free Documentation License".
 * Reporting Bugs::              Reporting Bugs
 * Acknowledgements::            Who Did What
 * GNU Free Documentation License::  GNU Free Documentation License
-* AS Index::                    AS Index
+* AS Index::                    LLVM Integrated Assembler Index
 
 
 File: llvm-assembler.info,  Node: Overview,  Next: Invoking,  Prev: Top,  Up: Top
@@ -1291,13 +1291,13 @@ see no trace of them.  They just see all your text subsections as a
 text section, and all your data subsections as a data section.
 
    To specify which subsection you want subsequent statements assembled
-into, use a numeric argument to specify it, in a `.text EXPRESSION' or
-a `.data EXPRESSION' statement.  When generating ELF output, you can
-also use the `.subsection' directive (*note SubSection::) to specify a
-subsection: `.subsection EXPRESSION'.  EXPRESSION should be an absolute
-expression (*note Expressions::).  If you just say `.text' then `.text
-0' is assumed.  Likewise `.data' means `.data 0'.  Assembly begins in
-`text 0'.  For instance:
+into, use a numeric argument to specify it, in a `.text EXPRESSION' or a
+`.data EXPRESSION' statement.  You can also use the `.subsection'
+directive (*note SubSection::) to specify a subsection: `.subsection
+EXPRESSION'.  EXPRESSION should be an absolute expression (*note
+Expressions::).  If you just say `.text' then `.text 0' is assumed.
+Likewise `.data' means `.data 0'.  Assembly begins in `text 0'.  For
+instance:
      .text 0     # The default subsection is text 0 anyway.
      .ascii "This lives in the first text subsection. *"
      .text 1
@@ -1844,50 +1844,30 @@ Those which are unsupported are listed at the end of this chapter.
 * P2align::                     `.p2align ABS-EXPR, ABS-EXPR, ABS-EXPR'
 * PopSection::                  `.popsection'
 * Previous::                    `.previous'
-
-* Print::			`.print STRING'
 * Protected::                   `.protected NAMES'
-
-* Psize::                       `.psize LINES, COLUMNS'
 * Purgem::			`.purgem NAME'
 * PushSection::                 `.pushsection NAME'
 
 * Quad::                        `.quad BIGNUMS'
-* Reloc::			`.reloc OFFSET, RELOC_NAME[, EXPRESSION]'
 * Rept::			`.rept COUNT'
-* Sbttl::                       `.sbttl "SUBHEADING"'
 * Section::                     `.section NAME[, FLAGS]'
-
 * Set::                         `.set SYMBOL, EXPRESSION'
 * Short::                       `.short EXPRESSIONS'
 * Single::                      `.single FLONUMS'
 * Size::                        `.size [NAME , EXPRESSION]'
-
 * Skip::                        `.skip SIZE , FILL'
-
 * Sleb128::			`.sleb128 EXPRESSIONS'
-
 * Space::                       `.space SIZE , FILL'
-
-* String::                      `.string "STR"', `.string8 "STR"', `.string16 "STR"', `.string32 "STR"', `.string64 "STR"'
-* Struct::			`.struct EXPRESSION'
+* String::                      `.string "STR"'
 * SubSection::                  `.subsection'
 * Symver::                      `.symver NAME,NAME2@NODENAME'
-
 * Text::                        `.text SUBSECTION'
-* Title::                       `.title "HEADING"'
 * Type::                        `.type <INT | NAME , TYPE DESCRIPTION>'
-
 * Uleb128::                     `.uleb128 EXPRESSIONS'
-
 * Version::                     `.version "STRING"'
-* VTableEntry::                 `.vtable_entry TABLE, OFFSET'
-* VTableInherit::               `.vtable_inherit CHILD, PARENT'
-
 * Warning::			`.warning STRING'
 * Weak::                        `.weak NAMES'
 * Weakref::                     `.weakref ALIAS, SYMBOL'
-* Word::                        `.word EXPRESSIONS'
 * Deprecated::                  Deprecated Directives
 * Unsupported::                 Unsupported GNU Assembler Directives
 
@@ -2308,8 +2288,8 @@ File: llvm-assembler.info,  Node: Endr,  Next: Equ,  Prev: Endm,  Up: Pseudo Ops
 7.36 `.endr'
 ============
 
-End the current `.irp' or `.irpc' definition.  *Note Irp::.  *Note
-Irpc::.
+End the current `.irp', `.irpc' or `.rept' definition.  *Note Irp::.
+*Note Irpc::.  *Note Rept::.
 
 
 File: llvm-assembler.info,  Node: Equ,  Next: Equiv,  Prev: Endr,  Up: Pseudo Ops
@@ -3024,7 +3004,7 @@ the top section (and subsection) on the section stack.  This section is
 popped off the stack.
 
 
-File: llvm-assembler.info,  Node: Previous,  Next: Print,  Prev: PopSection,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Previous,  Next: Protected,  Prev: PopSection,  Up: Pseudo Ops
 
 7.67 `.previous'
 ================
@@ -3072,18 +3052,9 @@ subsection 2 of section A.  Whilst:
 section with the top section on the section stack.
 
 
-File: llvm-assembler.info,  Node: Print,  Next: Protected,  Prev: Previous,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Protected,  Next: Purgem,  Prev: Previous,  Up: Pseudo Ops
 
-7.68 `.print STRING'
-====================
-
-the LLVM integrated assembler will print STRING on the standard output
-during assembly.  You must put STRING in double quotes.
-
-
-File: llvm-assembler.info,  Node: Protected,  Next: Psize,  Prev: Print,  Up: Pseudo Ops
-
-7.69 `.protected NAMES'
+7.68 `.protected NAMES'
 =======================
 
 This is one of the ELF visibility directives.  The other two are
@@ -3097,29 +3068,9 @@ to the definition in that component, even if a definition in another
 component would normally preempt this.
 
 
-File: llvm-assembler.info,  Node: Psize,  Next: Purgem,  Prev: Protected,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Purgem,  Next: PushSection,  Prev: Protected,  Up: Pseudo Ops
 
-7.70 `.psize LINES , COLUMNS'
-=============================
-
-Use this directive to declare the number of lines--and, optionally, the
-number of columns--to use for each page, when generating listings.
-
-   If you do not use `.psize', listings use a default line-count of 60.
-You may omit the comma and COLUMNS specification; the default width is
-200 columns.
-
-   the LLVM integrated assembler generates formfeeds whenever the
-specified number of lines is exceeded (or whenever you explicitly
-request one, using `.eject').
-
-   If you specify LINES as `0', no formfeeds are generated save those
-explicitly specified with `.eject'.
-
-
-File: llvm-assembler.info,  Node: Purgem,  Next: PushSection,  Prev: Psize,  Up: Pseudo Ops
-
-7.71 `.purgem NAME'
+7.69 `.purgem NAME'
 ===================
 
 Undefine the macro NAME, so that later uses of the string will not be
@@ -3128,7 +3079,7 @@ expanded.  *Note Macro::.
 
 File: llvm-assembler.info,  Node: PushSection,  Next: Quad,  Prev: Purgem,  Up: Pseudo Ops
 
-7.72 `.pushsection NAME [, SUBSECTION] [, "FLAGS"[, @TYPE[,ARGUMENTS]]]'
+7.70 `.pushsection NAME [, SUBSECTION] [, "FLAGS"[, @TYPE[,ARGUMENTS]]]'
 ========================================================================
 
 This is one of the ELF section stack manipulation directives.  The
@@ -3143,9 +3094,9 @@ and `arguments' are treated the same as in the `.section' (*note
 Section::) directive.
 
 
-File: llvm-assembler.info,  Node: Quad,  Next: Reloc,  Prev: PushSection,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Quad,  Next: Rept,  Prev: PushSection,  Up: Pseudo Ops
 
-7.73 `.quad BIGNUMS'
+7.71 `.quad BIGNUMS'
 ====================
 
 `.quad' expects zero or more bignums, separated by commas.  For each
@@ -3157,25 +3108,9 @@ bytes of the bignum.
 hence _quad_-word for 8 bytes.
 
 
-File: llvm-assembler.info,  Node: Reloc,  Next: Rept,  Prev: Quad,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Rept,  Next: Section,  Prev: Quad,  Up: Pseudo Ops
 
-7.74 `.reloc OFFSET, RELOC_NAME[, EXPRESSION]'
-==============================================
-
-Generate a relocation at OFFSET of type RELOC_NAME with value
-EXPRESSION.  If OFFSET is a number, the relocation is generated in the
-current section.  If OFFSET is an expression that resolves to a symbol
-plus offset, the relocation is generated in the given symbol's section.
-EXPRESSION, if present, must resolve to a symbol plus addend or to an
-absolute value, but note that not all targets support an addend.  e.g.
-ELF REL targets such as i386 store an addend in the section contents
-rather than in the relocation.  This low level interface does not
-support addends stored in the section.
-
-
-File: llvm-assembler.info,  Node: Rept,  Next: Sbttl,  Prev: Reloc,  Up: Pseudo Ops
-
-7.75 `.rept COUNT'
+7.72 `.rept COUNT'
 ==================
 
 Repeat the sequence of lines between the `.rept' directive and the next
@@ -3194,21 +3129,9 @@ Repeat the sequence of lines between the `.rept' directive and the next
              .long   0
 
 
-File: llvm-assembler.info,  Node: Sbttl,  Next: Section,  Prev: Rept,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Section,  Next: Set,  Prev: Rept,  Up: Pseudo Ops
 
-7.76 `.sbttl "SUBHEADING"'
-==========================
-
-Use SUBHEADING as the title (third line, immediately after the title
-line) when generating assembly listings.
-
-   This directive affects subsequent pages, as well as the current page
-if it appears within ten lines of the top of a page.
-
-
-File: llvm-assembler.info,  Node: Section,  Next: Set,  Prev: Sbttl,  Up: Pseudo Ops
-
-7.77 `.section NAME'
+7.73 `.section NAME'
 ====================
 
 Use the `.section' directive to assemble the following code into a
@@ -3223,7 +3146,7 @@ others are `.subsection' (*note SubSection::), `.pushsection' (*note
 PushSection::), `.popsection' (*note PopSection::), and `.previous'
 (*note Previous::).
 
-   For ELF targets, the `.section' directive is used like this:
+   The `.section' directive is used like this:
 
      .section NAME [, "FLAGS"[, @TYPE[,FLAG_SPECIFIC_ARGUMENTS]]]
 
@@ -3256,6 +3179,9 @@ combination of the following characters:
 `?'
      section is a member of the previously-current section's group, if
      any
+   There may be further target dependent flags.  For example AAP
+supports the `R' flag to indicate a section should not be relaxed when
+linking.  *Note Machine Dependencies::.
 
    The optional TYPE argument may contain one of the following
 constants:
@@ -3280,9 +3206,9 @@ constants:
 
    Many targets only support the first three section types.
 
-   Note on targets where the `@' character is the start of a comment (eg
-ARM) then another character is used instead.  For example the ARM port
-uses the `%' character.
+   _Note:_ On targets where the `@' character is the start of a comment
+(eg ARM) then another character is used instead.  For example the ARM
+port uses the `%' character.
 
    If FLAGS contains the `M' symbol then the TYPE argument must be
 specified as well as an extra argument--ENTSIZE--like this:
@@ -3313,8 +3239,8 @@ contain:
 `.gnu.linkonce'
      an alias for comdat
 
-   Note: if both the M and G flags are present then the fields for the
-Merge flag should come first, like this:
+   _Note:_ If both the M and G flags are present then the fields for
+the Merge flag should come first, like this:
 
      .section NAME , "FLAGS"MG, @TYPE, ENTSIZE, GROUPNAME[, LINKAGE]
 
@@ -3330,13 +3256,13 @@ name.  If the section name is not recognized, the default will be for
 the section to have none of the above flags: it will not be allocated
 in memory, nor writable, nor executable.  The section will contain data.
 
-   For ELF targets, the assembler supports another type of `.section'
-directive for compatibility with the Solaris assembler:
+   The assembler supports another type of `.section' directive for
+compatibility with the Solaris assembler:
 
      .section "NAME"[, FLAGS...]
 
-   Note that the section name is quoted.  There may be a sequence of
-comma separated flags:
+   _Note:_ The section name is quoted.  There may be a sequence of comma
+separated flags:
 `#alloc'
      section is allocatable
 
@@ -3352,15 +3278,14 @@ comma separated flags:
 `#tls'
      section is used for thread local storage
 
-   This directive replaces the current section and subsection.  See the
-contents of the gas testsuite directory `gas/testsuite/gas/elf' for
-some examples of how this directive and the other section stack
-directives work.
+   This directive replaces the current section and subsection.  The GNU
+assembler testsuite directory `gas/testsuite/gas/elf' contains some
+examples of how this directive and the other section stack directives.
 
 
 File: llvm-assembler.info,  Node: Set,  Next: Short,  Prev: Section,  Up: Pseudo Ops
 
-7.78 `.set SYMBOL, EXPRESSION'
+7.74 `.set SYMBOL, EXPRESSION'
 ==============================
 
 Set the value of SYMBOL to EXPRESSION.  This changes SYMBOL's value and
@@ -3375,18 +3300,18 @@ is the last value stored into it.
 
 File: llvm-assembler.info,  Node: Short,  Next: Single,  Prev: Set,  Up: Pseudo Ops
 
-7.79 `.short EXPRESSIONS'
+7.75 `.short EXPRESSIONS'
 =========================
 
-`.short' is normally the same as `.word'.  *Note `.word': Word.
-
-   In some configurations, however, `.short' and `.word' generate
-numbers of different lengths.  *Note Machine Dependencies::.
+Insert arguments into the output.  The meaning is target specific.  In
+particular there may be unusual behavior if the target has a 32-bit
+address space, but less than 32-bit addressing.  *Note Machine
+Dependencies::.
 
 
 File: llvm-assembler.info,  Node: Single,  Next: Size,  Prev: Short,  Up: Pseudo Ops
 
-7.80 `.single FLONUMS'
+7.76 `.single FLONUMS'
 ======================
 
 This directive assembles zero or more flonums, separated by commas.  It
@@ -3397,24 +3322,18 @@ configured.  *Note Machine Dependencies::.
 
 File: llvm-assembler.info,  Node: Size,  Next: Skip,  Prev: Single,  Up: Pseudo Ops
 
-7.81 `.size'
-============
+7.77 `.size EXPRESSION'
+=======================
 
-This directive is used to set the size associated with a symbol.
-
-   For ELF targets, the `.size' directive is used like this:
-
-     .size NAME , EXPRESSION
-
-   This directive sets the size associated with a symbol NAME.  The
-size in bytes is computed from EXPRESSION which can make use of label
+This directive sets the size associated with a symbol NAME.  The size
+in bytes is computed from EXPRESSION which can make use of label
 arithmetic.  This directive is typically used to set the size of
 function symbols.
 
 
 File: llvm-assembler.info,  Node: Skip,  Next: Sleb128,  Prev: Size,  Up: Pseudo Ops
 
-7.82 `.skip SIZE , FILL'
+7.78 `.skip SIZE , FILL'
 ========================
 
 This directive emits SIZE bytes, each of value FILL.  Both SIZE and
@@ -3424,7 +3343,7 @@ is assumed to be zero.  This is the same as `.space'.
 
 File: llvm-assembler.info,  Node: Sleb128,  Next: Space,  Prev: Skip,  Up: Pseudo Ops
 
-7.83 `.sleb128 EXPRESSIONS'
+7.79 `.sleb128 EXPRESSIONS'
 ===========================
 
 SLEB128 stands for "signed little endian base 128."  This is a compact,
@@ -3434,7 +3353,7 @@ debugging format.  *Note `.uleb128': Uleb128.
 
 File: llvm-assembler.info,  Node: Space,  Next: String,  Prev: Sleb128,  Up: Pseudo Ops
 
-7.84 `.space SIZE , FILL'
+7.80 `.space SIZE , FILL'
 =========================
 
 This directive emits SIZE bytes, each of value FILL.  Both SIZE and
@@ -3442,70 +3361,40 @@ FILL are absolute expressions.  If the comma and FILL are omitted, FILL
 is assumed to be zero.  This is the same as `.skip'.
 
 
-File: llvm-assembler.info,  Node: String,  Next: Struct,  Prev: Space,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: String,  Next: SubSection,  Prev: Space,  Up: Pseudo Ops
 
-7.85 `.string' "STR", `.string8' "STR", `.string16'
-===================================================
+7.81 `.string' "STR"
+====================
 
-"STR", `.string32' "STR", `.string64' "STR"
-
-   Copy the characters in STR to the object file.  You may specify more
+Copy the characters in STR to the object file.  You may specify more
 than one string to copy, separated by commas.  Unless otherwise
 specified for a particular machine, the assembler marks the end of each
 string with a 0 byte.  You can use any of the escape sequences
 described in *note Strings: Strings.
 
-   The variants `string16', `string32' and `string64' differ from the
-`string' pseudo opcode in that each 8-bit character from STR is copied
-and expanded to 16, 32 or 64 bits respectively.  The expanded characters
-are stored in target endianness byte order.
-
-   Example:
-     	.string32 "BYE"
-     expands to:
-     	.string   "B\0\0\0Y\0\0\0E\0\0\0"  /* On little endian targets.  */
-     	.string   "\0\0\0B\0\0\0Y\0\0\0E"  /* On big endian targets.  */
+   The GNU assembler variants `.string8', `.string16', `.string32' and
+`.string64' are not supported by the LLVM integrated assembler.  *Note
+Unsupported::.
 
 
-File: llvm-assembler.info,  Node: Struct,  Next: SubSection,  Prev: String,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: SubSection,  Next: Symver,  Prev: String,  Up: Pseudo Ops
 
-7.86 `.struct EXPRESSION'
-=========================
-
-Switch to the absolute section, and set the section offset to
-EXPRESSION, which must be an absolute expression.  You might use this
-as follows:
-             .struct 0
-     field1:
-             .struct field1 + 4
-     field2:
-             .struct field2 + 4
-     field3:
-   This would define the symbol `field1' to have the value 0, the symbol
-`field2' to have the value 4, and the symbol `field3' to have the value
-8.  Assembly would be left in the absolute section, and you would need
-to use a `.section' directive of some sort to change to some other
-section before further assembly.
-
-
-File: llvm-assembler.info,  Node: SubSection,  Next: Symver,  Prev: Struct,  Up: Pseudo Ops
-
-7.87 `.subsection NAME'
-=======================
+7.82 `.subsection EXPRESSION'
+=============================
 
 This is one of the ELF section stack manipulation directives.  The
 others are `.section' (*note Section::), `.pushsection' (*note
 PushSection::), `.popsection' (*note PopSection::), and `.previous'
 (*note Previous::).
 
-   This directive replaces the current subsection with `name'.  The
-current section is not changed.  The replaced subsection is put onto
-the section stack in place of the then current top of stack subsection.
+   This directive replaces the current subsection with EXPRESSION.  The
+current section is not changed.  The replaced subsection is put onto the
+section stack in place of the then current top of stack subsection.
 
 
 File: llvm-assembler.info,  Node: Symver,  Next: Text,  Prev: SubSection,  Up: Pseudo Ops
 
-7.88 `.symver'
+7.83 `.symver'
 ==============
 
 Use the `.symver' directive to bind symbols to specific version nodes
@@ -3515,7 +3404,7 @@ There are cases where it may make sense to use this in objects to be
 bound into an application itself so as to override a versioned symbol
 from a shared library.
 
-   For ELF targets, the `.symver' directive can be used like this:
+   The `.symver' directive can be used like this:
      .symver NAME, NAME2@NODENAME
    If the symbol NAME is defined within the file being assembled, the
 `.symver' directive effectively creates a symbol alias with the name
@@ -3552,9 +3441,9 @@ treated as NAME2@NODENAME. When NAME is defined within the file being
 assembled, the symbol name, NAME, will be changed to NAME2@@NODENAME.
 
 
-File: llvm-assembler.info,  Node: Text,  Next: Title,  Prev: Symver,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Text,  Next: Type,  Prev: Symver,  Up: Pseudo Ops
 
-7.89 `.text SUBSECTION'
+7.84 `.text SUBSECTION'
 =======================
 
 Tells the LLVM integrated assembler to assemble the following
@@ -3563,40 +3452,22 @@ which is an absolute expression.  If SUBSECTION is omitted, subsection
 number zero is used.
 
 
-File: llvm-assembler.info,  Node: Title,  Next: Type,  Prev: Text,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Type,  Next: Uleb128,  Prev: Text,  Up: Pseudo Ops
 
-7.90 `.title "HEADING"'
-=======================
+7.85 `.type NAME , TYPE DESCRIPTION'
+====================================
 
-Use HEADING as the title (second line, immediately after the source
-file name and pagenumber) when generating assembly listings.
-
-   This directive affects subsequent pages, as well as the current page
-if it appears within ten lines of the top of a page.
-
-
-File: llvm-assembler.info,  Node: Type,  Next: Uleb128,  Prev: Title,  Up: Pseudo Ops
-
-7.91 `.type'
-============
-
-This directive is used to set the type of a symbol.
-
-   For ELF targets, the `.type' directive is used like this:
-
-     .type NAME , TYPE DESCRIPTION
-
-   This sets the type of symbol NAME to be either a function symbol or
-an object symbol.  There are five different syntaxes supported for the
+This sets the type of symbol NAME to be either a function symbol or an
+object symbol.  There are five different syntaxes supported for the
 TYPE DESCRIPTION field, in order to provide compatibility with various
 other assemblers.
 
    Because some of the characters used in these syntaxes (such as `@'
 and `#') are comment characters for some architectures, some of the
 syntaxes below do not work on all architectures.  The first variant
-will be accepted by the GNU assembler on all architectures so that
-variant should be used for maximum portability, if you do not need to
-assemble your code with other assemblers.
+will be accepted by the LLVM integrated assembler on all architectures
+so that variant should be used for maximum portability, if you do not
+need to assemble your code with other assemblers.
 
    The syntaxes supported are:
 
@@ -3642,13 +3513,13 @@ assemble your code with other assemblers.
      supported on assemblers targeting GNU systems).
 
 
-   Note: Some targets support extra types in addition to those listed
-above.
+   _Note:_ Some targets support extra types in addition to those listed
+above.  *Note Machine Dependencies::.
 
 
 File: llvm-assembler.info,  Node: Uleb128,  Next: Version,  Prev: Type,  Up: Pseudo Ops
 
-7.92 `.uleb128 EXPRESSIONS'
+7.86 `.uleb128 EXPRESSIONS'
 ===========================
 
 ULEB128 stands for "unsigned little endian base 128."  This is a
@@ -3656,38 +3527,18 @@ compact, variable length representation of numbers used by the DWARF
 symbolic debugging format.  *Note `.sleb128': Sleb128.
 
 
-File: llvm-assembler.info,  Node: Version,  Next: VTableEntry,  Prev: Uleb128,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Version,  Next: Warning,  Prev: Uleb128,  Up: Pseudo Ops
 
-7.93 `.version "STRING"'
+7.87 `.version "STRING"'
 ========================
 
 This directive creates a `.note' section and places into it an ELF
 formatted note of type NT_VERSION.  The note's name is set to `string'.
 
 
-File: llvm-assembler.info,  Node: VTableEntry,  Next: VTableInherit,  Prev: Version,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Warning,  Next: Weak,  Prev: Version,  Up: Pseudo Ops
 
-7.94 `.vtable_entry TABLE, OFFSET'
-==================================
-
-This directive finds or creates a symbol `table' and creates a
-`VTABLE_ENTRY' relocation for it with an addend of `offset'.
-
-
-File: llvm-assembler.info,  Node: VTableInherit,  Next: Warning,  Prev: VTableEntry,  Up: Pseudo Ops
-
-7.95 `.vtable_inherit CHILD, PARENT'
-====================================
-
-This directive finds the symbol `child' and finds or creates the symbol
-`parent' and then creates a `VTABLE_INHERIT' relocation for the parent
-whose addend is the value of the child symbol.  As a special case the
-parent name of `0' is treated as referring to the `*ABS*' section.
-
-
-File: llvm-assembler.info,  Node: Warning,  Next: Weak,  Prev: VTableInherit,  Up: Pseudo Ops
-
-7.96 `.warning "STRING"'
+7.88 `.warning "STRING"'
 ========================
 
 Similar to the directive `.error' (*note `.error "STRING"': Error.),
@@ -3696,26 +3547,17 @@ but just emits a warning.
 
 File: llvm-assembler.info,  Node: Weak,  Next: Weakref,  Prev: Warning,  Up: Pseudo Ops
 
-7.97 `.weak NAMES'
+7.89 `.weak NAMES'
 ==================
 
 This directive sets the weak attribute on the comma separated list of
 symbol `names'.  If the symbols do not already exist, they will be
 created.
 
-   On COFF targets other than PE, weak symbols are a GNU extension.
-This directive sets the weak attribute on the comma separated list of
-symbol `names'.  If the symbols do not already exist, they will be
-created.
-
-   On the PE target, weak symbols are supported natively as weak
-aliases.  When a weak symbol is created that is not an alias, GAS
-creates an alternate symbol to hold the default value.
-
 
-File: llvm-assembler.info,  Node: Weakref,  Next: Word,  Prev: Weak,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Weakref,  Next: Deprecated,  Prev: Weak,  Up: Pseudo Ops
 
-7.98 `.weakref ALIAS, TARGET'
+7.90 `.weakref ALIAS, TARGET'
 =============================
 
 This directive creates an alias to the target symbol that enables the
@@ -3736,51 +3578,10 @@ removed.
 handled within the assembler.
 
 
-File: llvm-assembler.info,  Node: Word,  Next: Deprecated,  Prev: Weakref,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Deprecated,  Next: Unsupported,  Prev: Weakref,  Up: Pseudo Ops
 
-7.99 `.word EXPRESSIONS'
-========================
-
-This directive expects zero or more EXPRESSIONS, of any section,
-separated by commas.
-
-   The size of the number emitted, and its byte order, depend on what
-target computer the assembly is for.
-
-     _Warning: Special Treatment to support Compilers_
-
-   Machines with a 32-bit address space, but that do less than 32-bit
-addressing, require the following special treatment.  If the machine of
-interest to you does 32-bit addressing (or doesn't require it; *note
-Machine Dependencies::), you can ignore this issue.
-
-   In order to assemble compiler output into something that works, the
-LLVM integrated assembler occasionally does strange things to `.word'
-directives.  Directives of the form `.word sym1-sym2' are often emitted
-by compilers as part of jump tables.  Therefore, when the LLVM
-integrated assembler assembles a directive of the form `.word
-sym1-sym2', and the difference between `sym1' and `sym2' does not fit
-in 16 bits, the LLVM integrated assembler creates a "secondary jump
-table", immediately before the next label.  This secondary jump table
-is preceded by a short-jump to the first byte after the secondary
-table.  This short-jump prevents the flow of control from accidentally
-falling into the new table.  Inside the table is a long-jump to `sym2'.
-The original `.word' contains `sym1' minus the address of the long-jump
-to `sym2'.
-
-   If there were several occurrences of `.word sym1-sym2' before the
-secondary jump table, all of them are adjusted.  If there was a `.word
-sym3-sym4', that also did not fit in sixteen bits, a long-jump to
-`sym4' is included in the secondary jump table, and the `.word'
-directives are adjusted to contain `sym3' minus the address of the
-long-jump to `sym4'; and so on, for as many entries in the original
-jump table as necessary.
-
-
-File: llvm-assembler.info,  Node: Deprecated,  Next: Unsupported,  Prev: Word,  Up: Pseudo Ops
-
-7.100 Deprecated Directives
-===========================
+7.91 Deprecated Directives
+==========================
 
 One day these directives won't work.  They are included for
 compatibility with older assemblers.
@@ -3793,8 +3594,8 @@ compatibility with older assemblers.
 
 File: llvm-assembler.info,  Node: Unsupported,  Prev: Deprecated,  Up: Pseudo Ops
 
-7.101 Unsupported GNU Assembler Directives
-==========================================
+7.92 Unsupported GNU Assembler Directives
+=========================================
 
 These directives are supported by the GNU assembler, but not the LLVM
 integrated assembler.  Code originally intended for the GNU assembler
@@ -3855,6 +3656,39 @@ will need modifying to eliminate the need for these directives.
 
 `.offset'
      Set the location counter in the absolute section.
+
+`.print'
+     Print string on standard output.
+
+`.psize'
+     Declare the number of lines and columns to use for each listing
+     page
+
+`.reloc'
+     Generate a relocation.
+
+`.sbttl'
+     Generate a subheadng in a listing.
+
+`.string8'
+`.string16'
+`.string32'
+`.string64'
+     Directives to copy expanded string characters into the object file.
+
+`.struct'
+     Set offset symbol values.
+
+`.title'
+     Set a title for listing files.
+
+`.vtableentry'
+     Create VTABLE_ENTRY relocation.
+
+`.vtableinherit'
+     Create VTABLE_INHERIT relocation.
+
+     @item .word Emit words in a machine dependent way.
 
 
 
@@ -5665,8 +5499,8 @@ permit their use in free software.
 
 File: llvm-assembler.info,  Node: AS Index,  Prev: GNU Free Documentation License,  Up: Top
 
-AS Index
-********
+LLVM Integrated Assembler Index
+*******************************
 
  [index ]
 * Menu:
@@ -5823,6 +5657,21 @@ AS Index
 * .octa:                                 Octa.                (line   6)
 * .offset (unsupported):                 Unsupported.         (line  64)
 * .org:                                  Org.                 (line   6)
+* .p2align:                              P2align.             (line   6)
+* .p2alignl:                             P2align.             (line  28)
+* .p2alignw:                             P2align.             (line  28)
+* .popsection:                           PopSection.          (line   6)
+* .previous:                             Previous.            (line   6)
+* .print (unsupported):                  Unsupported.         (line  67)
+* .protected:                            Protected.           (line   6)
+* .psize (unsupported):                  Unsupported.         (line  70)
+* .purgem:                               Purgem.              (line   6)
+* .pushsection:                          PushSection.         (line   6)
+* .quad:                                 Quad.                (line   6)
+* .reloc (unsupported):                  Unsupported.         (line  74)
+* .rept:                                 Rept.                (line   6)
+* .sbttl (unsupported):                  Unsupported.         (line  77)
+* .section:                              Section.             (line  18)
 * .set arch=CPU:                         AAP ISA.             (line  19)
 * .set at:                               AAP Macros.          (line  42)
 * .set at=REG:                           AAP Macros.          (line  36)
@@ -5884,6 +5733,30 @@ AS Index
                                                               (line  47)
 * .set xpa:                              AAP ASE Instruction Generation Overrides.
                                                               (line  52)
+* .short:                                Short.               (line   6)
+* .single:                               Single.              (line   6)
+* .size:                                 Size.                (line   6)
+* .skip:                                 Skip.                (line   6)
+* .sleb128:                              Sleb128.             (line   6)
+* .space:                                Space.               (line   6)
+* .string:                               String.              (line   6)
+* .string16 (unsupported):               Unsupported.         (line  83)
+* .string32 (unsupported):               Unsupported.         (line  83)
+* .string64 (unsupported):               Unsupported.         (line  83)
+* .string8 (unsupported):                Unsupported.         (line  83)
+* .struct (unsupported):                 Unsupported.         (line  86)
+* .subsection:                           SubSection.          (line   6)
+* .text:                                 Text.                (line   6)
+* .title (unsupported):                  Unsupported.         (line  89)
+* .type:                                 Type.                (line   6)
+* .uleb128:                              Uleb128.             (line   6)
+* .version:                              Version.             (line   6)
+* .vtable_entry (unsupported):           Unsupported.         (line  92)
+* .vtable_inherit (unsupported):         Unsupported.         (line  95)
+* .warning:                              Warning.             (line   6)
+* .weak:                                 Weak.                (line   6)
+* .weakref:                              Weakref.             (line   6)
+* .word (unsupported):                   Unsupported.         (line  97)
 * : (label):                             Statements.          (line  31)
 * \" (doublequote character):            Strings.             (line  44)
 * \\ (\ character):                      Strings.             (line  41)
@@ -5935,7 +5808,6 @@ AS Index
 * advancing location counter:            Org.                 (line   6)
 * align directive:                       Align.               (line   6)
 * aligned instruction bundle:            Bundle directives.   (line   6)
-* altered difference tables:             Word.                (line  12)
 * altmacro directive (unsupported):      Unsupported.         (line  11)
 * arguments for addition:                Infix Ops.           (line  44)
 * arguments for subtraction:             Infix Ops.           (line  49)
@@ -6038,7 +5910,6 @@ AS Index
 * debuggers, and symbol order:           Symbols.             (line  10)
 * decimal integers:                      Integers.            (line  12)
 * deprecated directives:                 Deprecated.          (line   6)
-* difference tables altered:             Word.                (line  12)
 * directives and instructions:           Statements.          (line  20)
 * directives, machine independent:       Pseudo Ops.          (line   6)
 * Disable floating-point instructions:   AAP Floating-Point.  (line   6)
@@ -6050,7 +5921,6 @@ AS Index
 * doublequote (\"):                      Strings.             (line  44)
 * eight-byte integer:                    Quad.                (line   9)
 * eject directive (unsupported):         Unsupported.         (line  20)
-* ELF symbol type:                       Type.                (line   8)
 * else directive:                        Else.                (line   6)
 * elseif directive:                      Elseif.              (line   6)
 * empty expressions:                     Empty Exprs.         (line   6)
@@ -6140,7 +6010,7 @@ AS Index
 * integer, 16-byte:                      Octa.                (line   6)
 * integer, 8-byte:                       Quad.                (line   9)
 * integers:                              Integers.            (line   6)
-* integers, 16-bit:                      Unsupported.         (line  38)
+* integers, 16-bit (unsupported):        Unsupported.         (line  38)
 * integers, 32-bit:                      Int.                 (line   6)
 * integers, binary:                      Integers.            (line   6)
 * integers, decimal:                     Integers.            (line  12)
@@ -6175,10 +6045,10 @@ AS Index
 * list directive (unsupported):          Unsupported.         (line  49)
 * listing control, turning off:          Unsupported.         (line  61)
 * listing control, turning on:           Unsupported.         (line  49)
-* listing control: new page:             Unsupported.         (line  20)
-* listing control: paper size:           Psize.               (line   6)
-* listing control: subtitle:             Sbttl.               (line   6)
-* listing control: title line:           Title.               (line   6)
+* listing control: new page (unsupported): Unsupported.       (line  20)
+* listing control: paper size (unsupported): Unsupported.     (line  70)
+* listing control: subtitle (unsupported): Unsupported.       (line  77)
+* listing control: title line (unsupported): Unsupported.     (line  89)
 * little-endian output, AAP:             AAP Options.         (line  14)
 * lld:                                   Object.              (line  15)
 * LLVM options for assembly:             llvm.                (line   6)
@@ -6211,7 +6081,7 @@ AS Index
 * named section:                         Section.             (line   6)
 * named sections:                        Ld Sections.         (line   8)
 * names, symbol:                         Symbol Names.        (line   6)
-* new page, in listings:                 Unsupported.         (line  20)
+* new page, in listings (unsupported):   Unsupported.         (line  20)
 * newline (\n):                          Strings.             (line  22)
 * newline, required at file end:         Statements.          (line  14)
 * noaltmacro directive (unsupported):    Unsupported.         (line  58)
@@ -6220,7 +6090,7 @@ AS Index
 * number constants:                      Numbers.             (line   6)
 * number of macros executed:             Macro.               (line 143)
 * numbered subsections:                  Sub-Sections.        (line   6)
-* numbers, 16-bit:                       Unsupported.         (line  38)
+* numbers, 16-bit (unsupported):         Unsupported.         (line  38)
 * numeric values:                        Expressions.         (line   6)
 * object attributes:                     Object Attributes.   (line   6)
 * object file:                           Object.              (line   6)
@@ -6246,8 +6116,8 @@ AS Index
 * padding the location counter:          Align.               (line   6)
 * padding the location counter given a power of two: P2align. (line   6)
 * padding the location counter given number of bytes: Balign. (line   6)
-* page, in listings:                     Unsupported.         (line  20)
-* paper size, for listings:              Psize.               (line   6)
+* page, in listings (unsupported):       Unsupported.         (line  20)
+* paper size, for listings (unsupported): Unsupported.        (line  70)
 * paths for .include:                    include.             (line   6)
 * patterns, writing in memory:           Fill.                (line   6)
 * PIC selection, AAP:                    AAP Options.         (line  22)
@@ -6259,22 +6129,22 @@ AS Index
 * preprocessing:                         Preprocessing.       (line   6)
 * preprocessing, turning on and off:     Preprocessing.       (line  26)
 * previous directive:                    Previous.            (line   6)
-* print directive:                       Print.               (line   6)
+* print directive (unsupported):         Unsupported.         (line  67)
 * protected directive:                   Protected.           (line   6)
 * pseudo-ops, machine independent:       Pseudo Ops.          (line   6)
-* psize directive:                       Psize.               (line   6)
+* psize directive (unsupported):         Unsupported.         (line  70)
 * purgem directive:                      Purgem.              (line   6)
 * purpose of the LLVM integrated assembler: LLVM Assembler.   (line  13)
 * pushsection directive:                 PushSection.         (line   6)
 * quad directive:                        Quad.                (line   6)
-* reloc directive:                       Reloc.               (line   6)
+* reloc directive (unsupported):         Unsupported.         (line  74)
 * relocation:                            Sections.            (line   6)
 * relocation example:                    Ld Sections.         (line  38)
 * reporting bugs in assembler:           Reporting Bugs.      (line   6)
 * rept directive:                        Rept.                (line   6)
-* sbttl directive:                       Sbttl.               (line   6)
+* sbttl directive (unsupported):         Unsupported.         (line  77)
 * search path for .include:              include.             (line   6)
-* section directive (ELF version):       Section.             (line  18)
+* section directive:                     Section.             (line  18)
 * Section Stack <1>:                     SubSection.          (line   6)
 * Section Stack <2>:                     Section.             (line  13)
 * Section Stack <3>:                     PushSection.         (line   6)
@@ -6288,9 +6158,9 @@ AS Index
 * short directive:                       Short.               (line   6)
 * single character constant:             Chars.               (line   6)
 * single directive:                      Single.              (line   6)
-* sixteen bit integers:                  Unsupported.         (line  38)
+* sixteen bit integers (unsupported):    Unsupported.         (line  38)
 * sixteen byte integer:                  Octa.                (line   6)
-* size directive (ELF version):          Size.                (line   8)
+* size directive:                        Size.                (line   6)
 * skip directive:                        Skip.                (line   6)
 * sleb128 directive:                     Sleb128.             (line   6)
 * small data, AAP:                       AAP Small Data.      (line   6)
@@ -6304,21 +6174,24 @@ AS Index
 * statements, structure of:              Statements.          (line   6)
 * stopping the assembly:                 Abort.               (line   6)
 * string constants:                      Strings.             (line   6)
-* string directive:                      String.              (line   8)
+* string directive:                      String.              (line   6)
 * string literals:                       Ascii.               (line   6)
-* string, copying to object file:        String.              (line   8)
-* string16 directive:                    String.              (line   8)
-* string16, copying to object file:      String.              (line   8)
-* string32 directive:                    String.              (line   8)
-* string32, copying to object file:      String.              (line   8)
-* string64 directive:                    String.              (line   8)
-* string64, copying to object file:      String.              (line   8)
-* string8 directive:                     String.              (line   8)
-* string8, copying to object file:       String.              (line   8)
-* struct directive:                      Struct.              (line   6)
+* string, copying to object file:        String.              (line   6)
+* string16 directive (unsupported):      Unsupported.         (line  83)
+* string16, copying to object file (unsupported): Unsupported.
+                                                              (line  83)
+* string32 directive (unsupported):      Unsupported.         (line  83)
+* string32, copying to object file (unsupported): Unsupported.
+                                                              (line  83)
+* string64 directive (unsupported):      Unsupported.         (line  83)
+* string64, copying to object file (unsupported): Unsupported.
+                                                              (line  83)
+* string8 directive (unsupported):       Unsupported.         (line  83)
+* string8, copying to object file (unsupported): Unsupported. (line  83)
+* struct directive (unsupported):        Unsupported.         (line  86)
 * subexpressions:                        Arguments.           (line  25)
 * subsection directive:                  SubSection.          (line   6)
-* subtitles for listings:                Sbttl.               (line   6)
+* subtitles for listings (unsupported):  Unsupported.         (line  77)
 * subtraction, permitted arguments:      Infix Ops.           (line  49)
 * summary of options:                    Overview.            (line   6)
 * supporting files, including:           Include.             (line   6)
@@ -6327,8 +6200,8 @@ AS Index
 * symbol names, local:                   Symbol Names.        (line  27)
 * symbol names, temporary:               Symbol Names.        (line  40)
 * symbol table control, assembly:        symbol-options.      (line   6)
+* symbol type <1>:                       Type.                (line   6)
 * symbol type:                           Symbol Type.         (line   6)
-* symbol type, ELF:                      Type.                (line   8)
 * symbol value:                          Symbol Value.        (line   6)
 * symbol value, setting:                 Set.                 (line   6)
 * symbol values, assigning:              Setting Symbols.     (line   6)
@@ -6344,9 +6217,9 @@ AS Index
 * target specification, assembly:        target.              (line   6)
 * temporary symbol names:                Symbol Names.        (line  40)
 * text directive:                        Text.                (line   6)
-* title directive:                       Title.               (line   6)
+* title directive (unsupported):         Unsupported.         (line  89)
 * turning preprocessing on and off:      Preprocessing.       (line  26)
-* type directive (ELF version):          Type.                (line   8)
+* type directive:                        Type.                (line   6)
 * type of a symbol:                      Symbol Type.         (line   6)
 * uleb128 directive:                     Uleb128.             (line   6)
 * undefined section:                     Ld Sections.         (line  34)
@@ -6360,8 +6233,8 @@ AS Index
 * visibility <1>:                        Protected.           (line   6)
 * visibility <2>:                        Internal.            (line   6)
 * visibility:                            Hidden.              (line   6)
-* vtable_entry directive:                VTableEntry.         (line   6)
-* vtable_inherit directive:              VTableInherit.       (line   6)
+* vtable_entry directive (unsupported):  Unsupported.         (line  92)
+* vtable_inherit directive (unsupported): Unsupported.        (line  95)
 * warning control, assembly:             warnings.            (line   6)
 * warning directive:                     Warning.             (line   6)
 * warning messages:                      Errors.              (line   6)
@@ -6369,7 +6242,7 @@ AS Index
 * weakref directive:                     Weakref.             (line   6)
 * whitespace:                            Whitespace.          (line   6)
 * whitespace, removed by preprocessor:   Preprocessing.       (line   7)
-* word directive:                        Word.                (line   6)
+* word directive (unsupported):          Unsupported.         (line  97)
 * writing patterns in memory:            Fill.                (line   6)
 * zero-terminated strings:               Asciz.               (line   6)
 
@@ -6377,194 +6250,185 @@ AS Index
 
 Tag Table:
 Node: Top817
-Node: Overview1859
-Node: Manual2513
-Node: LLVM Assembler3509
-Node: Object Formats4897
-Node: Command Line5308
-Ref: cc1as5838
-Node: Input Files7821
-Node: Object10427
-Node: Errors11511
-Node: Invoking12894
-Node: codegen14613
-Node: mnoexecstack14821
-Node: mrelax-all15155
-Node: n15680
-Node: debug15837
-Node: compress-debug-sections16341
-Node: dwarf-debug-flags16550
-Node: dwarf-debug-producer16806
-Node: fdebug-compilation-dir17069
-Node: gdwarf-n17329
-Node: g17637
-Node: main-file-name17793
-Node: encoding17985
-Node: show-encoding18259
-Node: show-inst18452
-Node: include18640
-Node: information19617
-Node: help19870
-Node: version20571
-Node: llvm20921
-Node: output21174
-Node: filetype21484
-Node: output-asm-variant22165
-Node: o22475
-Node: symbol-options22752
-Node: target23096
-Node: target-abi23408
-Node: target-cpu23609
-Node: target-feature23836
-Node: triple24077
-Node: warnings24263
-Node: Syntax24509
-Node: Preprocessing25136
-Node: Whitespace26446
-Node: Comments26854
-Node: Symbol Intro28926
-Node: Statements29665
-Node: Constants31492
-Node: Characters32137
-Node: Strings32651
-Node: Chars34903
-Node: Numbers35801
-Node: Integers36378
-Node: Bignums37046
-Node: Flonums37414
-Node: Sections38933
-Node: Secs Background39323
-Node: Ld Sections43634
-Node: As Sections46042
-Node: Sub-Sections47039
-Node: bss50074
-Node: Symbols50968
-Node: Labels51658
-Node: Setting Symbols52099
-Node: Symbol Names52627
-Node: Dot57551
-Node: Symbol Attributes58035
-Node: Symbol Value58630
-Node: Symbol Type59699
-Node: Expressions60077
-Node: Empty Exprs60859
-Node: Integer Exprs61243
-Node: Arguments61650
-Node: Operators62793
-Node: Prefix Ops63140
-Node: Infix Ops63504
-Node: Pseudo Ops65906
-Node: Abort70800
-Node: Align71287
-Node: Ascii73318
-Node: Asciz73636
-Node: Balign73893
-Node: Bundle directives75805
-Node: Byte78746
-Node: CFI directives79017
-Node: Comm84191
-Node: Data85514
-Node: Double85871
-Node: Else86246
-Node: Elseif86584
-Node: End86915
-Node: Endif87167
-Node: Endm87462
-Node: Endr87626
-Node: Equ87813
-Node: Equiv88067
-Node: Err88635
-Node: Error88985
-Node: Exitm89442
-Node: Extern89623
-Node: File89921
-Node: Fill90580
-Node: Float91582
-Node: Global91963
-Node: Hidden92527
-Node: Ident93118
-Node: If93331
-Node: Incbin96561
-Node: Include97122
-Node: Int97685
-Node: Internal98078
-Node: Irp98737
-Node: Irpc99628
-Node: Lcomm100557
-Node: Line101203
-Node: Ln101637
-Node: Loc102173
-Node: Local103561
-Node: Long104173
-Node: Macro104363
-Node: Octa110202
-Node: Org110547
-Node: P2align111892
-Node: PopSection113832
-Node: Previous114352
-Node: Print115777
-Node: Protected116043
-Node: Psize116702
-Node: Purgem117423
-Node: PushSection117656
-Node: Quad118411
-Node: Reloc118879
-Node: Rept119652
-Node: Sbttl120078
-Node: Section120459
-Node: Set125314
-Node: Short125819
-Node: Single126152
-Node: Size126534
-Node: Skip127028
-Node: Sleb128127362
-Node: Space127696
-Node: String128034
-Node: Struct129039
-Node: SubSection129774
-Node: Symver130347
-Node: Text132751
-Node: Title133111
-Node: Type133502
-Node: Uleb128135569
-Node: Version135907
-Node: VTableEntry136196
-Node: VTableInherit136496
-Node: Warning136956
-Node: Weak137200
-Node: Weakref137879
-Node: Word138854
-Node: Deprecated140784
-Node: Unsupported141098
-Node: Object Attributes142813
-Node: Machine Dependencies143218
-Node: AAP-dependent144107
-Node: AAP Options145492
-Node: AAP Macros160264
-Ref: AAP Macros-Footnote-1162975
-Node: AAP Symbol Sizes163118
-Node: AAP Small Data164796
-Node: AAP ISA166962
-Node: AAP assembly options168766
-Node: AAP autoextend169902
-Node: AAP insn170637
-Node: AAP FP ABIs171995
-Node: AAP FP ABI History172449
-Node: AAP FP ABI Variants173215
-Node: AAP FP ABI Selection175771
-Node: AAP FP ABI Compatibility176841
-Node: AAP NaN Encodings177658
-Node: AAP Option Stack179641
-Node: AAP ASE Instruction Generation Overrides180431
-Node: AAP Floating-Point183142
-Node: AAP Syntax184053
-Node: AAP-Chars184319
-Node: Reporting Bugs184869
-Node: Bug Criteria185682
-Node: Bug Reporting186576
-Node: Acknowledgements193563
-Ref: Acknowledgements-Footnote-1198676
-Node: GNU Free Documentation License198702
-Node: AS Index223883
+Node: Overview1882
+Node: Manual2536
+Node: LLVM Assembler3532
+Node: Object Formats4920
+Node: Command Line5331
+Ref: cc1as5861
+Node: Input Files7844
+Node: Object10450
+Node: Errors11534
+Node: Invoking12917
+Node: codegen14636
+Node: mnoexecstack14844
+Node: mrelax-all15178
+Node: n15703
+Node: debug15860
+Node: compress-debug-sections16364
+Node: dwarf-debug-flags16573
+Node: dwarf-debug-producer16829
+Node: fdebug-compilation-dir17092
+Node: gdwarf-n17352
+Node: g17660
+Node: main-file-name17816
+Node: encoding18008
+Node: show-encoding18282
+Node: show-inst18475
+Node: include18663
+Node: information19640
+Node: help19893
+Node: version20594
+Node: llvm20944
+Node: output21197
+Node: filetype21507
+Node: output-asm-variant22188
+Node: o22498
+Node: symbol-options22775
+Node: target23119
+Node: target-abi23431
+Node: target-cpu23632
+Node: target-feature23859
+Node: triple24100
+Node: warnings24286
+Node: Syntax24532
+Node: Preprocessing25159
+Node: Whitespace26469
+Node: Comments26877
+Node: Symbol Intro28949
+Node: Statements29688
+Node: Constants31515
+Node: Characters32160
+Node: Strings32674
+Node: Chars34926
+Node: Numbers35824
+Node: Integers36401
+Node: Bignums37069
+Node: Flonums37437
+Node: Sections38956
+Node: Secs Background39346
+Node: Ld Sections43657
+Node: As Sections46065
+Node: Sub-Sections47062
+Node: bss50068
+Node: Symbols50962
+Node: Labels51652
+Node: Setting Symbols52093
+Node: Symbol Names52621
+Node: Dot57545
+Node: Symbol Attributes58029
+Node: Symbol Value58624
+Node: Symbol Type59693
+Node: Expressions60071
+Node: Empty Exprs60853
+Node: Integer Exprs61237
+Node: Arguments61644
+Node: Operators62787
+Node: Prefix Ops63134
+Node: Infix Ops63498
+Node: Pseudo Ops65900
+Node: Abort70253
+Node: Align70740
+Node: Ascii72771
+Node: Asciz73089
+Node: Balign73346
+Node: Bundle directives75258
+Node: Byte78199
+Node: CFI directives78470
+Node: Comm83644
+Node: Data84967
+Node: Double85324
+Node: Else85699
+Node: Elseif86037
+Node: End86368
+Node: Endif86620
+Node: Endm86915
+Node: Endr87079
+Node: Equ87289
+Node: Equiv87543
+Node: Err88111
+Node: Error88461
+Node: Exitm88918
+Node: Extern89099
+Node: File89397
+Node: Fill90056
+Node: Float91058
+Node: Global91439
+Node: Hidden92003
+Node: Ident92594
+Node: If92807
+Node: Incbin96037
+Node: Include96598
+Node: Int97161
+Node: Internal97554
+Node: Irp98213
+Node: Irpc99104
+Node: Lcomm100033
+Node: Line100679
+Node: Ln101113
+Node: Loc101649
+Node: Local103037
+Node: Long103649
+Node: Macro103839
+Node: Octa109678
+Node: Org110023
+Node: P2align111368
+Node: PopSection113308
+Node: Previous113828
+Node: Protected115257
+Node: Purgem115920
+Node: PushSection116157
+Node: Quad116912
+Node: Rept117379
+Node: Section117806
+Node: Set122795
+Node: Short123300
+Node: Single123659
+Node: Size124041
+Node: Skip124396
+Node: Sleb128124730
+Node: Space125064
+Node: String125402
+Node: SubSection126003
+Node: Symver126592
+Node: Text128979
+Node: Type129338
+Node: Uleb128131343
+Node: Version131681
+Node: Warning131966
+Node: Weak132204
+Node: Weakref132481
+Node: Deprecated133462
+Node: Unsupported133777
+Node: Object Attributes136091
+Node: Machine Dependencies136496
+Node: AAP-dependent137385
+Node: AAP Options138770
+Node: AAP Macros153542
+Ref: AAP Macros-Footnote-1156253
+Node: AAP Symbol Sizes156396
+Node: AAP Small Data158074
+Node: AAP ISA160240
+Node: AAP assembly options162044
+Node: AAP autoextend163180
+Node: AAP insn163915
+Node: AAP FP ABIs165273
+Node: AAP FP ABI History165727
+Node: AAP FP ABI Variants166493
+Node: AAP FP ABI Selection169049
+Node: AAP FP ABI Compatibility170119
+Node: AAP NaN Encodings170936
+Node: AAP Option Stack172919
+Node: AAP ASE Instruction Generation Overrides173709
+Node: AAP Floating-Point176420
+Node: AAP Syntax177331
+Node: AAP-Chars177597
+Node: Reporting Bugs178147
+Node: Bug Criteria178960
+Node: Bug Reporting179854
+Node: Acknowledgements186841
+Ref: Acknowledgements-Footnote-1191954
+Node: GNU Free Documentation License191980
+Node: AS Index217161
 
 End Tag Table
