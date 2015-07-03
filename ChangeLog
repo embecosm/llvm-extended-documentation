@@ -1,3 +1,13 @@
+2015-07-03  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* llvm-assembler-manual/llvm-assembler.info: Regenerated
+	* llvm-assembler-manual/llvm-assembler.texi (Overview): Simplify
+	introduction and command line description.
+	(Command Line Options): Rationalize for LLVM integrated assembler.
+	(Assembler Dirctives): Separate out unsupported directives
+	and improve indexing.
+	(Object Attributes): Remove most of contents, since unsupported.
+
 2015-07-01  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* llvm-assembler-manual/llvm-assembler.info: Regenerated.

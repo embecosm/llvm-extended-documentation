@@ -120,11 +120,8 @@ Copyright @copyright{} 1991-2015 Free Software Foundation, Inc.
 @node Top
 @top Using the LLVM integrated assembler
 
-This file is a user guide to the LLVM integrated assembler
-@ifset VERSION_PACKAGE
-@value{VERSION_PACKAGE}
-@end ifset
-version @value{version-LLVM}.
+This file is a user guide to the LLVM integrated assembler version
+@value{version-LLVM}.
 
 This document is distributed under the terms of the GNU Free
 Documentation License.  A copy of the license is included in the
@@ -164,71 +161,10 @@ details, see @ref{Invoking,,Command-Line Options}.
 @c We don't use deffn and friends for the following because they seem
 @c to be limited to one line for the header.
 @example
-clang [@b{-a}[@b{cdghlns}][=@var{file}]]
- [@b{--}|@var{files} @dots{}]
-@c
-@c Target dependent options are listed below.  Keep the list sorted.
-@c Add an empty line for separation.
-
-@emph{Target AAP options:}
-   [@b{-O}[@var{optimization level}]]
-
+clang @b{-cc1as} [@var{options}] @var{inputs}
 @end example
 
 @c Command options
-
-@table @code
-
-@item -a[cdghlmns]
-Turn on listings, in any of a variety of ways:
-
-@table @code
-@item -ac
-omit false conditionals
-
-@item -ad
-omit debugging directives
-
-@item -ag
-include general information, like assembler version and options passed
-
-@item -ah
-include high-level source
-
-@item -al
-include assembly
-
-@item -am
-include macro expansions
-
-@item -an
-omit forms processing
-
-@item -as
-include symbols
-
-@item =file
-set the name of the listing file
-@end table
-
-You may combine these options; for example, use @samp{-aln} for assembly
-listing without forms processing.  The @samp{=file} option, if used, must be
-the last one.  By itself, @samp{-a} defaults to @samp{-ahls}.
-
-@item -- | @var{files} @dots{}
-Standard input, or source files to assemble.
-
-@end table
-
-@c AAP specific options
-The following options are available when the LLVM integrated assembler is
-configured for a AAP processor.
-
-@table @code
-@item -O @var{otpimization level}
-Set the optimization level.
-
-@end table
 
 @menu
 * Manual::                      Structure of this Manual
@@ -325,30 +261,57 @@ Attributes,,Symbol Attributes}.
 @cindex command line conventions
 
 There is no separate command for running the LLVM integrated assembler.  The
-assembler is invoked through the Clang front end to LLVM, by giving it
-assembler source code.  Since the @command{clang} command supports all LLVM
-target architectures, the desired architecture must be specified
+assembler is automatically invoked for any assembler source file from the Clang
+front end to LLVM.
 @example
-clang -march=@var{arch} ...
+clang ... @var{myfile}.s
 @end example
+The output of the assembly will be controlled by the usual @command{clang}
+options.  So by default the assembled output will be found in @file{a.out}, or
+if the @samp{-c} flag is specified in @var{myfile}.o.
+
+@anchor{cc1as}
+@kindex @option{-cc1as}
+The assembler can be invoked directly through the Clang front end to LLVM.
+@example
+clang -cc1as ...
+@end example
+In this case only one source file is given, and any assembled output is sent to
+standard output.
+
+Unless otherwise indiated, clang will use the default architecture.  This can
+be changed using the @samp{-target} option.
+@example
+clang -target @var{arch} ... @var{myfile}.s
+@end example
+
 It is common practice to provide a symbolic link from clang to architecture
 specific command name, which then implies use of that architecture.
 @example
-@var{arch}-cc ...
+@var{arch}-cc ... @var{myfile}.s
 @end example
+
+@cindex assembler, invoking directly
+If the assembler is invoked directly, then the assembler option to specify the
+target triple must be used. For example:
+@example
+clang -cc1as -triple i686-apple-darwin9
+@end example
+
+Note in particular that using -cc1as means any clang options are ignored, so
+@example
+@var{arch}-cc -cc1as ...
+@end example
+will invoke the assembler for the default architecture, @emph{not} the
+@var{arch} architecture.
 
 After the program name @command{clang} or @command{@var{arc}-cc}, the command
 line may contain options and file names.  Options may appear in any order, and
-may be before, after, or between file names.  The order of file names is
+may be before, after, or between file names.  The order of file names is not
 significant.
 
-@cindex standard input, as input file
-@kindex --
-@file{--} (two hyphens) by itself names the standard input file explicitly, as
-one of the files to be assembled.
-
 @cindex options, command line
-Except for @samp{--} any command line argument that begins with a hyphen
+Any command line argument passed to the assembler that begins with a hyphen
 (@samp{-}) is an option.  Each option changes the behavior of the assembler.
 No option changes the way another option works.  An option is a @samp{-}
 followed by one or more letters; the case of the letter is important.  All
@@ -392,6 +355,11 @@ pre-processor.  For example
 @example
 @var{arch}-cc -c hello.s
 @end example
+will assembler the code in @file{hello.s}, while:
+@example
+@var{arch}-cc -c hello.S
+@end example
+will pass @file{hello.s} through the C pre-processor, then assemble it.
 
 The suffix can be overridden using Clang's @samp{-x} option to specify the
 language of succeeding files on the commmand line.  For the integrated
@@ -403,17 +371,8 @@ assembling:
 @var{arch}-cc -c -x assembler-with-cpp hello.s
 @end example
 
-@anchor{cc1as}
-It is possible to invoke just the assembler by passing the argument
-@samp{-cc1as} to Clang.  The assembler does not deduce the architecture from
-the command name, and it needs to be told what type of output to produce.  So
-for example
-@example
-@var{arch}-cc -cc1as -triple @var{arch} -filetype obj -o hello.o hello.s
-@end example
-
-When used this way, the integrated assembler must be given at most one argument
-to assemble.  It can also be used as a pipe:
+When invoked directly, the integrated assembler must be given at most one
+argument to assemble.  It can also be used as a pipe:
 @example
 @var{arch}-cc -cc1as -triple @var{arch} -filetype obj < hello.s > hello.o
 @end example
@@ -450,20 +409,20 @@ the object file.  Its default name is @code{a.out}.  You can give it another
 name by using the @option{-o} option.  Conventionally, object file names end
 with @file{.o}.  The default name is used for historical reasons: older
 assemblers were capable of assembling self-contained programs directly into a
-runnable program.  (For some formats, this isn't currently possible, but it can
-be done for the @code{a.out} format.)
+runnable program.  For some formats, this isn't currently possible, but it can
+be done for the @code{a.out} format.
 
 @cindex linker
 @kindex ld
 @kindex gold
 @kindex mclinker
 @kindex lld
-The object file is meant for input to the linker.  Clang/LLVM tool chains have
-considerable choice of linker to use: GNU @command{ld}, GNU @command{gold}, the
-LLVM @command{mc-linker} and the LLVM linker, @command{lld}.  The object file
-contains assembled program code, information to help the linker integrate the
-assembled program into a runnable file, and (optionally) symbolic information
-for the debugger.
+The object file is meant to be input to the linker.  Clang/LLVM tool chains
+have considerable choice of linker to use: GNU @command{ld}, GNU
+@command{gold}, the LLVM @command{mc-linker} and the LLVM linker,
+@command{lld}.  The object file contains assembled program code, information to
+help the linker integrate the assembled program into a runnable file, and
+(optionally) symbolic information for the debugger.
 
 @c link above to some info file(s) like the description of a.out.
 @c don't forget to describe @sc{gnu} info as well as Unix lossage.
@@ -485,24 +444,23 @@ problem that stops the assembly.
 Warning messages have the format
 
 @example
-file_name:@b{NNN}:Warning Message Text
+file_name:@b{NNN}:@b{CCC}:warning:Warning Message Text
 @end example
 
 @noindent
 @cindex line numbers, in warnings/errors
-(where @b{NNN} is a line number).  If a logical file name has been given
-(@pxref{File,,@code{.file}}) it is used for the filename, otherwise the name of
-the current input file is used.  If a logical line number was given
-(@pxref{Line,,@code{.line}})
-then it is used to calculate the number printed,
-otherwise the actual line in the current source file is printed.  The
-message text is intended to be self explanatory (in the grand Unix
-tradition).
+(where @b{NNN} is a line number and @b{CCC} is a character position within the
+line).  If a logical file name has been given (@pxref{File,,@code{.file}}) it
+is used for the filename, otherwise the name of the current input file is used.
+If a logical line number was given (@pxref{Line,,@code{.line}}) then it is used
+to calculate the number printed, otherwise the actual line in the current
+source file is printed.  The message text is intended to be self explanatory
+(in the grand Unix tradition).
 
 @cindex format of error messages
 Error messages have the format
 @example
-file_name:@b{NNN}:FATAL:Error Message Text
+file_name:@b{NNN}:@b{CCC}:error:Error Message Text
 @end example
 The file name and line number are derived as for warning
 messages.  The actual message text may be rather less explanatory
@@ -512,32 +470,38 @@ because many of them aren't supposed to happen.
 @chapter Command-Line Options
 
 @cindex options, all versions of assembler
-This chapter describes command-line options available in @emph{all}
-versions of the @sc{gnu} assembler; see @ref{Machine Dependencies},
-for options specific
-to particular machine architectures.
+This chapter describes command-line options available in @emph{all} versions of
+the @sc{gnu} assembler; see @ref{Machine Dependencies}, for options specific to
+particular machine architectures.
 
-If you are invoking the integrated assembler via the Clang/LLVM C/C++ compiler,
-you can use the @samp{-Wa} option to pass arguments through to the assembler.
-The assembler arguments must be separated from each other (and the @samp{-Wa})
-by commas.  For example:
+There are three ways to pass options to the assembler.  Some options are common
+to both the C compiler and assembler and can be used ``as is''.
+@example
+clang @var{myfile}.S -o @var{myfile}.o
+@end example
 
+If the assembler is invoked automatically by Clang, then options specific to
+the assembler may be passed with either the @samp{-Wa} or
+@samp{-Xassembler} option:
+@example
+clang -Xassembler -compress-debug-sections ... @var{myfile}.S
+clang -Wa,-gdwarf-3 ... @var{myfile}.S
+@end example
+
+For @samp{-Wa}, multiple options, or arguments to options, should be separated
+by commas:
 @example
 @var{arch}-cc -c -g -O -Wa,-I.,-compress-debug-sections file.c
 @end example
 
-@noindent
-This passes two options to the assembler: @samp{-I.} (search for include files
-in the current directory) and @samp{-compress-debug-sections} (compress DWARF
-debug sections using zlib).
+If the assembler is invoked directly, then all options are automatically
+interpreted as assembler options.
+@example
+clang -cc1as -help
+@end example
 
-Usually you do not need to use this @samp{-Wa} mechanism, since many options
-are automatically passed to the assembler by the compiler.  (You can call the
-@sc{gnu} compiler driver with the @samp{-v} option to see precisely what
-options it passes to each compilation pass, including the assembler.)
-
-You never need to use @samp{-Wa} if you are invoking the assembler directly
-using @samp{-cc1as}.  Any options are assumed to be assembler options.
+@emph{Note:}  At the time of writing, there are some assembler options that can
+only be passed if the assembler is invoked directly with @samp{-cc1as}.
 
 @menu
 * codegen::         How the assembly code is generated
@@ -902,13 +866,12 @@ appropriate number of newlines.
 converts character constants into the appropriate numeric values.
 @end itemize
 
-It does not do macro processing, include file handling, or
-anything else you may get from your C compiler's preprocessor.  You can
-do include file processing with the @code{.include} directive
-(@pxref{Include,,@code{.include}}).  You can use the @sc{gnu} C compiler driver
-to get other ``CPP'' style preprocessing by giving the input file a
-@samp{.S} suffix.  @xref{Overall Options, ,Options Controlling the Kind of
-Output, gcc.info, Using GNU CC}.
+It does not do macro processing, include file handling, or anything else you
+may get from your C compiler's preprocessor.  You can do include file
+processing with the @code{.include} directive
+(@pxref{Include,,@code{.include}}).  You can use Clang to get other ``CPP''
+style preprocessing by giving the input file a @samp{.S} suffix.  @xref{Input
+Files, ,Input Files}.
 
 Excess whitespace, comments, and character constants
 cannot be used in the portions of the input text that are not
@@ -918,10 +881,7 @@ preprocessed.
 @cindex preprocessing, turning on and off
 @kindex #NO_APP
 @kindex #APP
-If the first line of an input file is @code{#NO_APP} or if you use the
-@samp{-f} option, whitespace and comments are not removed from the input file.
-Within an input file, you can ask for whitespace and comment removal in
-specific portions of the by putting a line that says @code{#APP} before the
+Unlike the GNU assembler, @code{#NO_APP} and @code{#APP} before the
 text that may contain whitespace or comments, and putting a line that says
 @code{#NO_APP} after this text.  This feature is mainly intend to support
 @code{asm} statements in compilers whose output is otherwise free of comments
@@ -959,9 +919,9 @@ This means you may not nest these comments.
 @cindex line comment character
 Anything from a @dfn{line comment} character up to the next newline is
 considered a comment and is ignored.  The line comment character is target
-specific, and some targets multiple comment characters.  Some targets also have
-line comment characters that only work if they are the first character on a
-line.  Some targets use a sequence of two characters to introduce a line
+specific, and some targets have multiple comment characters.  Some targets also
+have line comment characters that only work if they are the first character on
+a line.  Some targets use a sequence of two characters to introduce a line
 comment.  Some targets can also change their line comment characters depending
 upon command line options that have been used.  For more details see the
 @emph{Syntax} section in the documentation for individual targets.
@@ -987,8 +947,8 @@ the line is ignored.  (Just like a comment.)
 # 42-6 "new_file_name"    # New logical file name
                           # This is logical line # 36.
 @end example
-This feature is deprecated, and may disappear from future versions
-of LLVM integrated assembler.
+This feature is deprecated, and may disappear from future versions of the LLVM
+integrated assembler.
 
 @node Symbol Intro
 @section Symbols
@@ -1035,23 +995,22 @@ An empty statement is allowed, and may include whitespace.  It is ignored.
 @c "key symbol" is not used elsewhere in the document; seems pedantic to
 @c @defn{} it in that case, as was done previously...  doc@cygnus.com,
 @c 13feb91.
-A statement begins with zero or more labels, optionally followed by a
-key symbol which determines what kind of statement it is.  The key
-symbol determines the syntax of the rest of the statement.  If the
-symbol begins with a dot @samp{.} then the statement is an assembler
-directive: typically valid for any computer.  If the symbol begins with
-a letter the statement is an assembly language @dfn{instruction}: it
-assembles into a machine language instruction.
-Different versions of LLVM integrated assembler for different computers
-recognize different instructions.  In fact, the same symbol may
+A statement begins with zero or more labels, optionally followed by a key
+symbol which determines what kind of statement it is.  The key symbol
+determines the syntax of the rest of the statement.  If the symbol begins with
+a dot @samp{.} then the statement is an assembler directive: typically valid
+for any computer.  If the symbol begins with a letter the statement is an
+assembly language @dfn{instruction}: it assembles into a machine language
+instruction.  Different versions of the LLVM integrated assembler for different
+computers recognize different instructions.  In fact, the same symbol may
 represent a different instruction in a different computer's assembly
 language.@refill
 
 @cindex @code{:} (label)
 @cindex label (@code{:})
-A label is a symbol immediately followed by a colon (@code{:}).
-Whitespace before a label or after a colon is permitted, but you may not
-have whitespace between a label's symbol and its colon. @xref{Labels}.
+A label is a symbol immediately followed by a colon (@code{:}).  Whitespace
+before a label or after a colon is permitted, but you may not have whitespace
+between a label's symbol and its colon. @xref{Labels}.
 
 @example
 label:     .directive    followed by something
@@ -1067,7 +1026,7 @@ A constant is a number, written so that its value is known by
 inspection, without knowing any context.  Like this:
 @example
 @group
-.byte  74, 0112, 092, 0x4A, 0X4a, 'J, '\J # All the same value.
+.byte  74, 0112, 092, 0x4A, 0X4a, 'J', '\J' # All the same value.
 .ascii "Ring the bell\7"                  # A string constant.
 .octa  0x123456789abcdef0123456789ABCDEF0 # A bignum.
 .float 0f-314159265358979323846264338327\
@@ -1101,14 +1060,15 @@ used in arithmetic expressions.
 
 @cindex string constants
 @cindex constants, string
-A @dfn{string} is written between double-quotes.  It may contain
-double-quotes or null characters.  The way to get special characters
-into a string is to @dfn{escape} these characters: precede them with
-a backslash @samp{\} character.  For example @samp{\\} represents
-one backslash:  the first @code{\} is an escape which tells
-LLVM integrated assembler to interpret the second character literally as a backslash
-(which prevents LLVM integrated assembler from recognizing the second @code{\} as an
-escape character).  The complete list of escapes follows.
+A @dfn{string} is written between double-quotes.  It may contain double-quotes
+or null characters.  The way to get special characters into a string is to
+@dfn{escape} these characters: precede them with a backslash @samp{\}
+character.  For example @samp{\\} represents one backslash: the first @code{\}
+is an escape which tells the LLVM integrated assembler to interpret the second
+character literally as a backslash (which prevents the LLVM integrated
+assembler from recognizing the second @code{\} as an escape character).  The
+list of escapes is target and operating system specific.  The following list of
+escapes are commonly recognized.
 
 @cindex escape codes, character
 @cindex character escape codes
@@ -1187,19 +1147,16 @@ Represents one @samp{"} character.  Needed in strings to represent
 this character, because an unescaped @samp{"} would end the string.
 
 @item \ @var{anything-else}
-Any other character when escaped by @kbd{\} gives a warning, but
-assembles as if the @samp{\} was not present.  The idea is that if
-you used an escape sequence you clearly didn't want the literal
-interpretation of the following character.  However LLVM integrated assembler has no
-other interpretation, so LLVM integrated assembler knows it is giving you the wrong
-code and warns you of the fact.
+Any other character when escaped by @kbd{\} assembles as if the @samp{\} was
+not present.  This is a change in behavior from the @sc{gnu} assembler, which
+assumed that if you used an escape sequence you clearly didn't want the literal
+interpretation of the following character and should be warned.
 @end table
 
-Which characters are escapable, and what those escapes represent,
-varies widely among assemblers.  The current set is what we think
-the BSD 4.2 assembler recognizes, and is a subset of what most C
-compilers recognize.  If you are in doubt, do not use an escape
-sequence.
+Which characters are escapable, and what those escapes represent, varies widely
+among assemblers.  The current set is the set provided in the user manual for
+the @sc{gnu} assembler, and is a subset of what most C compilers recognize.  If
+you are in doubt, do not use an escape sequence.
 
 @node Chars
 @subsubsection Characters
@@ -1207,24 +1164,25 @@ sequence.
 @cindex single character constant
 @cindex character, single
 @cindex constant, single character
-A single character may be written as a single quote immediately
-followed by that character.  The same escapes apply to characters as
-to strings.  So if you want to write the character backslash, you
-must write @kbd{'\\} where the first @code{\} escapes the second
-@code{\}.  As you can see, the quote is an acute accent, not a
-grave accent.  A newline
-immediately following an acute accent is taken as a literal character
-and does not count as the end of a statement.  The value of a character
-constant in a numeric expression is the machine's byte-wide code for
-that character.  LLVM integrated assembler assumes your character code is ASCII:
-@kbd{'A} means 65, @kbd{'B} means 66, and so on. @refill
+A single character should be written as that character surrounded by single
+quotes.  The same escapes apply to characters as to strings.  So if you want to
+write the character backslash, you must write @kbd{'\\'} where the first
+@code{\} escapes the second @code{\}.  As you can see, the quote is an acute
+accent, not a grave accent.  A newline within single quotes is taken as a
+literal character and does not count as the end of a statement.  The value of a
+character constant in a numeric expression is the machine's byte-wide code for
+that character.  The LLVM integrated assembler assumes your character code is
+ASCII: @kbd{'A'} means 65, @kbd{'B'} means 66, and so on. @refill
+
+@emph{Note:} The @sc{gnu} assembler used a single quote before a character.
+There was no requirement for the closing quote afterwards.
 
 @node Numbers
 @subsection Number Constants
 
 @cindex constants, number
 @cindex number constants
-LLVM integrated assembler distinguishes three kinds of numbers according to how they
+the LLVM integrated assembler distinguishes three kinds of numbers according to how they
 are stored in the target machine.  @emph{Integers} are numbers that
 would fit into an @code{int} in the C language.  @emph{Bignums} are
 integers, but they are stored in more than 32 bits.  @emph{Flonums}
@@ -1284,35 +1242,19 @@ integers are permitted while bignums are not.
 @cindex precision, floating point
 A @dfn{flonum} represents a floating point number.  The translation is
 indirect: a decimal floating point number from the text is converted by
-LLVM integrated assembler to a generic binary floating point number of more than
+the LLVM integrated assembler to a generic binary floating point number of more than
 sufficient precision.  This generic floating point number is converted
 to a particular computer's floating point format (or formats) by a
-portion of LLVM integrated assembler specialized to that computer.
+portion of the LLVM integrated assembler specialized to that computer.
 
 A flonum is written by writing (in order)
 @itemize @bullet
 @item
 The digit @samp{0}.
 @item
-A letter, to tell LLVM integrated assembler the rest of the number is a flonum.
-@kbd{e} is recommended.  Case is not important.
-@ignore
-@c FIXME: verify if flonum syntax really this vague for most cases
-(Any otherwise illegal letter works here, but that might be changed.  Vax BSD
-4.2 assembler seems to allow any of @samp{defghDEFGH}.)
-@end ignore
-
-On the H8/300, Renesas / SuperH SH,
-and AMD 29K architectures, the letter must be
-one of the letters @samp{DFPRSX} (in upper or lower case).
-
-On the ARC, the letter must be one of the letters @samp{DFRS}
-(in upper or lower case).
-
-On the Intel 960 architecture, the letter must be
-one of the letters @samp{DFT} (in upper or lower case).
-
-On the HPPA architecture, the letter must be @samp{E} (upper case only).
+A letter, to tell the LLVM integrated assembler the rest of the number is a flonum.
+@kbd{e} is recommended.  Case is not important.  There is architecture
+specificity here, with different letters having different meanings.
 
 @item
 An optional sign: either @samp{+} or @samp{-}.
@@ -1343,9 +1285,9 @@ One or more decimal digits.
 At least one of the integer part or the fractional part must be
 present.  The floating point number has the usual base-10 value.
 
-LLVM integrated assembler does all processing using integers.  Flonums are computed
-independently of any floating point hardware in the computer running
-LLVM integrated assembler.
+The LLVM integrated assembler does all processing using integers.  Flonums are
+computed independently of any floating point hardware in the computer running
+the LLVM integrated assembler.
 
 @node Sections
 @chapter Sections and Relocation
@@ -1369,41 +1311,38 @@ For example there may be a ``read only'' section.
 
 @cindex linker, and assembler
 @cindex assembler, and linker
-The linker reads many object files (partial programs) and
-combines their contents to form a runnable program.  When LLVM integrated assembler
-emits an object file, the partial program is assumed to start at address 0.
-the linker assigns the final addresses for the partial program, so that
-different partial programs do not overlap.  This is actually an
-oversimplification, but it suffices to explain how LLVM integrated assembler uses
-sections.
+The linker reads many object files (partial programs) and combines their
+contents to form a runnable program.  When the LLVM integrated assembler emits
+an object file, the partial program is assumed to start at address 0.  The
+linker assigns the final addresses for the partial program, so that different
+partial programs do not overlap.  This is actually an oversimplification, but
+it suffices to explain how the LLVM integrated assembler uses sections.
 
-the linker moves blocks of bytes of your program to their run-time
-addresses.  These blocks slide to their run-time addresses as rigid
-units; their length does not change and neither does the order of bytes
-within them.  Such a rigid unit is called a @emph{section}.  Assigning
-run-time addresses to sections is called @dfn{relocation}.  It includes
-the task of adjusting mentions of object-file addresses so they refer to
-the proper run-time addresses.
+The linker moves blocks of bytes of your program to their run-time addresses.
+These blocks slide to their run-time addresses as rigid units; their length
+does not change and neither does the order of bytes within them.  Such a rigid
+unit is called a @emph{section}.  Assigning run-time addresses to sections is
+called @dfn{relocation}.  It includes the task of adjusting mentions of
+object-file addresses so they refer to the proper run-time addresses.
 
 @cindex standard assembler sections
-An object file written by LLVM integrated assembler has at least three sections, any
-of which may be empty.  These are named @dfn{text}, @dfn{data} and
-@dfn{bss} sections.
+An object file written by the LLVM integrated assembler has at least three
+sections, any of which may be empty.  These are named @dfn{text}, @dfn{data}
+and @dfn{bss} sections.
 
-When it generates COFF or ELF output,
-LLVM integrated assembler can also generate whatever other named sections you specify
-using the @samp{.section} directive (@pxref{Section,,@code{.section}}).
-If you do not use any directives that place output in the @samp{.text}
-or @samp{.data} sections, these sections still exist, but are empty.
+The LLVM integrated assembler can also generate whatever other named sections
+you specify using the @samp{.section} directive
+(@pxref{Section,,@code{.section}}).  If you do not use any directives that
+place output in the @samp{.text} or @samp{.data} sections, these sections still
+exist, but are empty.
 
 Within the object file, the text section starts at address @code{0}, the
 data section follows, and the bss section follows the data section.
 
-To let the linker know which data changes when the sections are
-relocated, and how to change that data, LLVM integrated assembler also writes to the
-object file details of the relocation needed.  To perform relocation
-the linker must know, each time an address in the object
-file is mentioned:
+To let the linker know which data changes when the sections are relocated, and
+how to change that data, the LLVM integrated assembler also writes to the
+object file details of the relocation needed.  To perform relocation the linker
+must know, each time an address in the object file is mentioned:
 @itemize @bullet
 @item
 Where in the object file is the beginning of this reference to
@@ -1421,13 +1360,13 @@ Is the reference to an address ``Program-Counter relative''?
 
 @cindex addresses, format of
 @cindex section-relative addressing
-In fact, every address LLVM integrated assembler ever uses is expressed as
+In fact, every address the LLVM integrated assembler ever uses is expressed as
 @display
 (@var{section}) + (@var{offset into section})
 @end display
 @noindent
-Further, most expressions LLVM integrated assembler computes have this section-relative
-nature.
+Further, most expressions the LLVM integrated assembler computes have this
+section-relative nature.
 
 In this manual we use the notation @{@var{secname} @var{N}@} to mean ``offset
 @var{N} into section @var{secname}.''
@@ -1458,35 +1397,33 @@ the addresses of all partial programs' text sections.  Likewise for
 data and bss sections.
 
 Some sections are manipulated by the linker; others are invented for
-use of LLVM integrated assembler and have no meaning except during assembly.
+use of the LLVM integrated assembler and have no meaning except during assembly.
 
 @node Ld Sections
 @section Linker Sections
-the linker deals with just four kinds of sections, summarized below.
+The linker deals with just four kinds of sections, summarized below.
 
 @table @strong
 
 @cindex named sections
 @cindex sections, named
 @item named sections
-These sections hold your program.  LLVM integrated assembler and the linker treat them as
-separate but equal sections.  Anything you can say of one section is
-true of another.
-When the program is running, however, it is
-customary for the text section to be unalterable.  The
-text section is often shared among processes: it contains
-instructions, constants and the like.  The data section of a running
-program is usually alterable: for example, C variables would be stored
-in the data section.
+These sections hold your program.  the LLVM integrated assembler and the linker
+treat them as separate but equal sections.  Anything you can say of one section
+is true of another.  When the program is running, however, it is customary for
+the text section to be unalterable.  The text section is often shared among
+processes: it contains instructions, constants and the like.  The data section
+of a running program is usually alterable: for example, C variables would be
+stored in the data section.
 
 @cindex bss section
 @item bss section
-This section contains zeroed bytes when your program begins running.  It
-is used to hold uninitialized variables or common storage.  The length of
-each partial program's bss section is important, but because it starts
-out containing zeroed bytes there is no need to store explicit zero
-bytes in the object file.  The bss section was invented to eliminate
-those explicit zeros from object files.
+This section contains zeroed bytes when your program begins running.  It is
+used to hold uninitialized variables or common storage.  The length of each
+partial program's bss section is important, but because it starts out
+containing zeroed bytes there is no need to store explicit zero bytes in the
+object file.  The bss section was invented to eliminate those explicit zeros
+from object files.
 
 @cindex absolute section
 @item absolute section
@@ -1558,12 +1495,12 @@ DDDD}\boxit{2cm}{\tt 00000}\ \dots\hfil}
 
 @cindex internal assembler sections
 @cindex sections in messages, internal
-These sections are meant only for the internal use of LLVM integrated assembler.  They
-have no meaning at run-time.  You do not really need to know about these
-sections for most purposes; but they can be mentioned in LLVM integrated assembler
-warning messages, so it might be helpful to have an idea of their
-meanings to LLVM integrated assembler.  These sections are used to permit the
-value of every expression in your assembly language program to be a
+These sections are meant only for the internal use of the LLVM integrated
+assembler.  They have no meaning at run-time.  You do not really need to know
+about these sections for most purposes; but they can be mentioned in the LLVM
+integrated assembler warning messages, so it might be helpful to have an idea
+of their meanings to the LLVM integrated assembler.  These sections are used to
+permit the value of every expression in your assembly language program to be a
 section-relative address.
 
 @table @b
@@ -1588,13 +1525,12 @@ it in the expr section.
 
 @cindex numbered subsections
 @cindex grouping data
-You may have separate groups of
-data in named sections
-that you want to end up near to each other in the object file, even though they
-are not contiguous in the assembler source.  LLVM integrated assembler allows you to
-use @dfn{subsections} for this purpose.  Within each section, there can be
-numbered subsections with values from 0 to 8192.  Objects assembled into the
-same subsection go into the object file together with other objects in the same
+You may have separate groups of data in named sections that you want to end up
+near to each other in the object file, even though they are not contiguous in
+the assembler source.  The LLVM integrated assembler allows you to use
+@dfn{subsections} for this purpose.  Within each section, there can be numbered
+subsections with values from 0 to 8192.  Objects assembled into the same
+subsection go into the object file together with other objects in the same
 subsection.  For example, a compiler might want to store constants in the text
 section, but might not want to have them interspersed with the program being
 assembled.  In this case, the compiler could issue a @samp{.text 0} before each
@@ -1606,7 +1542,7 @@ goes in subsection number zero.
 
 Each subsection is zero-padded up to a multiple of four bytes.
 (Subsections may be padded a different amount on different flavors
-of LLVM integrated assembler.)
+of the LLVM integrated assembler.)
 
 Subsections appear in your object file in numeric order, lowest numbered
 to highest.  (All this to be compatible with other people's assemblers.)
@@ -1640,7 +1576,7 @@ begins in @code{text 0}.  For instance:
 
 Each section has a @dfn{location counter} incremented by one for every byte
 assembled into that section.  Because subsections are merely a convenience
-restricted to LLVM integrated assembler there is no concept of a subsection location
+restricted to the LLVM integrated assembler there is no concept of a subsection location
 counter.  There is no way to directly manipulate a location counter---but the
 @code{.align} directive changes it, and any label definition captures its
 current value.  The location counter of the section where statements are being
@@ -1663,11 +1599,10 @@ The @code{.lcomm} pseudo-op defines a symbol in the bss section; see
 The @code{.comm} pseudo-op may be used to declare a common symbol, which is
 another form of uninitialized symbol; see @ref{Comm,,@code{.comm}}.
 
-When assembling for a target which supports multiple sections, such as ELF or
-COFF, you may switch into the @code{.bss} section and define symbols as usual;
-see @ref{Section,,@code{.section}}.  You may only assemble zero values into the
-section.  Typically the section will only contain symbol definitions and
-@code{.skip} directives (@pxref{Skip,,@code{.skip}}).
+When assembling you may switch into the @code{.bss} section and define symbols
+as usual; see @ref{Section,,@code{.section}}.  You may only assemble zero
+values into the section.  Typically the section will only contain symbol
+definitions and @code{.skip} directives (@pxref{Skip,,@code{.skip}}).
 
 @node Symbols
 @chapter Symbols
@@ -1679,7 +1614,7 @@ to debug.
 
 @quotation
 @cindex debuggers, and symbol order
-@emph{Warning:} LLVM integrated assembler does not place symbols in the object file in
+@emph{Warning:} the LLVM integrated assembler does not place symbols in the object file in
 the same order they were declared.  This may break some debuggers.
 @end quotation
 
@@ -1712,7 +1647,7 @@ by an equals sign @samp{=}, followed by an expression
 (@pxref{Expressions}).  This is equivalent to using the @code{.set}
 directive.  @xref{Set,,@code{.set}}.  In the same way, using a double
 equals sign @samp{=}@samp{=} here represents an equivalent of the
-@code{.eqv} directive.  @xref{Eqv,,@code{.eqv}}.
+unsupported @code{.eqv} directive.  @xref{Unsupported,,@code{.eqv}}.
 
 @node Symbol Names
 @section Symbol Names
@@ -1743,9 +1678,8 @@ in a program.
 
 @cindex local symbol names
 @cindex symbol names, local
-A local symbol is any symbol beginning with certain local label prefixes.
-By default, the local label prefix is @samp{.L} for ELF systems or
-@samp{L} for traditional a.out systems, but each target may have its own
+A local symbol is any symbol beginning with certain local label prefixes.  By
+default, the local label prefix is @samp{.L}, but each target may have its own
 set of local label prefixes.
 
 Local symbols are defined and used within the assembler, but they are normally
@@ -1803,10 +1737,10 @@ these parts:
 @table @code
 @item @emph{local label prefix}
 All local symbols begin with the system-specific local label prefix.
-Normally both LLVM integrated assembler and the linker forget symbols
+Normally both the LLVM integrated assembler and the linker forget symbols
 that start with the local label prefix.  These labels are
 used for symbols you are never intended to see.  If you use the
-@samp{-L} option then LLVM integrated assembler retains these symbols in the
+@samp{-L} option then the LLVM integrated assembler retains these symbols in the
 object file. If you also instruct the linker to retain these symbols,
 you may use them in debugging.
 
@@ -1814,7 +1748,7 @@ you may use them in debugging.
 This is the number that was used in the local label definition.  So if the
 label is written @samp{55:} then the number is @samp{55}.
 
-@item @kbd{C-B}
+@item @kbd{Ctrl-B}
 This unusual character is included so you do not accidentally invent a symbol
 of the same name.  The character has ASCII value of @samp{\002} (control-B).
 
@@ -1831,21 +1765,14 @@ the 44th @code{3:} may be named @code{.L3@kbd{C-B}44}.
 @subheading Dollar Local Labels
 @cindex dollar local symbols
 
-The LLVM integrated assembler also supports an even more local form of local
-labels called dollar labels.  These labels go out of scope (i.e., they become
-undefined) as soon as a non-local label is defined.  Thus they remain valid for
-only a small region of the input source code.  Normal local labels, by
-contrast, remain in scope for the entire file, or until they are redefined by
-another occurrence of the same local label.
+Unlike the @sc{gnu} assembler, the LLVM integrated assembler does not support
+dollar local labels.  These are even more local labels which go out of scope
+(i.e., they become undefined) as soon as a non-local label is defined.  They
+take the same format as ordinary local labels, except that they have a dollar
+sign suffix to their numeric value, e.g., @samp{@b{55$:}}.
 
-Dollar labels are defined in exactly the same way as ordinary local labels,
-except that they have a dollar sign suffix to their numeric value, e.g.,
-@samp{@b{55$:}}.
-
-They can also be distinguished from ordinary local labels by their transformed
-names which use ASCII character @samp{\001} (control-A) as the magic character
-to distinguish them from ordinary labels.  For example, the fifth definition of
-@samp{6$} may be named @samp{.L6@kbd{C-A}5}.
+Assembler source code intended for the @sc{gnu} assembler will need
+modification if it contains such labels.
 
 @node Dot
 @section The Special Dot Symbol
@@ -1855,7 +1782,7 @@ to distinguish them from ordinary labels.  For example, the fifth definition of
 @cindex current address
 @cindex location counter
 The special symbol @samp{.} refers to the current address that
-LLVM integrated assembler is assembling into.  Thus, the expression @samp{melvin:
+the LLVM integrated assembler is assembling into.  Thus, the expression @samp{melvin:
 .long .} defines @code{melvin} to contain its own address.
 Assigning a value to @code{.} is treated the same as a @code{.org}
 directive.
@@ -1876,7 +1803,7 @@ attributes.
 The detailed definitions are in @file{a.out.h}.
 @end ifset
 
-If you use a symbol without defining it, LLVM integrated assembler assumes zero for
+If you use a symbol without defining it, the LLVM integrated assembler assumes zero for
 all these attributes, and probably won't warn you.  This makes the
 symbol an externally defined symbol, which is generally what you
 would want.
@@ -1929,10 +1856,10 @@ Whitespace may precede and/or follow an expression.
 
 The result of an expression must be an absolute number, or else an offset into
 a particular section.  If an expression is not absolute, and there is not
-enough information when LLVM integrated assembler sees the expression to know its
-section, a second pass over the source program might be necessary to interpret
-the expression---but the second pass is currently not implemented.
-LLVM integrated assembler aborts with an error message in this situation.
+enough information when the LLVM integrated assembler sees the expression to
+know its section, a second pass over the source program would be necessary to
+interpret the expression---but no second pass is implemented, so the assembler
+aborts with an error message in this situation.
 
 @menu
 * Empty Exprs::                 Empty Expressions
@@ -1946,7 +1873,7 @@ LLVM integrated assembler aborts with an error message in this situation.
 @cindex expressions, empty
 An empty expression has no value: it is just whitespace or null.
 Wherever an absolute expression is required, you may omit the
-expression, and LLVM integrated assembler assumes a value of (absolute) 0.  This
+expression, and the LLVM integrated assembler assumes a value of (absolute) 0.  This
 is compatible with other assemblers.
 
 @node Integer Exprs
@@ -1986,7 +1913,7 @@ integer.
 Numbers are usually integers.
 
 A number can be a flonum or bignum.  In this case, you are warned
-that only the low order 32 bits are used, and LLVM integrated assembler pretends
+that only the low order 32 bits are used, and the LLVM integrated assembler pretends
 these 32 bits are an integer.  You may write integer-manipulating
 instructions that act on exotic constants, compatible with other
 assemblers.
@@ -2011,7 +1938,7 @@ whitespace.
 @subsection Prefix Operator
 
 @cindex prefix operators
-LLVM integrated assembler has the following @dfn{prefix operators}.  They each take
+the LLVM integrated assembler has the following @dfn{prefix operators}.  They each take
 one argument, which must be absolute.
 
 @c the tex/end tex stuff surrounding this small table is meant to make
@@ -2156,16 +2083,16 @@ address; you can only have a defined section in one of the two arguments.
 All assembler directives have names that begin with a period (@samp{.}).
 The rest of the name is letters, usually in lower case.
 
-This chapter discusses directives that are available regardless of the
-target machine configuration for the @sc{gnu} assembler.
-Some machine configurations provide additional directives.
-@xref{Machine Dependencies}.
+This chapter discusses directives that are available regardless of the target
+machine configuration for the LLVM integrated assembler.  Some machine
+configurations provide additional directives.  @xref{Machine Dependencies}.
 
+@emph{Note:} While the LLVM integrated assembler strives for compatibility with
+@sc{gnu} assembler, not all @sc{gnu} directives are supported.  Those which are
+unsupported are listed at the end of this chapter. @xref{Unsupported}.
 @menu
 * Abort::                       @code{.abort}
-
 * Align::                       @code{.align @var{abs-expr} , @var{abs-expr}}
-* Altmacro::                    @code{.altmacro}
 * Ascii::                       @code{.ascii "@var{string}"}@dots{}
 * Asciz::                       @code{.asciz "@var{string}"}@dots{}
 * Balign::                      @code{.balign @var{abs-expr} , @var{abs-expr}}
@@ -2175,62 +2102,39 @@ Some machine configurations provide additional directives.
 * Comm::                        @code{.comm @var{symbol} , @var{length} }
 * Data::                        @code{.data @var{subsection}}
 * Double::                      @code{.double @var{flonums}}
-* Eject::                       @code{.eject}
 * Else::                        @code{.else}
 * Elseif::                      @code{.elseif}
 * End::				@code{.end}
-
-* Endfunc::                     @code{.endfunc}
 * Endif::                       @code{.endif}
+* Endm::                        @code{.endm}
+* Endr::                        @code{.endr}
 * Equ::                         @code{.equ @var{symbol}, @var{expression}}
 * Equiv::                       @code{.equiv @var{symbol}, @var{expression}}
-* Eqv::                         @code{.eqv @var{symbol}, @var{expression}}
 * Err::				@code{.err}
 * Error::			@code{.error @var{string}}
 * Exitm::			@code{.exitm}
 * Extern::                      @code{.extern}
-* Fail::			@code{.fail}
 * File::                        @code{.file}
 * Fill::                        @code{.fill @var{repeat} , @var{size} , @var{value}}
 * Float::                       @code{.float @var{flonums}}
-* Func::                        @code{.func}
 * Global::                      @code{.global @var{symbol}}, @code{.globl @var{symbol}}
-* Gnu_attribute::               @code{.gnu_attribute @var{tag},@var{value}}
 * Hidden::                      @code{.hidden @var{names}}
-
-* hword::                       @code{.hword @var{expressions}}
 * Ident::                       @code{.ident}
 * If::                          @code{.if @var{absolute expression}}
 * Incbin::                      @code{.incbin "@var{file}"[,@var{skip}[,@var{count}]]}
 * Include::                     @code{.include "@var{file}"}
 * Int::                         @code{.int @var{expressions}}
 * Internal::                    @code{.internal @var{names}}
-
 * Irp::				@code{.irp @var{symbol},@var{values}}@dots{}
 * Irpc::			@code{.irpc @var{symbol},@var{values}}@dots{}
 * Lcomm::                       @code{.lcomm @var{symbol} , @var{length}}
-* Lflags::                      @code{.lflags}
-@ifclear no-line-dir
 * Line::                        @code{.line @var{line-number}}
-@end ifclear
-
-* Linkonce::			@code{.linkonce [@var{type}]}
-* List::                        @code{.list}
 * Ln::                          @code{.ln @var{line-number}}
 * Loc::                         @code{.loc @var{fileno} @var{lineno}}
-* Loc_mark_labels::             @code{.loc_mark_labels @var{enable}}
 * Local::                       @code{.local @var{names}}
-
 * Long::                        @code{.long @var{expressions}}
-@ignore
-* Lsym::                        @code{.lsym @var{symbol}, @var{expression}}
-@end ignore
-
 * Macro::			@code{.macro @var{name} @var{args}}@dots{}
-* Noaltmacro::                  @code{.noaltmacro}
-* Nolist::                      @code{.nolist}
 * Octa::                        @code{.octa @var{bignums}}
-* Offset::			@code{.offset @var{loc}}
 * Org::                         @code{.org @var{new-lc}, @var{fill}}
 * P2align::                     @code{.p2align @var{abs-expr}, @var{abs-expr}, @var{abs-expr}}
 * PopSection::                  @code{.popsection}
@@ -2282,18 +2186,22 @@ Some machine configurations provide additional directives.
 * Weakref::                     @code{.weakref @var{alias}, @var{symbol}}
 * Word::                        @code{.word @var{expressions}}
 * Deprecated::                  Deprecated Directives
+* Unsupported::                 Unsupported @sc{gnu} Assembler Directives
 @end menu
 
 @node Abort
 @section @code{.abort}
 
-@cindex @code{abort} directive
+@cindex @code{abort} directive (deprecated)
+@cindex @code{.abort} (deprecated)
 @cindex stopping the assembly
-This directive stops the assembly immediately.  It is for
-compatibility with other assemblers.  The original idea was that the
-assembly language source would be piped into the assembler.  If the sender
-of the source quit, it could use this directive tells LLVM integrated assembler to
-quit also.  One day @code{.abort} will not be supported.
+This directive stops the assembly immediately.  It is for compatibility with
+other assemblers.  The original idea was that the assembly language source
+would be piped into the assembler.  If the sender of the source quit, it could
+use this directive to tell the LLVM integrated assembler to quit also.
+
+@emph{Note:} This directive is deprecated.  One day @code{.abort} will not be
+supported.
 
 @node Align
 @section @code{.align @var{abs-expr}, @var{abs-expr}, @var{abs-expr}}
@@ -2318,67 +2226,25 @@ fill value (the second argument) entirely by simply using two commas after the
 required alignment; this can be useful if you want the alignment to be filled
 with no-op instructions when appropriate.
 
-The way the required alignment is specified varies from system to system.
-For the arc, hppa, i386 using ELF, i860, iq2000, m68k, or1k,
-s390, sparc, tic4x, tic80 and xtensa, the first expression is the
-alignment request in bytes.  For example @samp{.align 8} advances
-the location counter until it is a multiple of 8.  If the location counter
-is already a multiple of 8, no change is needed.  For the tic54x, the
-first expression is the alignment request in words.
+The way the required alignment is specified is target specific.  Commonly it is
+the byte boundary on which to align. Very occasionaly the word boundary on
+which to align. On other systems, it is the number of low-order zero bits the
+location counter must have after advancement.  So for example @samp{.align 3}
+advances the location counter until it a multiple of 8.  If the location
+counter is already a multiple of 8, no change is needed.
 
-For other systems, including ppc, i386 using a.out format, arm and
-strongarm, it is the
-number of low-order zero bits the location counter must have after
-advancement.  For example @samp{.align 3} advances the location
-counter until it a multiple of 8.  If the location counter is already a
-multiple of 8, no change is needed.
-
-This inconsistency is due to the different behaviors of the various
-native assemblers for these systems which GAS must emulate.
-GAS also provides @code{.balign} and @code{.p2align} directives,
-described later, which have a consistent behavior across all
-architectures (but are specific to GAS).
-
-@node Altmacro
-@section @code{.altmacro}
-Enable alternate macro mode, enabling:
-
-@ftable @code
-@item LOCAL @var{name} [ , @dots{} ]
-One additional directive, @code{LOCAL}, is available.  It is used to
-generate a string replacement for each of the @var{name} arguments, and
-replace any instances of @var{name} in each macro expansion.  The
-replacement string is unique in the assembly, and different for each
-separate macro expansion.  @code{LOCAL} allows you to write macros that
-define symbols, without fear of conflict between separate macro expansions.
-
-@item String delimiters
-You can write strings delimited in these other ways besides
-@code{"@var{string}"}:
-
-@table @code
-@item '@var{string}'
-You can delimit strings with single-quote characters.
-
-@item <@var{string}>
-You can delimit strings with matching angle brackets.
-@end table
-
-@item single-character string escape
-To include any single character literally in a string (even if the
-character would otherwise have some special meaning), you can prefix the
-character with @samp{!} (an exclamation mark).  For example, you can
-write @samp{<4.3 !> 5.4!!>} to get the literal text @samp{4.3 > 5.4!}.
-
-@item Expression results as strings
-You can write @samp{%@var{expr}} to evaluate the expression @var{expr}
-and use the result as a string.
-@end ftable
+This inconsistency is due to the different behaviors of the various native
+assemblers for these systems which the LLVM integrated assembler aims to
+emulate. The LLVM integrated assembler also provides @code{.balign} and
+@code{.p2align} directives, described later, which have a consistent behavior
+across all architectures (but are specific to the LLVM integrated assembler and
+@sc{gnu} assembler).
 
 @node Ascii
 @section @code{.ascii "@var{string}"}@dots{}
 
 @cindex @code{ascii} directive
+@cindex @code{.ascii}
 @cindex string literals
 @code{.ascii} expects zero or more string literals (@pxref{Strings})
 separated by commas.  It assembles each string (with no automatic
@@ -2398,11 +2264,16 @@ a zero byte.  The ``z'' in @samp{.asciz} stands for ``zero''.
 
 @cindex padding the location counter given number of bytes
 @cindex @code{balign} directive
-Pad the location counter (in the current subsection) to a particular
-storage boundary.  The first expression (which must be absolute) is the
-alignment request in bytes.  For example @samp{.balign 8} advances
-the location counter until it is a multiple of 8.  If the location counter
-is already a multiple of 8, no change is needed.
+@cindex @code{.balign}
+@cindex @code{balignw} directive
+@cindex @code{.balignw}
+@cindex @code{balignl} directive
+@cindex @code{.balignl}
+Pad the location counter (in the current subsection) to a particular storage
+boundary.  The first expression (which must be absolute) is the alignment
+request in bytes and must be a power of 2.  For example @samp{.balign 8}
+advances the location counter until it is a multiple of 8.  If the location
+counter is already a multiple of 8, no change is needed.
 
 The second expression (also absolute) gives the fill value to be stored in the
 padding bytes.  It (and the comma) may be omitted.  If it is omitted, the
@@ -2432,6 +2303,7 @@ undefined.
 @node Bundle directives
 @section @code{.bundle_align_mode @var{abs-expr}}
 @cindex @code{bundle_align_mode} directive
+@cindex @code{.bundle_align_mode}
 @cindex bundle
 @cindex instruction bundle
 @cindex aligned instruction bundle
@@ -2489,6 +2361,7 @@ same number of @code{.bundle_lock} and @code{.bundle_unlock} directives.
 @section @code{.byte @var{expressions}}
 
 @cindex @code{byte} directive
+@cindex @code{.byte}
 @cindex integers, one byte
 @code{.byte} expects zero or more expressions, separated by commas.
 Each expression is assembled into the next byte.
@@ -2496,6 +2369,7 @@ Each expression is assembled into the next byte.
 @node CFI directives
 @section @code{.cfi_sections @var{section_list}}
 @cindex @code{cfi_sections} directive
+@cindex @code{.cfi_sections}
 @code{.cfi_sections} may be used to specify whether CFI directives
 should emit @code{.eh_frame} section and/or @code{.debug_frame} section.
 If @var{section_list} is @code{.eh_frame}, @code{.eh_frame} is emitted,
@@ -2505,6 +2379,7 @@ directive is not used is @code{.cfi_sections .eh_frame}.
 
 @section @code{.cfi_startproc [simple]}
 @cindex @code{cfi_startproc} directive
+@cindex @code{.cfi_startproc}
 @code{.cfi_startproc} is used at the beginning of each function that
 should have an entry in @code{.eh_frame}. It initializes some internal
 data structures. Don't forget to close the function by
@@ -2515,53 +2390,69 @@ it also emits some architecture dependent initial CFI instructions.
 
 @section @code{.cfi_endproc}
 @cindex @code{cfi_endproc} directive
+@cindex @code{.cfi_endproc}
 @code{.cfi_endproc} is used at the end of a function where it closes its
 unwind entry previously opened by
 @code{.cfi_startproc}, and emits it to @code{.eh_frame}.
 
 @section @code{.cfi_personality @var{encoding} [, @var{exp}]}
+@cindex @code{cfi_personality} directive
+@cindex @code{.cfi_personality}
 @code{.cfi_personality} defines personality routine and its encoding.
-@var{encoding} must be a constant determining how the personality
-should be encoded.  If it is 255 (@code{DW_EH_PE_omit}), second
-argument is not present, otherwise second argument should be
-a constant or a symbol name.  When using indirect encodings,
-the symbol provided should be the location where personality
-can be loaded from, not the personality routine itself.
-The default after @code{.cfi_startproc} is @code{.cfi_personality 0xff},
-no personality routine.
+@var{encoding} must be a constant determining how the personality should be
+encoded.  If it is 255 (@code{DW_EH_PE_omit}), the second argument should not
+be present, otherwise the second argument should be a symbol name (unlike the
+@sc{gnu} assembler, a constant is not permitted).  When using indirect
+encodings, the symbol provided should be the location where personality can be
+loaded from, not the personality routine itself.  The default after
+@code{.cfi_startproc} is @code{.cfi_personality 0xff}, no personality routine.
 
 @section @code{.cfi_lsda @var{encoding} [, @var{exp}]}
-@code{.cfi_lsda} defines LSDA and its encoding.
-@var{encoding} must be a constant determining how the LSDA
-should be encoded.  If it is 255 (@code{DW_EH_PE_omit}), second
-argument is not present, otherwise second argument should be a constant
-or a symbol name.  The default after @code{.cfi_startproc} is @code{.cfi_lsda 0xff},
-no LSDA.
+@cindex @code{cfi_lsda} directive
+@cindex @code{.cfi_lsda}
+@code{.cfi_lsda} defines LSDA and its encoding.  @var{encoding} must be a
+constant determining how the LSDA should be encoded.  If it is 255
+(@code{DW_EH_PE_omit}), the second argument should not be present, otherwise
+the second argument should be a symbol name (unlike the @sc{gnu} assembler, a
+constant is not permitted).  The default after @code{.cfi_startproc} is
+@code{.cfi_lsda 0xff}, no LSDA.
 
 @section @code{.cfi_def_cfa @var{register}, @var{offset}}
-@code{.cfi_def_cfa} defines a rule for computing CFA as: @i{take
-address from @var{register} and add @var{offset} to it}.
+@cindex @code{cfi_def_cfa} directive
+@cindex @code{.cfi_def_cfa}
+@code{.cfi_def_cfa} defines a rule for computing CFA as: @emph{take address
+from @var{register} and add @var{offset} to it}.
 
 @section @code{.cfi_def_cfa_register @var{register}}
+@cindex @code{cfi_def_cfa_register} directive
+@cindex @code{.cfi_def_cfa_register}
 @code{.cfi_def_cfa_register} modifies a rule for computing CFA. From
 now on @var{register} will be used instead of the old one. Offset
 remains the same.
 
 @section @code{.cfi_def_cfa_offset @var{offset}}
+@cindex @code{cfi_def_cfa_offset} directive
+@cindex @code{.cfi_def_cfa_offset}
 @code{.cfi_def_cfa_offset} modifies a rule for computing CFA. Register
 remains the same, but @var{offset} is new. Note that it is the
 absolute offset that will be added to a defined register to compute
 CFA address.
 
 @section @code{.cfi_adjust_cfa_offset @var{offset}}
+@cindex @code{cfi_adjust_cfa_offset} directive
+@cindex @code{.cfi_adjust_cfa_offset}
 Same as @code{.cfi_def_cfa_offset} but @var{offset} is a relative
 value that is added/substracted from the previous offset.
 
 @section @code{.cfi_offset @var{register}, @var{offset}}
+@cindex @code{cfi_offset} directive
+@cindex @code{.cfi_offset}
 Previous value of @var{register} is saved at offset @var{offset} from
 CFA.
 
 @section @code{.cfi_rel_offset @var{register}, @var{offset}}
+@cindex @code{cfi_rel_offset} directive
+@cindex @code{.cfi_rel_offset}
 Previous value of @var{register} is saved at offset @var{offset} from
 the current CFA register.  This is transformed to @code{.cfi_offset}
 using the known displacement of the CFA register from the CFA.
@@ -2569,56 +2460,61 @@ This is often easier to use, because the number will match the
 code it's annotating.
 
 @section @code{.cfi_register @var{register1}, @var{register2}}
+@cindex @code{cfi_register} directive
+@cindex @code{.cfi_register}
 Previous value of @var{register1} is saved in register @var{register2}.
 
 @section @code{.cfi_restore @var{register}}
+@cindex @code{cfi_restore} directive
+@cindex @code{.cfi_restore}
 @code{.cfi_restore} says that the rule for @var{register} is now the
 same as it was at the beginning of the function, after all initial
 instruction added by @code{.cfi_startproc} were executed.
 
 @section @code{.cfi_undefined @var{register}}
+@cindex @code{cfi_undefined} directive
+@cindex @code{.cfi_undefined}
 From now on the previous value of @var{register} can't be restored anymore.
 
 @section @code{.cfi_same_value @var{register}}
-Current value of @var{register} is the same like in the previous frame,
-i.e. no restoration needed.
+@cindex @code{cfi_same_value} directive
+@cindex @code{.cfi_same_value}
+Current value of @var{register} is the same as in the previous frame, i.e. no
+restoration needed.
 
-@section @code{.cfi_remember_state},
-First save all current rules for all registers by @code{.cfi_remember_state},
-then totally screw them up by subsequent @code{.cfi_*} directives and when
-everything is hopelessly bad, use @code{.cfi_restore_state} to restore
-the previous saved state.
-
-@section @code{.cfi_return_column @var{register}}
-Change return column @var{register}, i.e. the return address is either
-directly in @var{register} or can be accessed by rules for @var{register}.
+@section @code{.cfi_remember_state} and @code{.cfi_restore_state},
+@cindex @code{cfi_remember_state} directive
+@cindex @code{.cfi_remember_state}
+@cindex @code{cfi_restore_state} directive
+@cindex @code{.cfi_restore_state}
+Use @code{.cfi_remember_state} to save all current rules for all registers.  If
+you then totally screw them up by subsequent @code{.cfi_*} directives you can
+use @code{.cfi_restore_state} to restore the previous saved state.
 
 @section @code{.cfi_signal_frame}
-Mark current function as signal trampoline.
+@cindex @code{cfi_signal_frame} directive
+@cindex @code{.cfi_signal_frame}
+Mark current function as signal handler.
 
 @section @code{.cfi_window_save}
-SPARC register window has been saved.
+@cindex @code{cfi_window_save} directive
+@cindex @code{.cfi_window_save}
+@cindex debug for register windws
+Save a complete register window.  This directive is generically recognized, but
+its function, if any, is unclear, since few architectures now support register
+windows.  SPARC is an example of such an architecture.
 
 @section @code{.cfi_escape} @var{expression}[, @dots{}]
+@cindex @code{cfi_escape} directive
+@cindex @code{.cfi_escape}
 Allows the user to add arbitrary bytes to the unwind info.  One
 might use this to add OS-specific CFI opcodes, or generic CFI
-opcodes that GAS does not yet support.
-
-@section @code{.cfi_val_encoded_addr @var{register}, @var{encoding}, @var{label}}
-The current value of @var{register} is @var{label}.  The value of @var{label}
-will be encoded in the output file according to @var{encoding}; see the
-description of @code{.cfi_personality} for details on this encoding.
-
-The usefulness of equating a register to a fixed label is probably
-limited to the return address register.  Here, it can be useful to
-mark a code segment that has only one return address which is reached
-by a direct branch and no copy of the return address exists in memory
-or another register.
+opcodes that the LLVM integrated assembler does not yet support.
 
 @node Comm
-@section @code{.comm @var{symbol} , @var{length} }
-
+@section @code{.comm @var{symbol}, @var{length} [, @var{alignment}]}
 @cindex @code{comm} directive
+@cindex @code{.comm}
 @cindex symbol, common
 @code{.comm} declares a common symbol named @var{symbol}.  When linking, a
 common symbol in one object file may be merged with a defined or common symbol
@@ -2629,100 +2525,93 @@ absolute expression.  If the linker sees multiple common symbols with
 the same name, and they do not all have the same size, it will allocate space
 using the largest size.
 
-When using ELF or (as a GNU extension) PE, the @code{.comm} directive takes
-an optional third argument.  This is the desired alignment of the symbol,
-specified for ELF as a byte boundary (for example, an alignment of 16 means
-that the least significant 4 bits of the address should be zero), and for PE
-as a power of two (for example, an alignment of 5 means aligned to a 32-byte
-boundary).  The alignment must be an absolute expression, and it must be a
-power of two.  If the linker allocates uninitialized memory for the
-common symbol, it will use the alignment when placing the symbol.  If no
-alignment is specified, LLVM integrated assembler will set the alignment to the
-largest power of two less than or equal to the size of the symbol, up to a
-maximum of 16 on ELF, or the default section alignment of 4 on PE@footnote{This
-is not the same as the executable image file alignment controlled by the linker's
-@samp{--section-alignment} option; image file sections in PE are aligned to
-multiples of 4096, which is far too large an alignment for ordinary variables.
-It is rather the default alignment for (non-debug) sections within object
-(@samp{*.o}) files, which are less strictly aligned.}.
+The @code{.comm} directive takes an optional third argument.  This is the
+desired alignment of the symbol, specified as a byte boundary (for example, an
+alignment of 16 means that the least significant 4 bits of the address should
+be zero).  The alignment must be an absolute expression, and it must be a power
+of two.  If the linker allocates uninitialized memory for the common symbol, it
+will use the alignment when placing the symbol.  If no alignment is specified,
+the LLVM integrated assembler will set the alignment to the largest power of
+two less than or equal to the size of the symbol, up to a maximum of 16.
 
 @node Data
 @section @code{.data @var{subsection}}
-
 @cindex @code{data} directive
-@code{.data} tells LLVM integrated assembler to assemble the following statements onto the
-end of the data subsection numbered @var{subsection} (which is an
-absolute expression).  If @var{subsection} is omitted, it defaults
-to zero.
+@cindex @code{.data}
+@code{.data} tells the LLVM integrated assembler to assemble the following
+statements onto the end of the data subsection numbered @var{subsection} (which
+is an absolute expression).  If @var{subsection} is omitted, it defaults to
+zero.
 
 @node Double
 @section @code{.double @var{flonums}}
-
 @cindex @code{double} directive
+@cindex @code{.double}
 @cindex floating point numbers (double)
-@code{.double} expects zero or more flonums, separated by commas.  It
-assembles floating point numbers.
-The exact kind of floating point numbers emitted depends on how
-LLVM integrated assembler is configured.  @xref{Machine Dependencies}.
-
-@node Eject
-@section @code{.eject}
-
-@cindex @code{eject} directive
-@cindex new page, in listings
-@cindex page, in listings
-@cindex listing control: new page
-Force a page break at this point, when generating assembly listings.
+@code{.double} expects zero or more flonums, separated by commas.  It assembles
+floating point numbers.  The exact kind of floating point numbers emitted
+depends on how the LLVM integrated assembler is configured.  @xref{Machine
+Dependencies}.
 
 @node Else
 @section @code{.else}
-
 @cindex @code{else} directive
-@code{.else} is part of the LLVM integrated assembler support for conditional
-assembly; see @ref{If,,@code{.if}}.  It marks the beginning of a section
-of code to be assembled if the condition for the preceding @code{.if}
+@cindex @code{.else}
+@code{.else} is part of the the LLVM integrated assembler support for
+conditional assembly; see @ref{If,,@code{.if}}.  It marks the beginning of a
+section of code to be assembled if the condition for the preceding @code{.if}
 was false.
 
 @node Elseif
 @section @code{.elseif}
-
 @cindex @code{elseif} directive
-@code{.elseif} is part of the LLVM integrated assembler support for conditional
-assembly; see @ref{If,,@code{.if}}.  It is shorthand for beginning a new
-@code{.if} block that would otherwise fill the entire @code{.else} section.
+@cindex @code{.elseif}
+@code{.elseif} is part of the the LLVM integrated assembler support for
+conditional assembly; see @ref{If,,@code{.if}}.  It is shorthand for beginning
+a new @code{.if} block that would otherwise fill the entire @code{.else}
+section.
 
 @node End
 @section @code{.end}
-
 @cindex @code{end} directive
-@code{.end} marks the end of the assembly file.  LLVM integrated assembler does not
-process anything in the file past the @code{.end} directive.
-
-@node Endfunc
-@section @code{.endfunc}
-@cindex @code{endfunc} directive
-@code{.endfunc} marks the end of a function specified with @code{.func}.
+@cindex @code{.end}
+@code{.end} marks the end of the assembly file.  The LLVM integrated assembler
+does not process anything in the file past the @code{.end} directive.
 
 @node Endif
 @section @code{.endif}
-
 @cindex @code{endif} directive
-@code{.endif} is part of the LLVM integrated assembler support for conditional assembly;
-it marks the end of a block of code that is only assembled
-conditionally.  @xref{If,,@code{.if}}.
+@cindex @code{.endif}
+@code{.endif} is part of the the LLVM integrated assembler support for
+conditional assembly; it marks the end of a block of code that is only
+assembled conditionally.  @xref{If,,@code{.if}}.
+
+@node Endm
+@section @code{.endm}
+@cindex @code{endm} directive
+@cindex @code{.endm}
+End the current macro definition.  @xref{Macro}.
+
+@node Endr
+@section @code{.endr}
+@cindex @code{endr} directive
+@cindex @code{.endr}
+End the current @code{.irp} or @code{.irpc} definition.  @xref{Irp}.
+@xref{Irpc}.
 
 @node Equ
 @section @code{.equ @var{symbol}, @var{expression}}
-
 @cindex @code{equ} directive
+@cindex @code{.equ}
 @cindex assigning values to symbols
 @cindex symbols, assigning values to
-This directive sets the value of @var{symbol} to @var{expression}.
-It is synonymous with @samp{.set}; see @ref{Set,,@code{.set}}.
+This directive sets the value of @var{symbol} to @var{expression}.  It is
+synonymous with @samp{.set}. @xref{Set,,@code{.set}}.
 
 @node Equiv
 @section @code{.equiv @var{symbol}, @var{expression}}
 @cindex @code{equiv} directive
+@cindex @code{.equiv}
 The @code{.equiv} directive is like @code{.equ} and @code{.set}, except that
 the assembler will signal an error if @var{symbol} is already defined.  Note a
 symbol which has been referenced but not actually defined is considered to be
@@ -2737,25 +2626,19 @@ Except for the contents of the error message, this is roughly equivalent to
 @end example
 plus it protects the symbol from later redefinition.
 
-@node Eqv
-@section @code{.eqv @var{symbol}, @var{expression}}
-@cindex @code{eqv} directive
-The @code{.eqv} directive is like @code{.equiv}, but no attempt is made to
-evaluate the expression or any part of it immediately.  Instead each time
-the resulting symbol is used in an expression, a snapshot of its current
-value is taken.
-
 @node Err
 @section @code{.err}
 @cindex @code{err} directive
-If LLVM integrated assembler assembles a @code{.err} directive, it will print an error
-message and, unless the @option{-Z} option was used, it will not generate an
-object file.  This can be used to signal an error in conditionally compiled code.
+@cindex @code{.err}
+If the LLVM integrated assembler assembles a @code{.err} directive, it will
+print an error message and, unless the @option{-Z} option was used, it will not
+generate an object file.  This can be used to signal an error in conditionally
+compiled code.
 
 @node Error
 @section @code{.error "@var{string}"}
-@cindex error directive
-
+@cindex @code{error} directive
+@cindex @code{.error}
 Similarly to @code{.err}, this directive emits an error, but you can specify a
 string that will be emitted as the error message.  If you don't specify the
 message, it defaults to @code{".error directive invoked in source file"}.
@@ -2767,54 +2650,22 @@ message, it defaults to @code{".error directive invoked in source file"}.
 
 @node Exitm
 @section @code{.exitm}
+@cindex @code{exitm} directive
+@cindex @code{.exitm}
 Exit early from the current macro definition.  @xref{Macro}.
 
 @node Extern
 @section @code{.extern}
-
 @cindex @code{extern} directive
-@code{.extern} is accepted in the source program---for compatibility
-with other assemblers---but it is ignored.  LLVM integrated assembler treats
-all undefined symbols as external.
-
-@node Fail
-@section @code{.fail @var{expression}}
-
-@cindex @code{fail} directive
-Generates an error or a warning.  If the value of the @var{expression} is 500
-or more, LLVM integrated assembler will print a warning message.  If the value is less
-than 500, LLVM integrated assembler will print an error message.  The message will
-include the value of @var{expression}.  This can occasionally be useful inside
-complex nested macros or conditional assembly.
+@cindex @code{.extern}
+@code{.extern} is accepted in the source program---for compatibility with other
+assemblers---but it is ignored.  the LLVM integrated assembler treats all
+undefined symbols as external.
 
 @node File
 @section @code{.file}
 @cindex @code{file} directive
-
-@ifclear no-file-dir
-There are two different versions of the @code{.file} directive.  Targets
-that support DWARF2 line number information use the DWARF2 version of
-@code{.file}.  Other targets use the default version.
-
-@subheading Default Version
-
-@cindex logical file name
-@cindex file name, logical
-This version of the @code{.file} directive tells LLVM integrated assembler that we
-are about to start a new logical file.  The syntax is:
-
-@example
-.file @var{string}
-@end example
-
-@var{string} is the new file name.  In general, the filename is
-recognized whether or not it is surrounded by quotes @samp{"}; but if you wish
-to specify an empty file name, you must give the quotes--@code{""}.  This
-statement may go away in future: it is only recognized to be compatible with
-old LLVM integrated assembler programs.
-
-@subheading DWARF2 Version
-@end ifclear
+@cindex @code{.file}
 
 When emitting DWARF2 line number information, @code{.file} assigns filenames
 to the @code{.debug_line} file name table.  The syntax is:
@@ -2829,13 +2680,13 @@ literal.
 
 The detail of filename indices is exposed to the user because the filename
 table is shared with the @code{.debug_info} section of the DWARF2 debugging
-information, and thus the user must know the exact indices that table
-entries will have.
+information, and thus the user must know the exact indices that table entries
+will have.
 
 @node Fill
 @section @code{.fill @var{repeat} , @var{size} , @var{value}}
-
 @cindex @code{fill} directive
+@cindex @code{.fill}
 @cindex writing patterns in memory
 @cindex patterns, writing in memory
 @var{repeat}, @var{size} and @var{value} are absolute expressions.
@@ -2845,7 +2696,7 @@ more than 8, then it is deemed to have the value 8, compatible with
 other people's assemblers.  The contents of each @var{repeat} bytes
 is taken from an 8-byte number.  The highest order 4 bytes are
 zero.  The lowest order 4 bytes are @var{value} rendered in the
-byte-order of an integer on the computer LLVM integrated assembler is assembling for.
+byte-order of an integer on the computer the LLVM integrated assembler is assembling for.
 Each @var{size} bytes in a repetition is taken from the lowest order
 @var{size} bytes of this number.  Again, this bizarre behavior is
 compatible with other people's assemblers.
@@ -2857,31 +2708,18 @@ assumed zero.  If the first comma and following tokens are absent,
 
 @node Float
 @section @code{.float @var{flonums}}
-
-@cindex floating point numbers (single)
 @cindex @code{float} directive
-This directive assembles zero or more flonums, separated by commas.  It
-has the same effect as @code{.single}.
-The exact kind of floating point numbers emitted depends on how
-LLVM integrated assembler is configured.
+@cindex @code{.float}
+@cindex floating point numbers (single)
+This directive assembles zero or more flonums, separated by commas.  It has the
+same effect as @code{.single}.  The exact kind of floating point numbers
+emitted depends on how the LLVM integrated assembler is configured.
 @xref{Machine Dependencies}.
-
-@node Func
-@section @code{.func @var{name}[,@var{label}]}
-@cindex @code{func} directive
-@code{.func} emits debugging information to denote function @var{name}, and
-is ignored unless the file is assembled with debugging enabled.
-Only @samp{--gstabs[+]} is currently supported.
-@var{label} is the entry point of the function and if omitted @var{name}
-prepended with the @samp{leading char} is used.
-@samp{leading char} is usually @code{_} or nothing, depending on the target.
-All functions are currently defined to have @code{void} return type.
-The function must be terminated with @code{.endfunc}.
 
 @node Global
 @section @code{.global @var{symbol}}, @code{.globl @var{symbol}}
-
 @cindex @code{global} directive
+@cindex @code{.global}
 @cindex symbol, making visible to linker
 @code{.global} makes the symbol visible to the linker.  If you define
 @var{symbol} in your partial program, its value is made available to
@@ -2892,14 +2730,10 @@ from another file linked into the same program.
 Both spellings (@samp{.globl} and @samp{.global}) are accepted, for
 compatibility with other assemblers.
 
-@node Gnu_attribute
-@section @code{.gnu_attribute @var{tag},@var{value}}
-Record a @sc{gnu} object attribute for this file.  @xref{Object Attributes}.
-
 @node Hidden
 @section @code{.hidden @var{names}}
-
 @cindex @code{hidden} directive
+@cindex @code{.hidden}
 @cindex visibility
 This is one of the ELF visibility directives.  The other two are
 @code{.internal} (@pxref{Internal,,@code{.internal}}) and
@@ -2910,37 +2744,19 @@ their binding: local, global or weak).  The directive sets the visibility to
 @code{hidden} which means that the symbols are not visible to other components.
 Such symbols are always considered to be @code{protected} as well.
 
-@node hword
-@section @code{.hword @var{expressions}}
-
-@cindex @code{hword} directive
-@cindex integers, 16-bit
-@cindex numbers, 16-bit
-@cindex sixteen bit integers
-This expects zero or more @var{expressions}, and emits
-a 16 bit number for each.
-
-This directive is a synonym for @samp{.short}; depending on the target
-architecture, it may also be a synonym for @samp{.word}.
-
 @node Ident
-@section @code{.ident}
-
+@section @code{.ident} @var{string}
 @cindex @code{ident} directive
-
-This directive is used by some assemblers to place tags in object files.  The
-behavior of this directive varies depending on the target.  When using the
-a.out object file format, LLVM integrated assembler simply accepts the directive for
-source-file compatibility with existing assemblers, but does not emit anything
-for it.  When using COFF, comments are emitted to the @code{.comment} or
-@code{.rdata} section, depending on the target.  When using ELF, comments are
-emitted to the @code{.comment} section.
+@cindex @code{.ident}
+The @var{string} argument is treated as a comment and emitted to the
+@code{.comment} section.
 
 @node If
-@section @code{.if @var{absolute expression}}
+@section @code{.if @var{absolute expression}} and Variants
 
 @cindex conditional assembly
 @cindex @code{if} directive
+@cindex @code{.if}
 @code{.if} marks the beginning of a section of code which is only
 considered part of the source program being assembled if the argument
 (which must be an @var{absolute expression}) is non-zero.  The end of
@@ -2952,99 +2768,115 @@ nesting blocks if/else within each subsequent @code{.else} block.
 
 The following variants of @code{.if} are also supported:
 @table @code
-@cindex @code{ifdef} directive
 @item .ifdef @var{symbol}
+@cindex @code{ifdef} directive
+@cindex @code{.ifdef}
 Assembles the following section of code if the specified @var{symbol}
 has been defined.  Note a symbol which has been referenced but not yet defined
 is considered to be undefined.
 
-@cindex @code{ifb} directive
 @item .ifb @var{text}
+@cindex @code{ifb} directive
+@cindex @code{.ifb}
 Assembles the following section of code if the operand is blank (empty).
 
-@cindex @code{ifc} directive
 @item .ifc @var{string1},@var{string2}
+@cindex @code{ifc} directive
+@cindex @code{.ifc}
 Assembles the following section of code if the two strings are the same.  The
-strings may be optionally quoted with single quotes.  If they are not quoted,
-the first string stops at the first comma, and the second string stops at the
-end of the line.  Strings which contain whitespace should be quoted.  The
-string comparison is case sensitive.
+strings may be optionally @emph{both} quoted with double quotes.  If they are
+not quoted, the first string stops at the first comma, and the second string
+stops at the end of the line.  Strings which contain whitespace should be
+quoted.  The string comparison is case sensitive.
 
-@cindex @code{ifeq} directive
+@emph{Note:}  Unlike the @sc{gnu} assembler, which uses single quotes, the LLVM
+integrated assembler requires double quotes.
+
 @item .ifeq @var{absolute expression}
+@cindex @code{ifeq} directive
+@cindex @code{.ifeq}
 Assembles the following section of code if the argument is zero.
 
-@cindex @code{ifeqs} directive
 @item .ifeqs @var{string1},@var{string2}
+@cindex @code{ifeqs} directive
+@cindex @code{.ifeqs}
 Another form of @code{.ifc}.  The strings must be quoted using double quotes.
 
-@cindex @code{ifge} directive
 @item .ifge @var{absolute expression}
+@cindex @code{ifge} directive
+@cindex @code{.ifge}
 Assembles the following section of code if the argument is greater than or
 equal to zero.
 
-@cindex @code{ifgt} directive
 @item .ifgt @var{absolute expression}
+@cindex @code{ifgt} directive
+@cindex @code{.ifgt}
 Assembles the following section of code if the argument is greater than zero.
 
-@cindex @code{ifle} directive
 @item .ifle @var{absolute expression}
+@cindex @code{ifle} directive
+@cindex @code{.ifle}
 Assembles the following section of code if the argument is less than or equal
 to zero.
 
-@cindex @code{iflt} directive
 @item .iflt @var{absolute expression}
+@cindex @code{iflt} directive
+@cindex @code{.iflt}
 Assembles the following section of code if the argument is less than zero.
 
-@cindex @code{ifnb} directive
 @item .ifnb @var{text}
+@cindex @code{ifnb} directive
+@cindex @code{.ifnb}
 Like @code{.ifb}, but the sense of the test is reversed: this assembles the
 following section of code if the operand is non-blank (non-empty).
 
 @cindex @code{ifnc} directive
+@cindex @code{.ifnc}
 @item .ifnc @var{string1},@var{string2}.
 Like @code{.ifc}, but the sense of the test is reversed: this assembles the
 following section of code if the two strings are not the same.
 
-@cindex @code{ifndef} directive
-@cindex @code{ifnotdef} directive
 @item .ifndef @var{symbol}
 @itemx .ifnotdef @var{symbol}
+@cindex @code{ifndef} directive
+@cindex @code{.ifndef}
+@cindex @code{ifnotdef} directive
+@cindex @code{.ifnotdef}
 Assembles the following section of code if the specified @var{symbol}
 has not been defined.  Both spelling variants are equivalent.  Note a symbol
 which has been referenced but not yet defined is considered to be undefined.
 
-@cindex @code{ifne} directive
 @item .ifne @var{absolute expression}
+@cindex @code{ifne} directive
+@cindex @code{.ifne}
 Assembles the following section of code if the argument is not equal to zero
 (in other words, this is equivalent to @code{.if}).
 
-@cindex @code{ifnes} directive
 @item .ifnes @var{string1},@var{string2}
+@cindex @code{ifnes} directive
+@cindex @code{.ifnes}
 Like @code{.ifeqs}, but the sense of the test is reversed: this assembles the
 following section of code if the two strings are not the same.
 @end table
 
 @node Incbin
-@section @code{.incbin "@var{file}"[,@var{skip}[,@var{count}]]}
-
+@section @code{.incbin "@var{file}"}
 @cindex @code{incbin} directive
+@cindex @code{.incbin}
 @cindex binary files, including
 The @code{incbin} directive includes @var{file} verbatim at the current
 location. You can control the search paths used with the @samp{-I} command-line
 option (@pxref{Invoking,,Command-Line Options}).  Quotation marks are required
 around @var{file}.
 
-The @var{skip} argument skips a number of bytes from the start of the
-@var{file}.  The @var{count} argument indicates the maximum number of bytes to
-read.  Note that the data is not aligned in any way, so it is the user's
-responsibility to make sure that proper alignment is provided both before and
-after the @code{incbin} directive.
+@emph{Note:} Unlike the @sc{gnu} assember, the LLVM integrated assembler does
+not have optional second and third arguments to skip bytes from the start of
+the file, or to specify a maximum number of bytes.
 
 @node Include
 @section @code{.include "@var{file}"}
-
 @cindex @code{include} directive
+@cindex @code{.include}
 @cindex supporting files, including
 @cindex files, including
 This directive provides a way to include supporting files at specified
@@ -3057,34 +2889,33 @@ around @var{file}.
 
 @node Int
 @section @code{.int @var{expressions}}
-
 @cindex @code{int} directive
+@cindex @code{.int}
 @cindex integers, 32-bit
 Expect zero or more @var{expressions}, of any section, separated by commas.
 For each expression, emit a number that, at run time, is the value of that
-expression.  The byte order and bit size of the number depends on what kind
-of target the assembly is for.
-
+expression.  The byte order and bit size of the number is target dependent.
+@xref{Machine Dependencies}.
 
 @node Internal
 @section @code{.internal @var{names}}
-
 @cindex @code{internal} directive
+@cindex @code{.internal}
 @cindex visibility
-This is one of the ELF visibility directives.  The other two are
-@code{.hidden} (@pxref{Hidden,,@code{.hidden}}) and
-@code{.protected} (@pxref{Protected,,@code{.protected}}).
+This is one of the ELF visibility directives.  The other two are @code{.hidden}
+(@pxref{Hidden,,@code{.hidden}}) and @code{.protected}
+(@pxref{Protected,,@code{.protected}}).
 
 This directive overrides the named symbols default visibility (which is set by
 their binding: local, global or weak).  The directive sets the visibility to
 @code{internal} which means that the symbols are considered to be @code{hidden}
-(i.e., not visible to other components), and that some extra, processor specific
-processing must also be performed upon the  symbols as well.
+(i.e., not visible to other components), and that some extra, processor
+specific processing must also be performed upon the symbols as well.
 
 @node Irp
 @section @code{.irp @var{symbol},@var{values}}@dots{}
-
 @cindex @code{irp} directive
+@cindex @code{.irp}
 Evaluate a sequence of statements assigning different values to @var{symbol}.
 The sequence of statements starts at the @code{.irp} directive, and is
 terminated by an @code{.endr} directive.  For each @var{value}, @var{symbol} is
@@ -3113,8 +2944,8 @@ For some caveats with the spelling of @var{symbol}, see also @ref{Macro}.
 
 @node Irpc
 @section @code{.irpc @var{symbol},@var{values}}@dots{}
-
 @cindex @code{irpc} directive
+@cindex @code{.irpc}
 Evaluate a sequence of statements assigning different values to @var{symbol}.
 The sequence of statements starts at the @code{.irpc} directive, and is
 terminated by an @code{.endr} directive.  For each character in @var{value},
@@ -3144,8 +2975,8 @@ at @xref{Macro}.
 
 @node Lcomm
 @section @code{.lcomm @var{symbol} , @var{length}}
-
 @cindex @code{lcomm} directive
+@cindex @code{.lcomm}
 @cindex local common symbols
 @cindex symbols, local common
 Reserve @var{length} (an absolute expression) bytes for a local common
@@ -3158,96 +2989,30 @@ not visible to the linker.
 Some targets permit a third argument to be used with @code{.lcomm}.  This
 argument specifies the desired alignment of the symbol in the bss section.
 
-@node Lflags
-@section @code{.lflags}
-
-@cindex @code{lflags} directive (ignored)
-LLVM integrated assembler accepts this directive, for compatibility with other
-assemblers, but ignores it.
-
-@ifclear no-line-dir
 @node Line
 @section @code{.line @var{line-number}}
-
-@cindex @code{line} directive
+@cindex @code{line} directive (deprecated)
+@cindex @code{.line} (deprecated)
 @cindex logical line number
 Even though this is a directive associated with the @code{a.out} or
-@code{b.out} object-code formats, LLVM integrated assembler still recognizes it
-when producing COFF output, and treats @samp{.line} as though it
-were the COFF @samp{.ln} @emph{if} it is found outside a
-@code{.def}/@code{.endef} pair.
+@code{b.out} object-code formats, the LLVM integrated assembler still recognizes it
+when producing ELF output.
 
-Inside a @code{.def}, @samp{.line} is, instead, one of the directives
-used by compilers to generate auxiliary symbol information for
-debugging.
-@end ifclear
-
-@node Linkonce
-@section @code{.linkonce [@var{type}]}
-@cindex COMDAT
-@cindex @code{linkonce} directive
-@cindex common sections
-Mark the current section so that the linker only includes a single copy of it.
-This may be used to include the same section in several different object files,
-but ensure that the linker will only include it once in the final output file.
-The @code{.linkonce} pseudo-op must be used for each instance of the section.
-Duplicate sections are detected based on the section name, so it should be
-unique.
-
-This directive is only supported by a few object file formats; as of this
-writing, the only object file format which supports it is the Portable
-Executable format used on Windows NT.
-
-The @var{type} argument is optional.  If specified, it must be one of the
-following strings.  For example:
-@example
-.linkonce same_size
-@end example
-Not all types may be supported on all object file formats.
-
-@table @code
-@item discard
-Silently discard duplicate sections.  This is the default.
-
-@item one_only
-Warn if there are duplicate sections, but still keep only one copy.
-
-@item same_size
-Warn if any of the duplicates have different sizes.
-
-@item same_contents
-Warn if any of the duplicates do not have exactly the same contents.
-@end table
-
-@node List
-@section @code{.list}
-
-@cindex @code{list} directive
-@cindex listing control, turning on
-Control (in conjunction with the @code{.nolist} directive) whether or
-not assembly listings are generated.  These two directives maintain an
-internal counter (which is zero initially).   @code{.list} increments the
-counter, and @code{.nolist} decrements it.  Assembly listings are
-generated whenever the counter is greater than zero.
-
-By default, listings are disabled.  When you enable them (with the
-@samp{-a} command line option; @pxref{Invoking,,Command-Line Options}),
-the initial value of the listing counter is one.
+@emph{Note:} This directive is deprecated.  One day @code{.line} will not be
+supported.  Use the @code{.ln} directive instead.  @xref{Ln}.
 
 @node Ln
 @section @code{.ln @var{line-number}}
 
 @cindex @code{ln} directive
-@ifclear no-line-dir
-@samp{.ln} is a synonym for @samp{.line}.
-@end ifclear
-@ifset no-line-dir
-Tell LLVM integrated assembler to change the logical line number.  @var{line-number}
-must be an absolute expression.  The next line has that logical
-line number, so any other statements on the current line (after a
-statement separator character @code{;}) are reported as on logical
-line number @var{line-number} @minus{} 1.
-@end ifset
+@samp{.ln} is a synonym for the deprecated @samp{.line} directive, and should
+be used in preference.
+
+Tell the LLVM integrated assembler to change the logical line number.
+@var{line-number} must be an absolute expression.  The next line has that
+logical line number, so any other statements on the current line (after a
+statement separator character such as @samp{;}) are reported as on logical line
+number @var{line-number} @minus{} 1.
 
 @node Loc
 @section @code{.loc @var{fileno} @var{lineno} [@var{column}] [@var{options}]}
@@ -3289,20 +3054,10 @@ state machine to @var{value}, which must be an unsigned integer.
 
 @end table
 
-@node Loc_mark_labels
-@section @code{.loc_mark_labels @var{enable}}
-@cindex @code{loc_mark_labels} directive
-When emitting DWARF2 line number information,
-the @code{.loc_mark_labels} directive makes the assembler emit an entry
-to the @code{.debug_line} line number matrix with the @code{basic_block}
-register in the state machine set whenever a code label is seen.
-The @var{enable} argument should be either 1 or 0, to enable or disable
-this function respectively.
-
 @node Local
 @section @code{.local @var{names}}
-
 @cindex @code{local} directive
+@cindex @code{.local}
 This directive, which is available for ELF targets, marks each symbol in
 the comma-separated list of @code{names} as a local symbol so that it
 will not be externally visible.  If the symbols do not already exist,
@@ -3315,34 +3070,12 @@ the @code{.local} directive can be used in combination with @code{.comm}
 
 @node Long
 @section @code{.long @var{expressions}}
-
 @cindex @code{long} directive
+@cindex @code{.long}
 @code{.long} is the same as @samp{.int}.  @xref{Int,,@code{.int}}.
 
-@ignore
-@c no one seems to know what this is for or whether this description is
-@c what it really ought to do
-@node Lsym
-@section @code{.lsym @var{symbol}, @var{expression}}
-
-@cindex @code{lsym} directive
-@cindex symbol, not referenced in assembly
-@code{.lsym} creates a new symbol named @var{symbol}, but does not put it in
-the hash table, ensuring it cannot be referenced by name during the
-rest of the assembly.  This sets the attributes of the symbol to be
-the same as the expression value:
-@example
-@var{other} = @var{descriptor} = 0
-@var{type} = @r{(section of @var{expression})}
-@var{value} = @var{expression}
-@end example
-@noindent
-The new symbol is not flagged as external.
-@end ignore
-
 @node Macro
-@section @code{.macro}
-
+@section @code{.macro} and associated directives
 @cindex macros
 The commands @code{.macro} and @code{.endm} allow you to define macros that
 generate assembly output.  For example, this definition specifies a macro
@@ -3373,6 +3106,7 @@ With that definition, @samp{SUM 0,5} is equivalent to this assembly input:
 @item .macro @var{macname}
 @itemx .macro @var{macname} @var{macargs} @dots{}
 @cindex @code{macro} directive
+@cindex @code{.macro}
 Begin the definition of a macro called @var{macname}.  If your macro
 definition requires arguments, specify their names after the macro name,
 separated by commas or spaces.  You can qualify the macro argument to
@@ -3504,36 +3238,16 @@ Exit early from the current macro definition.
 @cindex number of macros executed
 @cindex macros, count executed
 @item \@@
-LLVM integrated assembler maintains a counter of how many macros it has
+the LLVM integrated assembler maintains a counter of how many macros it has
 executed in this pseudo-variable; you can copy that number to your
 output with @samp{\@@}, but @emph{only within a macro definition}.
 
-@item LOCAL @var{name} [ , @dots{} ]
-@emph{Warning: @code{LOCAL} is only available if you select ``alternate
-macro syntax'' with @samp{--alternate} or @code{.altmacro}.}
-@xref{Altmacro,,@code{.altmacro}}.
 @end ftable
-
-@node Noaltmacro
-@section @code{.noaltmacro}
-Disable alternate macro mode.  @xref{Altmacro}.
-
-@node Nolist
-@section @code{.nolist}
-
-@cindex @code{nolist} directive
-@cindex listing control, turning off
-Control (in conjunction with the @code{.list} directive) whether or
-not assembly listings are generated.  These two directives maintain an
-internal counter (which is zero initially).   @code{.list} increments the
-counter, and @code{.nolist} decrements it.  Assembly listings are
-generated whenever the counter is greater than zero.
 
 @node Octa
 @section @code{.octa @var{bignums}}
-
-@c FIXME: double size emitted for "octa" on i960, others?  Or warn?
 @cindex @code{octa} directive
+@cindex @code{.octa}
 @cindex integer, 16-byte
 @cindex sixteen byte integer
 This directive expects zero or more bignums, separated by commas.  For each
@@ -3542,30 +3256,20 @@ bignum, it emits a 16-byte integer.
 The term ``octa'' comes from contexts in which a ``word'' is two bytes;
 hence @emph{octa}-word for 16 bytes.
 
-@node Offset
-@section @code{.offset @var{loc}}
-
-@cindex @code{offset} directive
-Set the location counter to @var{loc} in the absolute section.  @var{loc} must
-be an absolute expression.  This directive may be useful for defining
-symbols with absolute values.  Do not confuse it with the @code{.org}
-directive.
-
 @node Org
 @section @code{.org @var{new-lc} , @var{fill}}
-
 @cindex @code{org} directive
+@cindex @code{.org}
 @cindex location counter, advancing
 @cindex advancing location counter
 @cindex current address, advancing
-Advance the location counter of the current section to
-@var{new-lc}.  @var{new-lc} is either an absolute expression or an
-expression with the same section as the current subsection.  That is,
-you can't use @code{.org} to cross sections: if @var{new-lc} has the
-wrong section, the @code{.org} directive is ignored.  To be compatible
-with former assemblers, if the section of @var{new-lc} is absolute,
-LLVM integrated assembler issues a warning, then pretends the section of @var{new-lc}
-is the same as the current subsection.
+Advance the location counter of the current section to @var{new-lc}.
+@var{new-lc} is either an absolute expression or an expression with the same
+section as the current subsection.  That is, you can't use @code{.org} to cross
+sections: if @var{new-lc} has the wrong section, the @code{.org} directive is
+ignored.  To be compatible with former assemblers, if the section of
+@var{new-lc} is absolute, the LLVM integrated assembler issues a warning, then
+pretends the section of @var{new-lc} is the same as the current subsection.
 
 @code{.org} may only increase the location counter, or leave it
 unchanged; you cannot use @code{.org} to move the location counter
@@ -3574,9 +3278,9 @@ backwards.
 @c double negative used below "not undefined" because this is a specific
 @c reference to "undefined" (as SEG_UNKNOWN is called in this manual)
 @c section. doc@cygnus.com 18feb91
-Because LLVM integrated assembler tries to assemble programs in one pass, @var{new-lc}
-may not be undefined.  If you really detest this restriction we eagerly await
-a chance to share your improved assembler.
+Because the LLVM integrated assembler tries to assemble programs in one pass,
+@var{new-lc} may not be undefined.  If you really detest this restriction we
+eagerly await a chance to share your improved assembler.
 
 Beware that the origin is relative to the start of the section, not
 to the start of the subsection.  This is compatible with other
@@ -3693,7 +3397,7 @@ the top section on the section stack.
 @section @code{.print @var{string}}
 
 @cindex @code{print} directive
-LLVM integrated assembler will print @var{string} on the standard output during
+the LLVM integrated assembler will print @var{string} on the standard output during
 assembly.  You must put @var{string} in double quotes.
 
 @node Protected
@@ -3724,7 +3428,7 @@ If you do not use @code{.psize}, listings use a default line-count
 of 60.  You may omit the comma and @var{columns} specification; the
 default width is 200 columns.
 
-LLVM integrated assembler generates formfeeds whenever the specified number of
+the LLVM integrated assembler generates formfeeds whenever the specified number of
 lines is exceeded (or whenever you explicitly request one, using
 @code{.eject}).
 
@@ -4006,7 +3710,7 @@ numbers of different lengths.  @xref{Machine Dependencies}.
 This directive assembles zero or more flonums, separated by commas.  It
 has the same effect as @code{.float}.
 The exact kind of floating point numbers emitted depends on how
-LLVM integrated assembler is configured.  @xref{Machine Dependencies}.
+the LLVM integrated assembler is configured.  @xref{Machine Dependencies}.
 
 @node Size
 @section @code{.size}
@@ -4183,7 +3887,7 @@ name, @var{name}, will be changed to @var{name2@@@@nodename}.
 @section @code{.text @var{subsection}}
 
 @cindex @code{text} directive
-Tells LLVM integrated assembler to assemble the following statements onto the end of
+Tells the LLVM integrated assembler to assemble the following statements onto the end of
 the text subsection numbered @var{subsection}, which is an absolute
 expression.  If @var{subsection} is omitted, subsection number zero
 is used.
@@ -4368,11 +4072,11 @@ interest to you does 32-bit addressing (or doesn't require it;
 @pxref{Machine Dependencies}), you can ignore this issue.
 
 In order to assemble compiler output into something that works,
-LLVM integrated assembler occasionally does strange things to @samp{.word} directives.
+the LLVM integrated assembler occasionally does strange things to @samp{.word} directives.
 Directives of the form @samp{.word sym1-sym2} are often emitted by
-compilers as part of jump tables.  Therefore, when LLVM integrated assembler assembles a
+compilers as part of jump tables.  Therefore, when the LLVM integrated assembler assembles a
 directive of the form @samp{.word sym1-sym2}, and the difference between
-@code{sym1} and @code{sym2} does not fit in 16 bits, LLVM integrated assembler
+@code{sym1} and @code{sym2} does not fit in 16 bits, the LLVM integrated assembler
 creates a @dfn{secondary jump table}, immediately before the next label.
 This secondary jump table is preceded by a short-jump to the
 first byte after the secondary table.  This short-jump prevents the flow
@@ -4390,7 +4094,7 @@ minus the address of the long-jump to @code{sym4}; and so on, for as many
 entries in the original jump table as necessary.
 
 @ifset INTERNALS
-@emph{This feature may be disabled by compiling LLVM integrated assembler with the
+@emph{This feature may be disabled by compiling the LLVM integrated assembler with the
 @samp{-DWORKING_DOT_WORD} option.} This feature is likely to confuse
 assembly language programmers.
 @end ifset
@@ -4402,168 +4106,156 @@ assembly language programmers.
 @cindex obsolescent directives
 One day these directives won't work.
 They are included for compatibility with older assemblers.
-@table @t
+@table @code
 @item .abort
+@cindex @code{abort} directive (deprecated)
+@cindex @code{.abort} (deprecated)
+Abort assembly.
+
 @item .line
+@cindex @code{linet} directive (deprecated)
+@cindex @code{.linet} (deprecated)
+Set line number.
 @end table
+
+@node Unsupported
+@section Unsupported @sc{gnu} Assembler Directives
+
+@cindex @sc{gnu} assembler directives, unsupported
+@cindex unsupported @sc{gnu} assembler directives
+
+These directives are supported by the @sc{gnu} assembler, but not the LLVM
+integrated assembler.  Code originally intended for the @sc{gnu} assembler will
+need modifying to eliminate the need for these directives.
+
+@table @code
+@item .altmacro
+@cindex @code{altmacro} directive (unsupported)
+@cindex @code{.altmacro} (unsupported)
+Enable alternate macro mode.
+
+@item .cfi_return_column
+@cindex @code{cfi_return_column} directive (unsupported)
+@cindex @code{.cfi_return_column} (unsupported)
+Change return column register.
+
+@item .cfi_val_encoded_addr
+@cindex @code{cfi_val_encoded_addr} directive (unsupported)
+@cindex @code{.cfi_val_encoded_addr} (unsupported)
+Encode value of label in output.
+
+@item .eject
+@cindex @code{eject} directive (unsupported)
+@cindex @code{.eject} (unsupported)
+@cindex new page, in listings
+@cindex page, in listings
+@cindex listing control: new page
+Force a page break when generating listings.
+
+@item .endfunc
+@cindex @code{endfunc} directive (unsupported)
+@cindex @code{.endfunc} (unsupported)
+Marks the end of a function specified with @code{.func}.
+
+@item .eqv
+@cindex @code{eqv} directive (unsupported)
+@cindex @code{.eqv} (unsupported)
+Lazily evaluated version of @code{.equiv}.
+
+@item .fail
+@cindex @code{fail} directive (unsupported)
+@cindex @code{.fail} (unsupported)
+Generates an error or a warning depending on its argument.
+
+@item .func
+@cindex @code{func} directive (unsupported)
+@cindex @code{.func} (unsupported)
+Emit debugging information to denote a function.
+
+@item .gnu_attribute
+@cindex @code{gnu_attribute} directive (unsupported)
+@cindex @code{.gnu_attribute} (unsupported)
+Record a @sc{gnu} object attribute for this file.
+
+@item .hword
+@cindex @code{hword} directive (unsupported)
+@cindex @code{.hword} (unsupported)
+@cindex integers, 16-bit
+@cindex numbers, 16-bit
+@cindex sixteen bit integers
+Emit 16-bit numbers. A synonym for @samp{.short}; depending on the target
+architecture, it may also be a synonym for @samp{.word}.
+
+@item .lflags
+@cindex @code{lflags} directive (unsupported)
+@cindex @code{lflags} (unsupported)
+This option was ignored by the @sc{gnu} assembler anyway.
+
+@item .linkonce
+@cindex COMDAT
+@cindex @code{linkonce} directive (unsupported)
+@cindex @code{.linkonce} (unsupported)
+@cindex common sections
+Mark the current section so that the linker only includes a single copy of it.
+Incompatible with ELF output files.
+
+@item .list
+@cindex @code{list} directive (unsupported)
+@cindex @code{.list} (unsupported)
+@cindex listing control, turning on
+Control whether or not assembly listings are generated.
+
+@item .loc_mark_labels
+@cindex @code{loc_mark_labels} directive (unsupported)
+@cindex @code{.loc_mark_labels} (unsupported)
+Control emission of basic block debug info.
+
+@item LOCAL @var{name} [ , @dots{} ]
+@cindex @code{LOCAL} within macros (unsupported)
+@cindex macros, @code{LOCAL} (unsupported)
+Part of the unsupported ``alternate macro syntax''.
+
+@item .noaltmacro
+@cindex @code{noaltmacro} directive (unsupported)
+@cindex @code{.noaltmacro} (unsupported)
+Disable alternate macro mode, which is no longer supported.
+
+@item .nolist
+@cindex @code{nolist} directive (unsupported)
+@cindex @code{.nolist} (unsupported)
+@cindex listing control, turning off
+Control whether or not assembly listings are generated.
+
+@item .offset
+@cindex @code{offset} directive (unsupported)
+@cindex @code{.offset} (unsupported)
+Set the location counter in the absolute section.
+
+
+@end table
+
 
 @node Object Attributes
 @chapter Object Attributes
 @cindex object attributes
 
-LLVM integrated assembler assembles source files written for a specific architecture
-into object files for that architecture.  But not all object files are alike.
-Many architectures support incompatible variations.  For instance, floating
-point arguments might be passed in floating point registers if the object file
-requires hardware floating point support---or floating point arguments might be
-passed in integer registers if the object file supports processors with no
-hardware floating point unit.  Or, if two objects are built for different
-generations of the same architecture, the combination may require the
-newer generation at run-time.
+@cindex @sc{gnu} object attributes
+Object attributes are a concept introduced by the @sc{gnu} assembler, to
+provide information about architecture variations and compatibility that could
+be of use to the linker.
 
-This information is useful during and after linking.  At link time, the linker
-can warn about incompatible object files.  After link time, tools like
-@command{gdb} can use it to process the linked file correctly.
-
-Compatibility information is recorded as a series of object attributes.  Each
-attribute has a @dfn{vendor}, @dfn{tag}, and @dfn{value}.  The vendor is a
-string, and indicates who sets the meaning of the tag.  The tag is an integer,
-and indicates what property the attribute describes.  The value may be a string
-or an integer, and indicates how the property affects this object.  Missing
-attributes are the same as attributes with a zero value or empty string value.
-
-Object attributes were developed as part of the ABI for the ARM Architecture.
-The file format is documented in @cite{ELF for the ARM Architecture}.
-
-@menu
-* GNU Object Attributes::               @sc{gnu} Object Attributes
-* Defining New Object Attributes::      Defining New Object Attributes
-@end menu
-
-@node GNU Object Attributes
-@section @sc{gnu} Object Attributes
-
-The @code{.gnu_attribute} directive records an object attribute
-with vendor @samp{gnu}.
-
-Except for @samp{Tag_compatibility}, which has both an integer and a string for
-its value, @sc{gnu} attributes have a string value if the tag number is odd and
-an integer value if the tag number is even.  The second bit (@code{@var{tag} &
-2} is set for architecture-independent attributes and clear for
-architecture-dependent ones.
-
-@subsection Common @sc{gnu} attributes
-
-These attributes are valid on all architectures.
-
-@table @r
-@item Tag_compatibility (32)
-The compatibility attribute takes an integer flag value and a vendor name.  If
-the flag value is 0, the file is compatible with other toolchains.  If it is 1,
-then the file is only compatible with the named toolchain.  If it is greater
-than 1, the file can only be processed by other toolchains under some private
-arrangement indicated by the flag value and the vendor name.
-@end table
-
-@subsection AAP Attributes
-
-@table @r
-@item Tag_GNU_MIPS_ABI_FP (4)
-The floating-point ABI used by this object file.  The value will be:
-
-@itemize @bullet
-@item
-0 for files not affected by the floating-point ABI.
-@item
-1 for files using the hardware floating-point ABI with a standard
-double-precision FPU.
-@item
-2 for files using the hardware floating-point ABI with a single-precision FPU.
-@item
-3 for files using the software floating-point ABI.
-@item
-4 for files using the deprecated hardware floating-point ABI which used 64-bit
-floating-point registers, 32-bit general-purpose registers and increased the
-number of callee-saved floating-point registers.
-@item
-5 for files using the hardware floating-point ABI with a double-precision FPU
-with either 32-bit or 64-bit floating-point registers and 32-bit
-general-purpose registers.
-@item
-6 for files using the hardware floating-point ABI with 64-bit floating-point
-registers and 32-bit general-purpose registers.
-@item
-7 for files using the hardware floating-point ABI with 64-bit floating-point
-registers, 32-bit general-purpose registers and a rule that forbids the
-direct use of odd-numbered single-precision floating-point registers.
-@end itemize
-@end table
-
-@subsection PowerPC Attributes
-
-@table @r
-@item Tag_GNU_Power_ABI_FP (4)
-The floating-point ABI used by this object file.  The value will be:
-
-@itemize @bullet
-@item
-0 for files not affected by the floating-point ABI.
-@item
-1 for files using double-precision hardware floating-point ABI.
-@item
-2 for files using the software floating-point ABI.
-@item
-3 for files using single-precision hardware floating-point ABI.
-@end itemize
-
-@item Tag_GNU_Power_ABI_Vector (8)
-The vector ABI used by this object file.  The value will be:
-
-@itemize @bullet
-@item
-0 for files not affected by the vector ABI.
-@item
-1 for files using general purpose registers to pass vectors.
-@item
-2 for files using AltiVec registers to pass vectors.
-@item
-3 for files using SPE registers to pass vectors.
-@end itemize
-@end table
-
-@node Defining New Object Attributes
-@section Defining New Object Attributes
-
-If you want to define a new @sc{gnu} object attribute, here are the places you
-will need to modify.  New attributes should be discussed on the @samp{binutils}
-mailing list.
-
-@itemize @bullet
-@item
-This manual, which is the official register of attributes.
-@item
-The header for your architecture @file{include/elf}, to define the tag.
-@item
-The @file{bfd} support file for your architecture, to merge the attribute
-and issue any appropriate link warnings.
-@item
-Test cases in @file{ld/testsuite} for merging and link warnings.
-@item
-@file{binutils/readelf.c} to display your attribute.
-@item
-GCC, if you want the compiler to mark the attribute automatically.
-@end itemize
+@sc{gnu} object attributes are not supported by the LLVM integrated assembler.
 
 @node Machine Dependencies
 @chapter Machine Dependent Features
 
 @cindex machine dependencies
 The machine instruction sets are (almost by definition) different on
-each machine where LLVM integrated assembler runs.  Floating point representations
-vary as well, and LLVM integrated assembler often supports a few additional
+each machine where the LLVM integrated assembler runs.  Floating point representations
+vary as well, and the LLVM integrated assembler often supports a few additional
 directives or command-line options for compatibility with other
 assemblers on a particular platform.  Finally, some versions of
-LLVM integrated assembler support special pseudo-instructions for branch
+the LLVM integrated assembler support special pseudo-instructions for branch
 optimization.
 
 This chapter discusses most of these differences, though it does not
@@ -4584,12 +4276,12 @@ subject, see the hardware manufacturer's manual.
 @cindex bugs in assembler
 @cindex reporting bugs in assembler
 
-Your bug reports play an essential role in making LLVM integrated assembler reliable.
+Your bug reports play an essential role in making the LLVM integrated assembler reliable.
 
 Reporting a bug may help you by bringing a solution to your problem, or it may
 not.  But in any case the principal function of a bug report is to help the
-entire community by making the next version of LLVM integrated assembler work better.
-Bug reports are your contribution to the maintenance of LLVM integrated assembler.
+entire community by making the next version of the LLVM integrated assembler work better.
+Bug reports are your contribution to the maintenance of the LLVM integrated assembler.
 
 In order for a bug report to serve its purpose, you must include the
 information that enables us to fix the bug.
@@ -4611,21 +4303,21 @@ If you are not sure whether you have found a bug, here are some guidelines:
 @cindex crash of assembler
 @item
 If the assembler gets a fatal signal, for any input whatever, that is a
-LLVM integrated assembler bug.  Reliable assemblers never crash.
+the LLVM integrated assembler bug.  Reliable assemblers never crash.
 
 @cindex error on valid input
 @item
-If LLVM integrated assembler produces an error message for valid input, that is a bug.
+If the LLVM integrated assembler produces an error message for valid input, that is a bug.
 
 @cindex invalid input
 @item
-If LLVM integrated assembler does not produce an error message for invalid input, that
+If the LLVM integrated assembler does not produce an error message for invalid input, that
 is a bug.  However, you should note that your idea of ``invalid input'' might
 be our idea of ``an extension'' or ``support for traditional practice''.
 
 @item
 If you are an experienced user of assemblers, your suggestions for improvement
-of LLVM integrated assembler are welcome in any case.
+of the LLVM integrated assembler are welcome in any case.
 @end itemize
 
 @node Bug Reporting
@@ -4634,7 +4326,7 @@ of LLVM integrated assembler are welcome in any case.
 @cindex assembler bugs, reporting
 
 A number of companies and individuals offer support for @sc{gnu} products.  If
-you obtained LLVM integrated assembler from a support organization, we recommend you
+you obtained the LLVM integrated assembler from a support organization, we recommend you
 contact that organization first.
 
 You can find contact information for many support companies and
@@ -4642,7 +4334,7 @@ individuals in the file @file{etc/SERVICE} in the @sc{gnu} Emacs
 distribution.
 
 @ifset BUGURL
-In any event, we also recommend that you send bug reports for LLVM integrated assembler
+In any event, we also recommend that you send bug reports for the LLVM integrated assembler
 to @value{BUGURL}.
 @end ifset
 
@@ -4673,21 +4365,21 @@ To enable us to fix the bug, you should include all these things:
 
 @itemize @bullet
 @item
-The version of LLVM integrated assembler.  LLVM integrated assembler announces it if you start
+The version of the LLVM integrated assembler.  the LLVM integrated assembler announces it if you start
 it with the @samp{--version} argument.
 
 Without this, we will not know whether there is any point in looking for
-the bug in the current version of LLVM integrated assembler.
+the bug in the current version of the LLVM integrated assembler.
 
 @item
-Any patches you may have applied to the LLVM integrated assembler source.
+Any patches you may have applied to the the LLVM integrated assembler source.
 
 @item
 The type of machine you are using, and the operating system name and
 version number.
 
 @item
-What compiler (and its version) was used to compile LLVM integrated assembler---e.g.
+What compiler (and its version) was used to compile the LLVM integrated assembler---e.g.
 ``@code{gcc-2.7}''.
 
 @item
@@ -4704,21 +4396,21 @@ the assembler is invoked via a compiler, send the assembler source, not the
 high level language source.  Clang/LLVM will produce the assembler source when
 run with the @samp{-S} option.  With Clang/LLVM you can also use the options
 @samp{-v --save-temps}; this will save the assembler source in a file with an
-extension of @file{.s}, and also show you exactly how LLVM integrated assembler
+extension of @file{.s}, and also show you exactly how the LLVM integrated assembler
 is being run.
 
 @item
 A description of what behavior you observe that you believe is
 incorrect.  For example, ``It gets a fatal signal.''
 
-Of course, if the bug is that LLVM integrated assembler gets a fatal signal, then we
+Of course, if the bug is that the LLVM integrated assembler gets a fatal signal, then we
 will certainly notice it.  But if the bug is incorrect output, we might not
 notice unless it is glaringly wrong.  You might as well not give us a chance to
 make a mistake.
 
 Even if the problem you experience is a fatal signal, you should still say so
 explicitly.  Suppose something strange is going on, such as, your copy of
-LLVM integrated assembler is out of sync, or you have encountered a bug in the C
+the LLVM integrated assembler is out of sync, or you have encountered a bug in the C
 library on your system.  (This has happened!)  Your copy might crash and ours
 would not.  If you told us to expect a crash, then when ours fails to crash, we
 would know that the bug was not happening for us.  If you had not told us to
@@ -4726,10 +4418,10 @@ expect a crash, then we would not be able to draw any conclusion from our
 observations.
 
 @item
-If you wish to suggest changes to the LLVM integrated assembler source, send us context
+If you wish to suggest changes to the the LLVM integrated assembler source, send us context
 diffs, as generated by @code{diff} with the @samp{-u}, @samp{-c}, or @samp{-p}
 option.  Always send diffs from the old file to the new file.  If you even
-discuss something in the LLVM integrated assembler source, refer to it by context, not
+discuss something in the the LLVM integrated assembler source, refer to it by context, not
 by line number.
 
 The line numbers in our development sources will not match those in your
@@ -4767,7 +4459,7 @@ the necessary information, such as the test case, on the assumption that
 a patch is all we need.  We might see problems with your patch and decide
 to fix the problem another way, or we might not understand it at all.
 
-Sometimes with a program as complicated as LLVM integrated assembler it is very hard to
+Sometimes with a program as complicated as the LLVM integrated assembler it is very hard to
 construct an example that will make the program follow a certain path through
 the code.  If you do not send us the example, we will not be able to construct
 one, so we will not be able to verify that the bug is fixed.

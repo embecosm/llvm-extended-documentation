@@ -24,8 +24,8 @@ File: llvm-assembler.info,  Node: Top,  Next: Overview,  Up: (dir)
 Using the LLVM integrated assembler
 ***********************************
 
-This file is a user guide to the LLVM integrated assembler
-3.7 version 3.7.
+This file is a user guide to the LLVM integrated assembler version
+3.7.
 
    This document is distributed under the terms of the GNU Free
 Documentation License.  A copy of the license is included in the
@@ -56,57 +56,7 @@ File: llvm-assembler.info,  Node: Overview,  Next: Invoking,  Prev: Top,  Up: To
 Here is a brief summary of how to invoke the LLVM integrated assembler.
 For details, see *note Command-Line Options: Invoking.
 
-     clang [-a[cdghlns][=FILE]]
-      [-|FILES ...]
-
-     _Target AAP options:_
-        [-O[OPTIMIZATION LEVEL]]
-
-`-a[cdghlmns]'
-     Turn on listings, in any of a variety of ways:
-
-    `-ac'
-          omit false conditionals
-
-    `-ad'
-          omit debugging directives
-
-    `-ag'
-          include general information, like assembler version and
-          options passed
-
-    `-ah'
-          include high-level source
-
-    `-al'
-          include assembly
-
-    `-am'
-          include macro expansions
-
-    `-an'
-          omit forms processing
-
-    `-as'
-          include symbols
-
-    `=file'
-          set the name of the listing file
-
-     You may combine these options; for example, use `-aln' for assembly
-     listing without forms processing.  The `=file' option, if used,
-     must be the last one.  By itself, `-a' defaults to `-ahls'.
-
-`-- | FILES ...'
-     Standard input, or source files to assemble.
-
-
-   The following options are available when the LLVM integrated
-assembler is configured for a AAP processor.
-
-`-O OTPIMIZATION LEVEL'
-     Set the optimization level.
-
+     clang -cc1as [OPTIONS] INPUTS
 
 * Menu:
 
@@ -188,28 +138,48 @@ File: llvm-assembler.info,  Node: Command Line,  Next: Input Files,  Prev: Objec
 ================
 
 There is no separate command for running the LLVM integrated assembler.
-The assembler is invoked through the Clang front end to LLVM, by giving
-it assembler source code.  Since the `clang' command supports all LLVM
-target architectures, the desired architecture must be specified
-     clang -march=ARCH ...
+The assembler is automatically invoked for any assembler source file
+from the Clang front end to LLVM.
+     clang ... MYFILE.s
+   The output of the assembly will be controlled by the usual `clang'
+options.  So by default the assembled output will be found in `a.out',
+or if the `-c' flag is specified in MYFILE.o.
+
+   The assembler can be invoked directly through the Clang front end to
+LLVM.
+     clang -cc1as ...
+   In this case only one source file is given, and any assembled output
+is sent to standard output.
+
+   Unless otherwise indiated, clang will use the default architecture.
+This can be changed using the `-target' option.
+     clang -target ARCH ... MYFILE.s
+
    It is common practice to provide a symbolic link from clang to
 architecture specific command name, which then implies use of that
 architecture.
-     ARCH-cc ...
+     ARCH-cc ... MYFILE.s
+
+   If the assembler is invoked directly, then the assembler option to
+specify the target triple must be used. For example:
+     clang -cc1as -triple i686-apple-darwin9
+
+   Note in particular that using -cc1as means any clang options are
+ignored, so
+     ARCH-cc -cc1as ...
+   will invoke the assembler for the default architecture, _not_ the
+ARCH architecture.
 
    After the program name `clang' or `ARC-cc', the command line may
 contain options and file names.  Options may appear in any order, and
-may be before, after, or between file names.  The order of file names is
-significant.
+may be before, after, or between file names.  The order of file names
+is not significant.
 
-   `--' (two hyphens) by itself names the standard input file
-explicitly, as one of the files to be assembled.
-
-   Except for `--' any command line argument that begins with a hyphen
-(`-') is an option.  Each option changes the behavior of the assembler.
-No option changes the way another option works.  An option is a `-'
-followed by one or more letters; the case of the letter is important.
-All options are optional.
+   Any command line argument passed to the assembler that begins with a
+hyphen (`-') is an option.  Each option changes the behavior of the
+assembler.  No option changes the way another option works.  An option
+is a `-' followed by one or more letters; the case of the letter is
+important.  All options are optional.
 
    Some options expect exactly one file name to follow them.  The file
 name may either immediately follow the option's letter (compatible with
@@ -246,6 +216,9 @@ with the suffix `.s' or `.S' will be assembled.  The difference between
 the suffixes is that files ending in `.S' will first be passed through
 the C pre-processor.  For example
      ARCH-cc -c hello.s
+   will assembler the code in `hello.s', while:
+     ARCH-cc -c hello.S
+   will pass `hello.s' through the C pre-processor, then assemble it.
 
    The suffix can be overridden using Clang's `-x' option to specify the
 language of succeeding files on the commmand line.  For the integrated
@@ -254,14 +227,8 @@ and `assembler-with-cpp'.  So for example, the following would ensure
 `hello.s' is passed through the C pre-processor before assembling:
      ARCH-cc -c -x assembler-with-cpp hello.s
 
-   It is possible to invoke just the assembler by passing the argument
-`-cc1as' to Clang.  The assembler does not deduce the architecture from
-the command name, and it needs to be told what type of output to
-produce.  So for example
-     ARCH-cc -cc1as -triple ARCH -filetype obj -o hello.o hello.s
-
-   When used this way, the integrated assembler must be given at most
-one argument to assemble.  It can also be used as a pipe:
+   When invoked directly, the integrated assembler must be given at
+most one argument to assemble.  It can also be used as a pipe:
      ARCH-cc -cc1as -triple ARCH -filetype obj < hello.s > hello.o
 
 Filenames and Line-numbers
@@ -294,10 +261,10 @@ This file is the object file.  Its default name is `a.out'.  You can
 give it another name by using the `-o' option.  Conventionally, object
 file names end with `.o'.  The default name is used for historical
 reasons: older assemblers were capable of assembling self-contained
-programs directly into a runnable program.  (For some formats, this
-isn't currently possible, but it can be done for the `a.out' format.)
+programs directly into a runnable program.  For some formats, this
+isn't currently possible, but it can be done for the `a.out' format.
 
-   The object file is meant for input to the linker.  Clang/LLVM tool
+   The object file is meant to be input to the linker.  Clang/LLVM tool
 chains have considerable choice of linker to use: GNU `ld', GNU `gold',
 the LLVM `mc-linker' and the LLVM linker, `lld'.  The object file
 contains assembled program code, information to help the linker
@@ -319,18 +286,18 @@ flawed program; errors report a grave problem that stops the assembly.
 
    Warning messages have the format
 
-     file_name:NNN:Warning Message Text
+     file_name:NNN:CCC:warning:Warning Message Text
 
-(where NNN is a line number).  If a logical file name has been given
-(*note `.file': File.) it is used for the filename, otherwise the name
-of the current input file is used.  If a logical line number was given
-(*note `.line': Line.)  then it is used to calculate the number printed,
-otherwise the actual line in the current source file is printed.  The
-message text is intended to be self explanatory (in the grand Unix
-tradition).
+(where NNN is a line number and CCC is a character position within the
+line).  If a logical file name has been given (*note `.file': File.) it
+is used for the filename, otherwise the name of the current input file
+is used.  If a logical line number was given (*note `.line': Line.)
+then it is used to calculate the number printed, otherwise the actual
+line in the current source file is printed.  The message text is
+intended to be self explanatory (in the grand Unix tradition).
 
    Error messages have the format
-     file_name:NNN:FATAL:Error Message Text
+     file_name:NNN:CCC:error:Error Message Text
    The file name and line number are derived as for warning messages.
 The actual message text may be rather less explanatory because many of
 them aren't supposed to happen.
@@ -345,26 +312,27 @@ This chapter describes command-line options available in _all_ versions
 of the GNU assembler; see *note Machine Dependencies::, for options
 specific to particular machine architectures.
 
-   If you are invoking the integrated assembler via the Clang/LLVM
-C/C++ compiler, you can use the `-Wa' option to pass arguments through
-to the assembler.  The assembler arguments must be separated from each
-other (and the `-Wa') by commas.  For example:
+   There are three ways to pass options to the assembler.  Some options
+are common to both the C compiler and assembler and can be used "as is".
+     clang MYFILE.S -o MYFILE.o
 
+   If the assembler is invoked automatically by Clang, then options
+specific to the assembler may be passed with either the `-Wa' or
+`-Xassembler' option:
+     clang -Xassembler -compress-debug-sections ... MYFILE.S
+     clang -Wa,-gdwarf-3 ... MYFILE.S
+
+   For `-Wa', multiple options, or arguments to options, should be
+separated by commas:
      ARCH-cc -c -g -O -Wa,-I.,-compress-debug-sections file.c
 
-This passes two options to the assembler: `-I.' (search for include
-files in the current directory) and `-compress-debug-sections'
-(compress DWARF debug sections using zlib).
+   If the assembler is invoked directly, then all options are
+automatically interpreted as assembler options.
+     clang -cc1as -help
 
-   Usually you do not need to use this `-Wa' mechanism, since many
-options are automatically passed to the assembler by the compiler.
-(You can call the GNU compiler driver with the `-v' option to see
-precisely what options it passes to each compilation pass, including
-the assembler.)
-
-   You never need to use `-Wa' if you are invoking the assembler
-directly using `-cc1as'.  Any options are assumed to be assembler
-options.
+   _Note:_  At the time of writing, there are some assembler options
+that can only be passed if the assembler is invoked directly with
+`-cc1as'.
 
 * Menu:
 
@@ -758,21 +726,18 @@ The LLVM integrated assembler internal preprocessor:
    It does not do macro processing, include file handling, or anything
 else you may get from your C compiler's preprocessor.  You can do
 include file processing with the `.include' directive (*note
-`.include': Include.).  You can use the GNU C compiler driver to get
-other "CPP" style preprocessing by giving the input file a `.S' suffix.
-*Note Options Controlling the Kind of Output: (gcc.info)Overall Options.
+`.include': Include.).  You can use Clang to get other "CPP" style
+preprocessing by giving the input file a `.S' suffix.  *Note Input
+Files: Input Files.
 
    Excess whitespace, comments, and character constants cannot be used
 in the portions of the input text that are not preprocessed.
 
-   If the first line of an input file is `#NO_APP' or if you use the
-`-f' option, whitespace and comments are not removed from the input
-file.  Within an input file, you can ask for whitespace and comment
-removal in specific portions of the by putting a line that says `#APP'
-before the text that may contain whitespace or comments, and putting a
-line that says `#NO_APP' after this text.  This feature is mainly
-intend to support `asm' statements in compilers whose output is
-otherwise free of comments and whitespace.
+   Unlike the GNU assembler, `#NO_APP' and `#APP' before the text that
+may contain whitespace or comments, and putting a line that says
+`#NO_APP' after this text.  This feature is mainly intend to support
+`asm' statements in compilers whose output is otherwise free of comments
+and whitespace.
 
 
 File: llvm-assembler.info,  Node: Whitespace,  Next: Comments,  Prev: Preprocessing,  Up: Syntax
@@ -806,9 +771,9 @@ you may not nest these comments.
 
    Anything from a "line comment" character up to the next newline is
 considered a comment and is ignored.  The line comment character is
-target specific, and some targets multiple comment characters.  Some
-targets also have line comment characters that only work if they are
-the first character on a line.  Some targets use a sequence of two
+target specific, and some targets have multiple comment characters.
+Some targets also have line comment characters that only work if they
+are the first character on a line.  Some targets use a sequence of two
 characters to introduce a line comment.  Some targets can also change
 their line comment characters depending upon command line options that
 have been used.  For more details see the _Syntax_ section in the
@@ -832,7 +797,7 @@ the line is ignored.  (Just like a comment.)
      # 42-6 "new_file_name"    # New logical file name
                                # This is logical line # 36.
    This feature is deprecated, and may disappear from future versions
-of LLVM integrated assembler.
+of the LLVM integrated assembler.
 
 
 File: llvm-assembler.info,  Node: Symbol Intro,  Next: Statements,  Prev: Comments,  Up: Syntax
@@ -870,20 +835,21 @@ character of any input file should be a newline.
    An empty statement is allowed, and may include whitespace.  It is
 ignored.
 
-   A statement begins with zero or more labels, optionally followed by a
-key symbol which determines what kind of statement it is.  The key
+   A statement begins with zero or more labels, optionally followed by
+a key symbol which determines what kind of statement it is.  The key
 symbol determines the syntax of the rest of the statement.  If the
 symbol begins with a dot `.' then the statement is an assembler
 directive: typically valid for any computer.  If the symbol begins with
 a letter the statement is an assembly language "instruction": it
 assembles into a machine language instruction.  Different versions of
-LLVM integrated assembler for different computers recognize different
-instructions.  In fact, the same symbol may represent a different
-instruction in a different computer's assembly language.
+the LLVM integrated assembler for different computers recognize
+different instructions.  In fact, the same symbol may represent a
+different instruction in a different computer's assembly language.
 
    A label is a symbol immediately followed by a colon (`:').
-Whitespace before a label or after a colon is permitted, but you may not
-have whitespace between a label's symbol and its colon. *Note Labels::.
+Whitespace before a label or after a colon is permitted, but you may
+not have whitespace between a label's symbol and its colon. *Note
+Labels::.
 
      label:     .directive    followed by something
      another_label:           # This is an empty statement.
@@ -897,7 +863,7 @@ File: llvm-assembler.info,  Node: Constants,  Prev: Statements,  Up: Syntax
 
 A constant is a number, written so that its value is known by
 inspection, without knowing any context.  Like this:
-     .byte  74, 0112, 092, 0x4A, 0X4a, 'J, '\J # All the same value.
+     .byte  74, 0112, 092, 0x4A, 0X4a, 'J', '\J' # All the same value.
      .ascii "Ring the bell\7"                  # A string constant.
      .octa  0x123456789abcdef0123456789ABCDEF0 # A bignum.
      .float 0f-314159265358979323846264338327\
@@ -935,10 +901,11 @@ A "string" is written between double-quotes.  It may contain
 double-quotes or null characters.  The way to get special characters
 into a string is to "escape" these characters: precede them with a
 backslash `\' character.  For example `\\' represents one backslash:
-the first `\' is an escape which tells LLVM integrated assembler to
+the first `\' is an escape which tells the LLVM integrated assembler to
 interpret the second character literally as a backslash (which prevents
-LLVM integrated assembler from recognizing the second `\' as an escape
-character).  The complete list of escapes follows.
+the LLVM integrated assembler from recognizing the second `\' as an
+escape character).  The list of escapes is target and operating system
+specific.  The following list of escapes are commonly recognized.
 
 `\b'
      Mnemonic for backspace; for ASCII this is octal code 010.
@@ -973,18 +940,17 @@ character).  The complete list of escapes follows.
      character, because an unescaped `"' would end the string.
 
 `\ ANYTHING-ELSE'
-     Any other character when escaped by `\' gives a warning, but
-     assembles as if the `\' was not present.  The idea is that if you
-     used an escape sequence you clearly didn't want the literal
-     interpretation of the following character.  However LLVM
-     integrated assembler has no other interpretation, so LLVM
-     integrated assembler knows it is giving you the wrong code and
-     warns you of the fact.
+     Any other character when escaped by `\' assembles as if the `\' was
+     not present.  This is a change in behavior from the GNU assembler,
+     which assumed that if you used an escape sequence you clearly
+     didn't want the literal interpretation of the following character
+     and should be warned.
 
    Which characters are escapable, and what those escapes represent,
-varies widely among assemblers.  The current set is what we think the
-BSD 4.2 assembler recognizes, and is a subset of what most C compilers
-recognize.  If you are in doubt, do not use an escape sequence.
+varies widely among assemblers.  The current set is the set provided in
+the user manual for the GNU assembler, and is a subset of what most C
+compilers recognize.  If you are in doubt, do not use an escape
+sequence.
 
 
 File: llvm-assembler.info,  Node: Chars,  Prev: Strings,  Up: Characters
@@ -992,16 +958,19 @@ File: llvm-assembler.info,  Node: Chars,  Prev: Strings,  Up: Characters
 3.6.1.2 Characters
 ..................
 
-A single character may be written as a single quote immediately
-followed by that character.  The same escapes apply to characters as to
-strings.  So if you want to write the character backslash, you must
-write `'\\' where the first `\' escapes the second `\'.  As you can
-see, the quote is an acute accent, not a grave accent.  A newline
-immediately following an acute accent is taken as a literal character
-and does not count as the end of a statement.  The value of a character
-constant in a numeric expression is the machine's byte-wide code for
-that character.  LLVM integrated assembler assumes your character code
-is ASCII: `'A' means 65, `'B' means 66, and so on.
+A single character should be written as that character surrounded by
+single quotes.  The same escapes apply to characters as to strings.  So
+if you want to write the character backslash, you must write `'\\''
+where the first `\' escapes the second `\'.  As you can see, the quote
+is an acute accent, not a grave accent.  A newline within single quotes
+is taken as a literal character and does not count as the end of a
+statement.  The value of a character constant in a numeric expression
+is the machine's byte-wide code for that character.  The LLVM
+integrated assembler assumes your character code is ASCII: `'A'' means
+65, `'B'' means 66, and so on.
+
+   _Note:_ The GNU assembler used a single quote before a character.
+There was no requirement for the closing quote afterwards.
 
 
 File: llvm-assembler.info,  Node: Numbers,  Prev: Characters,  Up: Constants
@@ -1009,7 +978,7 @@ File: llvm-assembler.info,  Node: Numbers,  Prev: Characters,  Up: Constants
 3.6.2 Number Constants
 ----------------------
 
-LLVM integrated assembler distinguishes three kinds of numbers
+the LLVM integrated assembler distinguishes three kinds of numbers
 according to how they are stored in the target machine.  _Integers_ are
 numbers that would fit into an `int' in the C language.  _Bignums_ are
 integers, but they are stored in more than 32 bits.  _Flonums_ are
@@ -1062,28 +1031,19 @@ File: llvm-assembler.info,  Node: Flonums,  Prev: Bignums,  Up: Numbers
 
 A "flonum" represents a floating point number.  The translation is
 indirect: a decimal floating point number from the text is converted by
-LLVM integrated assembler to a generic binary floating point number of
-more than sufficient precision.  This generic floating point number is
-converted to a particular computer's floating point format (or formats)
-by a portion of LLVM integrated assembler specialized to that computer.
+the LLVM integrated assembler to a generic binary floating point number
+of more than sufficient precision.  This generic floating point number
+is converted to a particular computer's floating point format (or
+formats) by a portion of the LLVM integrated assembler specialized to
+that computer.
 
    A flonum is written by writing (in order)
    * The digit `0'.
 
-   * A letter, to tell LLVM integrated assembler the rest of the number
-     is a flonum.  `e' is recommended.  Case is not important.
-
-     On the H8/300, Renesas / SuperH SH, and AMD 29K architectures, the
-     letter must be one of the letters `DFPRSX' (in upper or lower
-     case).
-
-     On the ARC, the letter must be one of the letters `DFRS' (in upper
-     or lower case).
-
-     On the Intel 960 architecture, the letter must be one of the
-     letters `DFT' (in upper or lower case).
-
-     On the HPPA architecture, the letter must be `E' (upper case only).
+   * A letter, to tell the LLVM integrated assembler the rest of the
+     number is a flonum.  `e' is recommended.  Case is not important.
+     There is architecture specificity here, with different letters
+     having different meanings.
 
    * An optional sign: either `+' or `-'.
 
@@ -1104,9 +1064,9 @@ by a portion of LLVM integrated assembler specialized to that computer.
    At least one of the integer part or the fractional part must be
 present.  The floating point number has the usual base-10 value.
 
-   LLVM integrated assembler does all processing using integers.
+   The LLVM integrated assembler does all processing using integers.
 Flonums are computed independently of any floating point hardware in
-the computer running LLVM integrated assembler.
+the computer running the LLVM integrated assembler.
 
 
 File: llvm-assembler.info,  Node: Sections,  Next: Symbols,  Prev: Syntax,  Up: Top
@@ -1133,14 +1093,14 @@ those addresses is treated the same for some particular purpose.  For
 example there may be a "read only" section.
 
    The linker reads many object files (partial programs) and combines
-their contents to form a runnable program.  When LLVM integrated
+their contents to form a runnable program.  When the LLVM integrated
 assembler emits an object file, the partial program is assumed to start
-at address 0.  the linker assigns the final addresses for the partial
+at address 0.  The linker assigns the final addresses for the partial
 program, so that different partial programs do not overlap.  This is
-actually an oversimplification, but it suffices to explain how LLVM
+actually an oversimplification, but it suffices to explain how the LLVM
 integrated assembler uses sections.
 
-   the linker moves blocks of bytes of your program to their run-time
+   The linker moves blocks of bytes of your program to their run-time
 addresses.  These blocks slide to their run-time addresses as rigid
 units; their length does not change and neither does the order of bytes
 within them.  Such a rigid unit is called a _section_.  Assigning
@@ -1148,24 +1108,23 @@ run-time addresses to sections is called "relocation".  It includes the
 task of adjusting mentions of object-file addresses so they refer to
 the proper run-time addresses.
 
-   An object file written by LLVM integrated assembler has at least
+   An object file written by the LLVM integrated assembler has at least
 three sections, any of which may be empty.  These are named "text",
 "data" and "bss" sections.
 
-   When it generates COFF or ELF output, LLVM integrated assembler can
-also generate whatever other named sections you specify using the
-`.section' directive (*note `.section': Section.).  If you do not use
-any directives that place output in the `.text' or `.data' sections,
-these sections still exist, but are empty.
+   The LLVM integrated assembler can also generate whatever other named
+sections you specify using the `.section' directive (*note `.section':
+Section.).  If you do not use any directives that place output in the
+`.text' or `.data' sections, these sections still exist, but are empty.
 
    Within the object file, the text section starts at address `0', the
 data section follows, and the bss section follows the data section.
 
    To let the linker know which data changes when the sections are
-relocated, and how to change that data, LLVM integrated assembler also
-writes to the object file details of the relocation needed.  To perform
-relocation the linker must know, each time an address in the object
-file is mentioned:
+relocated, and how to change that data, the LLVM integrated assembler
+also writes to the object file details of the relocation needed.  To
+perform relocation the linker must know, each time an address in the
+object file is mentioned:
    * Where in the object file is the beginning of this reference to an
      address?
 
@@ -1177,11 +1136,11 @@ file is mentioned:
 
    * Is the reference to an address "Program-Counter relative"?
 
-   In fact, every address LLVM integrated assembler ever uses is
+   In fact, every address the LLVM integrated assembler ever uses is
 expressed as
      (SECTION) + (OFFSET INTO SECTION)
-   Further, most expressions LLVM integrated assembler computes have
-this section-relative nature.
+   Further, most expressions the LLVM integrated assembler computes
+have this section-relative nature.
 
    In this manual we use the notation {SECNAME N} to mean "offset N
 into section SECNAME."
@@ -1212,7 +1171,7 @@ addresses of all partial programs' text sections.  Likewise for data
 and bss sections.
 
    Some sections are manipulated by the linker; others are invented for
-use of LLVM integrated assembler and have no meaning except during
+use of the LLVM integrated assembler and have no meaning except during
 assembly.
 
 
@@ -1221,17 +1180,17 @@ File: llvm-assembler.info,  Node: Ld Sections,  Next: As Sections,  Prev: Secs B
 4.2 Linker Sections
 ===================
 
-the linker deals with just four kinds of sections, summarized below.
+The linker deals with just four kinds of sections, summarized below.
 
 *named sections*
-     These sections hold your program.  LLVM integrated assembler and
-     the linker treat them as separate but equal sections.  Anything
-     you can say of one section is true of another.  When the program
-     is running, however, it is customary for the text section to be
-     unalterable.  The text section is often shared among processes: it
-     contains instructions, constants and the like.  The data section
-     of a running program is usually alterable: for example, C
-     variables would be stored in the data section.
+     These sections hold your program.  the LLVM integrated assembler
+     and the linker treat them as separate but equal sections.
+     Anything you can say of one section is true of another.  When the
+     program is running, however, it is customary for the text section
+     to be unalterable.  The text section is often shared among
+     processes: it contains instructions, constants and the like.  The
+     data section of a running program is usually alterable: for
+     example, C variables would be stored in the data section.
 
 *bss section*
      This section contains zeroed bytes when your program begins
@@ -1280,13 +1239,14 @@ File: llvm-assembler.info,  Node: As Sections,  Next: Sub-Sections,  Prev: Ld Se
 4.3 Assembler Internal Sections
 ===============================
 
-These sections are meant only for the internal use of LLVM integrated
-assembler.  They have no meaning at run-time.  You do not really need
-to know about these sections for most purposes; but they can be
-mentioned in LLVM integrated assembler warning messages, so it might be
-helpful to have an idea of their meanings to LLVM integrated assembler.
-These sections are used to permit the value of every expression in your
-assembly language program to be a section-relative address.
+These sections are meant only for the internal use of the LLVM
+integrated assembler.  They have no meaning at run-time.  You do not
+really need to know about these sections for most purposes; but they
+can be mentioned in the LLVM integrated assembler warning messages, so
+it might be helpful to have an idea of their meanings to the LLVM
+integrated assembler.  These sections are used to permit the value of
+every expression in your assembly language program to be a
+section-relative address.
 
 ASSEMBLER-INTERNAL-LOGIC-ERROR!
      An internal assembler logic error has been found.  This means
@@ -1305,9 +1265,9 @@ File: llvm-assembler.info,  Node: Sub-Sections,  Next: bss,  Prev: As Sections, 
 
 You may have separate groups of data in named sections that you want to
 end up near to each other in the object file, even though they are not
-contiguous in the assembler source.  LLVM integrated assembler allows
-you to use "subsections" for this purpose.  Within each section, there
-can be numbered subsections with values from 0 to 8192.  Objects
+contiguous in the assembler source.  The LLVM integrated assembler
+allows you to use "subsections" for this purpose.  Within each section,
+there can be numbered subsections with values from 0 to 8192.  Objects
 assembled into the same subsection go into the object file together
 with other objects in the same subsection.  For example, a compiler
 might want to store constants in the text section, but might not want
@@ -1321,7 +1281,7 @@ goes in subsection number zero.
 
    Each subsection is zero-padded up to a multiple of four bytes.
 (Subsections may be padded a different amount on different flavors of
-LLVM integrated assembler.)
+the LLVM integrated assembler.)
 
    Subsections appear in your object file in numeric order, lowest
 numbered to highest.  (All this to be compatible with other people's
@@ -1351,8 +1311,8 @@ expression (*note Expressions::).  If you just say `.text' then `.text
 
    Each section has a "location counter" incremented by one for every
 byte assembled into that section.  Because subsections are merely a
-convenience restricted to LLVM integrated assembler there is no concept
-of a subsection location counter.  There is no way to directly
+convenience restricted to the LLVM integrated assembler there is no
+concept of a subsection location counter.  There is no way to directly
 manipulate a location counter--but the `.align' directive changes it,
 and any label definition captures its current value.  The location
 counter of the section where statements are being assembled is said to
@@ -1375,8 +1335,7 @@ running, all the contents of the bss section are zeroed bytes.
    The `.comm' pseudo-op may be used to declare a common symbol, which
 is another form of uninitialized symbol; see *note `.comm': Comm.
 
-   When assembling for a target which supports multiple sections, such
-as ELF or COFF, you may switch into the `.bss' section and define
+   When assembling you may switch into the `.bss' section and define
 symbols as usual; see *note `.section': Section.  You may only assemble
 zero values into the section.  Typically the section will only contain
 symbol definitions and `.skip' directives (*note `.skip': Skip.).
@@ -1391,9 +1350,9 @@ Symbols are a central concept: the programmer uses symbols to name
 things, the linker uses symbols to link, and the debugger uses symbols
 to debug.
 
-     _Warning:_ LLVM integrated assembler does not place symbols in the
-     object file in the same order they were declared.  This may break
-     some debuggers.
+     _Warning:_ the LLVM integrated assembler does not place symbols in
+     the object file in the same order they were declared.  This may
+     break some debuggers.
 
 * Menu:
 
@@ -1425,7 +1384,8 @@ A symbol can be given an arbitrary value by writing a symbol, followed
 by an equals sign `=', followed by an expression (*note Expressions::).
 This is equivalent to using the `.set' directive.  *Note `.set': Set.
 In the same way, using a double equals sign `='`=' here represents an
-equivalent of the `.eqv' directive.  *Note `.eqv': Eqv.
+equivalent of the unsupported `.eqv' directive.  *Note `.eqv':
+Unsupported.
 
 
 File: llvm-assembler.info,  Node: Symbol Names,  Next: Dot,  Prev: Setting Symbols,  Up: Symbols
@@ -1455,9 +1415,8 @@ Local Symbol Names
 ------------------
 
 A local symbol is any symbol beginning with certain local label
-prefixes.  By default, the local label prefix is `.L' for ELF systems or
-`L' for traditional a.out systems, but each target may have its own set
-of local label prefixes.
+prefixes.  By default, the local label prefix is `.L', but each target
+may have its own set of local label prefixes.
 
    Local symbols are defined and used within the assembler, but they
 are normally not saved in object files.  Thus, they are not visible
@@ -1509,18 +1468,18 @@ names are constructed using these parts:
 
 `_local label prefix_'
      All local symbols begin with the system-specific local label
-     prefix.  Normally both LLVM integrated assembler and the linker
-     forget symbols that start with the local label prefix.  These
-     labels are used for symbols you are never intended to see.  If you
-     use the `-L' option then LLVM integrated assembler retains these
-     symbols in the object file. If you also instruct the linker to
-     retain these symbols, you may use them in debugging.
+     prefix.  Normally both the LLVM integrated assembler and the
+     linker forget symbols that start with the local label prefix.
+     These labels are used for symbols you are never intended to see.
+     If you use the `-L' option then the LLVM integrated assembler
+     retains these symbols in the object file. If you also instruct the
+     linker to retain these symbols, you may use them in debugging.
 
 `NUMBER'
      This is the number that was used in the local label definition.
      So if the label is written `55:' then the number is `55'.
 
-`C-B'
+`Ctrl-B'
      This unusual character is included so you do not accidentally
      invent a symbol of the same name.  The character has ASCII value
      of `\002' (control-B).
@@ -1538,22 +1497,15 @@ names are constructed using these parts:
 Dollar Local Labels
 -------------------
 
-The LLVM integrated assembler also supports an even more local form of
-local labels called dollar labels.  These labels go out of scope (i.e.,
-they become undefined) as soon as a non-local label is defined.  Thus
-they remain valid for only a small region of the input source code.
-Normal local labels, by contrast, remain in scope for the entire file,
-or until they are redefined by another occurrence of the same local
-label.
+Unlike the GNU assembler, the LLVM integrated assembler does not support
+dollar local labels.  These are even more local labels which go out of
+scope (i.e., they become undefined) as soon as a non-local label is
+defined.  They take the same format as ordinary local labels, except
+that they have a dollar sign suffix to their numeric value, e.g.,
+`55$:'.
 
-   Dollar labels are defined in exactly the same way as ordinary local
-labels, except that they have a dollar sign suffix to their numeric
-value, e.g., `55$:'.
-
-   They can also be distinguished from ordinary local labels by their
-transformed names which use ASCII character `\001' (control-A) as the
-magic character to distinguish them from ordinary labels.  For example,
-the fifth definition of `6$' may be named `.L6C-A5'.
+   Assembler source code intended for the GNU assembler will need
+modification if it contains such labels.
 
 
 File: llvm-assembler.info,  Node: Dot,  Next: Symbol Attributes,  Prev: Symbol Names,  Up: Symbols
@@ -1561,7 +1513,7 @@ File: llvm-assembler.info,  Node: Dot,  Next: Symbol Attributes,  Prev: Symbol N
 5.4 The Special Dot Symbol
 ==========================
 
-The special symbol `.' refers to the current address that LLVM
+The special symbol `.' refers to the current address that the LLVM
 integrated assembler is assembling into.  Thus, the expression `melvin:
 .long .' defines `melvin' to contain its own address.  Assigning a
 value to `.' is treated the same as a `.org' directive.  Thus, the
@@ -1577,10 +1529,10 @@ Every symbol has, as well as its name, the attributes "Value" and
 "Type".  Depending on output format, symbols can also have auxiliary
 attributes.
 
-   If you use a symbol without defining it, LLVM integrated assembler
-assumes zero for all these attributes, and probably won't warn you.
-This makes the symbol an externally defined symbol, which is generally
-what you would want.
+   If you use a symbol without defining it, the LLVM integrated
+assembler assumes zero for all these attributes, and probably won't
+warn you.  This makes the symbol an externally defined symbol, which is
+generally what you would want.
 
 * Menu:
 
@@ -1632,11 +1584,11 @@ precede and/or follow an expression.
 
    The result of an expression must be an absolute number, or else an
 offset into a particular section.  If an expression is not absolute,
-and there is not enough information when LLVM integrated assembler sees
-the expression to know its section, a second pass over the source
-program might be necessary to interpret the expression--but the second
-pass is currently not implemented.  LLVM integrated assembler aborts
-with an error message in this situation.
+and there is not enough information when the LLVM integrated assembler
+sees the expression to know its section, a second pass over the source
+program would be necessary to interpret the expression--but no second
+pass is implemented, so the assembler aborts with an error message in
+this situation.
 
 * Menu:
 
@@ -1651,8 +1603,8 @@ File: llvm-assembler.info,  Node: Empty Exprs,  Next: Integer Exprs,  Up: Expres
 
 An empty expression has no value: it is just whitespace or null.
 Wherever an absolute expression is required, you may omit the
-expression, and LLVM integrated assembler assumes a value of (absolute)
-0.  This is compatible with other assemblers.
+expression, and the LLVM integrated assembler assumes a value of
+(absolute) 0.  This is compatible with other assemblers.
 
 
 File: llvm-assembler.info,  Node: Integer Exprs,  Prev: Empty Exprs,  Up: Expressions
@@ -1690,8 +1642,8 @@ complement 32 bit integer.
    Numbers are usually integers.
 
    A number can be a flonum or bignum.  In this case, you are warned
-that only the low order 32 bits are used, and LLVM integrated assembler
-pretends these 32 bits are an integer.  You may write
+that only the low order 32 bits are used, and the LLVM integrated
+assembler pretends these 32 bits are an integer.  You may write
 integer-manipulating instructions that act on exotic constants,
 compatible with other assemblers.
 
@@ -1716,8 +1668,8 @@ File: llvm-assembler.info,  Node: Prefix Ops,  Next: Infix Ops,  Prev: Operators
 6.2.3 Prefix Operator
 ---------------------
 
-LLVM integrated assembler has the following "prefix operators".  They
-each take one argument, which must be absolute.
+the LLVM integrated assembler has the following "prefix operators".
+They each take one argument, which must be absolute.
 
 `-'
      "Negation".  Two's complement negation.
@@ -1833,16 +1785,19 @@ All assembler directives have names that begin with a period (`.').
 The rest of the name is letters, usually in lower case.
 
    This chapter discusses directives that are available regardless of
-the target machine configuration for the GNU assembler.  Some machine
-configurations provide additional directives.  *Note Machine
-Dependencies::.
+the target machine configuration for the LLVM integrated assembler.
+Some machine configurations provide additional directives.  *Note
+Machine Dependencies::.
+
+   _Note:_ While the LLVM integrated assembler strives for
+compatibility with GNU assembler, not all GNU directives are supported.
+Those which are unsupported are listed at the end of this chapter.
+*Note Unsupported::.
 
 * Menu:
 
 * Abort::                       `.abort'
-
 * Align::                       `.align ABS-EXPR , ABS-EXPR'
-* Altmacro::                    `.altmacro'
 * Ascii::                       `.ascii "STRING"'...
 * Asciz::                       `.asciz "STRING"'...
 * Balign::                      `.balign ABS-EXPR , ABS-EXPR'
@@ -1852,58 +1807,39 @@ Dependencies::.
 * Comm::                        `.comm SYMBOL , LENGTH '
 * Data::                        `.data SUBSECTION'
 * Double::                      `.double FLONUMS'
-* Eject::                       `.eject'
 * Else::                        `.else'
 * Elseif::                      `.elseif'
 * End::				`.end'
-
-* Endfunc::                     `.endfunc'
 * Endif::                       `.endif'
+* Endm::                        `.endm'
+* Endr::                        `.endr'
 * Equ::                         `.equ SYMBOL, EXPRESSION'
 * Equiv::                       `.equiv SYMBOL, EXPRESSION'
-* Eqv::                         `.eqv SYMBOL, EXPRESSION'
 * Err::				`.err'
 * Error::			`.error STRING'
 * Exitm::			`.exitm'
 * Extern::                      `.extern'
-* Fail::			`.fail'
 * File::                        `.file'
 * Fill::                        `.fill REPEAT , SIZE , VALUE'
 * Float::                       `.float FLONUMS'
-* Func::                        `.func'
 * Global::                      `.global SYMBOL', `.globl SYMBOL'
-* Gnu_attribute::               `.gnu_attribute TAG,VALUE'
 * Hidden::                      `.hidden NAMES'
-
-* hword::                       `.hword EXPRESSIONS'
 * Ident::                       `.ident'
 * If::                          `.if ABSOLUTE EXPRESSION'
 * Incbin::                      `.incbin "FILE"[,SKIP[,COUNT]]'
 * Include::                     `.include "FILE"'
 * Int::                         `.int EXPRESSIONS'
 * Internal::                    `.internal NAMES'
-
 * Irp::				`.irp SYMBOL,VALUES'...
 * Irpc::			`.irpc SYMBOL,VALUES'...
 * Lcomm::                       `.lcomm SYMBOL , LENGTH'
-* Lflags::                      `.lflags'
-
 * Line::                        `.line LINE-NUMBER'
-
-* Linkonce::			`.linkonce [TYPE]'
-* List::                        `.list'
 * Ln::                          `.ln LINE-NUMBER'
 * Loc::                         `.loc FILENO LINENO'
-* Loc_mark_labels::             `.loc_mark_labels ENABLE'
 * Local::                       `.local NAMES'
-
 * Long::                        `.long EXPRESSIONS'
-
 * Macro::			`.macro NAME ARGS'...
-* Noaltmacro::                  `.noaltmacro'
-* Nolist::                      `.nolist'
 * Octa::                        `.octa BIGNUMS'
-* Offset::			`.offset LOC'
 * Org::                         `.org NEW-LC, FILL'
 * P2align::                     `.p2align ABS-EXPR, ABS-EXPR, ABS-EXPR'
 * PopSection::                  `.popsection'
@@ -1953,6 +1889,7 @@ Dependencies::.
 * Weakref::                     `.weakref ALIAS, SYMBOL'
 * Word::                        `.word EXPRESSIONS'
 * Deprecated::                  Deprecated Directives
+* Unsupported::                 Unsupported GNU Assembler Directives
 
 
 File: llvm-assembler.info,  Node: Abort,  Next: Align,  Up: Pseudo Ops
@@ -1963,11 +1900,14 @@ File: llvm-assembler.info,  Node: Abort,  Next: Align,  Up: Pseudo Ops
 This directive stops the assembly immediately.  It is for compatibility
 with other assemblers.  The original idea was that the assembly
 language source would be piped into the assembler.  If the sender of
-the source quit, it could use this directive tells LLVM integrated
-assembler to quit also.  One day `.abort' will not be supported.
+the source quit, it could use this directive to tell the LLVM
+integrated assembler to quit also.
+
+   _Note:_ This directive is deprecated.  One day `.abort' will not be
+supported.
 
 
-File: llvm-assembler.info,  Node: Align,  Next: Altmacro,  Prev: Abort,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Align,  Next: Ascii,  Prev: Abort,  Up: Pseudo Ops
 
 7.2 `.align ABS-EXPR, ABS-EXPR, ABS-EXPR'
 =========================================
@@ -1991,68 +1931,25 @@ entirely by simply using two commas after the required alignment; this
 can be useful if you want the alignment to be filled with no-op
 instructions when appropriate.
 
-   The way the required alignment is specified varies from system to
-system.  For the arc, hppa, i386 using ELF, i860, iq2000, m68k, or1k,
-s390, sparc, tic4x, tic80 and xtensa, the first expression is the
-alignment request in bytes.  For example `.align 8' advances the
-location counter until it is a multiple of 8.  If the location counter
-is already a multiple of 8, no change is needed.  For the tic54x, the
-first expression is the alignment request in words.
-
-   For other systems, including ppc, i386 using a.out format, arm and
-strongarm, it is the number of low-order zero bits the location counter
-must have after advancement.  For example `.align 3' advances the
-location counter until it a multiple of 8.  If the location counter is
-already a multiple of 8, no change is needed.
+   The way the required alignment is specified is target specific.
+Commonly it is the byte boundary on which to align. Very occasionaly
+the word boundary on which to align. On other systems, it is the number
+of low-order zero bits the location counter must have after
+advancement.  So for example `.align 3' advances the location counter
+until it a multiple of 8.  If the location counter is already a
+multiple of 8, no change is needed.
 
    This inconsistency is due to the different behaviors of the various
-native assemblers for these systems which GAS must emulate.  GAS also
-provides `.balign' and `.p2align' directives, described later, which
-have a consistent behavior across all architectures (but are specific
-to GAS).
+native assemblers for these systems which the LLVM integrated assembler
+aims to emulate. The LLVM integrated assembler also provides `.balign'
+and `.p2align' directives, described later, which have a consistent
+behavior across all architectures (but are specific to the LLVM
+integrated assembler and GNU assembler).
 
 
-File: llvm-assembler.info,  Node: Altmacro,  Next: Ascii,  Prev: Align,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Ascii,  Next: Asciz,  Prev: Align,  Up: Pseudo Ops
 
-7.3 `.altmacro'
-===============
-
-Enable alternate macro mode, enabling:
-
-`LOCAL NAME [ , ... ]'
-     One additional directive, `LOCAL', is available.  It is used to
-     generate a string replacement for each of the NAME arguments, and
-     replace any instances of NAME in each macro expansion.  The
-     replacement string is unique in the assembly, and different for
-     each separate macro expansion.  `LOCAL' allows you to write macros
-     that define symbols, without fear of conflict between separate
-     macro expansions.
-
-`String delimiters'
-     You can write strings delimited in these other ways besides
-     `"STRING"':
-
-    `'STRING''
-          You can delimit strings with single-quote characters.
-
-    `<STRING>'
-          You can delimit strings with matching angle brackets.
-
-`single-character string escape'
-     To include any single character literally in a string (even if the
-     character would otherwise have some special meaning), you can
-     prefix the character with `!' (an exclamation mark).  For example,
-     you can write `<4.3 !> 5.4!!>' to get the literal text `4.3 >
-     5.4!'.
-
-`Expression results as strings'
-     You can write `%EXPR' to evaluate the expression EXPR and use the
-     result as a string.
-
-
-File: llvm-assembler.info,  Node: Ascii,  Next: Asciz,  Prev: Altmacro,  Up: Pseudo Ops
-
-7.4 `.ascii "STRING"'...
+7.3 `.ascii "STRING"'...
 ========================
 
 `.ascii' expects zero or more string literals (*note Strings::)
@@ -2062,7 +1959,7 @@ trailing zero byte) into consecutive addresses.
 
 File: llvm-assembler.info,  Node: Asciz,  Next: Balign,  Prev: Ascii,  Up: Pseudo Ops
 
-7.5 `.asciz "STRING"'...
+7.4 `.asciz "STRING"'...
 ========================
 
 `.asciz' is just like `.ascii', but each string is followed by a zero
@@ -2071,14 +1968,14 @@ byte.  The "z" in `.asciz' stands for "zero".
 
 File: llvm-assembler.info,  Node: Balign,  Next: Bundle directives,  Prev: Asciz,  Up: Pseudo Ops
 
-7.6 `.balign[wl] ABS-EXPR, ABS-EXPR, ABS-EXPR'
+7.5 `.balign[wl] ABS-EXPR, ABS-EXPR, ABS-EXPR'
 ==============================================
 
 Pad the location counter (in the current subsection) to a particular
 storage boundary.  The first expression (which must be absolute) is the
-alignment request in bytes.  For example `.balign 8' advances the
-location counter until it is a multiple of 8.  If the location counter
-is already a multiple of 8, no change is needed.
+alignment request in bytes and must be a power of 2.  For example
+`.balign 8' advances the location counter until it is a multiple of 8.
+If the location counter is already a multiple of 8, no change is needed.
 
    The second expression (also absolute) gives the fill value to be
 stored in the padding bytes.  It (and the comma) may be omitted.  If it
@@ -2107,7 +2004,7 @@ bytes depends upon the endianness of the processor).  If it skips 1 or
 
 File: llvm-assembler.info,  Node: Bundle directives,  Next: Byte,  Prev: Balign,  Up: Pseudo Ops
 
-7.7 `.bundle_align_mode ABS-EXPR'
+7.6 `.bundle_align_mode ABS-EXPR'
 =================================
 
 `.bundle_align_mode' enables or disables "aligned instruction bundle"
@@ -2129,7 +2026,7 @@ at the end of that bundle is filled with no-op instructions so the
 instruction starts in the next bundle.  As a corollary, it's an error
 if any single instruction's encoding is longer than the bundle size.
 
-7.8 `.bundle_lock' and `.bundle_unlock'
+7.7 `.bundle_lock' and `.bundle_unlock'
 =======================================
 
 The `.bundle_lock' and directive `.bundle_unlock' directives allow
@@ -2161,7 +2058,7 @@ by another closing `.bundle_unlock' so that there is the same number of
 
 File: llvm-assembler.info,  Node: Byte,  Next: CFI directives,  Prev: Bundle directives,  Up: Pseudo Ops
 
-7.9 `.byte EXPRESSIONS'
+7.8 `.byte EXPRESSIONS'
 =======================
 
 `.byte' expects zero or more expressions, separated by commas.  Each
@@ -2170,8 +2067,8 @@ expression is assembled into the next byte.
 
 File: llvm-assembler.info,  Node: CFI directives,  Next: Comm,  Prev: Byte,  Up: Pseudo Ops
 
-7.10 `.cfi_sections SECTION_LIST'
-=================================
+7.9 `.cfi_sections SECTION_LIST'
+================================
 
 `.cfi_sections' may be used to specify whether CFI directives should
 emit `.eh_frame' section and/or `.debug_frame' section.  If
@@ -2180,7 +2077,7 @@ SECTION_LIST is `.eh_frame', `.eh_frame' is emitted, if SECTION_LIST is
 `.eh_frame, .debug_frame'.  The default if this directive is not used
 is `.cfi_sections .eh_frame'.
 
-7.11 `.cfi_startproc [simple]'
+7.10 `.cfi_startproc [simple]'
 ==============================
 
 `.cfi_startproc' is used at the beginning of each function that should
@@ -2190,65 +2087,67 @@ structures. Don't forget to close the function by `.cfi_endproc'.
    Unless `.cfi_startproc' is used along with parameter `simple' it
 also emits some architecture dependent initial CFI instructions.
 
-7.12 `.cfi_endproc'
+7.11 `.cfi_endproc'
 ===================
 
 `.cfi_endproc' is used at the end of a function where it closes its
 unwind entry previously opened by `.cfi_startproc', and emits it to
 `.eh_frame'.
 
-7.13 `.cfi_personality ENCODING [, EXP]'
+7.12 `.cfi_personality ENCODING [, EXP]'
 ========================================
 
 `.cfi_personality' defines personality routine and its encoding.
 ENCODING must be a constant determining how the personality should be
-encoded.  If it is 255 (`DW_EH_PE_omit'), second argument is not
-present, otherwise second argument should be a constant or a symbol
-name.  When using indirect encodings, the symbol provided should be the
-location where personality can be loaded from, not the personality
-routine itself.  The default after `.cfi_startproc' is
-`.cfi_personality 0xff', no personality routine.
+encoded.  If it is 255 (`DW_EH_PE_omit'), the second argument should not
+be present, otherwise the second argument should be a symbol name
+(unlike the GNU assembler, a constant is not permitted).  When using
+indirect encodings, the symbol provided should be the location where
+personality can be loaded from, not the personality routine itself.
+The default after `.cfi_startproc' is `.cfi_personality 0xff', no
+personality routine.
 
-7.14 `.cfi_lsda ENCODING [, EXP]'
+7.13 `.cfi_lsda ENCODING [, EXP]'
 =================================
 
 `.cfi_lsda' defines LSDA and its encoding.  ENCODING must be a constant
 determining how the LSDA should be encoded.  If it is 255
-(`DW_EH_PE_omit'), second argument is not present, otherwise second
-argument should be a constant or a symbol name.  The default after
-`.cfi_startproc' is `.cfi_lsda 0xff', no LSDA.
+(`DW_EH_PE_omit'), the second argument should not be present, otherwise
+the second argument should be a symbol name (unlike the GNU assembler, a
+constant is not permitted).  The default after `.cfi_startproc' is
+`.cfi_lsda 0xff', no LSDA.
 
-7.15 `.cfi_def_cfa REGISTER, OFFSET'
+7.14 `.cfi_def_cfa REGISTER, OFFSET'
 ====================================
 
-`.cfi_def_cfa' defines a rule for computing CFA as: take address from
-REGISTER and add OFFSET to it.
+`.cfi_def_cfa' defines a rule for computing CFA as: _take address from
+REGISTER and add OFFSET to it_.
 
-7.16 `.cfi_def_cfa_register REGISTER'
+7.15 `.cfi_def_cfa_register REGISTER'
 =====================================
 
 `.cfi_def_cfa_register' modifies a rule for computing CFA. From now on
 REGISTER will be used instead of the old one. Offset remains the same.
 
-7.17 `.cfi_def_cfa_offset OFFSET'
+7.16 `.cfi_def_cfa_offset OFFSET'
 =================================
 
 `.cfi_def_cfa_offset' modifies a rule for computing CFA. Register
 remains the same, but OFFSET is new. Note that it is the absolute
 offset that will be added to a defined register to compute CFA address.
 
-7.18 `.cfi_adjust_cfa_offset OFFSET'
+7.17 `.cfi_adjust_cfa_offset OFFSET'
 ====================================
 
 Same as `.cfi_def_cfa_offset' but OFFSET is a relative value that is
 added/substracted from the previous offset.
 
-7.19 `.cfi_offset REGISTER, OFFSET'
+7.18 `.cfi_offset REGISTER, OFFSET'
 ===================================
 
 Previous value of REGISTER is saved at offset OFFSET from CFA.
 
-7.20 `.cfi_rel_offset REGISTER, OFFSET'
+7.19 `.cfi_rel_offset REGISTER, OFFSET'
 =======================================
 
 Previous value of REGISTER is saved at offset OFFSET from the current
@@ -2256,78 +2155,61 @@ CFA register.  This is transformed to `.cfi_offset' using the known
 displacement of the CFA register from the CFA.  This is often easier to
 use, because the number will match the code it's annotating.
 
-7.21 `.cfi_register REGISTER1, REGISTER2'
+7.20 `.cfi_register REGISTER1, REGISTER2'
 =========================================
 
 Previous value of REGISTER1 is saved in register REGISTER2.
 
-7.22 `.cfi_restore REGISTER'
+7.21 `.cfi_restore REGISTER'
 ============================
 
 `.cfi_restore' says that the rule for REGISTER is now the same as it
 was at the beginning of the function, after all initial instruction
 added by `.cfi_startproc' were executed.
 
-7.23 `.cfi_undefined REGISTER'
+7.22 `.cfi_undefined REGISTER'
 ==============================
 
 From now on the previous value of REGISTER can't be restored anymore.
 
-7.24 `.cfi_same_value REGISTER'
+7.23 `.cfi_same_value REGISTER'
 ===============================
 
-Current value of REGISTER is the same like in the previous frame, i.e.
-no restoration needed.
+Current value of REGISTER is the same as in the previous frame, i.e. no
+restoration needed.
 
-7.25 `.cfi_remember_state',
-===========================
+7.24 `.cfi_remember_state' and `.cfi_restore_state',
+====================================================
 
-First save all current rules for all registers by `.cfi_remember_state',
-then totally screw them up by subsequent `.cfi_*' directives and when
-everything is hopelessly bad, use `.cfi_restore_state' to restore the
-previous saved state.
+Use `.cfi_remember_state' to save all current rules for all registers.
+If you then totally screw them up by subsequent `.cfi_*' directives you
+can use `.cfi_restore_state' to restore the previous saved state.
 
-7.26 `.cfi_return_column REGISTER'
-==================================
-
-Change return column REGISTER, i.e. the return address is either
-directly in REGISTER or can be accessed by rules for REGISTER.
-
-7.27 `.cfi_signal_frame'
+7.25 `.cfi_signal_frame'
 ========================
 
-Mark current function as signal trampoline.
+Mark current function as signal handler.
 
-7.28 `.cfi_window_save'
+7.26 `.cfi_window_save'
 =======================
 
-SPARC register window has been saved.
+Save a complete register window.  This directive is generically
+recognized, but its function, if any, is unclear, since few
+architectures now support register windows.  SPARC is an example of
+such an architecture.
 
-7.29 `.cfi_escape' EXPRESSION[, ...]
+7.27 `.cfi_escape' EXPRESSION[, ...]
 ====================================
 
 Allows the user to add arbitrary bytes to the unwind info.  One might
 use this to add OS-specific CFI opcodes, or generic CFI opcodes that
-GAS does not yet support.
-
-7.30 `.cfi_val_encoded_addr REGISTER, ENCODING, LABEL'
-======================================================
-
-The current value of REGISTER is LABEL.  The value of LABEL will be
-encoded in the output file according to ENCODING; see the description
-of `.cfi_personality' for details on this encoding.
-
-   The usefulness of equating a register to a fixed label is probably
-limited to the return address register.  Here, it can be useful to mark
-a code segment that has only one return address which is reached by a
-direct branch and no copy of the return address exists in memory or
-another register.
+the LLVM integrated assembler does not yet support.
 
 
 File: llvm-assembler.info,  Node: Comm,  Next: Data,  Prev: CFI directives,  Up: Pseudo Ops
 
-7.31 `.comm SYMBOL , LENGTH '
-=============================
+7.28 `.comm SYMBOL, LENGTH [, ALIGNMENT]'
+=========================================
 
 `.comm' declares a common symbol named SYMBOL.  When linking, a common
 symbol in one object file may be merged with a defined or common symbol
@@ -2338,119 +2220,110 @@ absolute expression.  If the linker sees multiple common symbols with
 the same name, and they do not all have the same size, it will allocate
 space using the largest size.
 
-   When using ELF or (as a GNU extension) PE, the `.comm' directive
-takes an optional third argument.  This is the desired alignment of the
-symbol, specified for ELF as a byte boundary (for example, an alignment
-of 16 means that the least significant 4 bits of the address should be
-zero), and for PE as a power of two (for example, an alignment of 5
-means aligned to a 32-byte boundary).  The alignment must be an
-absolute expression, and it must be a power of two.  If the linker
-allocates uninitialized memory for the common symbol, it will use the
-alignment when placing the symbol.  If no alignment is specified, LLVM
+   The `.comm' directive takes an optional third argument.  This is the
+desired alignment of the symbol, specified as a byte boundary (for
+example, an alignment of 16 means that the least significant 4 bits of
+the address should be zero).  The alignment must be an absolute
+expression, and it must be a power of two.  If the linker allocates
+uninitialized memory for the common symbol, it will use the alignment
+when placing the symbol.  If no alignment is specified, the LLVM
 integrated assembler will set the alignment to the largest power of two
-less than or equal to the size of the symbol, up to a maximum of 16 on
-ELF, or the default section alignment of 4 on PE(1).
-
-   ---------- Footnotes ----------
-
-   (1) This is not the same as the executable image file alignment
-controlled by the linker's `--section-alignment' option; image file
-sections in PE are aligned to multiples of 4096, which is far too large
-an alignment for ordinary variables.  It is rather the default
-alignment for (non-debug) sections within object (`*.o') files, which
-are less strictly aligned.
+less than or equal to the size of the symbol, up to a maximum of 16.
 
 
 File: llvm-assembler.info,  Node: Data,  Next: Double,  Prev: Comm,  Up: Pseudo Ops
 
-7.32 `.data SUBSECTION'
+7.29 `.data SUBSECTION'
 =======================
 
-`.data' tells LLVM integrated assembler to assemble the following
+`.data' tells the LLVM integrated assembler to assemble the following
 statements onto the end of the data subsection numbered SUBSECTION
 (which is an absolute expression).  If SUBSECTION is omitted, it
 defaults to zero.
 
 
-File: llvm-assembler.info,  Node: Double,  Next: Eject,  Prev: Data,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Double,  Next: Else,  Prev: Data,  Up: Pseudo Ops
 
-7.33 `.double FLONUMS'
+7.30 `.double FLONUMS'
 ======================
 
 `.double' expects zero or more flonums, separated by commas.  It
 assembles floating point numbers.  The exact kind of floating point
-numbers emitted depends on how LLVM integrated assembler is configured.
-*Note Machine Dependencies::.
+numbers emitted depends on how the LLVM integrated assembler is
+configured.  *Note Machine Dependencies::.
 
 
-File: llvm-assembler.info,  Node: Eject,  Next: Else,  Prev: Double,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Else,  Next: Elseif,  Prev: Double,  Up: Pseudo Ops
 
-7.34 `.eject'
-=============
-
-Force a page break at this point, when generating assembly listings.
-
-
-File: llvm-assembler.info,  Node: Else,  Next: Elseif,  Prev: Eject,  Up: Pseudo Ops
-
-7.35 `.else'
+7.31 `.else'
 ============
 
-`.else' is part of the LLVM integrated assembler support for conditional
-assembly; see *note `.if': If.  It marks the beginning of a section of
-code to be assembled if the condition for the preceding `.if' was false.
+`.else' is part of the the LLVM integrated assembler support for
+conditional assembly; see *note `.if': If.  It marks the beginning of a
+section of code to be assembled if the condition for the preceding `.if'
+was false.
 
 
 File: llvm-assembler.info,  Node: Elseif,  Next: End,  Prev: Else,  Up: Pseudo Ops
 
-7.36 `.elseif'
+7.32 `.elseif'
 ==============
 
-`.elseif' is part of the LLVM integrated assembler support for
+`.elseif' is part of the the LLVM integrated assembler support for
 conditional assembly; see *note `.if': If.  It is shorthand for
-beginning a new `.if' block that would otherwise fill the entire
-`.else' section.
+beginning a new `.if' block that would otherwise fill the entire `.else'
+section.
 
 
-File: llvm-assembler.info,  Node: End,  Next: Endfunc,  Prev: Elseif,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: End,  Next: Endif,  Prev: Elseif,  Up: Pseudo Ops
 
-7.37 `.end'
+7.33 `.end'
 ===========
 
-`.end' marks the end of the assembly file.  LLVM integrated assembler
-does not process anything in the file past the `.end' directive.
+`.end' marks the end of the assembly file.  The LLVM integrated
+assembler does not process anything in the file past the `.end'
+directive.
 
 
-File: llvm-assembler.info,  Node: Endfunc,  Next: Endif,  Prev: End,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Endif,  Next: Endm,  Prev: End,  Up: Pseudo Ops
 
-7.38 `.endfunc'
-===============
-
-`.endfunc' marks the end of a function specified with `.func'.
-
-
-File: llvm-assembler.info,  Node: Endif,  Next: Equ,  Prev: Endfunc,  Up: Pseudo Ops
-
-7.39 `.endif'
+7.34 `.endif'
 =============
 
-`.endif' is part of the LLVM integrated assembler support for
+`.endif' is part of the the LLVM integrated assembler support for
 conditional assembly; it marks the end of a block of code that is only
 assembled conditionally.  *Note `.if': If.
 
 
-File: llvm-assembler.info,  Node: Equ,  Next: Equiv,  Prev: Endif,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Endm,  Next: Endr,  Prev: Endif,  Up: Pseudo Ops
 
-7.40 `.equ SYMBOL, EXPRESSION'
+7.35 `.endm'
+============
+
+End the current macro definition.  *Note Macro::.
+
+
+File: llvm-assembler.info,  Node: Endr,  Next: Equ,  Prev: Endm,  Up: Pseudo Ops
+
+7.36 `.endr'
+============
+
+End the current `.irp' or `.irpc' definition.  *Note Irp::.  *Note
+Irpc::.
+
+
+File: llvm-assembler.info,  Node: Equ,  Next: Equiv,  Prev: Endr,  Up: Pseudo Ops
+
+7.37 `.equ SYMBOL, EXPRESSION'
 ==============================
 
 This directive sets the value of SYMBOL to EXPRESSION.  It is
-synonymous with `.set'; see *note `.set': Set.
+synonymous with `.set'. *Note `.set': Set.
 
 
-File: llvm-assembler.info,  Node: Equiv,  Next: Eqv,  Prev: Equ,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Equiv,  Next: Err,  Prev: Equ,  Up: Pseudo Ops
 
-7.41 `.equiv SYMBOL, EXPRESSION'
+7.38 `.equiv SYMBOL, EXPRESSION'
 ================================
 
 The `.equiv' directive is like `.equ' and `.set', except that the
@@ -2467,31 +2340,20 @@ equivalent to
    plus it protects the symbol from later redefinition.
 
 
-File: llvm-assembler.info,  Node: Eqv,  Next: Err,  Prev: Equiv,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Err,  Next: Error,  Prev: Equiv,  Up: Pseudo Ops
 
-7.42 `.eqv SYMBOL, EXPRESSION'
-==============================
-
-The `.eqv' directive is like `.equiv', but no attempt is made to
-evaluate the expression or any part of it immediately.  Instead each
-time the resulting symbol is used in an expression, a snapshot of its
-current value is taken.
-
-
-File: llvm-assembler.info,  Node: Err,  Next: Error,  Prev: Eqv,  Up: Pseudo Ops
-
-7.43 `.err'
+7.39 `.err'
 ===========
 
-If LLVM integrated assembler assembles a `.err' directive, it will
-print an error message and, unless the `-Z' option was used, it will
-not generate an object file.  This can be used to signal an error in
+If the LLVM integrated assembler assembles a `.err' directive, it will
+print an error message and, unless the `-Z' option was used, it will not
+generate an object file.  This can be used to signal an error in
 conditionally compiled code.
 
 
 File: llvm-assembler.info,  Node: Error,  Next: Exitm,  Prev: Err,  Up: Pseudo Ops
 
-7.44 `.error "STRING"'
+7.40 `.error "STRING"'
 ======================
 
 Similarly to `.err', this directive emits an error, but you can specify
@@ -2504,60 +2366,26 @@ source file"'.  *Note Error and Warning Messages: Errors.
 
 File: llvm-assembler.info,  Node: Exitm,  Next: Extern,  Prev: Error,  Up: Pseudo Ops
 
-7.45 `.exitm'
+7.41 `.exitm'
 =============
 
 Exit early from the current macro definition.  *Note Macro::.
 
 
-File: llvm-assembler.info,  Node: Extern,  Next: Fail,  Prev: Exitm,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Extern,  Next: File,  Prev: Exitm,  Up: Pseudo Ops
 
-7.46 `.extern'
+7.42 `.extern'
 ==============
 
 `.extern' is accepted in the source program--for compatibility with
-other assemblers--but it is ignored.  LLVM integrated assembler treats
-all undefined symbols as external.
+other assemblers--but it is ignored.  the LLVM integrated assembler
+treats all undefined symbols as external.
 
 
-File: llvm-assembler.info,  Node: Fail,  Next: File,  Prev: Extern,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: File,  Next: Fill,  Prev: Extern,  Up: Pseudo Ops
 
-7.47 `.fail EXPRESSION'
-=======================
-
-Generates an error or a warning.  If the value of the EXPRESSION is 500
-or more, LLVM integrated assembler will print a warning message.  If
-the value is less than 500, LLVM integrated assembler will print an
-error message.  The message will include the value of EXPRESSION.  This
-can occasionally be useful inside complex nested macros or conditional
-assembly.
-
-
-File: llvm-assembler.info,  Node: File,  Next: Fill,  Prev: Fail,  Up: Pseudo Ops
-
-7.48 `.file'
+7.43 `.file'
 ============
-
-There are two different versions of the `.file' directive.  Targets
-that support DWARF2 line number information use the DWARF2 version of
-`.file'.  Other targets use the default version.
-
-Default Version
----------------
-
-This version of the `.file' directive tells LLVM integrated assembler
-that we are about to start a new logical file.  The syntax is:
-
-     .file STRING
-
-   STRING is the new file name.  In general, the filename is recognized
-whether or not it is surrounded by quotes `"'; but if you wish to
-specify an empty file name, you must give the quotes-`""'.  This
-statement may go away in future: it is only recognized to be compatible
-with old LLVM integrated assembler programs.
-
-DWARF2 Version
---------------
 
 When emitting DWARF2 line number information, `.file' assigns filenames
 to the `.debug_line' file name table.  The syntax is:
@@ -2576,7 +2404,7 @@ that table entries will have.
 
 File: llvm-assembler.info,  Node: Fill,  Next: Float,  Prev: File,  Up: Pseudo Ops
 
-7.49 `.fill REPEAT , SIZE , VALUE'
+7.44 `.fill REPEAT , SIZE , VALUE'
 ==================================
 
 REPEAT, SIZE and VALUE are absolute expressions.  This emits REPEAT
@@ -2585,44 +2413,30 @@ more, but if it is more than 8, then it is deemed to have the value 8,
 compatible with other people's assemblers.  The contents of each REPEAT
 bytes is taken from an 8-byte number.  The highest order 4 bytes are
 zero.  The lowest order 4 bytes are VALUE rendered in the byte-order of
-an integer on the computer LLVM integrated assembler is assembling for.
-Each SIZE bytes in a repetition is taken from the lowest order SIZE
-bytes of this number.  Again, this bizarre behavior is compatible with
-other people's assemblers.
+an integer on the computer the LLVM integrated assembler is assembling
+for.  Each SIZE bytes in a repetition is taken from the lowest order
+SIZE bytes of this number.  Again, this bizarre behavior is compatible
+with other people's assemblers.
 
    SIZE and VALUE are optional.  If the second comma and VALUE are
 absent, VALUE is assumed zero.  If the first comma and following tokens
 are absent, SIZE is assumed to be 1.
 
 
-File: llvm-assembler.info,  Node: Float,  Next: Func,  Prev: Fill,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Float,  Next: Global,  Prev: Fill,  Up: Pseudo Ops
 
-7.50 `.float FLONUMS'
+7.45 `.float FLONUMS'
 =====================
 
 This directive assembles zero or more flonums, separated by commas.  It
 has the same effect as `.single'.  The exact kind of floating point
-numbers emitted depends on how LLVM integrated assembler is configured.
-*Note Machine Dependencies::.
+numbers emitted depends on how the LLVM integrated assembler is
+configured.  *Note Machine Dependencies::.
 
 
-File: llvm-assembler.info,  Node: Func,  Next: Global,  Prev: Float,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Global,  Next: Hidden,  Prev: Float,  Up: Pseudo Ops
 
-7.51 `.func NAME[,LABEL]'
-=========================
-
-`.func' emits debugging information to denote function NAME, and is
-ignored unless the file is assembled with debugging enabled.  Only
-`--gstabs[+]' is currently supported.  LABEL is the entry point of the
-function and if omitted NAME prepended with the `leading char' is used.
-`leading char' is usually `_' or nothing, depending on the target.  All
-functions are currently defined to have `void' return type.  The
-function must be terminated with `.endfunc'.
-
-
-File: llvm-assembler.info,  Node: Global,  Next: Gnu_attribute,  Prev: Func,  Up: Pseudo Ops
-
-7.52 `.global SYMBOL', `.globl SYMBOL'
+7.46 `.global SYMBOL', `.globl SYMBOL'
 ======================================
 
 `.global' makes the symbol visible to the linker.  If you define SYMBOL
@@ -2635,17 +2449,9 @@ the same program.
 compatibility with other assemblers.
 
 
-File: llvm-assembler.info,  Node: Gnu_attribute,  Next: Hidden,  Prev: Global,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Hidden,  Next: Ident,  Prev: Global,  Up: Pseudo Ops
 
-7.53 `.gnu_attribute TAG,VALUE'
-===============================
-
-Record a GNU object attribute for this file.  *Note Object Attributes::.
-
-
-File: llvm-assembler.info,  Node: Hidden,  Next: hword,  Prev: Gnu_attribute,  Up: Pseudo Ops
-
-7.54 `.hidden NAMES'
+7.47 `.hidden NAMES'
 ====================
 
 This is one of the ELF visibility directives.  The other two are
@@ -2659,37 +2465,19 @@ to other components.  Such symbols are always considered to be
 `protected' as well.
 
 
-File: llvm-assembler.info,  Node: hword,  Next: Ident,  Prev: Hidden,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Ident,  Next: If,  Prev: Hidden,  Up: Pseudo Ops
 
-7.55 `.hword EXPRESSIONS'
-=========================
+7.48 `.ident' STRING
+====================
 
-This expects zero or more EXPRESSIONS, and emits a 16 bit number for
-each.
-
-   This directive is a synonym for `.short'; depending on the target
-architecture, it may also be a synonym for `.word'.
-
-
-File: llvm-assembler.info,  Node: Ident,  Next: If,  Prev: hword,  Up: Pseudo Ops
-
-7.56 `.ident'
-=============
-
-This directive is used by some assemblers to place tags in object
-files.  The behavior of this directive varies depending on the target.
-When using the a.out object file format, LLVM integrated assembler
-simply accepts the directive for source-file compatibility with
-existing assemblers, but does not emit anything for it.  When using
-COFF, comments are emitted to the `.comment' or `.rdata' section,
-depending on the target.  When using ELF, comments are emitted to the
+The STRING argument is treated as a comment and emitted to the
 `.comment' section.
 
 
 File: llvm-assembler.info,  Node: If,  Next: Incbin,  Prev: Ident,  Up: Pseudo Ops
 
-7.57 `.if ABSOLUTE EXPRESSION'
-==============================
+7.49 `.if ABSOLUTE EXPRESSION' and Variants
+===========================================
 
 `.if' marks the beginning of a section of code which is only considered
 part of the source program being assembled if the argument (which must
@@ -2712,11 +2500,14 @@ each subsequent `.else' block.
 
 `.ifc STRING1,STRING2'
      Assembles the following section of code if the two strings are the
-     same.  The strings may be optionally quoted with single quotes.
-     If they are not quoted, the first string stops at the first comma,
-     and the second string stops at the end of the line.  Strings which
-     contain whitespace should be quoted.  The string comparison is
-     case sensitive.
+     same.  The strings may be optionally _both_ quoted with double
+     quotes.  If they are not quoted, the first string stops at the
+     first comma, and the second string stops at the end of the line.
+     Strings which contain whitespace should be quoted.  The string
+     comparison is case sensitive.
+
+     _Note:_  Unlike the GNU assembler, which uses single quotes, the
+     LLVM integrated assembler requires double quotes.
 
 `.ifeq ABSOLUTE EXPRESSION'
      Assembles the following section of code if the argument is zero.
@@ -2769,24 +2560,22 @@ each subsequent `.else' block.
 
 File: llvm-assembler.info,  Node: Incbin,  Next: Include,  Prev: If,  Up: Pseudo Ops
 
-7.58 `.incbin "FILE"[,SKIP[,COUNT]]'
-====================================
+7.50 `.incbin "FILE"'
+=====================
 
 The `incbin' directive includes FILE verbatim at the current location.
 You can control the search paths used with the `-I' command-line option
 (*note Command-Line Options: Invoking.).  Quotation marks are required
 around FILE.
 
-   The SKIP argument skips a number of bytes from the start of the
-FILE.  The COUNT argument indicates the maximum number of bytes to
-read.  Note that the data is not aligned in any way, so it is the user's
-responsibility to make sure that proper alignment is provided both
-before and after the `incbin' directive.
+   _Note:_ Unlike the GNU assember, the LLVM integrated assembler does
+not have optional second and third arguments to skip bytes from the
+start of the file, or to specify a maximum number of bytes.
 
 
 File: llvm-assembler.info,  Node: Include,  Next: Int,  Prev: Incbin,  Up: Pseudo Ops
 
-7.59 `.include "FILE"'
+7.51 `.include "FILE"'
 ======================
 
 This directive provides a way to include supporting files at specified
@@ -2800,18 +2589,18 @@ FILE.
 
 File: llvm-assembler.info,  Node: Int,  Next: Internal,  Prev: Include,  Up: Pseudo Ops
 
-7.60 `.int EXPRESSIONS'
+7.52 `.int EXPRESSIONS'
 =======================
 
 Expect zero or more EXPRESSIONS, of any section, separated by commas.
 For each expression, emit a number that, at run time, is the value of
-that expression.  The byte order and bit size of the number depends on
-what kind of target the assembly is for.
+that expression.  The byte order and bit size of the number is target
+dependent.  *Note Machine Dependencies::.
 
 
 File: llvm-assembler.info,  Node: Internal,  Next: Irp,  Prev: Int,  Up: Pseudo Ops
 
-7.61 `.internal NAMES'
+7.53 `.internal NAMES'
 ======================
 
 This is one of the ELF visibility directives.  The other two are
@@ -2823,12 +2612,12 @@ is set by their binding: local, global or weak).  The directive sets
 the visibility to `internal' which means that the symbols are
 considered to be `hidden' (i.e., not visible to other components), and
 that some extra, processor specific processing must also be performed
-upon the  symbols as well.
+upon the symbols as well.
 
 
 File: llvm-assembler.info,  Node: Irp,  Next: Irpc,  Prev: Internal,  Up: Pseudo Ops
 
-7.62 `.irp SYMBOL,VALUES'...
+7.54 `.irp SYMBOL,VALUES'...
 ============================
 
 Evaluate a sequence of statements assigning different values to SYMBOL.
@@ -2856,7 +2645,7 @@ statements, use \SYMBOL.
 
 File: llvm-assembler.info,  Node: Irpc,  Next: Lcomm,  Prev: Irp,  Up: Pseudo Ops
 
-7.63 `.irpc SYMBOL,VALUES'...
+7.55 `.irpc SYMBOL,VALUES'...
 =============================
 
 Evaluate a sequence of statements assigning different values to SYMBOL.
@@ -2883,9 +2672,9 @@ within the sequence of statements, use \SYMBOL.
 at *Note Macro::.
 
 
-File: llvm-assembler.info,  Node: Lcomm,  Next: Lflags,  Prev: Irpc,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Lcomm,  Next: Line,  Prev: Irpc,  Up: Pseudo Ops
 
-7.64 `.lcomm SYMBOL , LENGTH'
+7.56 `.lcomm SYMBOL , LENGTH'
 =============================
 
 Reserve LENGTH (an absolute expression) bytes for a local common
@@ -2900,91 +2689,37 @@ argument specifies the desired alignment of the symbol in the bss
 section.
 
 
-File: llvm-assembler.info,  Node: Lflags,  Next: Line,  Prev: Lcomm,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Line,  Next: Ln,  Prev: Lcomm,  Up: Pseudo Ops
 
-7.65 `.lflags'
-==============
-
-LLVM integrated assembler accepts this directive, for compatibility
-with other assemblers, but ignores it.
-
-
-File: llvm-assembler.info,  Node: Line,  Next: Linkonce,  Prev: Lflags,  Up: Pseudo Ops
-
-7.66 `.line LINE-NUMBER'
+7.57 `.line LINE-NUMBER'
 ========================
 
 Even though this is a directive associated with the `a.out' or `b.out'
-object-code formats, LLVM integrated assembler still recognizes it when
-producing COFF output, and treats `.line' as though it were the COFF
-`.ln' _if_ it is found outside a `.def'/`.endef' pair.
+object-code formats, the LLVM integrated assembler still recognizes it
+when producing ELF output.
 
-   Inside a `.def', `.line' is, instead, one of the directives used by
-compilers to generate auxiliary symbol information for debugging.
-
-
-File: llvm-assembler.info,  Node: Linkonce,  Next: List,  Prev: Line,  Up: Pseudo Ops
-
-7.67 `.linkonce [TYPE]'
-=======================
-
-Mark the current section so that the linker only includes a single copy
-of it.  This may be used to include the same section in several
-different object files, but ensure that the linker will only include it
-once in the final output file.  The `.linkonce' pseudo-op must be used
-for each instance of the section.  Duplicate sections are detected
-based on the section name, so it should be unique.
-
-   This directive is only supported by a few object file formats; as of
-this writing, the only object file format which supports it is the
-Portable Executable format used on Windows NT.
-
-   The TYPE argument is optional.  If specified, it must be one of the
-following strings.  For example:
-     .linkonce same_size
-   Not all types may be supported on all object file formats.
-
-`discard'
-     Silently discard duplicate sections.  This is the default.
-
-`one_only'
-     Warn if there are duplicate sections, but still keep only one copy.
-
-`same_size'
-     Warn if any of the duplicates have different sizes.
-
-`same_contents'
-     Warn if any of the duplicates do not have exactly the same
-     contents.
+   _Note:_ This directive is deprecated.  One day `.line' will not be
+supported.  Use the `.ln' directive instead.  *Note Ln::.
 
 
-File: llvm-assembler.info,  Node: List,  Next: Ln,  Prev: Linkonce,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Ln,  Next: Loc,  Prev: Line,  Up: Pseudo Ops
 
-7.68 `.list'
-============
-
-Control (in conjunction with the `.nolist' directive) whether or not
-assembly listings are generated.  These two directives maintain an
-internal counter (which is zero initially).   `.list' increments the
-counter, and `.nolist' decrements it.  Assembly listings are generated
-whenever the counter is greater than zero.
-
-   By default, listings are disabled.  When you enable them (with the
-`-a' command line option; *note Command-Line Options: Invoking.), the
-initial value of the listing counter is one.
-
-
-File: llvm-assembler.info,  Node: Ln,  Next: Loc,  Prev: List,  Up: Pseudo Ops
-
-7.69 `.ln LINE-NUMBER'
+7.58 `.ln LINE-NUMBER'
 ======================
 
-`.ln' is a synonym for `.line'.
+`.ln' is a synonym for the deprecated `.line' directive, and should be
+used in preference.
+
+   Tell the LLVM integrated assembler to change the logical line number.
+LINE-NUMBER must be an absolute expression.  The next line has that
+logical line number, so any other statements on the current line (after
+a statement separator character such as `;') are reported as on logical
+line number LINE-NUMBER - 1.
 
 
-File: llvm-assembler.info,  Node: Loc,  Next: Loc_mark_labels,  Prev: Ln,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Loc,  Next: Local,  Prev: Ln,  Up: Pseudo Ops
 
-7.70 `.loc FILENO LINENO [COLUMN] [OPTIONS]'
+7.59 `.loc FILENO LINENO [COLUMN] [OPTIONS]'
 ============================================
 
 When emitting DWARF2 line number information, the `.loc' directive will
@@ -3022,21 +2757,9 @@ machine before the row is added.
 
 
 
-File: llvm-assembler.info,  Node: Loc_mark_labels,  Next: Local,  Prev: Loc,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Local,  Next: Long,  Prev: Loc,  Up: Pseudo Ops
 
-7.71 `.loc_mark_labels ENABLE'
-==============================
-
-When emitting DWARF2 line number information, the `.loc_mark_labels'
-directive makes the assembler emit an entry to the `.debug_line' line
-number matrix with the `basic_block' register in the state machine set
-whenever a code label is seen.  The ENABLE argument should be either 1
-or 0, to enable or disable this function respectively.
-
-
-File: llvm-assembler.info,  Node: Local,  Next: Long,  Prev: Loc_mark_labels,  Up: Pseudo Ops
-
-7.72 `.local NAMES'
+7.60 `.local NAMES'
 ===================
 
 This directive, which is available for ELF targets, marks each symbol in
@@ -3052,16 +2775,16 @@ Comm::) to define aligned local common data.
 
 File: llvm-assembler.info,  Node: Long,  Next: Macro,  Prev: Local,  Up: Pseudo Ops
 
-7.73 `.long EXPRESSIONS'
+7.61 `.long EXPRESSIONS'
 ========================
 
 `.long' is the same as `.int'.  *Note `.int': Int.
 
 
-File: llvm-assembler.info,  Node: Macro,  Next: Noaltmacro,  Prev: Long,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Macro,  Next: Octa,  Prev: Long,  Up: Pseudo Ops
 
-7.74 `.macro'
-=============
+7.62 `.macro' and associated directives
+=======================================
 
 The commands `.macro' and `.endm' allow you to define macros that
 generate assembly output.  For example, this definition specifies a
@@ -3201,39 +2924,16 @@ With that definition, `SUM 0,5' is equivalent to this assembly input:
      Exit early from the current macro definition.
 
 `\@'
-     LLVM integrated assembler maintains a counter of how many macros
-     it has executed in this pseudo-variable; you can copy that number
-     to your output with `\@', but _only within a macro definition_.
+     the LLVM integrated assembler maintains a counter of how many
+     macros it has executed in this pseudo-variable; you can copy that
+     number to your output with `\@', but _only within a macro
+     definition_.
 
-`LOCAL NAME [ , ... ]'
-     _Warning: `LOCAL' is only available if you select "alternate macro
-     syntax" with `--alternate' or `.altmacro'._ *Note `.altmacro':
-     Altmacro.
 
 
-File: llvm-assembler.info,  Node: Noaltmacro,  Next: Nolist,  Prev: Macro,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Octa,  Next: Org,  Prev: Macro,  Up: Pseudo Ops
 
-7.75 `.noaltmacro'
-==================
-
-Disable alternate macro mode.  *Note Altmacro::.
-
-
-File: llvm-assembler.info,  Node: Nolist,  Next: Octa,  Prev: Noaltmacro,  Up: Pseudo Ops
-
-7.76 `.nolist'
-==============
-
-Control (in conjunction with the `.list' directive) whether or not
-assembly listings are generated.  These two directives maintain an
-internal counter (which is zero initially).   `.list' increments the
-counter, and `.nolist' decrements it.  Assembly listings are generated
-whenever the counter is greater than zero.
-
-
-File: llvm-assembler.info,  Node: Octa,  Next: Offset,  Prev: Nolist,  Up: Pseudo Ops
-
-7.77 `.octa BIGNUMS'
+7.63 `.octa BIGNUMS'
 ====================
 
 This directive expects zero or more bignums, separated by commas.  For
@@ -3243,20 +2943,9 @@ each bignum, it emits a 16-byte integer.
 hence _octa_-word for 16 bytes.
 
 
-File: llvm-assembler.info,  Node: Offset,  Next: Org,  Prev: Octa,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Org,  Next: P2align,  Prev: Octa,  Up: Pseudo Ops
 
-7.78 `.offset LOC'
-==================
-
-Set the location counter to LOC in the absolute section.  LOC must be
-an absolute expression.  This directive may be useful for defining
-symbols with absolute values.  Do not confuse it with the `.org'
-directive.
-
-
-File: llvm-assembler.info,  Node: Org,  Next: P2align,  Prev: Offset,  Up: Pseudo Ops
-
-7.79 `.org NEW-LC , FILL'
+7.64 `.org NEW-LC , FILL'
 =========================
 
 Advance the location counter of the current section to NEW-LC.  NEW-LC
@@ -3264,14 +2953,14 @@ is either an absolute expression or an expression with the same section
 as the current subsection.  That is, you can't use `.org' to cross
 sections: if NEW-LC has the wrong section, the `.org' directive is
 ignored.  To be compatible with former assemblers, if the section of
-NEW-LC is absolute, LLVM integrated assembler issues a warning, then
+NEW-LC is absolute, the LLVM integrated assembler issues a warning, then
 pretends the section of NEW-LC is the same as the current subsection.
 
    `.org' may only increase the location counter, or leave it
 unchanged; you cannot use `.org' to move the location counter backwards.
 
-   Because LLVM integrated assembler tries to assemble programs in one
-pass, NEW-LC may not be undefined.  If you really detest this
+   Because the LLVM integrated assembler tries to assemble programs in
+one pass, NEW-LC may not be undefined.  If you really detest this
 restriction we eagerly await a chance to share your improved assembler.
 
    Beware that the origin is relative to the start of the section, not
@@ -3285,7 +2974,7 @@ expression.  If the comma and FILL are omitted, FILL defaults to zero.
 
 File: llvm-assembler.info,  Node: P2align,  Next: PopSection,  Prev: Org,  Up: Pseudo Ops
 
-7.80 `.p2align[wl] ABS-EXPR, ABS-EXPR, ABS-EXPR'
+7.65 `.p2align[wl] ABS-EXPR, ABS-EXPR, ABS-EXPR'
 ================================================
 
 Pad the location counter (in the current subsection) to a particular
@@ -3322,7 +3011,7 @@ bytes depends upon the endianness of the processor).  If it skips 1 or
 
 File: llvm-assembler.info,  Node: PopSection,  Next: Previous,  Prev: P2align,  Up: Pseudo Ops
 
-7.81 `.popsection'
+7.66 `.popsection'
 ==================
 
 This is one of the ELF section stack manipulation directives.  The
@@ -3337,7 +3026,7 @@ popped off the stack.
 
 File: llvm-assembler.info,  Node: Previous,  Next: Print,  Prev: PopSection,  Up: Pseudo Ops
 
-7.82 `.previous'
+7.67 `.previous'
 ================
 
 This is one of the ELF section stack manipulation directives.  The
@@ -3385,16 +3074,16 @@ section with the top section on the section stack.
 
 File: llvm-assembler.info,  Node: Print,  Next: Protected,  Prev: Previous,  Up: Pseudo Ops
 
-7.83 `.print STRING'
+7.68 `.print STRING'
 ====================
 
-LLVM integrated assembler will print STRING on the standard output
+the LLVM integrated assembler will print STRING on the standard output
 during assembly.  You must put STRING in double quotes.
 
 
 File: llvm-assembler.info,  Node: Protected,  Next: Psize,  Prev: Print,  Up: Pseudo Ops
 
-7.84 `.protected NAMES'
+7.69 `.protected NAMES'
 =======================
 
 This is one of the ELF visibility directives.  The other two are
@@ -3410,7 +3099,7 @@ component would normally preempt this.
 
 File: llvm-assembler.info,  Node: Psize,  Next: Purgem,  Prev: Protected,  Up: Pseudo Ops
 
-7.85 `.psize LINES , COLUMNS'
+7.70 `.psize LINES , COLUMNS'
 =============================
 
 Use this directive to declare the number of lines--and, optionally, the
@@ -3420,9 +3109,9 @@ number of columns--to use for each page, when generating listings.
 You may omit the comma and COLUMNS specification; the default width is
 200 columns.
 
-   LLVM integrated assembler generates formfeeds whenever the specified
-number of lines is exceeded (or whenever you explicitly request one,
-using `.eject').
+   the LLVM integrated assembler generates formfeeds whenever the
+specified number of lines is exceeded (or whenever you explicitly
+request one, using `.eject').
 
    If you specify LINES as `0', no formfeeds are generated save those
 explicitly specified with `.eject'.
@@ -3430,7 +3119,7 @@ explicitly specified with `.eject'.
 
 File: llvm-assembler.info,  Node: Purgem,  Next: PushSection,  Prev: Psize,  Up: Pseudo Ops
 
-7.86 `.purgem NAME'
+7.71 `.purgem NAME'
 ===================
 
 Undefine the macro NAME, so that later uses of the string will not be
@@ -3439,7 +3128,7 @@ expanded.  *Note Macro::.
 
 File: llvm-assembler.info,  Node: PushSection,  Next: Quad,  Prev: Purgem,  Up: Pseudo Ops
 
-7.87 `.pushsection NAME [, SUBSECTION] [, "FLAGS"[, @TYPE[,ARGUMENTS]]]'
+7.72 `.pushsection NAME [, SUBSECTION] [, "FLAGS"[, @TYPE[,ARGUMENTS]]]'
 ========================================================================
 
 This is one of the ELF section stack manipulation directives.  The
@@ -3456,7 +3145,7 @@ Section::) directive.
 
 File: llvm-assembler.info,  Node: Quad,  Next: Reloc,  Prev: PushSection,  Up: Pseudo Ops
 
-7.88 `.quad BIGNUMS'
+7.73 `.quad BIGNUMS'
 ====================
 
 `.quad' expects zero or more bignums, separated by commas.  For each
@@ -3470,7 +3159,7 @@ hence _quad_-word for 8 bytes.
 
 File: llvm-assembler.info,  Node: Reloc,  Next: Rept,  Prev: Quad,  Up: Pseudo Ops
 
-7.89 `.reloc OFFSET, RELOC_NAME[, EXPRESSION]'
+7.74 `.reloc OFFSET, RELOC_NAME[, EXPRESSION]'
 ==============================================
 
 Generate a relocation at OFFSET of type RELOC_NAME with value
@@ -3486,7 +3175,7 @@ support addends stored in the section.
 
 File: llvm-assembler.info,  Node: Rept,  Next: Sbttl,  Prev: Reloc,  Up: Pseudo Ops
 
-7.90 `.rept COUNT'
+7.75 `.rept COUNT'
 ==================
 
 Repeat the sequence of lines between the `.rept' directive and the next
@@ -3507,7 +3196,7 @@ Repeat the sequence of lines between the `.rept' directive and the next
 
 File: llvm-assembler.info,  Node: Sbttl,  Next: Section,  Prev: Rept,  Up: Pseudo Ops
 
-7.91 `.sbttl "SUBHEADING"'
+7.76 `.sbttl "SUBHEADING"'
 ==========================
 
 Use SUBHEADING as the title (third line, immediately after the title
@@ -3519,7 +3208,7 @@ if it appears within ten lines of the top of a page.
 
 File: llvm-assembler.info,  Node: Section,  Next: Set,  Prev: Sbttl,  Up: Pseudo Ops
 
-7.92 `.section NAME'
+7.77 `.section NAME'
 ====================
 
 Use the `.section' directive to assemble the following code into a
@@ -3671,7 +3360,7 @@ directives work.
 
 File: llvm-assembler.info,  Node: Set,  Next: Short,  Prev: Section,  Up: Pseudo Ops
 
-7.93 `.set SYMBOL, EXPRESSION'
+7.78 `.set SYMBOL, EXPRESSION'
 ==============================
 
 Set the value of SYMBOL to EXPRESSION.  This changes SYMBOL's value and
@@ -3686,7 +3375,7 @@ is the last value stored into it.
 
 File: llvm-assembler.info,  Node: Short,  Next: Single,  Prev: Set,  Up: Pseudo Ops
 
-7.94 `.short EXPRESSIONS'
+7.79 `.short EXPRESSIONS'
 =========================
 
 `.short' is normally the same as `.word'.  *Note `.word': Word.
@@ -3697,18 +3386,18 @@ numbers of different lengths.  *Note Machine Dependencies::.
 
 File: llvm-assembler.info,  Node: Single,  Next: Size,  Prev: Short,  Up: Pseudo Ops
 
-7.95 `.single FLONUMS'
+7.80 `.single FLONUMS'
 ======================
 
 This directive assembles zero or more flonums, separated by commas.  It
 has the same effect as `.float'.  The exact kind of floating point
-numbers emitted depends on how LLVM integrated assembler is configured.
-*Note Machine Dependencies::.
+numbers emitted depends on how the LLVM integrated assembler is
+configured.  *Note Machine Dependencies::.
 
 
 File: llvm-assembler.info,  Node: Size,  Next: Skip,  Prev: Single,  Up: Pseudo Ops
 
-7.96 `.size'
+7.81 `.size'
 ============
 
 This directive is used to set the size associated with a symbol.
@@ -3725,7 +3414,7 @@ function symbols.
 
 File: llvm-assembler.info,  Node: Skip,  Next: Sleb128,  Prev: Size,  Up: Pseudo Ops
 
-7.97 `.skip SIZE , FILL'
+7.82 `.skip SIZE , FILL'
 ========================
 
 This directive emits SIZE bytes, each of value FILL.  Both SIZE and
@@ -3735,7 +3424,7 @@ is assumed to be zero.  This is the same as `.space'.
 
 File: llvm-assembler.info,  Node: Sleb128,  Next: Space,  Prev: Skip,  Up: Pseudo Ops
 
-7.98 `.sleb128 EXPRESSIONS'
+7.83 `.sleb128 EXPRESSIONS'
 ===========================
 
 SLEB128 stands for "signed little endian base 128."  This is a compact,
@@ -3745,7 +3434,7 @@ debugging format.  *Note `.uleb128': Uleb128.
 
 File: llvm-assembler.info,  Node: Space,  Next: String,  Prev: Sleb128,  Up: Pseudo Ops
 
-7.99 `.space SIZE , FILL'
+7.84 `.space SIZE , FILL'
 =========================
 
 This directive emits SIZE bytes, each of value FILL.  Both SIZE and
@@ -3755,8 +3444,8 @@ is assumed to be zero.  This is the same as `.skip'.
 
 File: llvm-assembler.info,  Node: String,  Next: Struct,  Prev: Space,  Up: Pseudo Ops
 
-7.100 `.string' "STR", `.string8' "STR", `.string16'
-====================================================
+7.85 `.string' "STR", `.string8' "STR", `.string16'
+===================================================
 
 "STR", `.string32' "STR", `.string64' "STR"
 
@@ -3780,8 +3469,8 @@ are stored in target endianness byte order.
 
 File: llvm-assembler.info,  Node: Struct,  Next: SubSection,  Prev: String,  Up: Pseudo Ops
 
-7.101 `.struct EXPRESSION'
-==========================
+7.86 `.struct EXPRESSION'
+=========================
 
 Switch to the absolute section, and set the section offset to
 EXPRESSION, which must be an absolute expression.  You might use this
@@ -3801,8 +3490,8 @@ section before further assembly.
 
 File: llvm-assembler.info,  Node: SubSection,  Next: Symver,  Prev: Struct,  Up: Pseudo Ops
 
-7.102 `.subsection NAME'
-========================
+7.87 `.subsection NAME'
+=======================
 
 This is one of the ELF section stack manipulation directives.  The
 others are `.section' (*note Section::), `.pushsection' (*note
@@ -3816,8 +3505,8 @@ the section stack in place of the then current top of stack subsection.
 
 File: llvm-assembler.info,  Node: Symver,  Next: Text,  Prev: SubSection,  Up: Pseudo Ops
 
-7.103 `.symver'
-===============
+7.88 `.symver'
+==============
 
 Use the `.symver' directive to bind symbols to specific version nodes
 within a source file.  This is only supported on ELF platforms, and is
@@ -3865,19 +3554,19 @@ assembled, the symbol name, NAME, will be changed to NAME2@@NODENAME.
 
 File: llvm-assembler.info,  Node: Text,  Next: Title,  Prev: Symver,  Up: Pseudo Ops
 
-7.104 `.text SUBSECTION'
-========================
+7.89 `.text SUBSECTION'
+=======================
 
-Tells LLVM integrated assembler to assemble the following statements
-onto the end of the text subsection numbered SUBSECTION, which is an
-absolute expression.  If SUBSECTION is omitted, subsection number zero
-is used.
+Tells the LLVM integrated assembler to assemble the following
+statements onto the end of the text subsection numbered SUBSECTION,
+which is an absolute expression.  If SUBSECTION is omitted, subsection
+number zero is used.
 
 
 File: llvm-assembler.info,  Node: Title,  Next: Type,  Prev: Text,  Up: Pseudo Ops
 
-7.105 `.title "HEADING"'
-========================
+7.90 `.title "HEADING"'
+=======================
 
 Use HEADING as the title (second line, immediately after the source
 file name and pagenumber) when generating assembly listings.
@@ -3888,8 +3577,8 @@ if it appears within ten lines of the top of a page.
 
 File: llvm-assembler.info,  Node: Type,  Next: Uleb128,  Prev: Title,  Up: Pseudo Ops
 
-7.106 `.type'
-=============
+7.91 `.type'
+============
 
 This directive is used to set the type of a symbol.
 
@@ -3959,8 +3648,8 @@ above.
 
 File: llvm-assembler.info,  Node: Uleb128,  Next: Version,  Prev: Type,  Up: Pseudo Ops
 
-7.107 `.uleb128 EXPRESSIONS'
-============================
+7.92 `.uleb128 EXPRESSIONS'
+===========================
 
 ULEB128 stands for "unsigned little endian base 128."  This is a
 compact, variable length representation of numbers used by the DWARF
@@ -3969,8 +3658,8 @@ symbolic debugging format.  *Note `.sleb128': Sleb128.
 
 File: llvm-assembler.info,  Node: Version,  Next: VTableEntry,  Prev: Uleb128,  Up: Pseudo Ops
 
-7.108 `.version "STRING"'
-=========================
+7.93 `.version "STRING"'
+========================
 
 This directive creates a `.note' section and places into it an ELF
 formatted note of type NT_VERSION.  The note's name is set to `string'.
@@ -3978,8 +3667,8 @@ formatted note of type NT_VERSION.  The note's name is set to `string'.
 
 File: llvm-assembler.info,  Node: VTableEntry,  Next: VTableInherit,  Prev: Version,  Up: Pseudo Ops
 
-7.109 `.vtable_entry TABLE, OFFSET'
-===================================
+7.94 `.vtable_entry TABLE, OFFSET'
+==================================
 
 This directive finds or creates a symbol `table' and creates a
 `VTABLE_ENTRY' relocation for it with an addend of `offset'.
@@ -3987,8 +3676,8 @@ This directive finds or creates a symbol `table' and creates a
 
 File: llvm-assembler.info,  Node: VTableInherit,  Next: Warning,  Prev: VTableEntry,  Up: Pseudo Ops
 
-7.110 `.vtable_inherit CHILD, PARENT'
-=====================================
+7.95 `.vtable_inherit CHILD, PARENT'
+====================================
 
 This directive finds the symbol `child' and finds or creates the symbol
 `parent' and then creates a `VTABLE_INHERIT' relocation for the parent
@@ -3998,8 +3687,8 @@ parent name of `0' is treated as referring to the `*ABS*' section.
 
 File: llvm-assembler.info,  Node: Warning,  Next: Weak,  Prev: VTableInherit,  Up: Pseudo Ops
 
-7.111 `.warning "STRING"'
-=========================
+7.96 `.warning "STRING"'
+========================
 
 Similar to the directive `.error' (*note `.error "STRING"': Error.),
 but just emits a warning.
@@ -4007,8 +3696,8 @@ but just emits a warning.
 
 File: llvm-assembler.info,  Node: Weak,  Next: Weakref,  Prev: Warning,  Up: Pseudo Ops
 
-7.112 `.weak NAMES'
-===================
+7.97 `.weak NAMES'
+==================
 
 This directive sets the weak attribute on the comma separated list of
 symbol `names'.  If the symbols do not already exist, they will be
@@ -4026,8 +3715,8 @@ creates an alternate symbol to hold the default value.
 
 File: llvm-assembler.info,  Node: Weakref,  Next: Word,  Prev: Weak,  Up: Pseudo Ops
 
-7.113 `.weakref ALIAS, TARGET'
-==============================
+7.98 `.weakref ALIAS, TARGET'
+=============================
 
 This directive creates an alias to the target symbol that enables the
 symbol to be referenced with weak-symbol semantics, but without
@@ -4049,8 +3738,8 @@ handled within the assembler.
 
 File: llvm-assembler.info,  Node: Word,  Next: Deprecated,  Prev: Weakref,  Up: Pseudo Ops
 
-7.114 `.word EXPRESSIONS'
-=========================
+7.99 `.word EXPRESSIONS'
+========================
 
 This directive expects zero or more EXPRESSIONS, of any section,
 separated by commas.
@@ -4065,19 +3754,19 @@ addressing, require the following special treatment.  If the machine of
 interest to you does 32-bit addressing (or doesn't require it; *note
 Machine Dependencies::), you can ignore this issue.
 
-   In order to assemble compiler output into something that works, LLVM
-integrated assembler occasionally does strange things to `.word'
+   In order to assemble compiler output into something that works, the
+LLVM integrated assembler occasionally does strange things to `.word'
 directives.  Directives of the form `.word sym1-sym2' are often emitted
-by compilers as part of jump tables.  Therefore, when LLVM integrated
-assembler assembles a directive of the form `.word sym1-sym2', and the
-difference between `sym1' and `sym2' does not fit in 16 bits, LLVM
-integrated assembler creates a "secondary jump table", immediately
-before the next label.  This secondary jump table is preceded by a
-short-jump to the first byte after the secondary table.  This
-short-jump prevents the flow of control from accidentally falling into
-the new table.  Inside the table is a long-jump to `sym2'.  The
-original `.word' contains `sym1' minus the address of the long-jump to
-`sym2'.
+by compilers as part of jump tables.  Therefore, when the LLVM
+integrated assembler assembles a directive of the form `.word
+sym1-sym2', and the difference between `sym1' and `sym2' does not fit
+in 16 bits, the LLVM integrated assembler creates a "secondary jump
+table", immediately before the next label.  This secondary jump table
+is preceded by a short-jump to the first byte after the secondary
+table.  This short-jump prevents the flow of control from accidentally
+falling into the new table.  Inside the table is a long-jump to `sym2'.
+The original `.word' contains `sym1' minus the address of the long-jump
+to `sym2'.
 
    If there were several occurrences of `.word sym1-sym2' before the
 secondary jump table, all of them are adjusted.  If there was a `.word
@@ -4088,16 +3777,85 @@ long-jump to `sym4'; and so on, for as many entries in the original
 jump table as necessary.
 
 
-File: llvm-assembler.info,  Node: Deprecated,  Prev: Word,  Up: Pseudo Ops
+File: llvm-assembler.info,  Node: Deprecated,  Next: Unsupported,  Prev: Word,  Up: Pseudo Ops
 
-7.115 Deprecated Directives
+7.100 Deprecated Directives
 ===========================
 
 One day these directives won't work.  They are included for
 compatibility with older assemblers.
-.abort
+`.abort'
+     Abort assembly.
 
-.line
+`.line'
+     Set line number.
+
+
+File: llvm-assembler.info,  Node: Unsupported,  Prev: Deprecated,  Up: Pseudo Ops
+
+7.101 Unsupported GNU Assembler Directives
+==========================================
+
+These directives are supported by the GNU assembler, but not the LLVM
+integrated assembler.  Code originally intended for the GNU assembler
+will need modifying to eliminate the need for these directives.
+
+`.altmacro'
+     Enable alternate macro mode.
+
+`.cfi_return_column'
+     Change return column register.
+
+`.cfi_val_encoded_addr'
+     Encode value of label in output.
+
+`.eject'
+     Force a page break when generating listings.
+
+`.endfunc'
+     Marks the end of a function specified with `.func'.
+
+`.eqv'
+     Lazily evaluated version of `.equiv'.
+
+`.fail'
+     Generates an error or a warning depending on its argument.
+
+`.func'
+     Emit debugging information to denote a function.
+
+`.gnu_attribute'
+     Record a GNU object attribute for this file.
+
+`.hword'
+     Emit 16-bit numbers. A synonym for `.short'; depending on the
+     target architecture, it may also be a synonym for `.word'.
+
+`.lflags'
+     This option was ignored by the GNU assembler anyway.
+
+`.linkonce'
+     Mark the current section so that the linker only includes a single
+     copy of it.  Incompatible with ELF output files.
+
+`.list'
+     Control whether or not assembly listings are generated.
+
+`.loc_mark_labels'
+     Control emission of basic block debug info.
+
+`LOCAL NAME [ , ... ]'
+     Part of the unsupported "alternate macro syntax".
+
+`.noaltmacro'
+     Disable alternate macro mode, which is no longer supported.
+
+`.nolist'
+     Control whether or not assembly listings are generated.
+
+`.offset'
+     Set the location counter in the absolute section.
+
 
 
 File: llvm-assembler.info,  Node: Object Attributes,  Next: Machine Dependencies,  Prev: Pseudo Ops,  Up: Top
@@ -4105,150 +3863,12 @@ File: llvm-assembler.info,  Node: Object Attributes,  Next: Machine Dependencies
 8 Object Attributes
 *******************
 
-LLVM integrated assembler assembles source files written for a specific
-architecture into object files for that architecture.  But not all
-object files are alike.  Many architectures support incompatible
-variations.  For instance, floating point arguments might be passed in
-floating point registers if the object file requires hardware floating
-point support--or floating point arguments might be passed in integer
-registers if the object file supports processors with no hardware
-floating point unit.  Or, if two objects are built for different
-generations of the same architecture, the combination may require the
-newer generation at run-time.
+Object attributes are a concept introduced by the GNU assembler, to
+provide information about architecture variations and compatibility
+that could be of use to the linker.
 
-   This information is useful during and after linking.  At link time,
-the linker can warn about incompatible object files.  After link time,
-tools like `gdb' can use it to process the linked file correctly.
-
-   Compatibility information is recorded as a series of object
-attributes.  Each attribute has a "vendor", "tag", and "value".  The
-vendor is a string, and indicates who sets the meaning of the tag.  The
-tag is an integer, and indicates what property the attribute describes.
-The value may be a string or an integer, and indicates how the property
-affects this object.  Missing attributes are the same as attributes
-with a zero value or empty string value.
-
-   Object attributes were developed as part of the ABI for the ARM
-Architecture.  The file format is documented in `ELF for the ARM
-Architecture'.
-
-* Menu:
-
-* GNU Object Attributes::               GNU Object Attributes
-* Defining New Object Attributes::      Defining New Object Attributes
-
-
-File: llvm-assembler.info,  Node: GNU Object Attributes,  Next: Defining New Object Attributes,  Up: Object Attributes
-
-8.1 GNU Object Attributes
-=========================
-
-The `.gnu_attribute' directive records an object attribute with vendor
-`gnu'.
-
-   Except for `Tag_compatibility', which has both an integer and a
-string for its value, GNU attributes have a string value if the tag
-number is odd and an integer value if the tag number is even.  The
-second bit (`TAG & 2' is set for architecture-independent attributes
-and clear for architecture-dependent ones.
-
-8.1.1 Common GNU attributes
----------------------------
-
-These attributes are valid on all architectures.
-
-Tag_compatibility (32)
-     The compatibility attribute takes an integer flag value and a
-     vendor name.  If the flag value is 0, the file is compatible with
-     other toolchains.  If it is 1, then the file is only compatible
-     with the named toolchain.  If it is greater than 1, the file can
-     only be processed by other toolchains under some private
-     arrangement indicated by the flag value and the vendor name.
-
-8.1.2 AAP Attributes
---------------------
-
-Tag_GNU_MIPS_ABI_FP (4)
-     The floating-point ABI used by this object file.  The value will
-     be:
-
-        * 0 for files not affected by the floating-point ABI.
-
-        * 1 for files using the hardware floating-point ABI with a
-          standard double-precision FPU.
-
-        * 2 for files using the hardware floating-point ABI with a
-          single-precision FPU.
-
-        * 3 for files using the software floating-point ABI.
-
-        * 4 for files using the deprecated hardware floating-point ABI
-          which used 64-bit floating-point registers, 32-bit
-          general-purpose registers and increased the number of
-          callee-saved floating-point registers.
-
-        * 5 for files using the hardware floating-point ABI with a
-          double-precision FPU with either 32-bit or 64-bit
-          floating-point registers and 32-bit general-purpose registers.
-
-        * 6 for files using the hardware floating-point ABI with 64-bit
-          floating-point registers and 32-bit general-purpose registers.
-
-        * 7 for files using the hardware floating-point ABI with 64-bit
-          floating-point registers, 32-bit general-purpose registers
-          and a rule that forbids the direct use of odd-numbered
-          single-precision floating-point registers.
-
-8.1.3 PowerPC Attributes
-------------------------
-
-Tag_GNU_Power_ABI_FP (4)
-     The floating-point ABI used by this object file.  The value will
-     be:
-
-        * 0 for files not affected by the floating-point ABI.
-
-        * 1 for files using double-precision hardware floating-point
-          ABI.
-
-        * 2 for files using the software floating-point ABI.
-
-        * 3 for files using single-precision hardware floating-point
-          ABI.
-
-Tag_GNU_Power_ABI_Vector (8)
-     The vector ABI used by this object file.  The value will be:
-
-        * 0 for files not affected by the vector ABI.
-
-        * 1 for files using general purpose registers to pass vectors.
-
-        * 2 for files using AltiVec registers to pass vectors.
-
-        * 3 for files using SPE registers to pass vectors.
-
-
-File: llvm-assembler.info,  Node: Defining New Object Attributes,  Prev: GNU Object Attributes,  Up: Object Attributes
-
-8.2 Defining New Object Attributes
-==================================
-
-If you want to define a new GNU object attribute, here are the places
-you will need to modify.  New attributes should be discussed on the
-`binutils' mailing list.
-
-   * This manual, which is the official register of attributes.
-
-   * The header for your architecture `include/elf', to define the tag.
-
-   * The `bfd' support file for your architecture, to merge the
-     attribute and issue any appropriate link warnings.
-
-   * Test cases in `ld/testsuite' for merging and link warnings.
-
-   * `binutils/readelf.c' to display your attribute.
-
-   * GCC, if you want the compiler to mark the attribute automatically.
+   GNU object attributes are not supported by the LLVM integrated
+assembler.
 
 
 File: llvm-assembler.info,  Node: Machine Dependencies,  Next: Reporting Bugs,  Prev: Object Attributes,  Up: Top
@@ -4257,11 +3877,11 @@ File: llvm-assembler.info,  Node: Machine Dependencies,  Next: Reporting Bugs,  
 ****************************
 
 The machine instruction sets are (almost by definition) different on
-each machine where LLVM integrated assembler runs.  Floating point
-representations vary as well, and LLVM integrated assembler often
+each machine where the LLVM integrated assembler runs.  Floating point
+representations vary as well, and the LLVM integrated assembler often
 supports a few additional directives or command-line options for
 compatibility with other assemblers on a particular platform.  Finally,
-some versions of LLVM integrated assembler support special
+some versions of the LLVM integrated assembler support special
 pseudo-instructions for branch optimization.
 
    This chapter discusses most of these differences, though it does not
@@ -5251,14 +4871,14 @@ File: llvm-assembler.info,  Node: Reporting Bugs,  Next: Acknowledgements,  Prev
 10 Reporting Bugs
 *****************
 
-Your bug reports play an essential role in making LLVM integrated
+Your bug reports play an essential role in making the LLVM integrated
 assembler reliable.
 
    Reporting a bug may help you by bringing a solution to your problem,
 or it may not.  But in any case the principal function of a bug report
-is to help the entire community by making the next version of LLVM
+is to help the entire community by making the next version of the LLVM
 integrated assembler work better.  Bug reports are your contribution to
-the maintenance of LLVM integrated assembler.
+the maintenance of the LLVM integrated assembler.
 
    In order for a bug report to serve its purpose, you must include the
 information that enables us to fix the bug.
@@ -5278,19 +4898,20 @@ If you are not sure whether you have found a bug, here are some
 guidelines:
 
    * If the assembler gets a fatal signal, for any input whatever, that
-     is a LLVM integrated assembler bug.  Reliable assemblers never
+     is a the LLVM integrated assembler bug.  Reliable assemblers never
      crash.
 
-   * If LLVM integrated assembler produces an error message for valid
-     input, that is a bug.
+   * If the LLVM integrated assembler produces an error message for
+     valid input, that is a bug.
 
-   * If LLVM integrated assembler does not produce an error message for
-     invalid input, that is a bug.  However, you should note that your
-     idea of "invalid input" might be our idea of "an extension" or
-     "support for traditional practice".
+   * If the LLVM integrated assembler does not produce an error message
+     for invalid input, that is a bug.  However, you should note that
+     your idea of "invalid input" might be our idea of "an extension"
+     or "support for traditional practice".
 
    * If you are an experienced user of assemblers, your suggestions for
-     improvement of LLVM integrated assembler are welcome in any case.
+     improvement of the LLVM integrated assembler are welcome in any
+     case.
 
 
 File: llvm-assembler.info,  Node: Bug Reporting,  Prev: Bug Criteria,  Up: Reporting Bugs
@@ -5299,14 +4920,14 @@ File: llvm-assembler.info,  Node: Bug Reporting,  Prev: Bug Criteria,  Up: Repor
 =======================
 
 A number of companies and individuals offer support for GNU products.
-If you obtained LLVM integrated assembler from a support organization,
-we recommend you contact that organization first.
+If you obtained the LLVM integrated assembler from a support
+organization, we recommend you contact that organization first.
 
    You can find contact information for many support companies and
 individuals in the file `etc/SERVICE' in the GNU Emacs distribution.
 
-   In any event, we also recommend that you send bug reports for LLVM
-integrated assembler to www.embecosm.com.
+   In any event, we also recommend that you send bug reports for the
+LLVM integrated assembler to www.embecosm.com.
 
    The fundamental principle of reporting bugs usefully is this:
 *report all the facts*.  If you are not sure whether to state a fact or
@@ -5333,21 +4954,21 @@ might as well expedite matters by sending them to begin with.
 
    To enable us to fix the bug, you should include all these things:
 
-   * The version of LLVM integrated assembler.  LLVM integrated
+   * The version of the LLVM integrated assembler.  the LLVM integrated
      assembler announces it if you start it with the `--version'
      argument.
 
      Without this, we will not know whether there is any point in
-     looking for the bug in the current version of LLVM integrated
+     looking for the bug in the current version of the LLVM integrated
      assembler.
 
-   * Any patches you may have applied to the LLVM integrated assembler
-     source.
+   * Any patches you may have applied to the the LLVM integrated
+     assembler source.
 
    * The type of machine you are using, and the operating system name
      and version number.
 
-   * What compiler (and its version) was used to compile LLVM
+   * What compiler (and its version) was used to compile the LLVM
      integrated assembler--e.g.  "`gcc-2.7'".
 
    * The command arguments you gave the assembler to assemble your
@@ -5364,33 +4985,33 @@ might as well expedite matters by sending them to begin with.
      will produce the assembler source when run with the `-S' option.
      With Clang/LLVM you can also use the options `-v --save-temps';
      this will save the assembler source in a file with an extension of
-     `.s', and also show you exactly how LLVM integrated assembler is
-     being run.
+     `.s', and also show you exactly how the LLVM integrated assembler
+     is being run.
 
    * A description of what behavior you observe that you believe is
      incorrect.  For example, "It gets a fatal signal."
 
-     Of course, if the bug is that LLVM integrated assembler gets a
+     Of course, if the bug is that the LLVM integrated assembler gets a
      fatal signal, then we will certainly notice it.  But if the bug is
      incorrect output, we might not notice unless it is glaringly
      wrong.  You might as well not give us a chance to make a mistake.
 
      Even if the problem you experience is a fatal signal, you should
      still say so explicitly.  Suppose something strange is going on,
-     such as, your copy of LLVM integrated assembler is out of sync, or
-     you have encountered a bug in the C library on your system.  (This
-     has happened!)  Your copy might crash and ours would not.  If you
-     told us to expect a crash, then when ours fails to crash, we would
-     know that the bug was not happening for us.  If you had not told
-     us to expect a crash, then we would not be able to draw any
-     conclusion from our observations.
+     such as, your copy of the LLVM integrated assembler is out of
+     sync, or you have encountered a bug in the C library on your
+     system.  (This has happened!)  Your copy might crash and ours
+     would not.  If you told us to expect a crash, then when ours fails
+     to crash, we would know that the bug was not happening for us.  If
+     you had not told us to expect a crash, then we would not be able
+     to draw any conclusion from our observations.
 
-   * If you wish to suggest changes to the LLVM integrated assembler
-     source, send us context diffs, as generated by `diff' with the
-     `-u', `-c', or `-p' option.  Always send diffs from the old file
-     to the new file.  If you even discuss something in the LLVM
-     integrated assembler source, refer to it by context, not by line
-     number.
+   * If you wish to suggest changes to the the LLVM integrated
+     assembler source, send us context diffs, as generated by `diff'
+     with the `-u', `-c', or `-p' option.  Always send diffs from the
+     old file to the new file.  If you even discuss something in the
+     the LLVM integrated assembler source, refer to it by context, not
+     by line number.
 
      The line numbers in our development sources will not match those
      in your sources.  Your line numbers would convey no useful
@@ -5426,7 +5047,7 @@ might as well expedite matters by sending them to begin with.
      with your patch and decide to fix the problem another way, or we
      might not understand it at all.
 
-     Sometimes with a program as complicated as LLVM integrated
+     Sometimes with a program as complicated as the LLVM integrated
      assembler it is very hard to construct an example that will make
      the program follow a certain path through the code.  If you do not
      send us the example, we will not be able to construct one, so we
@@ -6053,7 +5674,7 @@ AS Index
 * #:                                     Comments.            (line  33)
 * #APP:                                  Preprocessing.       (line  26)
 * #NO_APP:                               Preprocessing.       (line  26)
-* --:                                    Command Line.        (line  21)
+* -cc1as:                                Command Line.        (line  14)
 * -compress-debug-sections:              compress-debug-sections.
                                                               (line   6)
 * -dwarf-debug-flags VALUE:              dwarf-debug-flags.   (line   6)
@@ -6096,17 +5717,112 @@ AS Index
 * -triple VALUE:                         triple.              (line   6)
 * -version:                              version.             (line   6)
 * . (symbol):                            Dot.                 (line   6)
-* .global:                               AAP insn.            (line  13)
+* .abort (deprecated) <1>:               Deprecated.          (line   9)
+* .abort (deprecated):                   Abort.               (line   6)
+* .altmacro (unsupported):               Unsupported.         (line  11)
+* .ascii:                                Ascii.               (line   6)
+* .balign:                               Balign.              (line   6)
+* .balignl:                              Balign.              (line   6)
+* .balignw:                              Balign.              (line   6)
+* .bundle_align_mode:                    Bundle directives.   (line   6)
+* .byte:                                 Byte.                (line   6)
+* .cfi_adjust_cfa_offset:                CFI directives.      (line  75)
+* .cfi_def_cfa:                          CFI directives.      (line  56)
+* .cfi_def_cfa_offset:                   CFI directives.      (line  68)
+* .cfi_def_cfa_register:                 CFI directives.      (line  62)
+* .cfi_endproc:                          CFI directives.      (line  26)
+* .cfi_escape:                           CFI directives.      (line 137)
+* .cfi_lsda:                             CFI directives.      (line  46)
+* .cfi_offset:                           CFI directives.      (line  81)
+* .cfi_personality:                      CFI directives.      (line  33)
+* .cfi_register:                         CFI directives.      (line  94)
+* .cfi_rel_offset:                       CFI directives.      (line  86)
+* .cfi_remember_state:                   CFI directives.      (line 117)
+* .cfi_restore:                          CFI directives.      (line  99)
+* .cfi_restore_state:                    CFI directives.      (line 117)
+* .cfi_return_column (unsupported):      Unsupported.         (line  14)
+* .cfi_same_value:                       CFI directives.      (line 111)
+* .cfi_sections:                         CFI directives.      (line   6)
+* .cfi_signal_frame:                     CFI directives.      (line 124)
+* .cfi_startproc:                        CFI directives.      (line  16)
+* .cfi_undefined:                        CFI directives.      (line 106)
+* .cfi_val_encoded_addr (unsupported):   Unsupported.         (line  17)
+* .cfi_window_save:                      CFI directives.      (line 129)
+* .comm:                                 Comm.                (line   6)
+* .data:                                 Data.                (line   6)
+* .double:                               Double.              (line   6)
+* .eject (unsupported):                  Unsupported.         (line  20)
+* .else:                                 Else.                (line   6)
+* .elseif:                               Elseif.              (line   6)
+* .end:                                  End.                 (line   6)
+* .endfunc (unsupported):                Unsupported.         (line  23)
+* .endif:                                Endif.               (line   6)
+* .endm:                                 Endm.                (line   6)
+* .endr:                                 Endr.                (line   6)
+* .equ:                                  Equ.                 (line   6)
+* .equiv:                                Equiv.               (line   6)
+* .eqv (unsupported):                    Unsupported.         (line  26)
+* .err:                                  Err.                 (line   6)
+* .error:                                Error.               (line   6)
+* .exitm:                                Exitm.               (line   6)
+* .extern:                               Extern.              (line   6)
+* .fail (unsupported):                   Unsupported.         (line  29)
+* .file:                                 File.                (line   6)
+* .fill:                                 Fill.                (line   6)
+* .float:                                Float.               (line   6)
+* .func (unsupported):                   Unsupported.         (line  32)
+* .global <1>:                           AAP insn.            (line  13)
+* .global:                               Global.              (line   6)
+* .gnu_attribute (unsupported):          Unsupported.         (line  35)
 * .gnu_attribute 4, N directive, AAP:    AAP FP ABI History.  (line   6)
 * .gnu_attribute Tag_GNU_AAP_ABI_FP, N directive, AAP: AAP FP ABI History.
                                                               (line   6)
+* .hidden:                               Hidden.              (line   6)
+* .hword (unsupported):                  Unsupported.         (line  38)
+* .ident:                                Ident.               (line   6)
+* .if:                                   If.                  (line   6)
+* .ifb:                                  If.                  (line  22)
+* .ifc:                                  If.                  (line  26)
+* .ifdef:                                If.                  (line  17)
+* .ifeq:                                 If.                  (line  37)
+* .ifeqs:                                If.                  (line  40)
+* .ifge:                                 If.                  (line  44)
+* .ifgt:                                 If.                  (line  48)
+* .ifle:                                 If.                  (line  52)
+* .iflt:                                 If.                  (line  56)
+* .ifnb:                                 If.                  (line  60)
+* .ifnc:                                 If.                  (line  64)
+* .ifndef:                               If.                  (line  70)
+* .ifne:                                 If.                  (line  76)
+* .ifnes:                                If.                  (line  80)
+* .ifnotdef:                             If.                  (line  70)
+* .incbin:                               Incbin.              (line   6)
+* .include:                              Include.             (line   6)
 * .insn:                                 AAP insn.            (line   6)
+* .int:                                  Int.                 (line   6)
+* .internal:                             Internal.            (line   6)
+* .irp:                                  Irp.                 (line   6)
+* .irpc:                                 Irpc.                (line   6)
+* .lcomm:                                Lcomm.               (line   6)
+* .line (deprecated):                    Line.                (line   6)
+* .linet (deprecated):                   Deprecated.          (line  12)
+* .linkonce (unsupported):               Unsupported.         (line  45)
+* .list (unsupported):                   Unsupported.         (line  49)
+* .loc_mark_labels (unsupported):        Unsupported.         (line  52)
+* .local:                                Local.               (line   6)
+* .long:                                 Long.                (line   6)
+* .macro:                                Macro.               (line  28)
 * .module:                               AAP assembly options.
                                                               (line   6)
 * .module fp=NN directive, AAP:          AAP FP ABI Selection.
                                                               (line   6)
 * .nan directive, AAP:                   AAP NaN Encodings.   (line   6)
+* .noaltmacro (unsupported):             Unsupported.         (line  58)
+* .nolist (unsupported):                 Unsupported.         (line  61)
 * .o:                                    Object.              (line   6)
+* .octa:                                 Octa.                (line   6)
+* .offset (unsupported):                 Unsupported.         (line  64)
+* .org:                                  Org.                 (line   6)
 * .set arch=CPU:                         AAP ISA.             (line  19)
 * .set at:                               AAP Macros.          (line  42)
 * .set at=REG:                           AAP Macros.          (line  36)
@@ -6169,15 +5885,15 @@ AS Index
 * .set xpa:                              AAP ASE Instruction Generation Overrides.
                                                               (line  52)
 * : (label):                             Statements.          (line  31)
-* \" (doublequote character):            Strings.             (line  43)
-* \\ (\ character):                      Strings.             (line  40)
-* \b (backspace character):              Strings.             (line  15)
-* \DDD (octal character code):           Strings.             (line  30)
-* \f (formfeed character):               Strings.             (line  18)
-* \n (newline character):                Strings.             (line  21)
-* \r (carriage return character):        Strings.             (line  24)
-* \t (tab):                              Strings.             (line  27)
-* \XD... (hex character code):           Strings.             (line  36)
+* \" (doublequote character):            Strings.             (line  44)
+* \\ (\ character):                      Strings.             (line  41)
+* \b (backspace character):              Strings.             (line  16)
+* \DDD (octal character code):           Strings.             (line  31)
+* \f (formfeed character):               Strings.             (line  19)
+* \n (newline character):                Strings.             (line  22)
+* \r (carriage return character):        Strings.             (line  25)
+* \t (tab):                              Strings.             (line  28)
+* \XD... (hex character code):           Strings.             (line  37)
 * a.out:                                 Object.              (line   6)
 * AAP 32-bit microAAP instruction generation override: AAP assembly options.
                                                               (line  18)
@@ -6210,15 +5926,17 @@ AS Index
 * AAP processor:                         AAP-dependent.       (line   6)
 * AAP SIMD Architecture instruction generation override: AAP ASE Instruction Generation Overrides.
                                                               (line  42)
-* abort directive:                       Abort.               (line   6)
+* abort directive (deprecated) <1>:      Deprecated.          (line   9)
+* abort directive (deprecated):          Abort.               (line   6)
 * absolute section:                      Ld Sections.         (line  27)
 * addition, permitted arguments:         Infix Ops.           (line  44)
 * addresses:                             Expressions.         (line   6)
-* addresses, format of:                  Secs Background.     (line  55)
+* addresses, format of:                  Secs Background.     (line  54)
 * advancing location counter:            Org.                 (line   6)
 * align directive:                       Align.               (line   6)
 * aligned instruction bundle:            Bundle directives.   (line   6)
 * altered difference tables:             Word.                (line  12)
+* altmacro directive (unsupported):      Unsupported.         (line  11)
 * arguments for addition:                Infix Ops.           (line  44)
 * arguments for subtraction:             Infix Ops.           (line  49)
 * arguments in expressions:              Arguments.           (line   6)
@@ -6228,9 +5946,10 @@ AS Index
 * asciz directive:                       Asciz.               (line   6)
 * assembler bugs, reporting:             Bug Reporting.       (line   6)
 * assembler crash:                       Bug Criteria.        (line   9)
-* assembler internal logic error:        As Sections.         (line  14)
+* assembler internal logic error:        As Sections.         (line  15)
 * assembler version:                     information.         (line   6)
 * assembler, and linker:                 Secs Background.     (line  10)
+* assembler, invoking directly:          Command Line.        (line  29)
 * assembly code generation:              codegen.             (line   6)
 * assembly debug output:                 debug.               (line   6)
 * assembly help:                         information.         (line   6)
@@ -6244,11 +5963,11 @@ AS Index
 * assigning values to symbols:           Setting Symbols.     (line   6)
 * at register, AAP:                      AAP Macros.          (line  36)
 * attributes, symbol:                    Symbol Attributes.   (line   6)
-* backslash (\\):                        Strings.             (line  40)
-* backspace (\b):                        Strings.             (line  15)
+* backslash (\\):                        Strings.             (line  41)
+* backspace (\b):                        Strings.             (line  16)
 * balign directive:                      Balign.              (line   6)
-* balignl directive:                     Balign.              (line  27)
-* balignw directive:                     Balign.              (line  27)
+* balignl directive:                     Balign.              (line   6)
+* balignw directive:                     Balign.              (line   6)
 * big-endian output, AAP:                AAP Options.         (line  14)
 * bignums:                               Bignums.             (line   6)
 * binary files, including:               Incbin.              (line   6)
@@ -6264,21 +5983,40 @@ AS Index
 * bundle_lock directive:                 Bundle directives.   (line  28)
 * bundle_unlock directive:               Bundle directives.   (line  28)
 * byte directive:                        Byte.                (line   6)
-* carriage return (\r):                  Strings.             (line  24)
+* carriage return (\r):                  Strings.             (line  25)
+* cfi_adjust_cfa_offset directive:       CFI directives.      (line  75)
+* cfi_def_cfa directive:                 CFI directives.      (line  56)
+* cfi_def_cfa_offset directive:          CFI directives.      (line  68)
+* cfi_def_cfa_register directive:        CFI directives.      (line  62)
 * cfi_endproc directive:                 CFI directives.      (line  26)
+* cfi_escape directive:                  CFI directives.      (line 137)
+* cfi_lsda directive:                    CFI directives.      (line  46)
+* cfi_offset directive:                  CFI directives.      (line  81)
+* cfi_personality directive:             CFI directives.      (line  33)
+* cfi_register directive:                CFI directives.      (line  94)
+* cfi_rel_offset directive:              CFI directives.      (line  86)
+* cfi_remember_state directive:          CFI directives.      (line 117)
+* cfi_restore directive:                 CFI directives.      (line  99)
+* cfi_restore_state directive:           CFI directives.      (line 117)
+* cfi_return_column directive (unsupported): Unsupported.     (line  14)
+* cfi_same_value directive:              CFI directives.      (line 111)
 * cfi_sections directive:                CFI directives.      (line   6)
+* cfi_signal_frame directive:            CFI directives.      (line 124)
 * cfi_startproc directive:               CFI directives.      (line  16)
+* cfi_undefined directive:               CFI directives.      (line 106)
+* cfi_val_encoded_addr directive (unsupported): Unsupported.  (line  17)
+* cfi_window_save directive:             CFI directives.      (line 129)
 * character constants:                   Characters.          (line   6)
-* character escape codes:                Strings.             (line  15)
+* character escape codes:                Strings.             (line  16)
 * character, single:                     Chars.               (line   6)
 * characters used in symbols:            Symbol Intro.        (line   6)
 * code generation, assembly:             codegen.             (line   6)
-* COMDAT:                                Linkonce.            (line   6)
+* COMDAT:                                Unsupported.         (line  45)
 * comm directive:                        Comm.                (line   6)
 * command line conventions:              Command Line.        (line   6)
 * comments:                              Comments.            (line   6)
 * comments, removed by preprocessor:     Preprocessing.       (line  11)
-* common sections:                       Linkonce.            (line   6)
+* common sections:                       Unsupported.         (line  45)
 * common variable storage:               bss.                 (line   6)
 * comparison expressions:                Infix Ops.           (line  55)
 * conditional assembly:                  If.                  (line   6)
@@ -6295,6 +6033,7 @@ AS Index
 * current address:                       Dot.                 (line   6)
 * current address, advancing:            Org.                 (line   6)
 * data directive:                        Data.                (line   6)
+* debug for register windws:             CFI directives.      (line 129)
 * debug output, assembly:                debug.               (line   6)
 * debuggers, and symbol order:           Symbols.             (line  10)
 * decimal integers:                      Integers.            (line  12)
@@ -6305,42 +6044,44 @@ AS Index
 * Disable floating-point instructions:   AAP Floating-Point.  (line   6)
 * Disable single-precision floating-point operations: AAP Floating-Point.
                                                               (line  12)
-* dollar local symbols:                  Symbol Names.        (line 111)
+* dollar local symbols:                  Symbol Names.        (line 110)
 * dot (symbol):                          Dot.                 (line   6)
 * double directive:                      Double.              (line   6)
-* doublequote (\"):                      Strings.             (line  43)
+* doublequote (\"):                      Strings.             (line  44)
 * eight-byte integer:                    Quad.                (line   9)
-* eject directive:                       Eject.               (line   6)
+* eject directive (unsupported):         Unsupported.         (line  20)
 * ELF symbol type:                       Type.                (line   8)
 * else directive:                        Else.                (line   6)
 * elseif directive:                      Elseif.              (line   6)
 * empty expressions:                     Empty Exprs.         (line   6)
 * encoding of instructions, assembly:    encoding.            (line   6)
 * end directive:                         End.                 (line   6)
-* endfunc directive:                     Endfunc.             (line   6)
+* endfunc directive (unsupported):       Unsupported.         (line  23)
 * endif directive:                       Endif.               (line   6)
-* endm directive:                        Macro.               (line 138)
+* endm directive <1>:                    Macro.               (line 138)
+* endm directive:                        Endm.                (line   6)
+* endr directive:                        Endr.                (line   6)
 * EOF, newline must precede:             Statements.          (line  14)
 * equ directive:                         Equ.                 (line   6)
 * equiv directive:                       Equiv.               (line   6)
-* eqv directive:                         Eqv.                 (line   6)
+* eqv directive (unsupported):           Unsupported.         (line  26)
 * err directive:                         Err.                 (line   6)
 * error directive:                       Error.               (line   6)
 * error messages:                        Errors.              (line   6)
 * error on valid input:                  Bug Criteria.        (line  13)
-* escape codes, character:               Strings.             (line  15)
-* exitm directive:                       Macro.               (line 141)
-* expr (internal section):               As Sections.         (line  18)
+* escape codes, character:               Strings.             (line  16)
+* exitm directive <1>:                   Macro.               (line 141)
+* exitm directive:                       Exitm.               (line   6)
+* expr (internal section):               As Sections.         (line  19)
 * expression arguments:                  Arguments.           (line   6)
 * expressions:                           Expressions.         (line   6)
 * expressions, comparison:               Infix Ops.           (line  55)
 * expressions, empty:                    Empty Exprs.         (line   6)
 * expressions, integer:                  Integer Exprs.       (line   6)
 * extern directive:                      Extern.              (line   6)
-* fail directive:                        Fail.                (line   6)
+* fail directive (unsupported):          Unsupported.         (line  29)
 * fatal signal:                          Bug Criteria.        (line   9)
 * file directive:                        File.                (line   6)
-* file name, logical:                    File.                (line  13)
 * files, including:                      Include.             (line   6)
 * files, input:                          Input Files.         (line   6)
 * fill directive:                        Fill.                (line   6)
@@ -6354,41 +6095,44 @@ AS Index
 * flonums:                               Flonums.             (line   6)
 * format of error messages:              Errors.              (line  25)
 * format of warning messages:            Errors.              (line  13)
-* formfeed (\f):                         Strings.             (line  18)
-* func directive:                        Func.                (line   6)
+* formfeed (\f):                         Strings.             (line  19)
+* func directive (unsupported):          Unsupported.         (line  32)
 * functions, in expressions:             Operators.           (line   6)
 * global directive:                      Global.              (line   6)
+* GNU assembler directives, unsupported: Unsupported.         (line   6)
+* GNU object attributes:                 Object Attributes.   (line   6)
+* gnu_attribute directive (unsupported): Unsupported.         (line  35)
 * gold:                                  Object.              (line  15)
 * gp register, AAP:                      AAP Small Data.      (line   6)
 * grouping data:                         Sub-Sections.        (line   6)
 * help, assembly:                        information.         (line   6)
-* hex character code (\XD...):           Strings.             (line  36)
+* hex character code (\XD...):           Strings.             (line  37)
 * hexadecimal integers:                  Integers.            (line  15)
 * hidden directive:                      Hidden.              (line   6)
-* hword directive:                       hword.               (line   6)
+* hword directive (unsupported):         Unsupported.         (line  38)
 * ident directive:                       Ident.               (line   6)
 * if directive:                          If.                  (line   6)
-* ifb directive:                         If.                  (line  21)
-* ifc directive:                         If.                  (line  25)
-* ifdef directive:                       If.                  (line  16)
-* ifeq directive:                        If.                  (line  33)
-* ifeqs directive:                       If.                  (line  36)
-* ifge directive:                        If.                  (line  40)
-* ifgt directive:                        If.                  (line  44)
-* ifle directive:                        If.                  (line  48)
-* iflt directive:                        If.                  (line  52)
-* ifnb directive:                        If.                  (line  56)
-* ifnc directive:                        If.                  (line  61)
-* ifndef directive:                      If.                  (line  65)
-* ifne directive:                        If.                  (line  72)
-* ifnes directive:                       If.                  (line  76)
-* ifnotdef directive:                    If.                  (line  65)
+* ifb directive:                         If.                  (line  22)
+* ifc directive:                         If.                  (line  26)
+* ifdef directive:                       If.                  (line  17)
+* ifeq directive:                        If.                  (line  37)
+* ifeqs directive:                       If.                  (line  40)
+* ifge directive:                        If.                  (line  44)
+* ifgt directive:                        If.                  (line  48)
+* ifle directive:                        If.                  (line  52)
+* iflt directive:                        If.                  (line  56)
+* ifnb directive:                        If.                  (line  60)
+* ifnc directive:                        If.                  (line  64)
+* ifndef directive:                      If.                  (line  70)
+* ifne directive:                        If.                  (line  76)
+* ifnes directive:                       If.                  (line  80)
+* ifnotdef directive:                    If.                  (line  70)
 * incbin directive:                      Incbin.              (line   6)
 * include directive:                     Include.             (line   6)
 * include directive search path:         include.             (line   6)
 * infix operators:                       Infix Ops.           (line   6)
 * input:                                 Input Files.         (line   6)
-* input file linenumbers:                Input Files.         (line  44)
+* input file linenumbers:                Input Files.         (line  41)
 * instruction bundle:                    Bundle directives.   (line   6)
 * instructions and directives:           Statements.          (line  20)
 * int directive:                         Int.                 (line   6)
@@ -6396,7 +6140,7 @@ AS Index
 * integer, 16-byte:                      Octa.                (line   6)
 * integer, 8-byte:                       Quad.                (line   9)
 * integers:                              Integers.            (line   6)
-* integers, 16-bit:                      hword.               (line   6)
+* integers, 16-bit:                      Unsupported.         (line  38)
 * integers, 32-bit:                      Int.                 (line   6)
 * integers, binary:                      Integers.            (line   6)
 * integers, decimal:                     Integers.            (line  12)
@@ -6414,22 +6158,24 @@ AS Index
 * lcomm directive:                       Lcomm.               (line   6)
 * ld:                                    Object.              (line  15)
 * length of symbols:                     Symbol Intro.        (line  14)
-* lflags directive (ignored):            Lflags.              (line   6)
+* lflags (unsupported):                  Unsupported.         (line  42)
+* lflags directive (unsupported):        Unsupported.         (line  42)
 * line comment character:                Comments.            (line  19)
 * line comment character, AAP:           AAP-Chars.           (line   6)
-* line directive:                        Line.                (line   6)
-* line numbers, in input files:          Input Files.         (line  44)
+* line directive (deprecated):           Line.                (line   6)
+* line numbers, in input files:          Input Files.         (line  41)
 * line numbers, in warnings/errors:      Errors.              (line  17)
 * line separator character:              Statements.          (line   6)
 * line separator, AAP:                   AAP-Chars.           (line  14)
 * lines starting with #:                 Comments.            (line  33)
+* linet directive (deprecated):          Deprecated.          (line  12)
 * linker:                                Object.              (line  15)
 * linker, and assembler:                 Secs Background.     (line  10)
-* linkonce directive:                    Linkonce.            (line   6)
-* list directive:                        List.                (line   6)
-* listing control, turning off:          Nolist.              (line   6)
-* listing control, turning on:           List.                (line   6)
-* listing control: new page:             Eject.               (line   6)
+* linkonce directive (unsupported):      Unsupported.         (line  45)
+* list directive (unsupported):          Unsupported.         (line  49)
+* listing control, turning off:          Unsupported.         (line  61)
+* listing control, turning on:           Unsupported.         (line  49)
+* listing control: new page:             Unsupported.         (line  20)
 * listing control: paper size:           Psize.               (line   6)
 * listing control: subtitle:             Sbttl.               (line   6)
 * listing control: title line:           Title.               (line   6)
@@ -6438,14 +6184,14 @@ AS Index
 * LLVM options for assembly:             llvm.                (line   6)
 * ln directive:                          Ln.                  (line   6)
 * loc directive:                         Loc.                 (line   6)
-* loc_mark_labels directive:             Loc_mark_labels.     (line   6)
+* loc_mark_labels directive (unsupported): Unsupported.       (line  52)
 * local common symbols:                  Lcomm.               (line   6)
 * local directive:                       Local.               (line   6)
-* local labels:                          Symbol Names.        (line  41)
+* local labels:                          Symbol Names.        (line  40)
 * local symbol names:                    Symbol Names.        (line  27)
+* LOCAL within macros (unsupported):     Unsupported.         (line  55)
 * location counter:                      Dot.                 (line   6)
 * location counter, advancing:           Org.                 (line   6)
-* logical file name:                     File.                (line  13)
 * logical line number:                   Line.                (line   6)
 * logical line numbers:                  Comments.            (line  33)
 * long directive:                        Long.                (line   6)
@@ -6457,6 +6203,7 @@ AS Index
 * macro directive:                       Macro.               (line  28)
 * macros:                                Macro.               (line   6)
 * macros, count executed:                Macro.               (line 143)
+* macros, LOCAL (unsupported):           Unsupported.         (line  55)
 * manual, structure and purpose:         Manual.              (line   6)
 * mclinker:                              Object.              (line  15)
 * messages from assembler:               Errors.              (line   6)
@@ -6464,31 +6211,32 @@ AS Index
 * named section:                         Section.             (line   6)
 * named sections:                        Ld Sections.         (line   8)
 * names, symbol:                         Symbol Names.        (line   6)
-* new page, in listings:                 Eject.               (line   6)
-* newline (\n):                          Strings.             (line  21)
+* new page, in listings:                 Unsupported.         (line  20)
+* newline (\n):                          Strings.             (line  22)
 * newline, required at file end:         Statements.          (line  14)
-* nolist directive:                      Nolist.              (line   6)
+* noaltmacro directive (unsupported):    Unsupported.         (line  58)
+* nolist directive (unsupported):        Unsupported.         (line  61)
 * null-terminated strings:               Asciz.               (line   6)
 * number constants:                      Numbers.             (line   6)
 * number of macros executed:             Macro.               (line 143)
 * numbered subsections:                  Sub-Sections.        (line   6)
-* numbers, 16-bit:                       hword.               (line   6)
+* numbers, 16-bit:                       Unsupported.         (line  38)
 * numeric values:                        Expressions.         (line   6)
 * object attributes:                     Object Attributes.   (line   6)
 * object file:                           Object.              (line   6)
 * object file format:                    Object Formats.      (line   6)
 * obsolescent directives:                Deprecated.          (line   6)
 * octa directive:                        Octa.                (line   6)
-* octal character code (\DDD):           Strings.             (line  30)
+* octal character code (\DDD):           Strings.             (line  31)
 * octal integers:                        Integers.            (line   9)
-* offset directive:                      Offset.              (line   6)
+* offset directive (unsupported):        Unsupported.         (line  64)
 * operands in expressions:               Arguments.           (line   6)
 * operator precedence:                   Infix Ops.           (line  11)
 * operators, in expressions:             Operators.           (line   6)
 * operators, permitted arguments:        Infix Ops.           (line   6)
 * option summary:                        Overview.            (line   6)
 * options, all versions of assembler:    Invoking.            (line   6)
-* options, command line:                 Command Line.        (line  24)
+* options, command line:                 Command Line.        (line  44)
 * org directive:                         Org.                 (line   6)
 * output file:                           Object.              (line   6)
 * output options for assembly:           output.              (line   6)
@@ -6498,7 +6246,7 @@ AS Index
 * padding the location counter:          Align.               (line   6)
 * padding the location counter given a power of two: P2align. (line   6)
 * padding the location counter given number of bytes: Balign. (line   6)
-* page, in listings:                     Eject.               (line   6)
+* page, in listings:                     Unsupported.         (line  20)
 * paper size, for listings:              Psize.               (line   6)
 * paths for .include:                    include.             (line   6)
 * patterns, writing in memory:           Fill.                (line   6)
@@ -6532,7 +6280,7 @@ AS Index
 * Section Stack <3>:                     PushSection.         (line   6)
 * Section Stack <4>:                     Previous.            (line   6)
 * Section Stack:                         PopSection.          (line   6)
-* section-relative addressing:           Secs Background.     (line  55)
+* section-relative addressing:           Secs Background.     (line  54)
 * sections:                              Sections.            (line   6)
 * sections in messages, internal:        As Sections.         (line   6)
 * sections, named:                       Ld Sections.         (line   8)
@@ -6540,7 +6288,7 @@ AS Index
 * short directive:                       Short.               (line   6)
 * single character constant:             Chars.               (line   6)
 * single directive:                      Single.              (line   6)
-* sixteen bit integers:                  hword.               (line   6)
+* sixteen bit integers:                  Unsupported.         (line  38)
 * sixteen byte integer:                  Octa.                (line   6)
 * size directive (ELF version):          Size.                (line   8)
 * skip directive:                        Skip.                (line   6)
@@ -6551,7 +6299,6 @@ AS Index
 * source program:                        Input Files.         (line   6)
 * space directive:                       Space.               (line   6)
 * standard assembler sections:           Secs Background.     (line  26)
-* standard input, as input file:         Command Line.        (line  21)
 * statement separator character:         Statements.          (line   6)
 * statement separator, AAP:              AAP-Chars.           (line  14)
 * statements, structure of:              Statements.          (line   6)
@@ -6578,7 +6325,7 @@ AS Index
 * symbol attributes:                     Symbol Attributes.   (line   6)
 * symbol names:                          Symbol Names.        (line   6)
 * symbol names, local:                   Symbol Names.        (line  27)
-* symbol names, temporary:               Symbol Names.        (line  41)
+* symbol names, temporary:               Symbol Names.        (line  40)
 * symbol table control, assembly:        symbol-options.      (line   6)
 * symbol type:                           Symbol Type.         (line   6)
 * symbol type, ELF:                      Type.                (line   8)
@@ -6593,9 +6340,9 @@ AS Index
 * symbols, local common:                 Lcomm.               (line   6)
 * symver directive:                      Symver.              (line   6)
 * syntax, machine-independent:           Syntax.              (line   6)
-* tab (\t):                              Strings.             (line  27)
+* tab (\t):                              Strings.             (line  28)
 * target specification, assembly:        target.              (line   6)
-* temporary symbol names:                Symbol Names.        (line  41)
+* temporary symbol names:                Symbol Names.        (line  40)
 * text directive:                        Text.                (line   6)
 * title directive:                       Title.               (line   6)
 * turning preprocessing on and off:      Preprocessing.       (line  26)
@@ -6603,6 +6350,7 @@ AS Index
 * type of a symbol:                      Symbol Type.         (line   6)
 * uleb128 directive:                     Uleb128.             (line   6)
 * undefined section:                     Ld Sections.         (line  34)
+* unsupported GNU assembler directives:  Unsupported.         (line   6)
 * value of a symbol:                     Symbol Value.        (line   6)
 * version directive:                     Version.             (line   6)
 * version, assembler:                    information.         (line   6)
@@ -6629,209 +6377,194 @@ AS Index
 
 Tag Table:
 Node: Top817
-Node: Overview1863
-Node: Manual3570
-Node: LLVM Assembler4566
-Node: Object Formats5954
-Node: Command Line6365
-Node: Input Files8167
-Ref: cc1as9615
-Node: Object10928
-Node: Errors12012
-Node: Invoking13332
-Node: codegen15109
-Node: mnoexecstack15317
-Node: mrelax-all15651
-Node: n16176
-Node: debug16333
-Node: compress-debug-sections16837
-Node: dwarf-debug-flags17046
-Node: dwarf-debug-producer17302
-Node: fdebug-compilation-dir17565
-Node: gdwarf-n17825
-Node: g18133
-Node: main-file-name18289
-Node: encoding18481
-Node: show-encoding18755
-Node: show-inst18948
-Node: include19136
-Node: information20113
-Node: help20366
-Node: version21067
-Node: llvm21417
-Node: output21670
-Node: filetype21980
-Node: output-asm-variant22661
-Node: o22971
-Node: symbol-options23248
-Node: target23592
-Node: target-abi23904
-Node: target-cpu24105
-Node: target-feature24332
-Node: triple24573
-Node: warnings24759
-Node: Syntax25005
-Node: Preprocessing25632
-Node: Whitespace27228
-Node: Comments27636
-Node: Symbol Intro29700
-Node: Statements30439
-Node: Constants32262
-Node: Characters32905
-Node: Strings33419
-Node: Chars35686
-Node: Numbers36473
-Node: Integers37046
-Node: Bignums37714
-Node: Flonums38082
-Node: Sections39913
-Node: Secs Background40303
-Node: Ld Sections44620
-Node: As Sections47025
-Node: Sub-Sections48009
-Node: bss51032
-Node: Symbols51994
-Node: Labels52680
-Node: Setting Symbols53121
-Node: Symbol Names53629
-Node: Dot58988
-Node: Symbol Attributes59468
-Node: Symbol Value60058
-Node: Symbol Type61127
-Node: Expressions61505
-Node: Empty Exprs62308
-Node: Integer Exprs62688
-Node: Arguments63095
-Node: Operators64234
-Node: Prefix Ops64581
-Node: Infix Ops64942
-Node: Pseudo Ops67344
-Node: Abort72512
-Node: Align72951
-Node: Altmacro75238
-Node: Ascii76579
-Node: Asciz76900
-Node: Balign77157
-Node: Bundle directives79045
-Node: Byte81986
-Node: CFI directives82257
-Node: Comm87898
-Ref: Comm-Footnote-189434
-Node: Data89802
-Node: Double90155
-Node: Eject90526
-Node: Else90713
-Node: Elseif91046
-Node: End91373
-Node: Endfunc91623
-Node: Endif91808
-Node: Equ92102
-Node: Equiv92361
-Node: Eqv92929
-Node: Err93305
-Node: Error93649
-Node: Exitm94106
-Node: Extern94287
-Node: Fail94581
-Node: File95080
-Node: Fill96463
-Node: Float97460
-Node: Func97834
-Node: Global98436
-Node: Gnu_attribute99006
-Node: Hidden99243
-Node: hword99841
-Node: Ident100181
-Node: If100788
-Node: Incbin103859
-Node: Include104566
-Node: Int105129
-Node: Internal105522
-Node: Irp106182
-Node: Irpc107073
-Node: Lcomm108002
-Node: Lflags108650
-Node: Line108877
-Node: Linkonce109425
-Node: List110666
-Node: Ln111286
-Node: Loc111448
-Node: Loc_mark_labels112846
-Node: Local113342
-Node: Long113966
-Node: Macro114156
-Node: Noaltmacro120118
-Node: Nolist120301
-Node: Octa120743
-Node: Offset121092
-Node: Org121431
-Node: P2align122770
-Node: PopSection124710
-Node: Previous125230
-Node: Print126655
-Node: Protected126917
-Node: Psize127576
-Node: Purgem128293
-Node: PushSection128526
-Node: Quad129281
-Node: Reloc129749
-Node: Rept130522
-Node: Sbttl130948
-Node: Section131329
-Node: Set136184
-Node: Short136689
-Node: Single137022
-Node: Size137399
-Node: Skip137893
-Node: Sleb128138227
-Node: Space138561
-Node: String138899
-Node: Struct139906
-Node: SubSection140643
-Node: Symver141218
-Node: Text143624
-Node: Title143982
-Node: Type144375
-Node: Uleb128146444
-Node: Version146784
-Node: VTableEntry147075
-Node: VTableInherit147377
-Node: Warning147839
-Node: Weak148085
-Node: Weakref148766
-Node: Word149743
-Node: Deprecated151664
-Node: Object Attributes151911
-Node: GNU Object Attributes153671
-Node: Defining New Object Attributes156908
-Node: Machine Dependencies157717
-Node: AAP-dependent158594
-Node: AAP Options159979
-Node: AAP Macros174751
-Ref: AAP Macros-Footnote-1177462
-Node: AAP Symbol Sizes177605
-Node: AAP Small Data179283
-Node: AAP ISA181449
-Node: AAP assembly options183253
-Node: AAP autoextend184389
-Node: AAP insn185124
-Node: AAP FP ABIs186482
-Node: AAP FP ABI History186936
-Node: AAP FP ABI Variants187702
-Node: AAP FP ABI Selection190258
-Node: AAP FP ABI Compatibility191328
-Node: AAP NaN Encodings192145
-Node: AAP Option Stack194128
-Node: AAP ASE Instruction Generation Overrides194918
-Node: AAP Floating-Point197629
-Node: AAP Syntax198540
-Node: AAP-Chars198806
-Node: Reporting Bugs199356
-Node: Bug Criteria200157
-Node: Bug Reporting201030
-Node: Acknowledgements207965
-Ref: Acknowledgements-Footnote-1213078
-Node: GNU Free Documentation License213104
-Node: AS Index238285
+Node: Overview1859
+Node: Manual2513
+Node: LLVM Assembler3509
+Node: Object Formats4897
+Node: Command Line5308
+Ref: cc1as5838
+Node: Input Files7821
+Node: Object10427
+Node: Errors11511
+Node: Invoking12894
+Node: codegen14613
+Node: mnoexecstack14821
+Node: mrelax-all15155
+Node: n15680
+Node: debug15837
+Node: compress-debug-sections16341
+Node: dwarf-debug-flags16550
+Node: dwarf-debug-producer16806
+Node: fdebug-compilation-dir17069
+Node: gdwarf-n17329
+Node: g17637
+Node: main-file-name17793
+Node: encoding17985
+Node: show-encoding18259
+Node: show-inst18452
+Node: include18640
+Node: information19617
+Node: help19870
+Node: version20571
+Node: llvm20921
+Node: output21174
+Node: filetype21484
+Node: output-asm-variant22165
+Node: o22475
+Node: symbol-options22752
+Node: target23096
+Node: target-abi23408
+Node: target-cpu23609
+Node: target-feature23836
+Node: triple24077
+Node: warnings24263
+Node: Syntax24509
+Node: Preprocessing25136
+Node: Whitespace26446
+Node: Comments26854
+Node: Symbol Intro28926
+Node: Statements29665
+Node: Constants31492
+Node: Characters32137
+Node: Strings32651
+Node: Chars34903
+Node: Numbers35801
+Node: Integers36378
+Node: Bignums37046
+Node: Flonums37414
+Node: Sections38933
+Node: Secs Background39323
+Node: Ld Sections43634
+Node: As Sections46042
+Node: Sub-Sections47039
+Node: bss50074
+Node: Symbols50968
+Node: Labels51658
+Node: Setting Symbols52099
+Node: Symbol Names52627
+Node: Dot57551
+Node: Symbol Attributes58035
+Node: Symbol Value58630
+Node: Symbol Type59699
+Node: Expressions60077
+Node: Empty Exprs60859
+Node: Integer Exprs61243
+Node: Arguments61650
+Node: Operators62793
+Node: Prefix Ops63140
+Node: Infix Ops63504
+Node: Pseudo Ops65906
+Node: Abort70800
+Node: Align71287
+Node: Ascii73318
+Node: Asciz73636
+Node: Balign73893
+Node: Bundle directives75805
+Node: Byte78746
+Node: CFI directives79017
+Node: Comm84191
+Node: Data85514
+Node: Double85871
+Node: Else86246
+Node: Elseif86584
+Node: End86915
+Node: Endif87167
+Node: Endm87462
+Node: Endr87626
+Node: Equ87813
+Node: Equiv88067
+Node: Err88635
+Node: Error88985
+Node: Exitm89442
+Node: Extern89623
+Node: File89921
+Node: Fill90580
+Node: Float91582
+Node: Global91963
+Node: Hidden92527
+Node: Ident93118
+Node: If93331
+Node: Incbin96561
+Node: Include97122
+Node: Int97685
+Node: Internal98078
+Node: Irp98737
+Node: Irpc99628
+Node: Lcomm100557
+Node: Line101203
+Node: Ln101637
+Node: Loc102173
+Node: Local103561
+Node: Long104173
+Node: Macro104363
+Node: Octa110202
+Node: Org110547
+Node: P2align111892
+Node: PopSection113832
+Node: Previous114352
+Node: Print115777
+Node: Protected116043
+Node: Psize116702
+Node: Purgem117423
+Node: PushSection117656
+Node: Quad118411
+Node: Reloc118879
+Node: Rept119652
+Node: Sbttl120078
+Node: Section120459
+Node: Set125314
+Node: Short125819
+Node: Single126152
+Node: Size126534
+Node: Skip127028
+Node: Sleb128127362
+Node: Space127696
+Node: String128034
+Node: Struct129039
+Node: SubSection129774
+Node: Symver130347
+Node: Text132751
+Node: Title133111
+Node: Type133502
+Node: Uleb128135569
+Node: Version135907
+Node: VTableEntry136196
+Node: VTableInherit136496
+Node: Warning136956
+Node: Weak137200
+Node: Weakref137879
+Node: Word138854
+Node: Deprecated140784
+Node: Unsupported141098
+Node: Object Attributes142813
+Node: Machine Dependencies143218
+Node: AAP-dependent144107
+Node: AAP Options145492
+Node: AAP Macros160264
+Ref: AAP Macros-Footnote-1162975
+Node: AAP Symbol Sizes163118
+Node: AAP Small Data164796
+Node: AAP ISA166962
+Node: AAP assembly options168766
+Node: AAP autoextend169902
+Node: AAP insn170637
+Node: AAP FP ABIs171995
+Node: AAP FP ABI History172449
+Node: AAP FP ABI Variants173215
+Node: AAP FP ABI Selection175771
+Node: AAP FP ABI Compatibility176841
+Node: AAP NaN Encodings177658
+Node: AAP Option Stack179641
+Node: AAP ASE Instruction Generation Overrides180431
+Node: AAP Floating-Point183142
+Node: AAP Syntax184053
+Node: AAP-Chars184319
+Node: Reporting Bugs184869
+Node: Bug Criteria185682
+Node: Bug Reporting186576
+Node: Acknowledgements193563
+Ref: Acknowledgements-Footnote-1198676
+Node: GNU Free Documentation License198702
+Node: AS Index223883
 
 End Tag Table
