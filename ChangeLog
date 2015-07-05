@@ -1,3 +1,24 @@
+2015-07-05  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* Makefile.in: Regenerated.
+	* aclocal.m4: Regenerated.
+	* configure: Regenerated.
+	* configure.ac (BUGURL): Replaces BUFURL_TEXI.
+	* llvm-assembler-manual/Makefile.in: Regenerated.
+	* llvm-assembler-manual/llvm-assembler.info: Regenerated.
+	* llvm-assembler-manual/llvm-assembler.texi (Overview): Remove
+	invocations summary.
+	(Command-Line Options): Rewritten to simplify and separate into
+	just common, assembler and internal options.
+	* llvm-user-manual/Makefile.in: Regenerated.
+	* llvm-user-manual/llvm.info: Regenerated.
+	* llvm-user-manual/llvm.info-1: Regenerated.
+	* llvm-user-manual/llvm.info-2: Regenerated.
+	* llvm-user-manual/llvm.info-3: Regenerated.
+	* llvm-user-manual/llvm.info-4: Regenerated.
+	* llvm-user-manual/llvm.info-5: Regenerated.
+	* llvm-user-manual/llvm.info-6: Regenerated.
+
 2015-07-03  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* llvm-assembler-manual/llvm-assembler.info: Regenerated.

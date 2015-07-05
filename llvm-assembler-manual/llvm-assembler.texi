@@ -150,22 +150,6 @@ section entitled ``GNU Free Documentation License''.
 This manual is a user guide to the LLVM integrated assembler
 @end iftex
 
-@cindex invocation summary
-@cindex option summary
-@cindex summary of options
-Here is a brief summary of how to invoke the LLVM integrated assembler.  For
-details, see @ref{Invoking,,Command-Line Options}.
-
-@c Command synopsis
-
-@c We don't use deffn and friends for the following because they seem
-@c to be limited to one line for the header.
-@example
-clang @b{-cc1as} [@var{options}] @var{inputs}
-@end example
-
-@c Command options
-
 @menu
 * Manual::                      Structure of this Manual
 * LLVM Assembler::              The LLVM Integrated Assembler
@@ -232,9 +216,9 @@ including object file formats, most assembler directives (often called
 
 @cindex purpose of the LLVM integrated assembler
 The LLVM integrated assembler is primarily intended to assemble the output of
-the LLVM compiler for use by the linker.  Nevertheless, we've tried to make the
-LLVM integrated assembler handle correctly everything that other assemblers for
-the same machine would assemble.
+the LLVM compiler for use by the linker.  Nevertheless, the LLVM integrated
+assembler should handle correctly everything that other assemblers for the same
+machine would assemble.
 
 This doesn't mean the assembler always uses the same syntax as another
 assembler for the same architecture.  Unlike the @sc{gnu} assembler the LLVM
@@ -272,7 +256,9 @@ if the @samp{-c} flag is specified in @var{myfile}.o.
 
 @anchor{cc1as}
 @kindex @option{-cc1as}
-The assembler can be invoked directly through the Clang front end to LLVM.
+The main @command{clang} command is a driver programs for the various
+sub-commands that make up the Clang/LLVM compiler system.  The LLVM integrated
+assembler can be invoked directly through the Clang front end to LLVM.
 @example
 clang -cc1as ...
 @end example
@@ -327,9 +313,8 @@ standard).  These two command lines are equivalent:
 @var{arch}-cc -omy-object-file.o mumble.s
 @end example
 
-There can sometimes be ambiguity between options for the C/C++ compiler and for
-the assembler.  In this case, the option should be preceded by @samp{-Wa,} to
-indicate it is intended for the assembler.
+The details of command line options for the LLVM integrated assembler are
+described in a later chapter.  @xref{Invoking}.
 
 @node Input Files
 @section Input Files
@@ -348,7 +333,7 @@ turn and then linking them.  Supplying the @samp{-c} option will cause just the
 assembly to happen, with one object file produced for each source file.  There
 is no concept of concatenating the source files for a single file assembly.
 
-You give a command line that has one or more input file names.  Any with the
+A command line should have one or more input file names.  Any with the
 suffix @samp{.s} or @samp{.S} will be assembled.  The difference between the
 suffixes is that files ending in @samp{.S} will first be passed through the C
 pre-processor.  For example
@@ -500,145 +485,41 @@ interpreted as assembler options.
 clang -cc1as -help
 @end example
 
-@emph{Note:}  At the time of writing, there are some assembler options that can
-only be passed if the assembler is invoked directly with @samp{-cc1as}.
+@emph{Note:}  Some options to the LLVM integrated assembler are considered part
+of the internal interface between the clang driver and the LLVM integratated
+assembler component.  These options are not accesible via @samp{-Wa} or
+@samp{-Xassembler}, and can only be used when the assembler is invoked directly
+using @code{-cc1as}.  Avoid using such options--since they are part of an
+internal interface they are subject to change or removal without warning.
 
 @menu
-* codegen::         How the assembly code is generated
-* debug::           -g and other options controlling debug output
-* encoding::        Show how instructions are encoded
-* include::         -I for include search path
-* information::     -help, -version
-* llvm::            Additional arguments for LLVM option processing
-* output::          -o and other options controlling output
-* symbol-options::  Symbol table handling
-* target::          Target specification
-* warnings::        Control how warnings are handled
+* common-options::     Options Which are Common to the Compiler and Assembler
+* assembler-options::  Options Passed by @samp{-Wa} or @samp{-Xassembler}
+* internal-options::   Internal Assembler Options
 @end menu
 
-@node codegen
-@section Code Generation
-@cindex code generation, assembly
-@cindex assembly code generation
+@node common-options
+@section Options Which are Common to the Compiler and Assembler
+@cindex options common to the compiler
+These are options, which are common to the C/C++ compiler and are passed on
+from Clang to the assembler when processing any assembler files.
 
-@menu
-* mnoexecstack::  -mnoexecstack
-* mrelax-all::    -mrelax-all
-* n::             -n
-@end menu
+@table @samp
+@item -g
+@kindex -g
+Generate source-level debug information.  Whether this generates DWARF-2,
+DWARF-3 or DWARF-4 is target specific.  @xref{Machine Dependencies}.
 
-@node mnoexecstack
-@subsection @option{-mnoexecstack}
-
-@kindex -mnoexecstack
-Mark the output file as not needing an executable stack.  On some architectures,
-for example Harvard architectures like AAP, it is impossible to execute the
-stack, so this option has no additional effect.
-
-@node mrelax-all
-@subsection @option{-mrelax-all}
-
-@kindex -mrelax-all
-Relax all machine instructions.  For architectures which relax from short to
-longer instructions, this option says to relax all instructions to their long
-form, not just those that have to be.
-
-@emph{Note:}  Some architectures generate long instructions and then relax to
-shorter instructions.  This is simpler to implement, but suboptimal.  For these
-architectures, this flag has no effect.
-
-@node n
-@subsection @option{-n}
-
-@kindex -n
-Don't automatically start assembly file with a text section.
-
-@node debug
-@section Debug output
-@cindex debug output, assembly
-@cindex assembly debug output
-
-@menu
-* compress-debug-sections::  -compress-debug-sections
-* dwarf-debug-flags::        -dwarf-debug-flags @var{value}
-* dwarf-debug-producer::     -dwarf-debug-producer @var{value}
-* fdebug-compilation-dir::   -fdebug-compilation-dir @var{value}
-* gdwarf-n::                 -gdwarf-2, -gdwarf-3, -gdwarf-4
-* g::                        -g
-* main-file-name::           -main-file-name @var{value}
-@end menu
-
-@node compress-debug-sections
-@subsection @option{-compress-debug-sections}
-@kindex -compress-debug-sections
-
-Compress DWARF debug sections using zlib.
-
-@node dwarf-debug-flags
-@subsection @option{-dwarf-debug-flags} @var{value}
-@kindex -dwarf-debug-flags @var{value}
-
-@var{value} is a string to embed in the DWARF debug flags record.
-
-@node dwarf-debug-producer
-@subsection @option{-dwarf-debug-producer} @var{value}
-@kindex -dwarf-debug-producer @var{value}
-
-@var{value} is a string to embed in the DWARF @code{AT_producer} record.
-
-@node fdebug-compilation-dir
-@subsection @option{-fdebug-compilation-dir} @var{value}
-@kindex -fdebug-compilation-dir @var{value}
-
-@var{value}  is the compilation directory to embed in the debug info.
-
-@node gdwarf-n
-@subsection @option{-gdwarf-2}, @option{-gdwarf-3} and @option{-gdwarf-4}
+@item -gdwarf-2
+@itemx -gdwarf-3
+@itemx -gdwarf-4
 @kindex -gdwarf-2
 @kindex -gdwarf-3
 @kindex -gdwarf-4
-
 Generate source-level debug information using DWARF version 2, 3 or 4 as
 indicated.  Default is DWARF version 4.
 
-@node g
-@subsection @option{-g}
-@kindex -g
-
-Generate source-level debug information.
-
-@node main-file-name
-@subsection @option{-main-file-name} @var{value}
-@kindex -main-file-name @var{value}
-
-@var{value} is the main file name to embed in the debug info.
-
-@node encoding
-@section Showing Assembly Instruction Encoding Information
-
-@cindex encoding of instructions, assembly
-@cindex assembly instruction encoding
-
-@menu
-* show-encoding::  -show-encoding
-* show-inst::      -show-inst
-@end menu
-
-@node show-encoding
-@subsection @option{-show-encoding}
-
-@kindex -show-encoding
-Show instruction encoding information in transliterate mode.
-
-@node show-inst
-@subsection @option{-show-inst}
-
-@kindex -show-inst
-Show internal instruction representation in transliterate mode.
-
-@node include
-@section Search path for @code{.include}: @option{-I} @var{path}
-
+@item -I @var{path}
 @kindex -I @var{path}
 @cindex paths for @code{.include}
 @cindex search path for @code{.include}
@@ -651,36 +532,122 @@ always searched first; after that, the LLVM integrated assembler searches any
 @samp{-I} directories in the same order as they were specified (left to right)
 on the command line.
 
-@emph{Note:} The assembly @option{-I} option only relates to the
-@code{.include} directive.  Where the C pre-processor is used, any
-@code{#include} directives will use the @option{-I} for the compiler.  For
-example:
+@emph{Note:} This directive is common to the C pre-processor option, so where
+the C pre-processor is used, any @code{#include} directives will also use these
+directories.  It is possible to pass this option using @samp{-Wa} or
+@samp{-Xassembler} to give an include search directory which is used only for
+assembler @code{.include} files.  For example:
 @example
 clang -I@var{dir1} -Wa,-I@var{dir2} @var{myfile}.S
 @end example
 
 will search for any files in @code{#include} directives in @var{dir1} and any
-files in @code{.include} directives in @var{dir2}.
+files in @code{.include} directives in @var{dir1} amd then @var{dir2}.
 
-@node information
-@section  Help and Information about the Assembler
-@cindex  help, assembly
-@cindex  version, assembler
-@cindex  assembly help
-@cindex  assembler version
+@item -llvm @var{value}
+@cindex assembly, additional LLVM options
+@cindex LLVM options for assembly
+@kindex -mllvm @var{value}
+Pass the specified @var{value} to the LLVM option processing system.  In
+general this is only of value to compiler developers.
 
-@menu
-* help::              -help
-* version::           -version
-@end menu
+@item -mrelax-all
+@kindex -mrelax-all
+Relax all machine instructions.  For architectures which relax from short to
+longer instructions, this option says to relax all instructions to their long
+form, not just those that have to be.
 
-@node help
-@subsection @option{-help}
+@emph{Note:}  Some architectures generate long instructions and then relax to
+shorter instructions.  This is simpler to implement, but suboptimal.  For these
+architectures, this flag has no effect.
 
+@item -o @var{file}
+@kindex -o @var{file}
+Specify @var{file} as the output file.  If not specified output will by default
+go to @file{a.out} if the file type is @code{obj} and to standard output if the
+file type is @code{asm}.
+
+@end table
+
+@node assembler-options
+@section Options Passed by @samp{-Wa} or @samp{-Xassembler}
+@cindex options specific to the assembler
+@cindex assembler specific options
+These are options which form the public (stable) interface to the LLVM
+integrated assembler.  They must be passed to the assembler using either the
+@samp{-Xassembler} or @samp{-Wa} options:
+@example
+clang -Xassembler @var{option} ...
+clang -Wa,@var{option} ...
+@end example
+
+@table @samp
+@item -compress-debug-sections
+@kindex -compress-debug-sections
+Compress DWARF debug sections using zlib.
+
+@end table
+
+@node internal-options
+@section Internal Assembler Options
+@cindex internal options
+@cindex options, internal
+These are options which form the internal interface to the LLVM
+integrated assembler.  They can only be used if the assembler is invoked
+explicitly:
+@example
+clang -cc1as @var{option} ...
+@end example
+
+@emph{Note:} These options are subject to change or withdrawal without warning,
+so should be avoided.
+
+@table @samp
+@item -dwarf-debug-flags @var{value}
+@kindex -dwarf-debug-flags @var{value}
+@var{value} is a string to embed in the DWARF debug flags record.
+
+@emph{Note:}  This option can be passed direct to Clang, but is ignored with a
+warning.
+
+@item -dwarf-debug-producer @var{value}
+@kindex -dwarf-debug-producer @var{value}
+@var{value} is a string to embed in the DWARF @code{AT_producer} record.
+
+@item -fdebug-compilation-dir @var{value}
+@kindex -fdebug-compilation-dir @var{value}
+@var{value} is the compilation directory to embed in the debug info.
+
+@item filetype @var{type}
+@cindex assembler output type
+Specify the output file type
+
+@table @code
+@item asm
+@kindex -filetype asm
+Generate assembly source code.  This can be used to generate assembler source
+when using the assembler directly.  It is usually used when the assembler is
+transliterating between one assembler flavor and another.  This is the default
+when the assembler is invoked directly.
+
+@item null
+@kindex -filetype null
+Do not generate any output
+
+@item obj
+@kindex -filetype obj
+Generate binary ELF object files.
+
+@end table
+
+@item -help
 @kindex -help
-Produce a summary of the options available to the assembler.  There is a
-side-effect of the clang driver, that this option cannot be specified using
-@option{-Wa}. For example
+Produce a summary of the options available to the assembler.  This option has
+to be passed explicitly to the assembler, since otherwise the main Clang help
+will be provided.
+
+@emph{Note:} A side-effect of the clang driver is that this option cannot be
+specified using @samp{-Wa} pr @samp{-Xassembler}. For example:
 @example
 clang -Wa,-help
 @end example
@@ -690,140 +657,74 @@ driver just passes @option{-Wa} options to the assembler, without any knowledge
 of what they do.  It thus thinks @command{clang} has been invoked without any
 file to process, so prints out the error message.
 
-Instead you should explicitly invoke the assembler backend
-(@pxref{cc1as,,invoking the assembler directly}:
-@example
-clang -cc1as -help
-@end example
-
-@node version
-@subsection @option{-version}
-
+@item -version
 @kindex -version
 Print out version information about the LLVM integrated assembler.
 
 @emph{Note:}  As with the @option{-help} option, this cannot be invoked using
-@option{-Wa} (@pxref{help,,@option{-help}}), but must be used with the
-assembler itself:
-@example
-clang -cc1as -version
-@end example
+@option{-Wa}.
 
-@node llvm
-@section @option{-mllvm} @var{value}
-@cindex assembly, additional LLVM options
-@cindex LLVM options for assembly
+@item -main-file-name @var{value}
+@kindex -main-file-name @var{value}
+@var{value} is the main file name to embed in the debug info.
 
-@kindex -mllvm @var{value}
-Pass the specified @var{value} to the LLVM option processing system.  In
-general this is only of value to compiler developers.
+@item -massembler-fatal-warnings
+@cindex assembly warning control
+@cindex warning control, assembly
+@kindex -massembler-fatal-warnings
+Causes all assembly warnings to be fatal.
 
-@node output
-@section Options controlling assembler output
-@cindex output options for assembly
-@cindex assembly, output options
+@item -mnoexecstack
+@kindex -mnoexecstack
+Mark the output file as not needing an executable stack.  On some
+architectures, for example Harvard architectures like AAP, it is impossible to
+execute the stack, so this option has no additional effect.
 
-@menu
-* filetype::            -filetype @var{value}
-* output-asm-variant::  -output-asm-variant @var{value}
-* o::                   -o @var{file}
-@end menu
-
-@node filetype
-@subsection @option{-filetype} @var{type}
-
-Specify the output file type
-
-@table @code
-@item asm
-@kindex -filetype asm
-Generate assembly source code.  This can be used to generate assembler source when
-using the assembler directly from code generated by the front end (equivalent
-to Clang's @option{-S} option, although the linker will then be confused by the
-absence of object files to link.  It is more usually used when the assembler is
-transliterating between one assembler flavor and another.
-
-@item null
-@kindex -filetype null
-Do not generate any output
-
-@item obj
-@kindex -filetype obj
-Generate binary ELF object files.  This is the default.
-
-@end table
-
-@node output-asm-variant
-@subsection @option{-output-asm-variant} @var{value}
-
-@kindex -output-asm-variant @var{value}
-@var{value} specifies a particular assembler variant for the target
-architecture.  The meaning is target specific, and many targets have no
-variants.
-
-@node o
-@subsection @option{-o} @var{file}
-
-@kindex -o @var{file}
-Specify @var{file} as the output file.  If not specified output will by default
-go to @file{a.out} if the file type is @code{obj} and to standard output if the
-file type is @code{asm}.
-
-@node symbol-options
-@section Symbol table control: @option{-msave-temp-labels}
+@item -msave-temp-labels
 @cindex symbol table control, assembly
 @cindex assembly symbol table control
-
 @kindex -msave-temp-labels
 Save temporary labels in the symbol table.
 
 @emph{Note:} This may change @code{.s} file semantics and shouldn't generally
 be used on compiler-generated code.
 
-@node target
-@section Target specification
-@cindex target specification, assembly
-@cindex assembly target specification
+@item -show-encoding
+@kindex -show-encoding
+Show instruction encoding information in transliterate mode.
 
-@menu
-* target-abi::      -target-abi @var{value}
-* target-cpu::      -target-cpu @var{value}
-* target-feature::  -target-feature @var{value}
-* triple::          -triple @var{value}
-@end menu
+@item -n
+@kindex -n
+Don't automatically start assembly file with a text section.
 
-@node target-abi
-@subsection @option{-target-abi} @var{value}
+@item -output-asm-variant @var{value}
+@kindex -output-asm-variant @var{value}
+@var{value} specifies a particular assembler variant for the target
+architecture.  The meaning is target specific, and many targets have no
+variants.  @xref{Machine Dependencies}.
 
+@item -show-inst
+@kindex -show-inst
+Show internal instruction representation in transliterate mode.
+
+@item -target-abi @var{value}
 @kindex -target-abi @var{value}
 Target a ABI of type @var{value}.  Not all targets may offer ABI values.
 
-@node target-cpu
-@subsection @option{-target-cpu} @var{value}
-
+@item -target-cpu @var{value}
 @kindex -target-cpu @var{value}
 Target a specific CPU variant.  Not all targets may offer CPU values.
 
-@node target-feature
-@subsection @option{-target-feature} @var{value}
-
+@item -target-feature @var{value}
 @kindex -target-feature @var{value}
 Set target specific attribute @var{value}.  Not all targets may offer feature
 values.
 
-@node triple
-@subsection @option{-triple} @var{value}
-
+@item -triple @var{value}
 @kindex -triple @var{value}
-Specify the target triple.  For example i686-apple-darwin9.
+Specify the target triple for the assembler.  For example i686-apple-darwin9.
 
-@node warnings
-@section Control of Warning Messages: @option{-massembler-fatal-warnings}
-@cindex assembly warning control
-@cindex warning control, assembly
-
-@kindex -massembler-fatal-warnings
-Causes all assembly warnings to be fatal.
+@end table
 
 @node Syntax
 @chapter Syntax
@@ -832,8 +733,8 @@ Causes all assembly warnings to be fatal.
 @cindex syntax, machine-independent
 This chapter describes the machine-independent syntax allowed in a source file.
 LLVM integrated assembler syntax is similar to what many other assemblers use;
-it is inspired by the @sc{gnu} assembler, which in turns is inspired by the BSD 4.2
-VAX assembler.
+it is inspired by the @sc{gnu} assembler, which in turns is inspired by the BSD
+4.2 VAX assembler.
 
 @menu
 * Preprocessing::               Preprocessing
@@ -954,11 +855,9 @@ integrated assembler.
 @section Symbols
 
 @cindex characters used in symbols
-@ifclear SPECIAL-SYMS
 A @dfn{symbol} is one or more characters chosen from the set of all
 letters (both upper and lower case), digits and the three characters
 @samp{_.$}.
-@end ifclear
 On most machines, you can also use @code{$} in symbol names; exceptions
 are noted in @ref{Machine Dependencies}.
 No symbol may begin with a digit.  Case is significant.
@@ -1094,17 +993,16 @@ Mnemonic for FormFeed; for ASCII this is octal code 014.
 @item \n
 Mnemonic for newline; for ASCII this is octal code 012.
 
-@c      @item \p
-@c      Mnemonic for prefix; for ASCII this is octal code 033, usually known as @code{escape}.
+@c      @item \p Mnemonic for prefix; for ASCII this is octal code 033, usually
+@c      known as @code{escape}.
 @c
 @cindex @code{\r} (carriage return character)
 @cindex carriage return (@code{\r})
 @item \r
 Mnemonic for carriage-Return; for ASCII this is octal code 015.
 
-@c      @item \s
-@c      Mnemonic for space; for ASCII this is octal code 040.  Included for compliance with
-@c      other assemblers.
+@c      @item \s Mnemonic for space; for ASCII this is octal code 040.
+@c      Included for compliance with other assemblers.
 @c
 @cindex @code{\t} (tab)
 @cindex tab (@code{\t})
@@ -1182,11 +1080,11 @@ There was no requirement for the closing quote afterwards.
 
 @cindex constants, number
 @cindex number constants
-the LLVM integrated assembler distinguishes three kinds of numbers according to how they
-are stored in the target machine.  @emph{Integers} are numbers that
-would fit into an @code{int} in the C language.  @emph{Bignums} are
-integers, but they are stored in more than 32 bits.  @emph{Flonums}
-are floating point numbers, described below.
+The LLVM integrated assembler distinguishes three kinds of numbers according to
+how they are stored in the target machine.  @emph{Integers} are numbers that
+would fit into an @code{int} in the C language.  @emph{Bignums} are integers,
+but they are stored in more than 32 bits.  @emph{Flonums} are floating point
+numbers, described below.
 
 @menu
 * Integers::                    Integers
@@ -1241,19 +1139,19 @@ integers are permitted while bignums are not.
 
 @cindex precision, floating point
 A @dfn{flonum} represents a floating point number.  The translation is
-indirect: a decimal floating point number from the text is converted by
-the LLVM integrated assembler to a generic binary floating point number of more than
-sufficient precision.  This generic floating point number is converted
-to a particular computer's floating point format (or formats) by a
-portion of the LLVM integrated assembler specialized to that computer.
+indirect: a decimal floating point number from the text is converted by the
+LLVM integrated assembler to a generic binary floating point number of more
+than sufficient precision.  This generic floating point number is converted to
+a particular computer's floating point format (or formats) by a portion of the
+LLVM integrated assembler specialized to that computer.
 
 A flonum is written by writing (in order)
 @itemize @bullet
 @item
 The digit @samp{0}.
 @item
-A letter, to tell the LLVM integrated assembler the rest of the number is a flonum.
-@kbd{e} is recommended.  Case is not important.  There is architecture
+A letter, to tell the LLVM integrated assembler the rest of the number is a
+flonum.  @kbd{e} is recommended.  Case is not important.  There is architecture
 specificity here, with different letters having different meanings.
 
 @item
@@ -1408,7 +1306,7 @@ The linker deals with just four kinds of sections, summarized below.
 @cindex named sections
 @cindex sections, named
 @item named sections
-These sections hold your program.  the LLVM integrated assembler and the linker
+These sections hold your program.  The LLVM integrated assembler and the linker
 treat them as separate but equal sections.  Anything you can say of one section
 is true of another.  When the program is running, however, it is customary for
 the text section to be unalterable.  The text section is often shared among
@@ -1574,11 +1472,11 @@ Assembly begins in @code{text 0}.  For instance:
 
 Each section has a @dfn{location counter} incremented by one for every byte
 assembled into that section.  Because subsections are merely a convenience
-restricted to the LLVM integrated assembler there is no concept of a subsection location
-counter.  There is no way to directly manipulate a location counter---but the
-@code{.align} directive changes it, and any label definition captures its
-current value.  The location counter of the section where statements are being
-assembled is said to be the @dfn{active} location counter.
+restricted to the LLVM integrated assembler there is no concept of a subsection
+location counter.  There is no way to directly manipulate a location
+counter---but the @code{.align} directive changes it, and any label definition
+captures its current value.  The location counter of the section where
+statements are being assembled is said to be the @dfn{active} location counter.
 
 @node bss
 @section bss Section
@@ -1612,8 +1510,9 @@ to debug.
 
 @quotation
 @cindex debuggers, and symbol order
-@emph{Warning:} the LLVM integrated assembler does not place symbols in the object file in
-the same order they were declared.  This may break some debuggers.
+@emph{Warning:} The LLVM integrated assembler does not place symbols in the
+object file in the same order they were declared.  This may break some
+debuggers.
 @end quotation
 
 @menu
@@ -1652,13 +1551,11 @@ unsupported @code{.eqv} directive.  @xref{Unsupported,,@code{.eqv}}.
 
 @cindex symbol names
 @cindex names, symbol
-@ifclear SPECIAL-SYMS
 Symbol names begin with a letter or with one of @samp{._}.  On most
 machines, you can also use @code{$} in symbol names; exceptions are
 noted in @ref{Machine Dependencies}.  That character may be followed by any
 string of digits, letters, dollar signs (unless otherwise noted for a
 particular target machine), and underscores.
-@end ifclear
 
 Case of letters is significant: @code{foo} is a different symbol name
 than @code{Foo}.
@@ -1682,7 +1579,7 @@ set of local label prefixes.
 
 Local symbols are defined and used within the assembler, but they are normally
 not saved in object files.  Thus, they are not visible when debugging.  You may
-use the @samp{-msave-temp-labels} option (@pxref{symbol-options, ,Symbol Table
+use the @samp{-msave-temp-labels} option (@pxref{internal-options, ,Symbol Table
 Control}) to retain the local symbols in the object files.
 
 @subheading Local Labels
@@ -1779,15 +1676,11 @@ modification if it contains such labels.
 @cindex @code{.} (symbol)
 @cindex current address
 @cindex location counter
-The special symbol @samp{.} refers to the current address that
-the LLVM integrated assembler is assembling into.  Thus, the expression @samp{melvin:
-.long .} defines @code{melvin} to contain its own address.
-Assigning a value to @code{.} is treated the same as a @code{.org}
-directive.
-@ifclear no-space-dir
-Thus, the expression @samp{.=.+4} is the same as saying
-@samp{.space 4}.
-@end ifclear
+The special symbol @samp{.} refers to the current address that the LLVM
+integrated assembler is assembling into.  Thus, the expression @samp{melvin:
+.long .} defines @code{melvin} to contain its own address.  Assigning a value
+to @code{.} is treated the same as a @code{.org} directive.  Thus, the
+expression @samp{.=.+4} is the same as saying @samp{.space 4}.
 
 @node Symbol Attributes
 @section Symbol Attributes
@@ -1797,14 +1690,10 @@ Thus, the expression @samp{.=.+4} is the same as saying
 Every symbol has, as well as its name, the attributes ``Value'' and
 ``Type''.  Depending on output format, symbols can also have auxiliary
 attributes.
-@ifset INTERNALS
-The detailed definitions are in @file{a.out.h}.
-@end ifset
 
-If you use a symbol without defining it, the LLVM integrated assembler assumes zero for
-all these attributes, and probably won't warn you.  This makes the
-symbol an externally defined symbol, which is generally what you
-would want.
+If you use a symbol without defining it, the LLVM integrated assembler assumes
+zero for all these attributes, and probably won't warn you.  This makes the
+symbol an externally defined symbol, which is generally what you would want.
 
 @menu
 * Symbol Value::                Value
@@ -1869,10 +1758,10 @@ aborts with an error message in this situation.
 
 @cindex empty expressions
 @cindex expressions, empty
-An empty expression has no value: it is just whitespace or null.
-Wherever an absolute expression is required, you may omit the
-expression, and the LLVM integrated assembler assumes a value of (absolute) 0.  This
-is compatible with other assemblers.
+An empty expression has no value: it is just whitespace or null.  Wherever an
+absolute expression is required, you may omit the expression, and the LLVM
+integrated assembler assumes a value of (absolute) 0.  This is compatible with
+other assemblers.
 
 @node Integer Exprs
 @section Integer Expressions
@@ -1910,11 +1799,10 @@ integer.
 
 Numbers are usually integers.
 
-A number can be a flonum or bignum.  In this case, you are warned
-that only the low order 32 bits are used, and the LLVM integrated assembler pretends
-these 32 bits are an integer.  You may write integer-manipulating
-instructions that act on exotic constants, compatible with other
-assemblers.
+A number can be a flonum or bignum.  In this case, you are warned that only the
+low order 32 bits are used, and the LLVM integrated assembler pretends these 32
+bits are an integer.  You may write integer-manipulating instructions that act
+on exotic constants, compatible with other assemblers.
 
 @cindex subexpressions
 Subexpressions are a left parenthesis @samp{(} followed by an integer
@@ -1936,8 +1824,8 @@ whitespace.
 @subsection Prefix Operator
 
 @cindex prefix operators
-the LLVM integrated assembler has the following @dfn{prefix operators}.  They each take
-one argument, which must be absolute.
+the LLVM integrated assembler has the following @dfn{prefix operators}.  They
+each take one argument, which must be absolute.
 
 @c the tex/end tex stuff surrounding this small table is meant to make
 @c it align, on the printed page, with the similar table in the next
@@ -2140,7 +2028,6 @@ unsupported are listed at the end of this chapter. @xref{Unsupported}.
 * Protected::                   @code{.protected @var{names}}
 * Purgem::			@code{.purgem @var{name}}
 * PushSection::                 @code{.pushsection @var{name}}
-
 * Quad::                        @code{.quad @var{bignums}}
 * Rept::			@code{.rept @var{count}}
 * Section::                     @code{.section @var{name}[, @var{flags}]}
@@ -2572,8 +2459,8 @@ End the current macro definition.  @xref{Macro}.
 @section @code{.endr}
 @cindex @code{endr} directive
 @cindex @code{.endr}
-End the current @code{.irp}, @code{.irpc} or @code{.rept} definition.  @xref{Irp}.
-@xref{Irpc}.  @xref{Rept}.
+End the current @code{.irp}, @code{.irpc} or @code{.rept} definition.
+@xref{Irp}.  @xref{Irpc}.  @xref{Rept}.
 
 @node Equ
 @section @code{.equ @var{symbol}, @var{expression}}
@@ -2635,7 +2522,7 @@ Exit early from the current macro definition.  @xref{Macro}.
 @cindex @code{extern} directive
 @cindex @code{.extern}
 @code{.extern} is accepted in the source program---for compatibility with other
-assemblers---but it is ignored.  the LLVM integrated assembler treats all
+assemblers---but it is ignored.  The LLVM integrated assembler treats all
 undefined symbols as external.
 
 @node File
@@ -2665,16 +2552,15 @@ will have.
 @cindex @code{.fill}
 @cindex writing patterns in memory
 @cindex patterns, writing in memory
-@var{repeat}, @var{size} and @var{value} are absolute expressions.
-This emits @var{repeat} copies of @var{size} bytes.  @var{Repeat}
-may be zero or more.  @var{Size} may be zero or more, but if it is
-more than 8, then it is deemed to have the value 8, compatible with
-other people's assemblers.  The contents of each @var{repeat} bytes
-is taken from an 8-byte number.  The highest order 4 bytes are
-zero.  The lowest order 4 bytes are @var{value} rendered in the
-byte-order of an integer on the computer the LLVM integrated assembler is assembling for.
-Each @var{size} bytes in a repetition is taken from the lowest order
-@var{size} bytes of this number.  Again, this bizarre behavior is
+@var{repeat}, @var{size} and @var{value} are absolute expressions.  This emits
+@var{repeat} copies of @var{size} bytes.  @var{Repeat} may be zero or more.
+@var{Size} may be zero or more, but if it is more than 8, then it is deemed to
+have the value 8, compatible with other people's assemblers.  The contents of
+each @var{repeat} bytes is taken from an 8-byte number.  The highest order 4
+bytes are zero.  The lowest order 4 bytes are @var{value} rendered in the
+byte-order of an integer on the computer the LLVM integrated assembler is
+assembling for.  Each @var{size} bytes in a repetition is taken from the lowest
+order @var{size} bytes of this number.  Again, this bizarre behavior is
 compatible with other people's assemblers.
 
 @var{size} and @var{value} are optional.
@@ -2765,7 +2651,7 @@ not quoted, the first string stops at the first comma, and the second string
 stops at the end of the line.  Strings which contain whitespace should be
 quoted.  The string comparison is case sensitive.
 
-@emph{Note:}  Unlike the @sc{gnu} assembler, which uses single quotes, the LLVM
+@emph{Note:} Unlike the @sc{gnu} assembler, which uses single quotes, the LLVM
 integrated assembler requires double quotes.
 
 @item .ifeq @var{absolute expression}
@@ -2971,8 +2857,8 @@ argument specifies the desired alignment of the symbol in the bss section.
 @cindex @code{.line} (deprecated)
 @cindex logical line number
 Even though this is a directive associated with the @code{a.out} or
-@code{b.out} object-code formats, the LLVM integrated assembler still recognizes it
-when producing ELF output.
+@code{b.out} object-code formats, the LLVM integrated assembler still
+recognizes it when producing ELF output.
 
 @emph{Note:} This directive is deprecated.  One day @code{.line} will not be
 supported.  Use the @code{.ln} directive instead.  @xref{Ln}.
@@ -3025,8 +2911,9 @@ This directive will set the @code{isa} register in the @code{.debug_line}
 state machine to @var{value}, which must be an unsigned integer.
 
 @item discriminator @var{value}
-This directive will set the @code{discriminator} register in the @code{.debug_line}
-state machine to @var{value}, which must be an unsigned integer.
+This directive will set the @code{discriminator} register in the
+@code{.debug_line} state machine to @var{value}, which must be an unsigned
+integer.
 
 @end table
 
@@ -3414,23 +3301,15 @@ as in the @code{.section} (@pxref{Section}) directive.
 @section @code{.quad @var{bignums}}
 @cindex @code{quad} directive
 @cindex @code{.quad}
-@code{.quad} expects zero or more bignums, separated by commas.  For
-each bignum, it emits
-@ifclear bignum-16
-an 8-byte integer.  If the bignum won't fit in 8 bytes, it prints a
-warning message; and just takes the lowest order 8 bytes of the bignum.
+@code{.quad} expects zero or more bignums, separated by commas.  For each
+bignum, it emits an 8-byte integer.  If the bignum won't fit in 8 bytes, it
+prints a warning message; and just takes the lowest order 8 bytes of the
+bignum.
 @cindex eight-byte integer
 @cindex integer, 8-byte
 
 The term ``quad'' comes from contexts in which a ``word'' is two bytes;
 hence @emph{quad}-word for 8 bytes.
-@end ifclear
-@ifset bignum-16
-a 16-byte integer.  If the bignum won't fit in 16 bytes, it prints a
-warning message; and just takes the lowest order 16 bytes of the bignum.
-@cindex sixteen-byte integer
-@cindex integer, 16-byte
-@end ifset
 
 @node Rept
 @section @code{.rept @var{count}}
@@ -4097,12 +3976,12 @@ be of use to the linker.
 @chapter Machine Dependent Features
 
 @cindex machine dependencies
-The machine instruction sets are (almost by definition) different on
-each machine where the LLVM integrated assembler runs.  Floating point representations
-vary as well, and the LLVM integrated assembler often supports a few additional
-directives or command-line options for compatibility with other
-assemblers on a particular platform.  Finally, some versions of
-the LLVM integrated assembler support special pseudo-instructions for branch
+The machine instruction sets are (almost by definition) different on each
+machine where the LLVM integrated assembler runs.  Floating point
+representations vary as well, and the LLVM integrated assembler often supports
+a few additional directives or command-line options for compatibility with
+other assemblers on a particular platform.  Finally, some versions of the LLVM
+integrated assembler support special pseudo-instructions for branch
 optimization.
 
 This chapter discusses most of these differences, though it does not
@@ -4123,12 +4002,14 @@ subject, see the hardware manufacturer's manual.
 @cindex bugs in assembler
 @cindex reporting bugs in assembler
 
-Your bug reports play an essential role in making the LLVM integrated assembler reliable.
+Your bug reports play an essential role in making the LLVM integrated assembler
+reliable.
 
 Reporting a bug may help you by bringing a solution to your problem, or it may
 not.  But in any case the principal function of a bug report is to help the
-entire community by making the next version of the LLVM integrated assembler work better.
-Bug reports are your contribution to the maintenance of the LLVM integrated assembler.
+entire community by making the next version of the LLVM integrated assembler
+work better.  Bug reports are your contribution to the maintenance of the LLVM
+integrated assembler.
 
 In order for a bug report to serve its purpose, you must include the
 information that enables us to fix the bug.
@@ -4154,13 +4035,15 @@ the LLVM integrated assembler bug.  Reliable assemblers never crash.
 
 @cindex error on valid input
 @item
-If the LLVM integrated assembler produces an error message for valid input, that is a bug.
+If the LLVM integrated assembler produces an error message for valid input,
+that is a bug.
 
 @cindex invalid input
 @item
-If the LLVM integrated assembler does not produce an error message for invalid input, that
-is a bug.  However, you should note that your idea of ``invalid input'' might
-be our idea of ``an extension'' or ``support for traditional practice''.
+If the LLVM integrated assembler does not produce an error message for invalid
+input, that is a bug.  However, you should note that your idea of ``invalid
+input'' might be our idea of ``an extension'' or ``support for traditional
+practice''.
 
 @item
 If you are an experienced user of assemblers, your suggestions for improvement
@@ -4173,16 +4056,16 @@ of the LLVM integrated assembler are welcome in any case.
 @cindex assembler bugs, reporting
 
 A number of companies and individuals offer support for @sc{gnu} products.  If
-you obtained the LLVM integrated assembler from a support organization, we recommend you
-contact that organization first.
+you obtained the LLVM integrated assembler from a support organization, we
+recommend you contact that organization first.
 
 You can find contact information for many support companies and
 individuals in the file @file{etc/SERVICE} in the @sc{gnu} Emacs
 distribution.
 
 @ifset BUGURL
-In any event, we also recommend that you send bug reports for the LLVM integrated assembler
-to @value{BUGURL}.
+In any event, we also recommend that you send bug reports for the LLVM
+integrated assembler to @value{BUGURL}.
 @end ifset
 
 The fundamental principle of reporting bugs usefully is this:
@@ -4212,8 +4095,8 @@ To enable us to fix the bug, you should include all these things:
 
 @itemize @bullet
 @item
-The version of the LLVM integrated assembler.  the LLVM integrated assembler announces it if you start
-it with the @samp{--version} argument.
+The version of the LLVM integrated assembler.  The LLVM integrated assembler
+announces it if you start it with the @samp{--version} argument.
 
 Without this, we will not know whether there is any point in looking for
 the bug in the current version of the LLVM integrated assembler.
@@ -4226,8 +4109,8 @@ The type of machine you are using, and the operating system name and
 version number.
 
 @item
-What compiler (and its version) was used to compile the LLVM integrated assembler---e.g.
-``@code{gcc-2.7}''.
+What compiler (and its version) was used to compile the LLVM integrated
+assembler---e.g.  ``@code{llvm-3.7}''.
 
 @item
 The command arguments you gave the assembler to assemble your example and
@@ -4243,33 +4126,33 @@ the assembler is invoked via a compiler, send the assembler source, not the
 high level language source.  Clang/LLVM will produce the assembler source when
 run with the @samp{-S} option.  With Clang/LLVM you can also use the options
 @samp{-v --save-temps}; this will save the assembler source in a file with an
-extension of @file{.s}, and also show you exactly how the LLVM integrated assembler
-is being run.
+extension of @file{.s}, and also show you exactly how the LLVM integrated
+assembler is being run.
 
 @item
 A description of what behavior you observe that you believe is
 incorrect.  For example, ``It gets a fatal signal.''
 
-Of course, if the bug is that the LLVM integrated assembler gets a fatal signal, then we
-will certainly notice it.  But if the bug is incorrect output, we might not
-notice unless it is glaringly wrong.  You might as well not give us a chance to
-make a mistake.
+Of course, if the bug is that the LLVM integrated assembler gets a fatal
+signal, then we will certainly notice it.  But if the bug is incorrect output,
+we might not notice unless it is glaringly wrong.  You might as well not give
+us a chance to make a mistake.
 
 Even if the problem you experience is a fatal signal, you should still say so
-explicitly.  Suppose something strange is going on, such as, your copy of
-the LLVM integrated assembler is out of sync, or you have encountered a bug in the C
-library on your system.  (This has happened!)  Your copy might crash and ours
+explicitly.  Suppose something strange is going on, such as, your copy of the
+LLVM integrated assembler is out of sync, or you have encountered a bug in the
+C library on your system.  (This has happened!)  Your copy might crash and ours
 would not.  If you told us to expect a crash, then when ours fails to crash, we
 would know that the bug was not happening for us.  If you had not told us to
 expect a crash, then we would not be able to draw any conclusion from our
 observations.
 
 @item
-If you wish to suggest changes to the the LLVM integrated assembler source, send us context
-diffs, as generated by @code{diff} with the @samp{-u}, @samp{-c}, or @samp{-p}
-option.  Always send diffs from the old file to the new file.  If you even
-discuss something in the the LLVM integrated assembler source, refer to it by context, not
-by line number.
+If you wish to suggest changes to the the LLVM integrated assembler source,
+send us context diffs, as generated by @code{diff} with the @samp{-u},
+@samp{-c}, or @samp{-p} option.  Always send diffs from the old file to the new
+file.  If you even discuss something in the the LLVM integrated assembler
+source, refer to it by context, not by line number.
 
 The line numbers in our development sources will not match those in your
 sources.  Your line numbers would convey no useful information to us.
@@ -4306,10 +4189,10 @@ the necessary information, such as the test case, on the assumption that
 a patch is all we need.  We might see problems with your patch and decide
 to fix the problem another way, or we might not understand it at all.
 
-Sometimes with a program as complicated as the LLVM integrated assembler it is very hard to
-construct an example that will make the program follow a certain path through
-the code.  If you do not send us the example, we will not be able to construct
-one, so we will not be able to verify that the bug is fixed.
+Sometimes with a program as complicated as the LLVM integrated assembler it is
+very hard to construct an example that will make the program follow a certain
+path through the code.  If you do not send us the example, we will not be able
+to construct one, so we will not be able to verify that the bug is fixed.
 
 And if we cannot understand what bug you are trying to fix, or why your
 patch should be an improvement, we will not install it.  A test case will
