@@ -15,8 +15,9 @@ AM_MAKEINFOFLAGS = -I . -I $(srcdir) -I $(srcdir)/include
 info_TEXINFOS = llvm-assembler.texi
 
 # Included files in the texinfo source
-llvm_assembler_TEXINFOS = llvm-assembler.texi \
-                          llvm-vers.texi         \
+llvm_assembler_TEXINFOS = c-aap.texi          \
+                          llvm-assembler.texi \
+                          llvm-vers.texi      \
                           fdl.texi
 
 # Images

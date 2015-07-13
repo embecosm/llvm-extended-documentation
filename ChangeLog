@@ -1,3 +1,15 @@
+2015-07-13  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* llvm-assembler-manual/Makefile.am: Add AAP specific section.
+	* llvm-assembler-manual/Makefile.in: Regenerated.
+	* llvm-assembler-manual/c-aap.texi: Restructured to replace MIPS
+	content by template content for AAP.
+	* llvm-assembler-manual/llvm-assembler.info: Regenerated.
+	* llvm-assembler-manual/llvm-assembler.texi: Generalize for COFF,
+	Mach-O and STABS throughout, including specific node names.
+	(Assembler Directives).  Restructure, adding sections for COFF and
+	Mach-O.
+
 2015-07-05  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* Makefile.in: Regenerated.

@@ -234,8 +234,9 @@ program in one pass of the source file.  This has a subtle impact on the
 @section Object File Formats
 
 @cindex object file format
-The LLVM integrated assembler can only produce the ELF object file format with
-DWARF debug information.  Unlike the @sc{gnu} assembler, directives for
+The LLVM integrated assembler can produce the ELF, COFF and Mach-O object file
+formats with DWARF or STABS debug information.  However STABS support (a much
+older format) is limited, and unlike the @sc{gnu} assembler, directives for
 debugging symbols are only available for the DWARF format.  @xref{Symbol
 Attributes,,Symbol Attributes}.
 
@@ -636,7 +637,7 @@ Do not generate any output
 
 @item obj
 @kindex -filetype obj
-Generate binary ELF object files.
+Generate binary object files.
 
 @end table
 
@@ -1230,7 +1231,7 @@ and @dfn{bss} sections.
 
 The LLVM integrated assembler can also generate whatever other named sections
 you specify using the @samp{.section} directive
-(@pxref{Section,,@code{.section}}).  If you do not use any directives that
+(@pxref{SectionElf,,@code{.section}}).  If you do not use any directives that
 place output in the @samp{.text} or @samp{.data} sections, these sections still
 exist, but are empty.
 
@@ -1452,7 +1453,7 @@ data subsections as a data section.
 To specify which subsection you want subsequent statements assembled into, use
 a numeric argument to specify it, in a @samp{.text @var{expression}} or a
 @samp{.data @var{expression}} statement.  You can also use the
-@code{.subsection} directive (@pxref{SubSection}) to specify a subsection:
+@code{.subsection} directive (@pxref{SubSectionElf}) to specify a subsection:
 @samp{.subsection @var{expression}}.  @var{Expression} should be an absolute
 expression (@pxref{Expressions}).  If you just say @samp{.text} then
 @samp{.text 0} is assumed.  Likewise @samp{.data} means @samp{.data 0}.
@@ -1496,7 +1497,7 @@ The @code{.comm} pseudo-op may be used to declare a common symbol, which is
 another form of uninitialized symbol; see @ref{Comm,,@code{.comm}}.
 
 When assembling you may switch into the @code{.bss} section and define symbols
-as usual; see @ref{Section,,@code{.section}}.  You may only assemble zero
+as usual; see @ref{SectionElf,,@code{.section}}.  You may only assemble zero
 values into the section.  Typically the section will only contain symbol
 definitions and @code{.skip} directives (@pxref{Skip,,@code{.skip}}).
 
@@ -1973,26 +1974,64 @@ This chapter discusses directives that are available regardless of the target
 machine configuration for the LLVM integrated assembler.  Some machine
 configurations provide additional directives.  @xref{Machine Dependencies}.
 
+Not all directives are supported for all object file formats.  This chapter is
+divided into sections for directives common to all formats and directives
+specific to ELF, COFF (including the Win64 event handling directives) and
+Mach-O.  Some directives (such as @code{.section}) are supported by each
+format, but with different semantics, so appear multiple times.
+
 @emph{Note:} While the LLVM integrated assembler strives for compatibility with
 @sc{gnu} assembler, not all @sc{gnu} directives are supported.  Those which are
 unsupported are listed at the end of this chapter. @xref{Unsupported}.
+
+Conversely, there are also a number of directives supported by the LLVM
+integrated assembler, which are not supported (or at least not documented as
+being supported) by the @sc{gnu} assembler.  These are: @code{.2byte},
+@code{.4bytes}, @code{.8byte}, @code{.align32}, @code{.cfi_escape},
+@code{.cfi_sections}, @code{.code16}, @code{.code16gcc}, @code{.common},
+@code{.endmacro}, @code{.lazy_reference}, @code{.macros_off},
+@code{.macros_on}, @code{.no_dead_strip}, @code{.private_extern},
+@code{.reference}, @code{.stabs}, @code{.string}, @code{.symbol_resolver},
+@code{.value}, @code{.weak_definition}, @code{.weak_def_can_be_hidden},
+@code{.weak_ref}, @code{.zero}.
+
 @menu
+* Common Directives::  Directives Common to All Object Formats
+* ELF Directives::     ELF Specific Directives
+* COFF Directives::    COFF Specific Directives
+* Mach-O Directives::  Mach-O Specific Directives
+* Deprecated::         Deprecated Directives
+* Unsupported::        Unsupported GNU Assembler Directives
+@end menu
+
+@node Common Directives
+@section Directives Common to All Object Formats
+
+These directives have the same form and semantics for all object formats
+
+@menu
+* 2byte::                       @code{.2byte @var{expressions}}
+* 4byte::                       @code{.4byte @var{expressions}}
+* 8byte::                       @code{.8byte @var{expressions}}
 * Abort::                       @code{.abort}
 * Align::                       @code{.align @var{abs-expr} , @var{abs-expr}}
+* Align32::                     @code{.align32 @var{abs-expr} , @var{abs-expr}}
 * Ascii::                       @code{.ascii "@var{string}"}@dots{}
 * Asciz::                       @code{.asciz "@var{string}"}@dots{}
 * Balign::                      @code{.balign @var{abs-expr} , @var{abs-expr}}
-* Bundle directives::           @code{.bundle_align_mode @var{abs-expr}}, @code{.bundle_lock}, @code{.bundle_unlock}
+* BundleAlign::                 @code{.bundle_align_mode @var{abs-expr}}
+* BundleLock::                  @code{.bundle_lock}, @code{.bundle_unlock}
 * Byte::                        @code{.byte @var{expressions}}
-* CFI directives::		@code{.cfi_startproc [simple]}, @code{.cfi_endproc}, etc.
+* CFIDirectives::		CFI Directives
+* Code16::                      @code{.code16}, @code{.code16gcc}
 * Comm::                        @code{.comm @var{symbol} , @var{length} }
-* Data::                        @code{.data @var{subsection}}
+* Common::                      @code{.common @var{symbol} , @var{length} }
 * Double::                      @code{.double @var{flonums}}
 * Else::                        @code{.else}
 * Elseif::                      @code{.elseif}
 * End::				@code{.end}
 * Endif::                       @code{.endif}
-* Endm::                        @code{.endm}
+* Endm::                        @code{.endm}, @code{.endmacro}
 * Endr::                        @code{.endr}
 * Equ::                         @code{.equ @var{symbol}, @var{expression}}
 * Equiv::                       @code{.equiv @var{symbol}, @var{expression}}
@@ -2004,57 +2043,73 @@ unsupported are listed at the end of this chapter. @xref{Unsupported}.
 * Fill::                        @code{.fill @var{repeat} , @var{size} , @var{value}}
 * Float::                       @code{.float @var{flonums}}
 * Global::                      @code{.global @var{symbol}}, @code{.globl @var{symbol}}
-* Hidden::                      @code{.hidden @var{names}}
 * Ident::                       @code{.ident}
 * If::                          @code{.if @var{absolute expression}}
 * Incbin::                      @code{.incbin "@var{file}"[,@var{skip}[,@var{count}]]}
 * Include::                     @code{.include "@var{file}"}
 * Int::                         @code{.int @var{expressions}}
-* Internal::                    @code{.internal @var{names}}
 * Irp::				@code{.irp @var{symbol},@var{values}}@dots{}
 * Irpc::			@code{.irpc @var{symbol},@var{values}}@dots{}
+* LazyReference::               @code{.lazy_reference}
 * Lcomm::                       @code{.lcomm @var{symbol} , @var{length}}
 * Line::                        @code{.line @var{line-number}}
-* Ln::                          @code{.ln @var{line-number}}
 * Loc::                         @code{.loc @var{fileno} @var{lineno}}
-* Local::                       @code{.local @var{names}}
 * Long::                        @code{.long @var{expressions}}
 * Macro::			@code{.macro @var{name} @var{args}}@dots{}
+* NoDeadStrip::                 @code{.no_dead_strip}
 * Octa::                        @code{.octa @var{bignums}}
 * Org::                         @code{.org @var{new-lc}, @var{fill}}
 * P2align::                     @code{.p2align @var{abs-expr}, @var{abs-expr}, @var{abs-expr}}
-* PopSection::                  @code{.popsection}
-* Previous::                    @code{.previous}
-* Protected::                   @code{.protected @var{names}}
+* PrivateExtern::               @code{.private_extern}
 * Purgem::			@code{.purgem @var{name}}
-* PushSection::                 @code{.pushsection @var{name}}
 * Quad::                        @code{.quad @var{bignums}}
+* Reference::                   @code{.reference}
 * Rept::			@code{.rept @var{count}}
-* Section::                     @code{.section @var{name}[, @var{flags}]}
 * Set::                         @code{.set @var{symbol}, @var{expression}}
 * Short::                       @code{.short @var{expressions}}
 * Single::                      @code{.single @var{flonums}}
-* Size::                        @code{.size [@var{name} , @var{expression}]}
 * Skip::                        @code{.skip @var{size} , @var{fill}}
 * Sleb128::			@code{.sleb128 @var{expressions}}
 * Space::                       @code{.space @var{size} , @var{fill}}
+* Stabs::                       @code{.stabs}
 * String::                      @code{.string "@var{str}"}
-* SubSection::                  @code{.subsection}
-* Symver::                      @code{.symver @var{name},@var{name2@@nodename}}
-* Text::                        @code{.text @var{subsection}}
-* Type::                        @code{.type <@var{int} | @var{name} , @var{type description}>}
+* SymbolResolver::              @code{.symbol_resolver}
 * Uleb128::                     @code{.uleb128 @var{expressions}}
-* Version::                     @code{.version "@var{string}"}
+* Value::                       @code{.value}
 * Warning::			@code{.warning @var{string}}
-* Weak::                        @code{.weak @var{names}}
-* Weakref::                     @code{.weakref @var{alias}, @var{symbol}}
-* Deprecated::                  Deprecated Directives
-* Unsupported::                 Unsupported @sc{gnu} Assembler Directives
+* WeakDefCanBeHidden::          @code{.weak_def_can_be_hidden}
+* WeakDefinition::              @code{.weak_definition}
+* WeakReference::               @code{.weak_reference}
+* Zero::                        @code{.zero}
 @end menu
 
-@node Abort
-@section @code{.abort}
+@node 2byte
+@subsection @code{.2byte}
+@cindex @code{2byte} directive
+@cindex @code{.2byte}
+@code{.2byte} expects zero or more expressions, separated by commas.
+Each expression is assembled into the next two bytes.  The endianness of the
+insertion is target specific.  @xref{Machine Dependencies}.
 
+@node 4byte
+@subsection @code{.4byte}
+@cindex @code{4byte} directive
+@cindex @code{.4byte}
+@code{.4byte} expects zero or more expressions, separated by commas.
+Each expression is assembled into the next four bytes.  The endianness of the
+insertion is target specific.  @xref{Machine Dependencies}.
+
+@node 8byte
+@subsection @code{.8byte}
+@cindex @code{8byte} directive
+@cindex @code{.8byte}
+@code{.8byte} expects zero or more expressions, separated by commas.  Each
+expression is assembled into the next eight bytes.  It is a synonym for
+@code{.quad} (@pxref{Quad}.  The endianness of the insertion is target
+specific.  @xref{Machine Dependencies}.
+
+@node Abort
+@subsection @code{.abort}
 @cindex @code{abort} directive (deprecated)
 @cindex @code{.abort} (deprecated)
 @cindex stopping the assembly
@@ -2067,10 +2122,10 @@ use this directive to tell the LLVM integrated assembler to quit also.
 supported.
 
 @node Align
-@section @code{.align @var{abs-expr}, @var{abs-expr}, @var{abs-expr}}
-
+@subsection @code{.align @var{abs-expr}, @var{abs-expr}, @var{abs-expr}}
 @cindex padding the location counter
 @cindex @code{align} directive
+@cindex @code{.align}
 Pad the location counter (in the current subsection) to a particular storage
 boundary.  The first expression (which must be absolute) is the alignment
 required, as described below.
@@ -2103,8 +2158,27 @@ emulate. The LLVM integrated assembler also provides @code{.balign} and
 across all architectures (but are specific to the LLVM integrated assembler and
 @sc{gnu} assembler).
 
+@node Align32
+@subsection @code{.align32 @var{abs-expr}, @var{abs-expr}, @var{abs-expr}}
+@cindex padding the location counter
+@cindex @code{align32} directive
+@cindex @code{.align32}
+This directive is almost identical to @code{.align} (@pxref{Align}), but allows
+specification of a 32-bit fill value as the second argument, and may have
+different default behavior for the fill value.
+
+If no value is omitted, the padding bytes are normally zero.  However, on some
+systems, if the section is marked as containing code and the fill value is
+omitted, the space is filled with no-op instructions.  This behavior may also
+differ between @code{.align} and @code{.align32} directives---for example
+@code{.align} may fill with no-op insturctions, while @code{.align32} fills
+with zero.
+
+The interpretation of the fill value when less than 32-bits need to be filled
+is target specific.  @xref{Machine Dependencies}.
+
 @node Ascii
-@section @code{.ascii "@var{string}"}@dots{}
+@subsection @code{.ascii "@var{string}"}@dots{}
 
 @cindex @code{ascii} directive
 @cindex @code{.ascii}
@@ -2114,7 +2188,7 @@ separated by commas.  It assembles each string (with no automatic
 trailing zero byte) into consecutive addresses.
 
 @node Asciz
-@section @code{.asciz "@var{string}"}@dots{}
+@subsection @code{.asciz "@var{string}"}@dots{}
 
 @cindex @code{asciz} directive
 @cindex zero-terminated strings
@@ -2123,7 +2197,7 @@ trailing zero byte) into consecutive addresses.
 a zero byte.  The ``z'' in @samp{.asciz} stands for ``zero''.
 
 @node Balign
-@section @code{.balign[wl] @var{abs-expr}, @var{abs-expr}, @var{abs-expr}}
+@subsection @code{.balign[wl] @var{abs-expr}, @var{abs-expr}, @var{abs-expr}}
 
 @cindex padding the location counter given number of bytes
 @cindex @code{balign} directive
@@ -2163,8 +2237,8 @@ filled in with the value 0x368d (the exact placement of the bytes depends upon
 the endianness of the processor).  If it skips 1 or 3 bytes, the fill value is
 undefined.
 
-@node Bundle directives
-@section @code{.bundle_align_mode @var{abs-expr}}
+@node BundleAlign
+@subsection @code{.bundle_align_mode @var{abs-expr}}
 @cindex @code{bundle_align_mode} directive
 @cindex @code{.bundle_align_mode}
 @cindex bundle
@@ -2189,7 +2263,8 @@ end of that bundle is filled with no-op instructions so the instruction
 starts in the next bundle.  As a corollary, it's an error if any single
 instruction's encoding is longer than the bundle size.
 
-@section @code{.bundle_lock} and @code{.bundle_unlock}
+@node BundleLock
+@subsection @code{.bundle_lock} and @code{.bundle_unlock}
 @cindex @code{bundle_lock} directive
 @cindex @code{bundle_unlock} directive
 The @code{.bundle_lock} and directive @code{.bundle_unlock} directives
@@ -2221,7 +2296,7 @@ matched by another closing @code{.bundle_unlock} so that there is the
 same number of @code{.bundle_lock} and @code{.bundle_unlock} directives.
 
 @node Byte
-@section @code{.byte @var{expressions}}
+@subsection @code{.byte @var{expressions}}
 
 @cindex @code{byte} directive
 @cindex @code{.byte}
@@ -2229,8 +2304,35 @@ same number of @code{.bundle_lock} and @code{.bundle_unlock} directives.
 @code{.byte} expects zero or more expressions, separated by commas.
 Each expression is assembled into the next byte.
 
-@node CFI directives
-@section @code{.cfi_sections @var{section_list}}
+@node CFIDirectives
+@subsection CFI Directives
+@cindex CFI assembler directives
+@cindex assembler directives for CFI
+
+@menu
+* CfiSections::          @code{.cfi_sections @var{section_list}}
+* CfiStartproc::         @code{.cfi_startproc [simple]}
+* CfiEndproc::           @code{.cfi_endproc}
+* CfiPersonality::       @code{.cfi_personality @var{encoding} [, @var{exp}]}
+* CfiLsda::              @code{.cfi_lsda @var{encoding} [, @var{exp}]}
+* CfiDefCfa::            @code{.cfi_def_cfa @var{register}, @var{offset}}
+* CfiDefCfaRegister::    @code{.cfi_def_cfa_register @var{register}}
+* CfiDefCfaOffset::      @code{.cfi_def_cfa_offset @var{offset}}
+* CfiAdjustCfaOffset::   @code{.cfi_adjust_cfa_offset @var{offset}}
+* CfiOffset::            @code{.cfi_offset @var{register}, @var{offset}}
+* CfiRelOffset::         @code{.cfi_rel_offset @var{register}, @var{offset}}
+* CfiRegister::          @code{.cfi_register @var{register1}, @var{register2}}
+* CfiRestore::           @code{.cfi_restore @var{register}}
+* CfiUndefined::         @code{.cfi_undefined @var{register}}
+* CfiSameValue::         @code{.cfi_same_value @var{register}}
+* CfiRememberState::     @code{.cfi_remember_state} and @code{.cfi_restore_state},
+* CfiSignalFrame::       @code{.cfi_signal_frame}
+* CfiWindowSave::        @code{.cfi_window_save}
+* CfiEscape::            @code{.cfi_escape} @var{expression}[, @dots{}]
+@end menu
+
+@node CfiSections
+@subsubsection @code{.cfi_sections @var{section_list}}
 @cindex @code{cfi_sections} directive
 @cindex @code{.cfi_sections}
 @code{.cfi_sections} may be used to specify whether CFI directives
@@ -2240,7 +2342,8 @@ if @var{section_list} is @code{.debug_frame}, @code{.debug_frame} is emitted.
 To emit both use @code{.eh_frame, .debug_frame}.  The default if this
 directive is not used is @code{.cfi_sections .eh_frame}.
 
-@section @code{.cfi_startproc [simple]}
+@node CfiStartproc
+@subsubsection @code{.cfi_startproc [simple]}
 @cindex @code{cfi_startproc} directive
 @cindex @code{.cfi_startproc}
 @code{.cfi_startproc} is used at the beginning of each function that
@@ -2251,14 +2354,16 @@ data structures. Don't forget to close the function by
 Unless @code{.cfi_startproc} is used along with parameter @code{simple}
 it also emits some architecture dependent initial CFI instructions.
 
-@section @code{.cfi_endproc}
+@node CfiEndproc
+@subsubsection @code{.cfi_endproc}
 @cindex @code{cfi_endproc} directive
 @cindex @code{.cfi_endproc}
 @code{.cfi_endproc} is used at the end of a function where it closes its
 unwind entry previously opened by
 @code{.cfi_startproc}, and emits it to @code{.eh_frame}.
 
-@section @code{.cfi_personality @var{encoding} [, @var{exp}]}
+@node CfiPersonality
+@subsubsection @code{.cfi_personality @var{encoding} [, @var{exp}]}
 @cindex @code{cfi_personality} directive
 @cindex @code{.cfi_personality}
 @code{.cfi_personality} defines personality routine and its encoding.
@@ -2270,7 +2375,8 @@ encodings, the symbol provided should be the location where personality can be
 loaded from, not the personality routine itself.  The default after
 @code{.cfi_startproc} is @code{.cfi_personality 0xff}, no personality routine.
 
-@section @code{.cfi_lsda @var{encoding} [, @var{exp}]}
+@node CfiLsda
+@subsubsection @code{.cfi_lsda @var{encoding} [, @var{exp}]}
 @cindex @code{cfi_lsda} directive
 @cindex @code{.cfi_lsda}
 @code{.cfi_lsda} defines LSDA and its encoding.  @var{encoding} must be a
@@ -2280,20 +2386,23 @@ the second argument should be a symbol name (unlike the @sc{gnu} assembler, a
 constant is not permitted).  The default after @code{.cfi_startproc} is
 @code{.cfi_lsda 0xff}, no LSDA.
 
-@section @code{.cfi_def_cfa @var{register}, @var{offset}}
+@node CfiDefCfa
+@subsubsection @code{.cfi_def_cfa @var{register}, @var{offset}}
 @cindex @code{cfi_def_cfa} directive
 @cindex @code{.cfi_def_cfa}
 @code{.cfi_def_cfa} defines a rule for computing CFA as: @emph{take address
 from @var{register} and add @var{offset} to it}.
 
-@section @code{.cfi_def_cfa_register @var{register}}
+@node CfiDefCfaRegister
+@subsubsection @code{.cfi_def_cfa_register @var{register}}
 @cindex @code{cfi_def_cfa_register} directive
 @cindex @code{.cfi_def_cfa_register}
 @code{.cfi_def_cfa_register} modifies a rule for computing CFA. From
 now on @var{register} will be used instead of the old one. Offset
 remains the same.
 
-@section @code{.cfi_def_cfa_offset @var{offset}}
+@node CfiDefCfaOffset
+@subsubsection @code{.cfi_def_cfa_offset @var{offset}}
 @cindex @code{cfi_def_cfa_offset} directive
 @cindex @code{.cfi_def_cfa_offset}
 @code{.cfi_def_cfa_offset} modifies a rule for computing CFA. Register
@@ -2301,19 +2410,22 @@ remains the same, but @var{offset} is new. Note that it is the
 absolute offset that will be added to a defined register to compute
 CFA address.
 
-@section @code{.cfi_adjust_cfa_offset @var{offset}}
+@node CfiAdjustCfaOffset
+@subsubsection @code{.cfi_adjust_cfa_offset @var{offset}}
 @cindex @code{cfi_adjust_cfa_offset} directive
 @cindex @code{.cfi_adjust_cfa_offset}
 Same as @code{.cfi_def_cfa_offset} but @var{offset} is a relative
 value that is added/substracted from the previous offset.
 
-@section @code{.cfi_offset @var{register}, @var{offset}}
+@node CfiOffset
+@subsubsection @code{.cfi_offset @var{register}, @var{offset}}
 @cindex @code{cfi_offset} directive
 @cindex @code{.cfi_offset}
 Previous value of @var{register} is saved at offset @var{offset} from
 CFA.
 
-@section @code{.cfi_rel_offset @var{register}, @var{offset}}
+@node CfiRelOffset
+@subsubsection @code{.cfi_rel_offset @var{register}, @var{offset}}
 @cindex @code{cfi_rel_offset} directive
 @cindex @code{.cfi_rel_offset}
 Previous value of @var{register} is saved at offset @var{offset} from
@@ -2322,30 +2434,35 @@ using the known displacement of the CFA register from the CFA.
 This is often easier to use, because the number will match the
 code it's annotating.
 
-@section @code{.cfi_register @var{register1}, @var{register2}}
+@node CfiRegister
+@subsubsection @code{.cfi_register @var{register1}, @var{register2}}
 @cindex @code{cfi_register} directive
 @cindex @code{.cfi_register}
 Previous value of @var{register1} is saved in register @var{register2}.
 
-@section @code{.cfi_restore @var{register}}
+@node CfiRestore
+@subsubsection @code{.cfi_restore @var{register}}
 @cindex @code{cfi_restore} directive
 @cindex @code{.cfi_restore}
 @code{.cfi_restore} says that the rule for @var{register} is now the
 same as it was at the beginning of the function, after all initial
 instruction added by @code{.cfi_startproc} were executed.
 
-@section @code{.cfi_undefined @var{register}}
+@node CfiUndefined
+@subsubsection @code{.cfi_undefined @var{register}}
 @cindex @code{cfi_undefined} directive
 @cindex @code{.cfi_undefined}
 From now on the previous value of @var{register} can't be restored anymore.
 
-@section @code{.cfi_same_value @var{register}}
+@node CfiSameValue
+@subsubsection @code{.cfi_same_value @var{register}}
 @cindex @code{cfi_same_value} directive
 @cindex @code{.cfi_same_value}
 Current value of @var{register} is the same as in the previous frame, i.e. no
 restoration needed.
 
-@section @code{.cfi_remember_state} and @code{.cfi_restore_state},
+@node CfiRememberState
+@subsubsection @code{.cfi_remember_state} and @code{.cfi_restore_state},
 @cindex @code{cfi_remember_state} directive
 @cindex @code{.cfi_remember_state}
 @cindex @code{cfi_restore_state} directive
@@ -2354,12 +2471,14 @@ Use @code{.cfi_remember_state} to save all current rules for all registers.  If
 you then totally screw them up by subsequent @code{.cfi_*} directives you can
 use @code{.cfi_restore_state} to restore the previous saved state.
 
-@section @code{.cfi_signal_frame}
+@node CfiSignalFrame
+@subsubsection @code{.cfi_signal_frame}
 @cindex @code{cfi_signal_frame} directive
 @cindex @code{.cfi_signal_frame}
 Mark current function as signal handler.
 
-@section @code{.cfi_window_save}
+@node CfiWindowSave
+@subsubsection @code{.cfi_window_save}
 @cindex @code{cfi_window_save} directive
 @cindex @code{.cfi_window_save}
 @cindex debug for register windws
@@ -2367,15 +2486,25 @@ Save a complete register window.  This directive is generically recognized, but
 its function, if any, is unclear, since few architectures now support register
 windows.  SPARC is an example of such an architecture.
 
-@section @code{.cfi_escape} @var{expression}[, @dots{}]
+@node CfiEscape
+@subsubsection @code{.cfi_escape} @var{expression}[, @dots{}]
 @cindex @code{cfi_escape} directive
 @cindex @code{.cfi_escape}
 Allows the user to add arbitrary bytes to the unwind info.  One
 might use this to add OS-specific CFI opcodes, or generic CFI
 opcodes that the LLVM integrated assembler does not yet support.
 
+@node Code16
+@subsection @code{.code16}, @code{.code16gcc}
+@cindex @code{code16} directive
+@cindex @code{.code16}
+@cindex @code{code16gcc} directive
+@cindex @code{.code16gcce}
+
+To be written...
+
 @node Comm
-@section @code{.comm @var{symbol}, @var{length} [, @var{alignment}]}
+@subsection @code{.comm @var{symbol}, @var{length} [, @var{alignment}]}
 @cindex @code{comm} directive
 @cindex @code{.comm}
 @cindex symbol, common
@@ -2397,17 +2526,15 @@ will use the alignment when placing the symbol.  If no alignment is specified,
 the LLVM integrated assembler will set the alignment to the largest power of
 two less than or equal to the size of the symbol, up to a maximum of 16.
 
-@node Data
-@section @code{.data @var{subsection}}
-@cindex @code{data} directive
-@cindex @code{.data}
-@code{.data} tells the LLVM integrated assembler to assemble the following
-statements onto the end of the data subsection numbered @var{subsection} (which
-is an absolute expression).  If @var{subsection} is omitted, it defaults to
-zero.
+@node Common
+@subsection @code{.common}
+@cindex @code{common} directive
+@cindex @code{.common}
+
+To be written...
 
 @node Double
-@section @code{.double @var{flonums}}
+@subsection @code{.double @var{flonums}}
 @cindex @code{double} directive
 @cindex @code{.double}
 @cindex floating point numbers (double)
@@ -2417,7 +2544,7 @@ depends on how the LLVM integrated assembler is configured.  @xref{Machine
 Dependencies}.
 
 @node Else
-@section @code{.else}
+@subsection @code{.else}
 @cindex @code{else} directive
 @cindex @code{.else}
 @code{.else} is part of the the LLVM integrated assembler support for
@@ -2426,7 +2553,7 @@ section of code to be assembled if the condition for the preceding @code{.if}
 was false.
 
 @node Elseif
-@section @code{.elseif}
+@subsection @code{.elseif}
 @cindex @code{elseif} directive
 @cindex @code{.elseif}
 @code{.elseif} is part of the the LLVM integrated assembler support for
@@ -2435,14 +2562,14 @@ a new @code{.if} block that would otherwise fill the entire @code{.else}
 section.
 
 @node End
-@section @code{.end}
+@subsection @code{.end}
 @cindex @code{end} directive
 @cindex @code{.end}
 @code{.end} marks the end of the assembly file.  The LLVM integrated assembler
 does not process anything in the file past the @code{.end} directive.
 
 @node Endif
-@section @code{.endif}
+@subsection @code{.endif}
 @cindex @code{endif} directive
 @cindex @code{.endif}
 @code{.endif} is part of the the LLVM integrated assembler support for
@@ -2450,20 +2577,20 @@ conditional assembly; it marks the end of a block of code that is only
 assembled conditionally.  @xref{If,,@code{.if}}.
 
 @node Endm
-@section @code{.endm}
+@subsection @code{.endm}
 @cindex @code{endm} directive
 @cindex @code{.endm}
 End the current macro definition.  @xref{Macro}.
 
 @node Endr
-@section @code{.endr}
+@subsection @code{.endr}
 @cindex @code{endr} directive
 @cindex @code{.endr}
 End the current @code{.irp}, @code{.irpc} or @code{.rept} definition.
 @xref{Irp}.  @xref{Irpc}.  @xref{Rept}.
 
 @node Equ
-@section @code{.equ @var{symbol}, @var{expression}}
+@subsection @code{.equ @var{symbol}, @var{expression}}
 @cindex @code{equ} directive
 @cindex @code{.equ}
 @cindex assigning values to symbols
@@ -2472,7 +2599,7 @@ This directive sets the value of @var{symbol} to @var{expression}.  It is
 synonymous with @samp{.set}. @xref{Set,,@code{.set}}.
 
 @node Equiv
-@section @code{.equiv @var{symbol}, @var{expression}}
+@subsection @code{.equiv @var{symbol}, @var{expression}}
 @cindex @code{equiv} directive
 @cindex @code{.equiv}
 The @code{.equiv} directive is like @code{.equ} and @code{.set}, except that
@@ -2490,7 +2617,7 @@ Except for the contents of the error message, this is roughly equivalent to
 plus it protects the symbol from later redefinition.
 
 @node Err
-@section @code{.err}
+@subsection @code{.err}
 @cindex @code{err} directive
 @cindex @code{.err}
 If the LLVM integrated assembler assembles a @code{.err} directive, it will
@@ -2499,7 +2626,7 @@ generate an object file.  This can be used to signal an error in conditionally
 compiled code.
 
 @node Error
-@section @code{.error "@var{string}"}
+@subsection @code{.error "@var{string}"}
 @cindex @code{error} directive
 @cindex @code{.error}
 Similarly to @code{.err}, this directive emits an error, but you can specify a
@@ -2512,13 +2639,13 @@ message, it defaults to @code{".error directive invoked in source file"}.
 @end example
 
 @node Exitm
-@section @code{.exitm}
+@subsection @code{.exitm}
 @cindex @code{exitm} directive
 @cindex @code{.exitm}
 Exit early from the current macro definition.  @xref{Macro}.
 
 @node Extern
-@section @code{.extern}
+@subsection @code{.extern}
 @cindex @code{extern} directive
 @cindex @code{.extern}
 @code{.extern} is accepted in the source program---for compatibility with other
@@ -2526,7 +2653,7 @@ assemblers---but it is ignored.  The LLVM integrated assembler treats all
 undefined symbols as external.
 
 @node File
-@section @code{.file}
+@subsection @code{.file}
 @cindex @code{file} directive
 @cindex @code{.file}
 
@@ -2547,7 +2674,7 @@ information, and thus the user must know the exact indices that table entries
 will have.
 
 @node Fill
-@section @code{.fill @var{repeat} , @var{size} , @var{value}}
+@subsection @code{.fill @var{repeat} , @var{size} , @var{value}}
 @cindex @code{fill} directive
 @cindex @code{.fill}
 @cindex writing patterns in memory
@@ -2569,7 +2696,7 @@ assumed zero.  If the first comma and following tokens are absent,
 @var{size} is assumed to be 1.
 
 @node Float
-@section @code{.float @var{flonums}}
+@subsection @code{.float @var{flonums}}
 @cindex @code{float} directive
 @cindex @code{.float}
 @cindex floating point numbers (single)
@@ -2579,7 +2706,7 @@ emitted depends on how the LLVM integrated assembler is configured.
 @xref{Machine Dependencies}.
 
 @node Global
-@section @code{.global @var{symbol}}, @code{.globl @var{symbol}}
+@subsection @code{.global @var{symbol}}, @code{.globl @var{symbol}}
 @cindex @code{global} directive
 @cindex @code{.global}
 @cindex symbol, making visible to linker
@@ -2592,29 +2719,15 @@ from another file linked into the same program.
 Both spellings (@samp{.globl} and @samp{.global}) are accepted, for
 compatibility with other assemblers.
 
-@node Hidden
-@section @code{.hidden @var{names}}
-@cindex @code{hidden} directive
-@cindex @code{.hidden}
-@cindex visibility
-This is one of the ELF visibility directives.  The other two are
-@code{.internal} (@pxref{Internal,,@code{.internal}}) and
-@code{.protected} (@pxref{Protected,,@code{.protected}}).
-
-This directive overrides the named symbols default visibility (which is set by
-their binding: local, global or weak).  The directive sets the visibility to
-@code{hidden} which means that the symbols are not visible to other components.
-Such symbols are always considered to be @code{protected} as well.
-
 @node Ident
-@section @code{.ident} @var{string}
+@subsection @code{.ident} @var{string}
 @cindex @code{ident} directive
 @cindex @code{.ident}
 The @var{string} argument is treated as a comment and emitted to the
 @code{.comment} section.
 
 @node If
-@section @code{.if @var{absolute expression}} and Variants
+@subsection @code{.if @var{absolute expression}} and Variants
 
 @cindex conditional assembly
 @cindex @code{if} directive
@@ -2722,7 +2835,7 @@ following section of code if the two strings are not the same.
 @end table
 
 @node Incbin
-@section @code{.incbin "@var{file}"}
+@subsection @code{.incbin "@var{file}"}
 @cindex @code{incbin} directive
 @cindex @code{.incbin}
 @cindex binary files, including
@@ -2736,7 +2849,7 @@ not have optional second and third arguments to skip bytes from the start of
 the file, or to specify a maximum number of bytes.
 
 @node Include
-@section @code{.include "@var{file}"}
+@subsection @code{.include "@var{file}"}
 @cindex @code{include} directive
 @cindex @code{.include}
 @cindex supporting files, including
@@ -2750,7 +2863,7 @@ can control the search paths used with the @samp{-I} command-line option
 around @var{file}.
 
 @node Int
-@section @code{.int @var{expressions}}
+@subsection @code{.int @var{expressions}}
 @cindex @code{int} directive
 @cindex @code{.int}
 @cindex integers, 32-bit
@@ -2759,23 +2872,8 @@ For each expression, emit a number that, at run time, is the value of that
 expression.  The byte order and bit size of the number is target dependent.
 @xref{Machine Dependencies}.
 
-@node Internal
-@section @code{.internal @var{names}}
-@cindex @code{internal} directive
-@cindex @code{.internal}
-@cindex visibility
-This is one of the ELF visibility directives.  The other two are @code{.hidden}
-(@pxref{Hidden,,@code{.hidden}}) and @code{.protected}
-(@pxref{Protected,,@code{.protected}}).
-
-This directive overrides the named symbols default visibility (which is set by
-their binding: local, global or weak).  The directive sets the visibility to
-@code{internal} which means that the symbols are considered to be @code{hidden}
-(i.e., not visible to other components), and that some extra, processor
-specific processing must also be performed upon the symbols as well.
-
 @node Irp
-@section @code{.irp @var{symbol},@var{values}}@dots{}
+@subsection @code{.irp @var{symbol},@var{values}}@dots{}
 @cindex @code{irp} directive
 @cindex @code{.irp}
 Evaluate a sequence of statements assigning different values to @var{symbol}.
@@ -2805,7 +2903,7 @@ is equivalent to assembling
 For some caveats with the spelling of @var{symbol}, see also @ref{Macro}.
 
 @node Irpc
-@section @code{.irpc @var{symbol},@var{values}}@dots{}
+@subsection @code{.irpc @var{symbol},@var{values}}@dots{}
 @cindex @code{irpc} directive
 @cindex @code{.irpc}
 Evaluate a sequence of statements assigning different values to @var{symbol}.
@@ -2835,8 +2933,15 @@ is equivalent to assembling
 For some caveats with the spelling of @var{symbol}, see also the discussion
 at @xref{Macro}.
 
+@node LazyReference
+@subsection @code{.lazy_reference}
+@cindex @code{lazy_reference} directive
+@cindex @code{.lazy_reference}
+
+To be written...
+
 @node Lcomm
-@section @code{.lcomm @var{symbol} , @var{length}}
+@subsection @code{.lcomm @var{symbol} , @var{length}}
 @cindex @code{lcomm} directive
 @cindex @code{.lcomm}
 @cindex local common symbols
@@ -2852,7 +2957,7 @@ Some targets permit a third argument to be used with @code{.lcomm}.  This
 argument specifies the desired alignment of the symbol in the bss section.
 
 @node Line
-@section @code{.line @var{line-number}}
+@subsection @code{.line @var{line-number}}
 @cindex @code{line} directive (deprecated)
 @cindex @code{.line} (deprecated)
 @cindex logical line number
@@ -2861,23 +2966,10 @@ Even though this is a directive associated with the @code{a.out} or
 recognizes it when producing ELF output.
 
 @emph{Note:} This directive is deprecated.  One day @code{.line} will not be
-supported.  Use the @code{.ln} directive instead.  @xref{Ln}.
-
-@node Ln
-@section @code{.ln @var{line-number}}
-
-@cindex @code{ln} directive
-@samp{.ln} is a synonym for the deprecated @samp{.line} directive, and should
-be used in preference.
-
-Tell the LLVM integrated assembler to change the logical line number.
-@var{line-number} must be an absolute expression.  The next line has that
-logical line number, so any other statements on the current line (after a
-statement separator character such as @samp{;}) are reported as on logical line
-number @var{line-number} @minus{} 1.
+supported.
 
 @node Loc
-@section @code{.loc @var{fileno} @var{lineno} [@var{column}] [@var{options}]}
+@subsection @code{.loc @var{fileno} @var{lineno} [@var{column}] [@var{options}]}
 @cindex @code{loc} directive
 When emitting DWARF2 line number information,
 the @code{.loc} directive will add a row to the @code{.debug_line} line
@@ -2917,28 +3009,14 @@ integer.
 
 @end table
 
-@node Local
-@section @code{.local @var{names}}
-@cindex @code{local} directive
-@cindex @code{.local}
-This directive, which is available for ELF targets, marks each symbol in
-the comma-separated list of @code{names} as a local symbol so that it
-will not be externally visible.  If the symbols do not already exist,
-they will be created.
-
-For targets where the @code{.lcomm} directive (@pxref{Lcomm}) does not
-accept an alignment argument, which is the case for most ELF targets,
-the @code{.local} directive can be used in combination with @code{.comm}
-(@pxref{Comm}) to define aligned local common data.
-
 @node Long
-@section @code{.long @var{expressions}}
+@subsection @code{.long @var{expressions}}
 @cindex @code{long} directive
 @cindex @code{.long}
 @code{.long} is the same as @samp{.int}.  @xref{Int,,@code{.int}}.
 
 @node Macro
-@section @code{.macro} and associated directives
+@subsection @code{.macro} and associated directives
 @cindex macros
 The commands @code{.macro} and @code{.endm} allow you to define macros that
 generate assembly output.  For example, this definition specifies a macro
@@ -3092,10 +3170,12 @@ and @code{.irpc} (@pxref{Irpc}) as well.
 
 @item .endm
 @cindex @code{endm} directive
+@cindex @code{.endm}
 Mark the end of a macro definition.
 
 @item .exitm
 @cindex @code{exitm} directive
+@cindex @code{.exitm}
 Exit early from the current macro definition.
 
 @cindex number of macros executed
@@ -3105,10 +3185,25 @@ the LLVM integrated assembler maintains a counter of how many macros it has
 executed in this pseudo-variable; you can copy that number to your
 output with @samp{\@@}, but @emph{only within a macro definition}.
 
+@item .macros_on
+@itemx .macros_off
+@cindex @code{macros_on} directive
+@cindex @code{.macros_on}
+@cindex @code{macros_off} directive
+@cindex @code{.macros_off}
+Enable (@code{macros_on} and disable (@code{macros_off}) recognition of macros
+in the code.
 @end ftable
 
+@node NoDeadStrip
+@subsection @code{.no_dead_strip}
+@cindex @code{no_dead_strip} directive
+@cindex @code{.no_dead_strip}
+
+To be written...
+
 @node Octa
-@section @code{.octa @var{bignums}}
+@subsection @code{.octa @var{bignums}}
 @cindex @code{octa} directive
 @cindex @code{.octa}
 @cindex integer, 16-byte
@@ -3120,7 +3215,7 @@ The term ``octa'' comes from contexts in which a ``word'' is two bytes;
 hence @emph{octa}-word for 16 bytes.
 
 @node Org
-@section @code{.org @var{new-lc} , @var{fill}}
+@subsection @code{.org @var{new-lc} , @var{fill}}
 @cindex @code{org} directive
 @cindex @code{.org}
 @cindex location counter, advancing
@@ -3155,7 +3250,7 @@ absolute expression.  If the comma and @var{fill} are omitted,
 @var{fill} defaults to zero.
 
 @node P2align
-@section @code{.p2align[wl] @var{abs-expr}, @var{abs-expr}, @var{abs-expr}}
+@subsection @code{.p2align[wl] @var{abs-expr}, @var{abs-expr}, @var{abs-expr}}
 
 @cindex padding the location counter given a power of two
 @cindex @code{p2align} directive
@@ -3194,29 +3289,322 @@ filled in with the value 0x368d (the exact placement of the bytes depends upon
 the endianness of the processor).  If it skips 1 or 3 bytes, the fill value is
 undefined.
 
-@node PopSection
-@section @code{.popsection}
-@cindex @code{popsection} directive
-@cindex @code{.popsection}
-@cindex Section Stack
+@node PrivateExtern
+@subsection @code{.private_extern}
+@cindex @code{private_extern} directive
+@cindex @code{.private_extern}
+
+To be written...
+
+@node Purgem
+@subsection @code{.purgem @var{name}}
+@cindex @code{purgem} directive
+@cindex @code{.purgem}
+Undefine the macro @var{name}, so that later uses of the string will not be
+expanded.  @xref{Macro}.
+
+@node Quad
+@subsection @code{.quad @var{bignums}}
+@cindex @code{quad} directive
+@cindex @code{.quad}
+@code{.quad} expects zero or more bignums, separated by commas.  For each
+bignum, it emits an 8-byte integer.  If the bignum won't fit in 8 bytes, it
+prints a warning message; and just takes the lowest order 8 bytes of the
+bignum.
+@cindex eight-byte integer
+@cindex integer, 8-byte
+
+The term ``quad'' comes from contexts in which a ``word'' is two bytes;
+hence @emph{quad}-word for 8 bytes.
+
+@node Reference
+@subsection @code{.reference}
+@cindex @code{reference} directive
+@cindex @code{.reference}
+
+To be written...
+
+@node Rept
+@subsection @code{.rept @var{count}}
+@cindex @code{rept} directive
+@cindex @code{.rept}
+Repeat the sequence of lines between the @code{.rept} directive and the next
+@code{.endr} directive @var{count} times.
+
+For example, assembling
+
+@example
+        .rept   3
+        .long   0
+        .endr
+@end example
+
+is equivalent to assembling
+
+@example
+        .long   0
+        .long   0
+        .long   0
+@end example
+
+@node Set
+@subsection @code{.set @var{symbol}, @var{expression}}
+
+@cindex @code{set} directive
+@cindex symbol value, setting
+Set the value of @var{symbol} to @var{expression}.  This
+changes @var{symbol}'s value and type to conform to
+@var{expression}.  If @var{symbol} was flagged as external, it remains
+flagged (@pxref{Symbol Attributes}).
+
+You may @code{.set} a symbol many times in the same assembly.
+
+If you @code{.set} a global symbol, the value stored in the object
+file is the last value stored into it.
+
+@node Short
+@subsection @code{.short @var{expressions}}
+@cindex @code{short} directive
+@cindex @code{.short}
+Insert arguments into the output.  The meaning is target specific.  In
+particular there may be unusual behavior if the target has a 32-bit address
+space, but less than 32-bit addressing.  @xref{Machine Dependencies}.
+
+@node Single
+@subsection @code{.single @var{flonums}}
+@cindex @code{single} directive
+@cindex @code{.single}
+@cindex floating point numbers (single)
+This directive assembles zero or more flonums, separated by commas.  It
+has the same effect as @code{.float}.
+The exact kind of floating point numbers emitted depends on how
+the LLVM integrated assembler is configured.  @xref{Machine Dependencies}.
+
+@node Skip
+@subsection @code{.skip @var{size} , @var{fill}}
+@cindex @code{skip} directive
+@cindex @code{.skip}
+@cindex filling memory
+This directive emits @var{size} bytes, each of value @var{fill}.  Both
+@var{size} and @var{fill} are absolute expressions.  If the comma and
+@var{fill} are omitted, @var{fill} is assumed to be zero.  This is the same as
+@samp{.space}.
+
+@node Sleb128
+@subsection @code{.sleb128 @var{expressions}}
+@cindex @code{sleb128} directive
+@cindex @code{.sleb128}
+@var{sleb128} stands for ``signed little endian base 128.''  This is a
+compact, variable length representation of numbers used by the DWARF
+symbolic debugging format.  @xref{Uleb128, ,@code{.uleb128}}.
+
+@node Space
+@subsection @code{.space @var{size} , @var{fill}}
+@cindex @code{space} directive
+@cindex @code{.space}
+@cindex filling memory
+This directive emits @var{size} bytes, each of value @var{fill}.  Both
+@var{size} and @var{fill} are absolute expressions.  If the comma
+and @var{fill} are omitted, @var{fill} is assumed to be zero.  This is the same
+as @samp{.skip}.
+
+@node Stabs
+@subsection @code{.stabs}
+@cindex @code{stabs} directive
+@cindex @code{.stabs}
+
+To be written...
+
+@node String
+@subsection @code{.string} "@var{str}"
+@cindex string, copying to object file
+@cindex @code{string} directive
+@cindex @code{.string}
+Copy the characters in @var{str} to the object file.  You may specify more than
+one string to copy, separated by commas.  Unless otherwise specified for a
+particular machine, the assembler marks the end of each string with a 0 byte.
+You can use any of the escape sequences described in @ref{Strings,,Strings}.
+
+The @sc{gnu} assembler variants @code{.string8}, @code{.string16},
+@code{.string32} and @code{.string64} are not supported by the LLVM integrated
+assembler.  @xref{Unsupported}.
+
+@node SymbolResolver
+@subsection @code{.symbol_resolver}
+@cindex @code{symbol_resolver} directive
+@cindex @code{.symbol_resolver}
+
+To be written...
+
+@node Uleb128
+@subsection @code{.uleb128 @var{expressions}}
+@cindex @code{uleb128} directive
+@cindex @code{.uleb128}
+@var{uleb128} stands for ``unsigned little endian base 128.''  This is a
+compact, variable length representation of numbers used by the DWARF
+symbolic debugging format.  @xref{Sleb128, ,@code{.sleb128}}.
+
+@node Value
+@subsection @code{.value}
+@cindex @code{value} directive
+@cindex @code{.value}
+
+To be written...
+
+@node Warning
+@subsection @code{.warning "@var{string}"}
+@cindex @code{warning} directive
+@cindex @code{.warning}
+Similar to the directive @code{.error}
+(@pxref{Error,,@code{.error "@var{string}"}}), but just emits a warning.
+
+@node WeakDefCanBeHidden
+@subsection @code{.weak_def_can_be_hidden}
+@cindex @code{weak_def_can_be_hidden} directive
+@cindex @code{.weak_def_can_be_hidden}
+
+To be written...
+
+@node WeakDefinition
+@subsection @code{.weak_definition}
+@cindex @code{weak_definition} directive
+@cindex @code{.weak_definition}
+
+To be written...
+
+@node WeakReference
+@subsection @code{.weak_reference}
+@cindex @code{weak_reference} directive
+@cindex @code{.weak_reference}
+
+To be written...
+
+@node Zero
+@subsection @code{.zero}
+@cindex @code{zero} directive
+@cindex @code{.zero}
+
+To be written...
+
+@node ELF Directives
+@section ELF Specific Directives
+@cindex ELF specific assembler directives
+@cindex assembler directives (ELF)
+
+@menu
+* BssElf::                         @code{.bss}
+* DataElf::                        @code{.data @var{subsection}}
+* HiddenElf::                      @code{.hidden @var{names}}
+* IdentElf::                       @code{.ident}
+* InternalElf::                    @code{.internal @var{names}}
+* LocalElf::                       @code{.local @var{names}}
+* PopSectionElf::                  @code{.popsection}
+* PreviousElf::                    @code{.previous}
+* ProtectedElf::                   @code{.protected @var{names}}
+* PushSectionElf::                 @code{.pushsection @var{name}}
+* RodataElf::                      @code{.rodata @var{subsection}}
+* SectionElf::                     @code{.section @var{name}[, @var{flags}]}
+* SizeElf::                        @code{.size [@var{name} , @var{expression}]}
+* SubSectionElf::                  @code{.subsection}
+* SymverElf::                      @code{.symver @var{name},@var{name2@@nodename}}
+* TbssElf::                        @code{.tbss}
+* TdataElf::                       @code{.tdata}
+* TextElf::                        @code{.text @var{subsection}}
+* TypeElf::                        @code{.type <@var{int} | @var{name} , @var{type description}>}
+* VersionElf::                     @code{.version "@var{string}"}
+* WeakElf::                        @code{.weak @var{names}}
+* WeakrefElf::                     @code{.weakref @var{alias}, @var{symbol}}
+@end menu
+
+@node BssElf
+@subsection @code{.bss}
+@cindex @code{bss} directive (ELF only)
+@cindex @code{.bss} (ELF only)
+
+To be written...
+
+@node DataElf
+@subsection @code{.data @var{subsection}}
+@cindex @code{data} directive (ELF only)
+@cindex @code{.data} (ELF only)
+@code{.data} tells the LLVM integrated assembler to assemble the following
+statements onto the end of the data subsection numbered @var{subsection} (which
+is an absolute expression).  If @var{subsection} is omitted, it defaults to
+zero.
+
+@node HiddenElf
+@subsection @code{.hidden @var{names}}
+@cindex @code{hidden} directive (ELF only)
+@cindex @code{.hidden} (ELF only)
+@cindex visibility (ELF only)
+This is one of the ELF visibility directives.  The other two are
+@code{.internal} (@pxref{InternalElf,,@code{.internal}}) and
+@code{.protected} (@pxref{ProtectedElf,,@code{.protected}}).
+
+This directive overrides the named symbols default visibility (which is set by
+their binding: local, global or weak).  The directive sets the visibility to
+@code{hidden} which means that the symbols are not visible to other components.
+Such symbols are always considered to be @code{protected} as well.
+
+@node IdentElf
+@subsection @code{.ident}
+@cindex @code{ident} directive (ELF only)
+@cindex @code{.ident} (ELF only)
+
+To be written...
+
+@node InternalElf
+@subsection @code{.internal @var{names}}
+@cindex @code{internal} directive (ELF only)
+@cindex @code{.internal} (ELF only)
+@cindex visibility (ELF only)
+This is one of the ELF visibility directives.  The other two are @code{.hidden}
+(@pxref{HiddenElf,,@code{.hidden}}) and @code{.protected}
+(@pxref{ProtectedElf,,@code{.protected}}).
+
+This directive overrides the named symbols default visibility (which is set by
+their binding: local, global or weak).  The directive sets the visibility to
+@code{internal} which means that the symbols are considered to be @code{hidden}
+(i.e., not visible to other components), and that some extra, processor
+specific processing must also be performed upon the symbols as well.
+
+@node LocalElf
+@subsection @code{.local @var{names}}
+@cindex @code{local} directive (ELF only)
+@cindex @code{.local} (ELF only)
+This ELF specific directive marks each symbol in
+the comma-separated list of @code{names} as a local symbol so that it
+will not be externally visible.  If the symbols do not already exist,
+they will be created.
+
+For targets where the @code{.lcomm} directive (@pxref{Lcomm}) does not
+accept an alignment argument, which is the case for most ELF targets,
+the @code{.local} directive can be used in combination with @code{.comm}
+(@pxref{Comm}) to define aligned local common data.
+
+@node PopSectionElf
+@subsection @code{.popsection}
+@cindex @code{popsection} directive (ELF only)
+@cindex @code{.popsection} (ELF only)
+@cindex Section Stack (ELF only)
 This is one of the ELF section stack manipulation directives.  The others are
-@code{.section} (@pxref{Section}), @code{.subsection} (@pxref{SubSection}),
-@code{.pushsection} (@pxref{PushSection}), and @code{.previous}
-(@pxref{Previous}).
+@code{.section} (@pxref{SectionElf}), @code{.subsection}
+(@pxref{SubSectionElf}), @code{.pushsection} (@pxref{PushSectionElf}), and
+@code{.previous} (@pxref{PreviousElf}).
 
 This directive replaces the current section (and subsection) with the top
 section (and subsection) on the section stack.  This section is popped off the
 stack.
 
-@node Previous
-@section @code{.previous}
-@cindex @code{previous} directive
-@cindex @code{.previous}
-@cindex Section Stack
+@node PreviousElf
+@subsection @code{.previous}
+@cindex @code{previous} directive (ELF only)
+@cindex @code{.previous} (ELF only)
+@cindex Section Stack (ELF only)
 This is one of the ELF section stack manipulation directives.  The others are
-@code{.section} (@pxref{Section}), @code{.subsection} (@pxref{SubSection}),
-@code{.pushsection} (@pxref{PushSection}), and @code{.popsection}
-(@pxref{PopSection}).
+@code{.section} (@pxref{SectionElf}), @code{.subsection}
+(@pxref{SubSectionElf}), @code{.pushsection} (@pxref{PushSectionElf}), and
+@code{.popsection} (@pxref{PopSectionElf}).
 
 This directive swaps the current section (and subsection) with most recently
 referenced section/subsection pair prior to this one.  Multiple
@@ -3259,13 +3647,13 @@ section B and 0x9abc into subsection 1 of section B.
 In terms of the section stack, this directive swaps the current section with
 the top section on the section stack.
 
-@node Protected
-@section @code{.protected @var{names}}
-@cindex @code{protected} directive
-@cindex @code{.protected}
-@cindex visibility
+@node ProtectedElf
+@subsection @code{.protected @var{names}}
+@cindex @code{protected} directive (ELF only)
+@cindex @code{.protected} (ELF only)
+@cindex visibility (ELF only)
 This is one of the ELF visibility directives.  The other two are
-@code{.hidden} (@pxref{Hidden}) and @code{.internal} (@pxref{Internal}).
+@code{.hidden} (@pxref{HiddenElf}) and @code{.internal} (@pxref{InternalElf}).
 
 This directive overrides the named symbols default visibility (which is set by
 their binding: local, global or weak).  The directive sets the visibility to
@@ -3274,69 +3662,34 @@ components that defines them must be resolved to the definition in that
 component, even if a definition in another component would normally preempt
 this.
 
-@node Purgem
-@section @code{.purgem @var{name}}
-@cindex @code{purgem} directive
-@cindex @code{.purgem}
-Undefine the macro @var{name}, so that later uses of the string will not be
-expanded.  @xref{Macro}.
-
-@node PushSection
-@section @code{.pushsection @var{name} [, @var{subsection}] [, "@var{flags}"[, @@@var{type}[,@var{arguments}]]]}
-@cindex @code{pushsection} directive
-@cindex @code{.pushsection}
-@cindex Section Stack
+@node PushSectionElf
+@subsection @code{.pushsection @var{name} [, @var{subsection}] [, "@var{flags}"[, @@@var{type}[,@var{arguments}]]]}
+@cindex @code{pushsection} directive (ELF only)
+@cindex @code{.pushsection} (ELF only)
+@cindex Section Stack (ELF only)
 This is one of the ELF section stack manipulation directives.  The others are
-@code{.section} (@pxref{Section}), @code{.subsection} (@pxref{SubSection}),
-@code{.popsection} (@pxref{PopSection}), and @code{.previous}
-(@pxref{Previous}).
+@code{.section} (@pxref{SectionElf}), @code{.subsection}
+(@pxref{SubSectionElf}), @code{.popsection} (@pxref{PopSectionElf}), and
+@code{.previous} (@pxref{PreviousElf}).
 
 This directive pushes the current section (and subsection) onto the
 top of the section stack, and then replaces the current section and
 subsection with @code{name} and @code{subsection}. The optional
 @code{flags}, @code{type} and @code{arguments} are treated the same
-as in the @code{.section} (@pxref{Section}) directive.
+as in the @code{.section} (@pxref{SectionElf}) directive.
 
-@node Quad
-@section @code{.quad @var{bignums}}
-@cindex @code{quad} directive
-@cindex @code{.quad}
-@code{.quad} expects zero or more bignums, separated by commas.  For each
-bignum, it emits an 8-byte integer.  If the bignum won't fit in 8 bytes, it
-prints a warning message; and just takes the lowest order 8 bytes of the
-bignum.
-@cindex eight-byte integer
-@cindex integer, 8-byte
+@node RodataElf
+@subsection @code{.rodata}
+@cindex @code{rodata} directive (ELF only)
+@cindex @code{.rodata} (ELF only)
 
-The term ``quad'' comes from contexts in which a ``word'' is two bytes;
-hence @emph{quad}-word for 8 bytes.
+To be written...
 
-@node Rept
-@section @code{.rept @var{count}}
-@cindex @code{rept} directive
-@cindex @code{.rept}
-Repeat the sequence of lines between the @code{.rept} directive and the next
-@code{.endr} directive @var{count} times.
-
-For example, assembling
-
-@example
-        .rept   3
-        .long   0
-        .endr
-@end example
-
-is equivalent to assembling
-
-@example
-        .long   0
-        .long   0
-        .long   0
-@end example
-
-@node Section
-@section @code{.section @var{name}}
-@cindex named section
+@node SectionElf
+@subsection @code{.section @var{name}}
+@cindex @code{section} directive (ELF only)
+@cindex @code{.section} (ELF only)
+@cindex named section (ELF only)
 Use the @code{.section} directive to assemble the following code into a section
 named @var{name}.
 
@@ -3344,14 +3697,14 @@ This directive is only supported for targets that actually support arbitrarily
 named sections; on @code{a.out} targets, for example, it is not accepted, even
 with a standard @code{a.out} section name.
 
-@cindex Section Stack
+@cindex Section Stack (ELF only)
 This is one of the ELF section stack manipulation directives.  The others are
-@code{.subsection} (@pxref{SubSection}), @code{.pushsection}
-(@pxref{PushSection}), @code{.popsection} (@pxref{PopSection}), and
-@code{.previous} (@pxref{Previous}).
+@code{.subsection} (@pxref{SubSectionElf}), @code{.pushsection}
+(@pxref{PushSectionElf}), @code{.popsection} (@pxref{PopSectionElf}), and
+@code{.previous} (@pxref{PreviousElf}).
 
-@cindex @code{section} directive
-@cindex @code{.section}
+@cindex @code{section} directive (ELF only)
+@cindex @code{.section} (ELF only)
 The @code{.section} directive is used like this:
 
 @example
@@ -3484,109 +3837,34 @@ This directive replaces the current section and subsection.  The @sc{gnu}
 assembler testsuite directory @code{gas/testsuite/gas/elf} contains some
 examples of how this directive and the other section stack directives.
 
-@node Set
-@section @code{.set @var{symbol}, @var{expression}}
-
-@cindex @code{set} directive
-@cindex symbol value, setting
-Set the value of @var{symbol} to @var{expression}.  This
-changes @var{symbol}'s value and type to conform to
-@var{expression}.  If @var{symbol} was flagged as external, it remains
-flagged (@pxref{Symbol Attributes}).
-
-You may @code{.set} a symbol many times in the same assembly.
-
-If you @code{.set} a global symbol, the value stored in the object
-file is the last value stored into it.
-
-@node Short
-@section @code{.short @var{expressions}}
-@cindex @code{short} directive
-@cindex @code{.short}
-Insert arguments into the output.  The meaning is target specific.  In
-particular there may be unusual behavior if the target has a 32-bit address
-space, but less than 32-bit addressing.  @xref{Machine Dependencies}.
-
-@node Single
-@section @code{.single @var{flonums}}
-@cindex @code{single} directive
-@cindex @code{.single}
-@cindex floating point numbers (single)
-This directive assembles zero or more flonums, separated by commas.  It
-has the same effect as @code{.float}.
-The exact kind of floating point numbers emitted depends on how
-the LLVM integrated assembler is configured.  @xref{Machine Dependencies}.
-
-@node Size
-@section @code{.size @var{expression}}
-@cindex @code{size} directive
-@cindex @code{.size}
+@node SizeElf
+@subsection @code{.size @var{expression}}
+@cindex @code{size} directive (ELF only)
+@cindex @code{.size} (ELF only)
 This directive sets the size associated with a symbol @var{name}.
 The size in bytes is computed from @var{expression} which can make use of label
 arithmetic.  This directive is typically used to set the size of function
 symbols.
 
-@node Skip
-@section @code{.skip @var{size} , @var{fill}}
-@cindex @code{skip} directive
-@cindex @code{.skip}
-@cindex filling memory
-This directive emits @var{size} bytes, each of value @var{fill}.  Both
-@var{size} and @var{fill} are absolute expressions.  If the comma and
-@var{fill} are omitted, @var{fill} is assumed to be zero.  This is the same as
-@samp{.space}.
-
-@node Sleb128
-@section @code{.sleb128 @var{expressions}}
-@cindex @code{sleb128} directive
-@cindex @code{.sleb128}
-@var{sleb128} stands for ``signed little endian base 128.''  This is a
-compact, variable length representation of numbers used by the DWARF
-symbolic debugging format.  @xref{Uleb128, ,@code{.uleb128}}.
-
-@node Space
-@section @code{.space @var{size} , @var{fill}}
-@cindex @code{space} directive
-@cindex @code{.space}
-@cindex filling memory
-This directive emits @var{size} bytes, each of value @var{fill}.  Both
-@var{size} and @var{fill} are absolute expressions.  If the comma
-and @var{fill} are omitted, @var{fill} is assumed to be zero.  This is the same
-as @samp{.skip}.
-
-@node String
-@section @code{.string} "@var{str}"
-@cindex string, copying to object file
-@cindex @code{string} directive
-@cindex @code{.string}
-Copy the characters in @var{str} to the object file.  You may specify more than
-one string to copy, separated by commas.  Unless otherwise specified for a
-particular machine, the assembler marks the end of each string with a 0 byte.
-You can use any of the escape sequences described in @ref{Strings,,Strings}.
-
-The @sc{gnu} assembler variants @code{.string8}, @code{.string16},
-@code{.string32} and @code{.string64} are not supported by the LLVM integrated
-assembler.  @xref{Unsupported}.
-
-@node SubSection
-@section @code{.subsection @var{expression}}
-@cindex @code{subsection} directive
-@cindex @code{.subsection}
-@cindex Section Stack
+@node SubSectionElf
+@subsection @code{.subsection @var{expression}}
+@cindex @code{subsection} directive (ELF only)
+@cindex @code{.subsection} (ELF only)
+@cindex Section Stack (ELF only)
 This is one of the ELF section stack manipulation directives.  The others are
-@code{.section} (@pxref{Section}), @code{.pushsection} (@pxref{PushSection}),
-@code{.popsection} (@pxref{PopSection}), and @code{.previous}
-(@pxref{Previous}).
+@code{.section} (@pxref{SectionElf}), @code{.pushsection}
+(@pxref{PushSectionElf}), @code{.popsection} (@pxref{PopSectionElf}), and
+@code{.previous} (@pxref{PreviousElf}).
 
 This directive replaces the current subsection with @var{expression}.  The
 current section is not changed.  The replaced subsection is put onto the
 section stack in place of the then current top of stack subsection.
 
-@node Symver
-@section @code{.symver}
-@cindex @code{symver} directive
-@cindex symbol versioning
-@cindex versions of symbols
+@node SymverElf
+@subsection @code{.symver}
+@cindex @code{symver} directive (ELF only)
+@cindex symbol versioning (ELF only)
+@cindex versions of symbols (ELF only)
 Use the @code{.symver} directive to bind symbols to specific version nodes
 within a source file.  This is only supported on ELF platforms, and is
 typically used when assembling files to be linked into a shared library.
@@ -3636,19 +3914,33 @@ file being assembled, it is treated as @var{name2@@nodename}. When
 @var{name} is defined within the file being assembled, the symbol
 name, @var{name}, will be changed to @var{name2@@@@nodename}.
 
-@node Text
-@section @code{.text @var{subsection}}
-@cindex @code{text} directive
-@cindex @code{.text}
+@node TbssElf
+@subsection @code{.tbss}
+@cindex @code{tbss} directive (ELF only)
+@cindex @code{.tbss} (ELF only)
+
+To be written...
+
+@node TdataElf
+@subsection @code{.tdata}
+@cindex @code{tdata} directive (ELF only)
+@cindex @code{.tdata} (ELF only)
+
+To be written...
+
+@node TextElf
+@subsection @code{.text @var{subsection}}
+@cindex @code{text} directive (ELF only)
+@cindex @code{.text} (ELF only)
 Tells the LLVM integrated assembler to assemble the following statements onto
 the end of the text subsection numbered @var{subsection}, which is an absolute
 expression.  If @var{subsection} is omitted, subsection number zero is used.
 
-@node Type
-@section @code{.type @var{name} , @var{type description}}
-@cindex symbol type
-@cindex @code{type} directive
-@cindex @code{.type}
+@node TypeElf
+@subsection @code{.type @var{name} , @var{type description}}
+@cindex symbol type (ELF only)
+@cindex @code{type} directive (ELF only)
+@cindex @code{.type} (ELF only)
 This sets the type of symbol @var{name} to be either a
 function symbol or an object symbol.  There are five different syntaxes
 supported for the @var{type description} field, in order to provide
@@ -3710,39 +4002,24 @@ systems).
 @emph{Note:} Some targets support extra types in addition to those listed
 above.  @xref{Machine Dependencies}.
 
-@node Uleb128
-@section @code{.uleb128 @var{expressions}}
-@cindex @code{uleb128} directive
-@cindex @code{.uleb128}
-@var{uleb128} stands for ``unsigned little endian base 128.''  This is a
-compact, variable length representation of numbers used by the DWARF
-symbolic debugging format.  @xref{Sleb128, ,@code{.sleb128}}.
-
-@node Version
-@section @code{.version "@var{string}"}
-@cindex @code{version} directive
-@cindex @code{.version}
+@node VersionElf
+@subsection @code{.version "@var{string}"}
+@cindex @code{version} directive (ELF only)
+@cindex @code{.version} (ELF only)
 This directive creates a @code{.note} section and places into it an ELF
 formatted note of type NT_VERSION.  The note's name is set to @code{string}.
 
-@node Warning
-@section @code{.warning "@var{string}"}
-@cindex @code{warning} directive
-@cindex @code{.warning}
-Similar to the directive @code{.error}
-(@pxref{Error,,@code{.error "@var{string}"}}), but just emits a warning.
-
-@node Weak
-@section @code{.weak @var{names}}
-@cindex @code{weak} directive
-@cindex @code{.weak}
+@node WeakElf
+@subsection @code{.weak @var{names}}
+@cindex @code{weak} directive (ELF only)
+@cindex @code{.weak} (ELF only)
 This directive sets the weak attribute on the comma separated list of symbol
 @code{names}.  If the symbols do not already exist, they will be created.
 
-@node Weakref
-@section @code{.weakref @var{alias}, @var{target}}
-@cindex @code{weakref} directive
-@cindex @code{.weakref}
+@node WeakrefElf
+@subsection @code{.weakref @var{alias}, @var{target}}
+@cindex @code{weakref} directive (ELF only)
+@cindex @code{.weakref} (ELF only)
 This directive creates an alias to the target symbol that enables the symbol to
 be referenced with weak-symbol semantics, but without actually making it weak.
 If direct references or definitions of the symbol are present, then the symbol
@@ -3757,6 +4034,626 @@ had the references to the alias removed.
 
 The alias itself never makes to the symbol table, and is entirely handled
 within the assembler.
+
+@node COFF Directives
+@section COFF Specific Directives
+
+@menu
+* BssCoff::             @code{.bss}
+* DataCoff::            @code{.data}
+* DefCoff::             @code{.def}, @code{.endef}
+* LinkonceCoff::        @code{.linkonce}
+* SclCoff::             @code{.scl}
+* SecidxCoff::          @code{.secidx}
+* Secrel32Coff::        @code{.secrel32}
+* SectionCoff::         @code{.section}
+* TextCoff::            @code{.text}
+* TypeCoff::            @code{.type}
+* Win64Coff::           Directives for Win64 Event Handling
+@end menu
+
+@node BssCoff
+@subsection @code{.bss}
+@cindex @code{bss} directive (COFF only)
+@cindex @code{.bss} (COFF only)
+
+To be written...
+
+@node DataCoff
+@subsection @code{.data}
+@cindex @code{data} directive (COFF only)
+@cindex @code{.data} (COFF only)
+
+To be written...
+
+@node DefCoff
+@subsection @code{.def}
+@cindex @code{def} directive (COFF only)
+@cindex @code{.def} (COFF only)
+
+To be written...
+
+@node LinkonceCoff
+@subsection @code{.linkonce}
+@cindex @code{linkonce} directive (COFF only)
+@cindex @code{.linkonce} (COFF only)
+
+To be written...
+
+@node SclCoff
+@subsection @code{.scl}
+@cindex @code{scl} directive (COFF only)
+@cindex @code{.scl} (COFF only)
+
+To be written...
+
+@node SecidxCoff
+@subsection @code{.secidx}
+@cindex @code{secidx} directive (COFF only)
+@cindex @code{.secidx} (COFF only)
+
+To be written...
+
+@node Secrel32Coff
+@subsection @code{.secrel32}
+@cindex @code{secrel32} directive (COFF only)
+@cindex @code{.secrel32} (COFF only)
+
+To be written...
+
+@node SectionCoff
+@subsection @code{.section}
+@cindex @code{section} directive (COFF only)
+@cindex @code{.section} (COFF only)
+
+To be written...
+
+@node TextCoff
+@subsection @code{.text}
+@cindex @code{text} directive (COFF only)
+@cindex @code{.text} (COFF only)
+
+To be written...
+
+@node TypeCoff
+@subsection @code{.type}
+@cindex @code{type} directive (COFF only)
+@cindex @code{.type} (COFF only)
+
+To be written...
+
+@node Win64Coff
+@subsection COFF Specific Directives for Win64 Event Handling
+
+@menu
+* SehProc::                  @code{.seh_proc}, @code{.seh_endproc}
+* SehEndPrologue::           @code{.seh_endprologue}
+* SehHandler::               @code{.seh_handler}
+* SehHandlerdata::           @code{.seh_handlerdata}
+* SehPushframe::             @code{.seh_pushframe}
+* SehPushreg::               @code{.seh_pushreg}
+* SehSavereg::               @code{.seh_savereg}
+* SehSavexmn::               @code{.seh_savexmm}
+* SehSetframe::              @code{.seh_setframe}
+* SehStackalloc::            @code{.seh_stackalloc}
+* SehChained::               @code{.seh_startchained}, @code{.seh_endchained}
+* WeakCoff::                 @code{.weak}
+@end menu
+
+@node SehProc
+@subsubsection @code{.seh_proc}, @code{.seh_proc}
+@cindex @code{seh_proc} directive (COFF Win64 event handling only)
+@cindex @code{.seh_proc} (COFF Win64 event handling only)
+@cindex @code{seh_endproc} directive (COFF Win64 event handling only)
+@cindex @code{.seh_endproc} (COFF Win64 event handling only)
+
+To be written...
+
+@node SehEndPrologue
+@subsubsection @code{.seh_end_prologue}
+@cindex @code{seh_end_prologue} directive (COFF Win64 event handling only)
+@cindex @code{.seh_end_prologue} (COFF Win64 event handling only)
+
+To be written...
+
+@node SehHandler
+@subsubsection @code{.seh_handler}
+@cindex @code{seh_handler} directive (COFF Win64 event handling only)
+@cindex @code{.seh_handler} (COFF Win64 event handling only)
+
+To be written...
+
+@node SehHandlerdata
+@subsubsection @code{.seh_handlerdata}
+@cindex @code{seh_handlerdata} directive (COFF Win64 event handling only)
+@cindex @code{.seh_handlerdata} (COFF Win64 event handling only)
+
+To be written...
+
+@node SehPushframe
+@subsubsection @code{.seh_pushframe}
+@cindex @code{seh_pushframe} directive (COFF Win64 event handling only)
+@cindex @code{.seh_pushframe} (COFF Win64 event handling only)
+
+To be written...
+
+@node SehPushreg
+@subsubsection @code{.seh_pushreg}
+@cindex @code{seh_pushreg} directive (COFF Win64 event handling only)
+@cindex @code{.seh_pushreg} (COFF Win64 event handling only)
+
+To be written...
+
+@node SehSavereg
+@subsubsection @code{.seh_savereg}
+@cindex @code{seh_savereg} directive (COFF Win64 event handling only)
+@cindex @code{.seh_savereg} (COFF Win64 event handling only)
+
+To be written...
+
+@node SehSavexmn
+@subsubsection @code{.seh_savexmn}
+@cindex @code{seh_savexmn} directive (COFF Win64 event handling only)
+@cindex @code{.seh_savexmn} (COFF Win64 event handling only)
+
+To be written...
+
+@node SehSetframe
+@subsubsection @code{.seh_setframe}
+@cindex @code{seh_setframe} directive (COFF Win64 event handling only)
+@cindex @code{.seh_setframe} (COFF Win64 event handling only)
+
+To be written...
+
+@node SehStackalloc
+@subsubsection @code{.seh_stackalloc}
+@cindex @code{seh_stackalloc} directive (COFF Win64 event handling only)
+@cindex @code{.seh_stackalloc} (COFF Win64 event handling only)
+
+To be written...
+
+@node SehChained
+@subsubsection @code{.seh_startchained}, @code{.seh_endchained}
+@cindex @code{seh_startchained} directive (COFF Win64 event handling only)
+@cindex @code{.seh_startchained} (COFF Win64 event handling only)
+@cindex @code{seh_endchained} directive (COFF Win64 event handling only)
+@cindex @code{.seh_endchained} (COFF Win64 event handling only)
+
+To be written...
+
+@node WeakCoff
+@subsubsection @code{.weak}
+@cindex @code{weak} directive (COFF Win64 event handling only)
+@cindex @code{.weak} (COFF Win64 event handling only)
+
+To be written...
+
+@node Mach-O Directives
+@section Mach-O Specific Directives
+
+@menu
+* BssMachO::                        @code{.bss}
+* ConstMachO::                      @code{.const}
+* ConstDataMachO::                  @code{.const_data}
+* ConstructorMachO::                @code{.constructor}, @code{.destructor}
+* CstringMachO::                    @code{.cstring}
+* DataMachO::                       @code{.data}
+* DescMachO::                       @code{.desc}
+* DumpMachO::                       @code{.dump}
+* DyldMachO::                       @code{.dyld}
+* FvmlibInitMachO::                 @code{.fvmlib_init0}, @code{.fvmlib_init1}
+* IdentMachO::                      @code{.ident}
+* IosVersionMinMachO::              @code{.ios_version_min}
+* LazySymbolPointerMachO::          @code{.lazy_symbol_pointer}, @code{.non_lazy_symbol_pointer}
+* LinkerOptionMachO::               @code{.linker_option}
+* LiteralMachO::                    @code{.literal4}, @code{.literal8}, @code{.literal16}
+* LoadMachO::                       @code{.load}
+* LsymMachO::                       @code{.lsym}
+* MacosxVersionMinMachO::           @code{.macosx_version_min}
+* ModInitFuncMachO::                @code{.mod_init_func}, @code{.mod_term_func}
+* ObjC::                            Mach-O Objective C Specific Directives
+* PicsymbolStubMachO::              @code{.picsymbol_stub}
+* PreviousMachO::                   @code{.previous}
+* SectionMachO::                    @code{.section}
+* StaticConstMachO::                @code{.static_const}
+* StaticDataMachO::                 @code{.static_data}
+* SymbolStubMachO::                 @code{.symbol_stub}
+* TbssMachO::                       @code{.tbss}
+* TdataMachO::                      @code{.tdata}
+* TextMachO::                       @code{.text}
+* ThreadInitFuncMachO::             @code{.thread_init_func}
+* TlvMachO::                        @code{.tlv}
+* ZerofillMachO::                   @code{.zerofill}
+@end menu
+
+@node BssMachO
+@subsection @code{.bss}
+@cindex @code{bss} directive (Mach-O only)
+@cindex @code{.bss} (Mach-O only)
+
+To be written...
+
+@node ConstMachO
+@subsection @code{.const}
+@cindex @code{const} directive (Mach-O only)
+@cindex @code{.const} (Mach-O only)
+
+To be written...
+
+@node ConstDataMachO
+@subsection @code{.const_data}
+@cindex @code{const_data} directive (Mach-O only)
+@cindex @code{.const_data} (Mach-O only)
+
+To be written...
+
+@node ConstructorMachO
+@subsection @code{.constructor}, @code{.destructor}
+@cindex @code{constructor} directive (Mach-O only)
+@cindex @code{.constructor} (Mach-O only)
+@cindex @code{destructor} directive (Mach-O only)
+@cindex @code{.destructor} (Mach-O only)
+
+To be written...
+
+@node CstringMachO
+@subsection @code{.cstring}
+@cindex @code{cstring} directive (Mach-O only)
+@cindex @code{.cstring} (Mach-O only)
+
+To be written...
+
+@node DataMachO
+@subsection @code{.data}
+@cindex @code{data} directive (Mach-O only)
+@cindex @code{.data} (Mach-O only)
+
+To be written...
+
+@node DescMachO
+@subsection @code{.desc}
+@cindex @code{desc} directive (Mach-O only)
+@cindex @code{.desc} (Mach-O only)
+
+To be written...
+
+@node DumpMachO
+@subsection @code{.dump}
+@cindex @code{dump} directive (Mach-O only)
+@cindex @code{.dump} (Mach-O only)
+
+To be written...
+
+@node DyldMachO
+@subsection @code{.dyld}
+@cindex @code{dyld} directive (Mach-O only)
+@cindex @code{.dyld} (Mach-O only)
+
+To be written...
+
+@node FvmlibInitMachO
+@subsection @code{.fvmlib_init0}, @code{.fvmlib_init0}
+@cindex @code{fvmlib_init0} directive (Mach-O only)
+@cindex @code{.fvmlib_init0} (Mach-O only)
+@cindex @code{fvmlib_init1} directive (Mach-O only)
+@cindex @code{.fvmlib_init1} (Mach-O only)
+
+To be written...
+
+@node IdentMachO
+@subsection @code{.ident}
+@cindex @code{ident} directive (Mach-O only)
+@cindex @code{.ident} (Mach-O only)
+
+To be written...
+
+@node IosVersionMinMachO
+@subsection @code{.ios_version_min}
+@cindex @code{ios_version_min} directive (Mach-O only)
+@cindex @code{.ios_version_min} (Mach-O only)
+
+To be written...
+
+@node LazySymbolPointerMachO
+@subsection @code{.lazy_symbol_pointer}, @code{.non_lazy_symbol_pointer}
+@cindex @code{lazy_symbol_pointer} directive (Mach-O only)
+@cindex @code{.lazy_symbol_pointer} (Mach-O only)
+@cindex @code{non_lazy_symbol_pointer} directive (Mach-O only)
+@cindex @code{.non_lazy_symbol_pointer} (Mach-O only)
+
+To be written...
+
+@node LinkerOptionMachO
+@subsection @code{.linker_option}
+@cindex @code{linker_option} directive (Mach-O only)
+@cindex @code{.linker_option} (Mach-O only)
+
+To be written...
+
+@node LiteralMachO
+@subsection @code{.literal4}, @code{.literal8}, @code{.literal16}
+@cindex @code{literal4} directive (Mach-O only)
+@cindex @code{.literal4} (Mach-O only)
+@cindex @code{literal8} directive (Mach-O only)
+@cindex @code{.literal8} (Mach-O only)
+@cindex @code{literal16} directive (Mach-O only)
+@cindex @code{.literal16} (Mach-O only)
+
+To be written...
+
+@node LoadMachO
+@subsection @code{.load}
+@cindex @code{load} directive (Mach-O only)
+@cindex @code{.load} (Mach-O only)
+
+To be written...
+
+@node LsymMachO
+@subsection @code{.lsym}
+@cindex @code{lsym} directive (Mach-O only)
+@cindex @code{.lsym} (Mach-O only)
+
+To be written...
+
+@node MacosxVersionMinMachO
+@subsection @code{.macosx_version_min}
+@cindex @code{macosx_version_min} directive (Mach-O only)
+@cindex @code{.macosx_version_min} (Mach-O only)
+
+To be written...
+
+@node ModInitFuncMachO
+@subsection @code{.mod_init_func}, @code{.mod_term_func}
+@cindex @code{mod_init_func} directive (Mach-O only)
+@cindex @code{.mod_init_func} (Mach-O only)
+@cindex @code{mod_term_func} directive (Mach-O only)
+@cindex @code{.mod_term_func} (Mach-O only)
+
+To be written...
+
+@node ObjC
+@subsection Mach-O Objective C Specific Directives
+@cindex assembler directives (Mach-O Objective C)
+@cindex Mach-O Objective C assembler directives
+
+@menu
+* ObjcCatClsMeth::         @code{.objc_cat_cls_meth}
+* ObjcCatInstMeth::        @code{.objc_cat_inst_meth}
+* ObjcCategory::           @code{.objc_category}
+* ObjcClass::              @code{.objc_class}
+* ObjcClassNames::         @code{.objc_class_names}
+* ObjcClassVars::          @code{.objc_class_vars}
+* ObjcClsMeth::            @code{.objc_cls_meth}
+* ObjcClsRefs::            @code{.objc_cls_refs}
+* ObjcInstMeth::           @code{.objc_inst_meth}
+* ObjcInstanceVars::       @code{.objc_instance_vars}
+* ObjcMessageRefs::        @code{.objc_message_refs}
+* ObjcMetaClass::          @code{.objc_meta_class}
+* ObjcMethVarNames::       @code{.objc_meth_var_names}
+* ObjcMethVarTypes::       @code{.objc_meth_var_types}
+* ObjcModuleInfo::         @code{.objc_module_info}
+* ObjcProtocol::           @code{.objc_protocol}
+* ObjcSelectorStrs::       @code{.objc_selector_strs}
+* ObjcStringObject::       @code{.objc_string_object}
+* ObjcSymbols::            @code{.objc_symbols}
+@end menu
+
+@node ObjcCatClsMeth
+@subsubsection @code{.objc_cat_cls_meth}
+@cindex @code{objc_cat_cls_meth} directive (Mach-O Objective C Only)
+@cindex @code{.objc_cat_cls_meth} (Mach-O Objective C Only)
+
+To be written...
+
+@node ObjcCatInstMeth
+@subsubsection @code{.objc_cat_inst_meth}
+@cindex @code{objc_cat_inst_meth} directive (Mach-O Objective C Only)
+@cindex @code{.objc_cat_inst_meth} (Mach-O Objective C Only)
+
+To be written...
+
+@node ObjcCategory
+@subsubsection @code{.objc_category}
+@cindex @code{objc_category} directive (Mach-O Objective C Only)
+@cindex @code{.objc_category} (Mach-O Objective C Only)
+
+To be written...
+
+@node ObjcClass
+@subsubsection @code{.objc_class}
+@cindex @code{objc_class} directive (Mach-O Objective C Only)
+@cindex @code{.objc_class} (Mach-O Objective C Only)
+
+To be written...
+
+@node ObjcClassNames
+@subsubsection @code{.objc_class_names}
+@cindex @code{objc_class_names} directive (Mach-O Objective C Only)
+@cindex @code{.objc_class_names} (Mach-O Objective C Only)
+
+To be written...
+
+@node ObjcClassVars
+@subsubsection @code{.objc_class_vars}
+@cindex @code{objc_class_vars} directive (Mach-O Objective C Only)
+@cindex @code{.objc_class_vars} (Mach-O Objective C Only)
+
+To be written...
+
+@node ObjcClsMeth
+@subsubsection @code{.objc_cls_meth}
+@cindex @code{objc_cls_meth} directive (Mach-O Objective C Only)
+@cindex @code{.objc_cls_meth} (Mach-O Objective C Only)
+
+To be written...
+
+@node ObjcClsRefs
+@subsubsection @code{.objc_cls_refs}
+@cindex @code{objc_cls_refs} directive (Mach-O Objective C Only)
+@cindex @code{.objc_cls_refs} (Mach-O Objective C Only)
+
+To be written...
+
+@node ObjcInstMeth
+@subsubsection @code{.objc_inst_meth}
+@cindex @code{objc_inst_meth} directive (Mach-O Objective C Only)
+@cindex @code{.objc_inst_meth} (Mach-O Objective C Only)
+
+To be written...
+
+@node ObjcInstanceVars
+@subsubsection @code{.objc_instance_vars}
+@cindex @code{objc_instance_vars} directive (Mach-O Objective C Only)
+@cindex @code{.objc_instance_vars} (Mach-O Objective C Only)
+
+To be written...
+
+@node ObjcMessageRefs
+@subsubsection @code{.objc_message_refs}
+@cindex @code{objc_message_refs} directive (Mach-O Objective C Only)
+@cindex @code{.objc_message_refs} (Mach-O Objective C Only)
+
+To be written...
+
+@node ObjcMetaClass
+@subsubsection @code{.objc_meta_class}
+@cindex @code{objc_meta_class} directive (Mach-O Objective C Only)
+@cindex @code{.objc_meta_class} (Mach-O Objective C Only)
+
+To be written...
+
+@node ObjcMethVarNames
+@subsubsection @code{.objc_meth_var_names}
+@cindex @code{objc_meth_var_names} directive (Mach-O Objective C Only)
+@cindex @code{.objc_meth_var_names} (Mach-O Objective C Only)
+
+To be written...
+
+@node ObjcMethVarTypes
+@subsubsection @code{.objc_meth_var_types}
+@cindex @code{objc_meth_var_types} directive (Mach-O Objective C Only)
+@cindex @code{.objc_meth_var_types} (Mach-O Objective C Only)
+
+To be written...
+
+@node ObjcModuleInfo
+@subsubsection @code{.objc_module_info}
+@cindex @code{objc_module_info} directive (Mach-O Objective C Only)
+@cindex @code{.objc_module_info} (Mach-O Objective C Only)
+
+To be written...
+
+@node ObjcProtocol
+@subsubsection @code{.objc_protocol}
+@cindex @code{objc_protocol} directive (Mach-O Objective C Only)
+@cindex @code{.objc_protocol} (Mach-O Objective C Only)
+
+To be written...
+
+@node ObjcSelectorStrs
+@subsubsection @code{.objc_selector_strs}
+@cindex @code{objc_selector_strs} directive (Mach-O Objective C Only)
+@cindex @code{.objc_selector_strs} (Mach-O Objective C Only)
+
+To be written...
+
+@node ObjcStringObject
+@subsubsection @code{.objc_string_object}
+@cindex @code{objc_string_object} directive (Mach-O Objective C Only)
+@cindex @code{.objc_string_object} (Mach-O Objective C Only)
+
+To be written...
+
+@node ObjcSymbols
+@subsubsection @code{.objc_symbols}
+@cindex @code{objc_symbols} directive (Mach-O Objective C Only)
+@cindex @code{.objc_symbols} (Mach-O Objective C Only)
+
+To be written...
+
+@node PicsymbolStubMachO
+@subsection @code{.picsymbol_stub}
+@cindex @code{picsymbol_stub} directive (Mach-O only)
+@cindex @code{.picsymbol_stub} (Mach-O only)
+
+To be written...
+
+@node PreviousMachO
+@subsection @code{.previous}
+@cindex @code{previous} directive (Mach-O only)
+@cindex @code{.previous} (Mach-O only)
+
+To be written...
+
+@node SectionMachO
+@subsection @code{.section}
+@cindex @code{section} directive (Mach-O only)
+@cindex @code{.section} (Mach-O only)
+
+To be written...
+
+@node StaticConstMachO
+@subsection @code{.static_const}
+@cindex @code{static_const} directive (Mach-O only)
+@cindex @code{.static_const} (Mach-O only)
+
+To be written...
+
+@node StaticDataMachO
+@subsection @code{.static_data}
+@cindex @code{static_data} directive (Mach-O only)
+@cindex @code{.static_data} (Mach-O only)
+
+To be written...
+
+@node SymbolStubMachO
+@subsection @code{.symbol_stub}
+@cindex @code{symbol_stub} directive (Mach-O only)
+@cindex @code{.symbol_stub} (Mach-O only)
+
+To be written...
+
+@node TbssMachO
+@subsection @code{.tbss}
+@cindex @code{tbss} directive (Mach-O only)
+@cindex @code{.tbss} (Mach-O only)
+
+To be written...
+
+@node TdataMachO
+@subsection @code{.tdata}
+@cindex @code{tdata} directive (Mach-O only)
+@cindex @code{.tdata} (Mach-O only)
+
+To be written...
+
+@node TextMachO
+@subsection @code{.text}
+@cindex @code{text} directive (Mach-O only)
+@cindex @code{.text} (Mach-O only)
+
+To be written...
+
+@node ThreadInitFuncMachO
+@subsection @code{.thread_init_func}
+@cindex @code{thread_init_func} directive (Mach-O only)
+@cindex @code{.thread_init_func} (Mach-O only)
+
+To be written...
+
+@node TlvMachO
+@subsection @code{.tlv}
+@cindex @code{tlv} directive (Mach-O only)
+@cindex @code{.tlv} (Mach-O only)
+
+To be written...
+
+@node ZerofillMachO
+@subsection @code{.zerofill}
+@cindex @code{zerofill} directive (Mach-O only)
+@cindex @code{.zerofill} (Mach-O only)
+
+To be written...
 
 @node Deprecated
 @section Deprecated Directives
@@ -3778,7 +4675,7 @@ Set line number.
 @end table
 
 @node Unsupported
-@section Unsupported @sc{gnu} Assembler Directives
+@section Unsupported GNU Assembler Directives
 
 @cindex @sc{gnu} assembler directives, unsupported
 @cindex unsupported @sc{gnu} assembler directives
@@ -3863,6 +4760,11 @@ Incompatible with ELF output files.
 @cindex @code{.list} (unsupported)
 @cindex listing control, turning on
 Control whether or not assembly listings are generated.
+
+@item .ln
+@cindex @code{ln} directive (unsupported)
+@cindex @code{.ln} (unsupported)
+Specify source line number.
 
 @item .loc_mark_labels
 @cindex @code{loc_mark_labels} directive (unsupported)
