@@ -2024,8 +2024,8 @@ These directives have the same form and semantics for all object formats
 * Byte::                        @code{.byte @var{expressions}}
 * CFIDirectives::		CFI Directives
 * Code16::                      @code{.code16}, @code{.code16gcc}
-* Comm::                        @code{.comm @var{symbol} , @var{length} }
-* Common::                      @code{.common @var{symbol} , @var{length} }
+* Comm::                        @code{.comm @var{symbol} , @var{length} [, @var{alignment}]}
+* Common::                      @code{.common @var{symbol} , @var{length} [, @var{alignment}]}
 * Double::                      @code{.double @var{flonums}}
 * Else::                        @code{.else}
 * Elseif::                      @code{.elseif}
@@ -2050,7 +2050,7 @@ These directives have the same form and semantics for all object formats
 * Int::                         @code{.int @var{expressions}}
 * Irp::				@code{.irp @var{symbol},@var{values}}@dots{}
 * Irpc::			@code{.irpc @var{symbol},@var{values}}@dots{}
-* LazyReference::               @code{.lazy_reference}
+* LazyReference::               @code{.lazy_reference @var{symbol}}
 * Lcomm::                       @code{.lcomm @var{symbol} , @var{length}}
 * Line::                        @code{.line @var{line-number}}
 * Loc::                         @code{.loc @var{fileno} @var{lineno}}
@@ -2060,10 +2060,10 @@ These directives have the same form and semantics for all object formats
 * Octa::                        @code{.octa @var{bignums}}
 * Org::                         @code{.org @var{new-lc}, @var{fill}}
 * P2align::                     @code{.p2align @var{abs-expr}, @var{abs-expr}, @var{abs-expr}}
-* PrivateExtern::               @code{.private_extern}
+* PrivateExtern::               @code{.private_extern @var{name}}
 * Purgem::			@code{.purgem @var{name}}
 * Quad::                        @code{.quad @var{bignums}}
-* Reference::                   @code{.reference}
+* Reference::                   @code{.reference @var{symbol}}
 * Rept::			@code{.rept @var{count}}
 * Set::                         @code{.set @var{symbol}, @var{expression}}
 * Short::                       @code{.short @var{expressions}}
@@ -2073,14 +2073,14 @@ These directives have the same form and semantics for all object formats
 * Space::                       @code{.space @var{size} , @var{fill}}
 * Stabs::                       @code{.stabs}
 * String::                      @code{.string "@var{str}"}
-* SymbolResolver::              @code{.symbol_resolver}
+* SymbolResolver::              @code{.symbol_resolver @var{name}}
 * Uleb128::                     @code{.uleb128 @var{expressions}}
 * Value::                       @code{.value}
 * Warning::			@code{.warning @var{string}}
-* WeakDefCanBeHidden::          @code{.weak_def_can_be_hidden}
-* WeakDefinition::              @code{.weak_definition}
-* WeakReference::               @code{.weak_reference}
-* Zero::                        @code{.zero}
+* WeakDefCanBeHidden::          @code{.weak_def_can_be_hidden @var{name}}
+* WeakDefinition::              @code{.weak_definition @var{name}}
+* WeakReference::               @code{.weak_reference @var{name}}
+* Zero::                        @code{.zero @var{size}}
 @end menu
 
 @node 2byte
@@ -2499,9 +2499,13 @@ opcodes that the LLVM integrated assembler does not yet support.
 @cindex @code{code16} directive
 @cindex @code{.code16}
 @cindex @code{code16gcc} directive
-@cindex @code{.code16gcce}
+@cindex @code{.code16gcc}
 
-To be written...
+These are target dependent assembler directives for architectures such as Intel
+x86 and ARM to control generation of 16-bit code (@pxref{Machine Dependencies}.
+For historical reasons they are included in the standard assembler directives,
+so all architectures must support them.  Most architectures will support them
+by reporting an error that along the lines of ``code16 not supported yet''.
 
 @node Comm
 @subsection @code{.comm @var{symbol}, @var{length} [, @var{alignment}]}
@@ -2527,11 +2531,14 @@ the LLVM integrated assembler will set the alignment to the largest power of
 two less than or equal to the size of the symbol, up to a maximum of 16.
 
 @node Common
-@subsection @code{.common}
+@subsection @code{.common @var{symbol}, @var{length} [, @var{alignment}]}
 @cindex @code{common} directive
 @cindex @code{.common}
 
-To be written...
+This is a synonym for @code{.comm}.
+
+@emph{Caution:} @code{.common} is not supported by the @sc{gnu} assembler, so
+should be avoided in portable code.
 
 @node Double
 @subsection @code{.double @var{flonums}}
@@ -2934,11 +2941,15 @@ For some caveats with the spelling of @var{symbol}, see also the discussion
 at @xref{Macro}.
 
 @node LazyReference
-@subsection @code{.lazy_reference}
+@subsection @code{.lazy_reference @var{symbol}}
 @cindex @code{lazy_reference} directive
 @cindex @code{.lazy_reference}
 
-To be written...
+This is a Mach-O specific assembler directive (@pxref{LazyReferenceMachO}).
+For historical reasons it is included in the standard assembler directives, so
+all architectures must support them.  Assemblers generating other object formats
+will support this directive by reporting an error ``unable to emit symbol
+attribute''.
 
 @node Lcomm
 @subsection @code{.lcomm @var{symbol} , @var{length}}
@@ -3200,7 +3211,10 @@ in the code.
 @cindex @code{no_dead_strip} directive
 @cindex @code{.no_dead_strip}
 
-To be written...
+This is a Mach-O specific assembler directive (@pxref{NoDeadStripMachO}).  For
+historical reasons it is included in the standard assembler directives, so all
+architectures must support them.  Assemblers generaring code for other object
+file formats will silently ignore this directive.
 
 @node Octa
 @subsection @code{.octa @var{bignums}}
@@ -3290,11 +3304,15 @@ the endianness of the processor).  If it skips 1 or 3 bytes, the fill value is
 undefined.
 
 @node PrivateExtern
-@subsection @code{.private_extern}
+@subsection @code{.private_extern @var{name}}
 @cindex @code{private_extern} directive
 @cindex @code{.private_extern}
 
-To be written...
+This is a Mach-O specific assembler directive (@pxref{PrivateExternMachO}).
+For historical reasons it is included in the standard assembler directives, so
+all architectures must support them.  Assemblers generating other object formats
+will support this directive by reporting an error ``unable to emit symbol
+attribute''.
 
 @node Purgem
 @subsection @code{.purgem @var{name}}
@@ -3318,11 +3336,14 @@ The term ``quad'' comes from contexts in which a ``word'' is two bytes;
 hence @emph{quad}-word for 8 bytes.
 
 @node Reference
-@subsection @code{.reference}
+@subsection @code{.reference @var{symbol}}
 @cindex @code{reference} directive
 @cindex @code{.reference}
-
-To be written...
+This is a Mach-O specific assembler directive (@pxref{ReferenceMachO}).  For
+historical reasons it is included in the standard assembler directives, so all
+architectures must support them.  Assemblers generating other object formats
+will support this directive by reporting an error ``unable to emit symbol
+attribute''.
 
 @node Rept
 @subsection @code{.rept @var{count}}
@@ -3409,11 +3430,55 @@ and @var{fill} are omitted, @var{fill} is assumed to be zero.  This is the same
 as @samp{.skip}.
 
 @node Stabs
-@subsection @code{.stabs}
+@subsection @code{.stabs @var{string} @var{type} @var{other} @var{desc} @var{value}}
 @cindex @code{stabs} directive
 @cindex @code{.stabs}
+@cindex symbolic debuggers, information for
+@emph{Note:} Support for STABS is still incomplete in the LLVM Integrated
+Assembler.  This directive should be used with caution.  Most architectures
+will report that this is an ``unsupported directive''.
 
-To be written...
+Where it is supported, this directive emits symbols (@pxref{Symbols}), for use
+by symbolic debuggers.  The five fields are:
+
+@table @var
+@item string
+This is the symbol's name.  It may contain any character except
+@samp{\000}, so is more general than ordinary symbol names.  Some
+debuggers used to code arbitrarily complex structures into symbol names
+using this field.
+
+@item type
+An absolute expression.  The symbol's type is set to the low 8 bits of this
+expression.  Any bit pattern is permitted, but linkers and debuggers choke on
+silly bit patterns.
+
+@item other
+An absolute expression.  The symbol's ``other'' attribute is set to the
+low 8 bits of this expression.
+
+@item desc
+An absolute expression.  The symbol's descriptor is set to the low 16
+bits of this expression.
+
+@item value
+An absolute expression which becomes the symbol's value.
+@end table
+
+If a warning is detected while reading a @code{.stabs} statement, the symbol
+has probably already been created; you get a half-formed symbol in your object
+file.  This is compatible with earlier assemblers!
+
+@cindex @code{stabd} directive (Unsupported)
+@cindex @code{.stabd} (Unsupported)
+@cindex @code{stabn} directive (Unsupported)
+@cindex @code{.stabn} (Unsupported)
+@emph{Note:} The @sc{GNU} assembler also supports the variant directives
+@code{.stabd} and @code{.stabn}. @code{.stabd} omits the @var{string} and
+@var{value} fields, setting them respectivel to the null pointer and the
+current location.  @code{stabn} omits the @var{string} field, setting it to eht
+empty string @code{""}.  Neither of these directives is supported by the LLVM
+integrated assembler.
 
 @node String
 @subsection @code{.string} "@var{str}"
@@ -3430,11 +3495,14 @@ The @sc{gnu} assembler variants @code{.string8}, @code{.string16},
 assembler.  @xref{Unsupported}.
 
 @node SymbolResolver
-@subsection @code{.symbol_resolver}
+@subsection @code{.symbol_resolver @var{name}}
 @cindex @code{symbol_resolver} directive
 @cindex @code{.symbol_resolver}
-
-To be written...
+This is an undocumented Mach-O specific assembler directive
+(@pxref{SymbolResolverMachO}).  For historical reasons it is included in the
+standard assembler directives, so all architectures must support them.
+Assemblers generating other object formats will support this directive by
+reporting an error ``unable to emit symbol attribute''.
 
 @node Uleb128
 @subsection @code{.uleb128 @var{expressions}}
@@ -3448,8 +3516,12 @@ symbolic debugging format.  @xref{Sleb128, ,@code{.sleb128}}.
 @subsection @code{.value}
 @cindex @code{value} directive
 @cindex @code{.value}
-
-To be written...
+This is a target dependent assembler directives for Intel i386 target, and is
+equivalent to the @code{.short} directive (@pxref{Short}.  For historical
+reasons it is included in the standard assembler directives, so all
+architectures must support it.  Most architectures will either silently ignore
+this directive, or report an error along the lines of ``value directive not
+supported yet''.
 
 @node Warning
 @subsection @code{.warning "@var{string}"}
@@ -3462,29 +3534,41 @@ Similar to the directive @code{.error}
 @subsection @code{.weak_def_can_be_hidden}
 @cindex @code{weak_def_can_be_hidden} directive
 @cindex @code{.weak_def_can_be_hidden}
-
-To be written...
+This is an undocumented Mach-O specific assembler directive
+(@pxref{WeakDefCanBeHiddenMachO}).  For historical reasons it is included in
+the standard assembler directives, so all architectures must support them.
+Assemblers generating other object formats will support this directive by
+reporting an error ``unable to emit symbol attribute''.
 
 @node WeakDefinition
-@subsection @code{.weak_definition}
+@subsection @code{.weak_definition @var{name}}
 @cindex @code{weak_definition} directive
 @cindex @code{.weak_definition}
-
-To be written...
+This is a Mach-O specific assembler directive (@pxref{WeakDefinitionMachO}).
+For historical reasons it is included in the standard assembler directives, so
+all architectures must support them.  Assemblers generating other object
+formats will support this directive by reporting an error ``unable to emit
+symbol attribute''.
 
 @node WeakReference
-@subsection @code{.weak_reference}
+@subsection @code{.weak_reference @var{name}}
 @cindex @code{weak_reference} directive
 @cindex @code{.weak_reference}
-
-To be written...
+This is a Mach-O specific assembler directive (@pxref{WeakReferenceMachO}).
+For historical reasons it is included in the standard assembler directives, so
+all architectures must support them.  Assemblers generating ELF or COFF will
+implement this as equivalent to the @code{.weak} directive (@pxref{WeakElf},
+@pxref{WeakCoff}).
 
 @node Zero
-@subsection @code{.zero}
+@subsection @code{.zero @var{size}}
 @cindex @code{zero} directive
 @cindex @code{.zero}
-
-To be written...
+This directive emits @var{size} zero-valued bytes.  @var{size} must be an
+absolute expression.  This directive is actually an alias for the @code{.skip}
+directive (@pxref{Skip}), so it can take an optional second argument of the
+value to store in the bytes instead of zero.  Using @code{.zero} in this way
+would be confusing however.
 
 @node ELF Directives
 @section ELF Specific Directives
@@ -4245,24 +4329,32 @@ To be written...
 * IdentMachO::                      @code{.ident}
 * IosVersionMinMachO::              @code{.ios_version_min}
 * LazySymbolPointerMachO::          @code{.lazy_symbol_pointer}, @code{.non_lazy_symbol_pointer}
+* LazyReferenceMachO::              @code{.lazy_reference @var{symbol}}
 * LinkerOptionMachO::               @code{.linker_option}
 * LiteralMachO::                    @code{.literal4}, @code{.literal8}, @code{.literal16}
 * LoadMachO::                       @code{.load}
 * LsymMachO::                       @code{.lsym}
 * MacosxVersionMinMachO::           @code{.macosx_version_min}
 * ModInitFuncMachO::                @code{.mod_init_func}, @code{.mod_term_func}
+* NoDeadStripMachO::                @code{.no_dead_strip}
 * ObjC::                            Mach-O Objective C Specific Directives
 * PicsymbolStubMachO::              @code{.picsymbol_stub}
 * PreviousMachO::                   @code{.previous}
+* PrivateExternMachO::              @code{.private_extern @var{name}}
+* ReferenceMachO::                  @code{.reference @var{symbol}}
 * SectionMachO::                    @code{.section}
 * StaticConstMachO::                @code{.static_const}
 * StaticDataMachO::                 @code{.static_data}
+* SymbolResolverMachO::             @code{.symbol_resolver @var{name}}
 * SymbolStubMachO::                 @code{.symbol_stub}
 * TbssMachO::                       @code{.tbss}
 * TdataMachO::                      @code{.tdata}
 * TextMachO::                       @code{.text}
 * ThreadInitFuncMachO::             @code{.thread_init_func}
 * TlvMachO::                        @code{.tlv}
+* WeakDefCanBeHiddenMachO::         @code{.symbol_resolver @var{name}}
+* WeakDefinitionMachO::             @code{.weak_definition @var{name}}
+* WeakReferenceMachO::              @code{.weak_reference @var{name}}
 * ZerofillMachO::                   @code{.zerofill}
 @end menu
 
@@ -4363,6 +4455,13 @@ To be written...
 
 To be written...
 
+@node LazyReferenceMachO
+@subsection @code{.lazy_reference @var{symbol}}
+@cindex @code{lazy_reference} directive (Mach-O only)
+@cindex @code{.lazy_reference} (Mach-O only)
+
+Generic option that is Mach-O specific. To be written...
+
 @node LinkerOptionMachO
 @subsection @code{.linker_option}
 @cindex @code{linker_option} directive (Mach-O only)
@@ -4410,6 +4509,13 @@ To be written...
 @cindex @code{.mod_term_func} (Mach-O only)
 
 To be written...
+
+@node NoDeadStripMachO
+@subsection @code{.no_dead_strip}
+@cindex @code{no_dead_strip} directive (Mach-O only)
+@cindex @code{.no_dead_strip} (Mach-O only)
+
+Generic option that is Mach-O specific. To be written...
 
 @node ObjC
 @subsection Mach-O Objective C Specific Directives
@@ -4585,6 +4691,20 @@ To be written...
 
 To be written...
 
+@node PrivateExternMachO
+@subsection @code{.private_extern @var{name}}
+@cindex @code{private_extern} directive (Mach-O only)
+@cindex @code{.private_extern} (Mach-O only)
+
+Generic option that is Mach-O specific. To be written...
+
+@node ReferenceMachO
+@subsection @code{.reference @var{symbol}}
+@cindex @code{reference} directive (Mach-O only)
+@cindex @code{.reference} (Mach-O only)
+
+Generic option that is Mach-O specific. To be written...
+
 @node SectionMachO
 @subsection @code{.section}
 @cindex @code{section} directive (Mach-O only)
@@ -4603,6 +4723,13 @@ To be written...
 @subsection @code{.static_data}
 @cindex @code{static_data} directive (Mach-O only)
 @cindex @code{.static_data} (Mach-O only)
+
+To be written...
+
+@node SymbolResolverMachO
+@subsection @code{.symbol_resolver}
+@cindex @code{symbol_resolver} directive (Mach-O only)
+@cindex @code{.symbol_resolver} (Mach-O only)
 
 To be written...
 
@@ -4648,10 +4775,29 @@ To be written...
 
 To be written...
 
+@node WeakDefCanBeHiddenMachO
+@subsection @code{.weak_def_can_be_hidden}
+@cindex @code{weak_def_can_be_hidden} directive (Mach-O only)
+@cindex @code{.weak_def_can_be_hidden} (Mach-O only)
+
+To be written...
+
+@node WeakDefinitionMachO
+@subsection @code{.weak_definition @var{name}}
+@cindex @code{weak_definition} directive
+@cindex @code{.weak_definition}
+
+To be written...
+
+@node WeakReferenceMachO
+@subsection @code{.weak_reference @var{name}}
+@cindex @code{weak_reference} directive (Mach-O only)
+@cindex @code{.weak_reference} (Mach-O only)
+
 @node ZerofillMachO
 @subsection @code{.zerofill}
-@cindex @code{zerofill} directive (Mach-O only)
-@cindex @code{.zerofill} (Mach-O only)
+@cindex @code{zerofill} directive (Mach-O only) (Mach-O only)
+@cindex @code{.zerofill} (Mach-O only) (Mach-O only)
 
 To be written...
 

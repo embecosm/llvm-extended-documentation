@@ -120,10 +120,11 @@ File: llvm-assembler.info,  Node: Object Formats,  Next: Command Line,  Prev: LL
 1.3 Object File Formats
 =======================
 
-The LLVM integrated assembler can only produce the ELF object file
-format with DWARF debug information.  Unlike the GNU assembler,
-directives for debugging symbols are only available for the DWARF
-format.  *Note Symbol Attributes: Symbol Attributes.
+The LLVM integrated assembler can produce the ELF, COFF and Mach-O
+object file formats with DWARF or STABS debug information.  However
+STABS support (a much older format) is limited, and unlike the GNU
+assembler, directives for debugging symbols are only available for the
+DWARF format.  *Note Symbol Attributes: Symbol Attributes.
 
 
 File: llvm-assembler.info,  Node: Command Line,  Next: Input Files,  Prev: Object Formats,  Up: Overview
@@ -451,7 +452,7 @@ warning, so should be avoided.
           Do not generate any output
 
      'obj'
-          Generate binary ELF object files.
+          Generate binary object files.
 
 '-help'
      Produce a summary of the options available to the assembler.  This
@@ -1661,8 +1662,8 @@ These directives have the same form and semantics for all object formats
 * Byte::                        '.byte EXPRESSIONS'
 * CFIDirectives::		CFI Directives
 * Code16::                      '.code16', '.code16gcc'
-* Comm::                        '.comm SYMBOL , LENGTH '
-* Common::                      '.common SYMBOL , LENGTH '
+* Comm::                        '.comm SYMBOL , LENGTH [, ALIGNMENT]'
+* Common::                      '.common SYMBOL , LENGTH [, ALIGNMENT]'
 * Double::                      '.double FLONUMS'
 * Else::                        '.else'
 * Elseif::                      '.elseif'
@@ -1687,7 +1688,7 @@ These directives have the same form and semantics for all object formats
 * Int::                         '.int EXPRESSIONS'
 * Irp::				'.irp SYMBOL,VALUES'...
 * Irpc::			'.irpc SYMBOL,VALUES'...
-* LazyReference::               '.lazy_reference'
+* LazyReference::               '.lazy_reference SYMBOL'
 * Lcomm::                       '.lcomm SYMBOL , LENGTH'
 * Line::                        '.line LINE-NUMBER'
 * Loc::                         '.loc FILENO LINENO'
@@ -1697,10 +1698,10 @@ These directives have the same form and semantics for all object formats
 * Octa::                        '.octa BIGNUMS'
 * Org::                         '.org NEW-LC, FILL'
 * P2align::                     '.p2align ABS-EXPR, ABS-EXPR, ABS-EXPR'
-* PrivateExtern::               '.private_extern'
+* PrivateExtern::               '.private_extern NAME'
 * Purgem::			'.purgem NAME'
 * Quad::                        '.quad BIGNUMS'
-* Reference::                   '.reference'
+* Reference::                   '.reference SYMBOL'
 * Rept::			'.rept COUNT'
 * Set::                         '.set SYMBOL, EXPRESSION'
 * Short::                       '.short EXPRESSIONS'
@@ -1710,14 +1711,14 @@ These directives have the same form and semantics for all object formats
 * Space::                       '.space SIZE , FILL'
 * Stabs::                       '.stabs'
 * String::                      '.string "STR"'
-* SymbolResolver::              '.symbol_resolver'
+* SymbolResolver::              '.symbol_resolver NAME'
 * Uleb128::                     '.uleb128 EXPRESSIONS'
 * Value::                       '.value'
 * Warning::			'.warning STRING'
-* WeakDefCanBeHidden::          '.weak_def_can_be_hidden'
-* WeakDefinition::              '.weak_definition'
-* WeakReference::               '.weak_reference'
-* Zero::                        '.zero'
+* WeakDefCanBeHidden::          '.weak_def_can_be_hidden NAME'
+* WeakDefinition::              '.weak_definition NAME'
+* WeakReference::               '.weak_reference NAME'
+* Zero::                        '.zero SIZE'
 
 
 File: llvm-assembler.info,  Node: 2byte,  Next: 4byte,  Up: Common Directives
@@ -2175,7 +2176,12 @@ File: llvm-assembler.info,  Node: Code16,  Next: Comm,  Prev: CFIDirectives,  Up
 7.1.14 '.code16', '.code16gcc'
 ------------------------------
 
-To be written...
+These are target dependent assembler directives for architectures such
+as Intel x86 and ARM to control generation of 16-bit code (*note Machine
+Dependencies::.  For historical reasons they are included in the
+standard assembler directives, so all architectures must support them.
+Most architectures will support them by reporting an error that along
+the lines of "code16 not supported yet".
 
 
 File: llvm-assembler.info,  Node: Comm,  Next: Common,  Prev: Code16,  Up: Common Directives
@@ -2205,10 +2211,13 @@ less than or equal to the size of the symbol, up to a maximum of 16.
 
 File: llvm-assembler.info,  Node: Common,  Next: Double,  Prev: Comm,  Up: Common Directives
 
-7.1.16 '.common'
-----------------
+7.1.16 '.common SYMBOL, LENGTH [, ALIGNMENT]'
+---------------------------------------------
 
-To be written...
+This is a synonym for '.comm'.
+
+   _Caution:_ '.common' is not supported by the GNU assembler, so should
+be avoided in portable code.
 
 
 File: llvm-assembler.info,  Node: Double,  Next: Else,  Prev: Common,  Up: Common Directives
@@ -2610,10 +2619,14 @@ at *Note Macro::.
 
 File: llvm-assembler.info,  Node: LazyReference,  Next: Lcomm,  Prev: Irpc,  Up: Common Directives
 
-7.1.41 '.lazy_reference'
-------------------------
+7.1.41 '.lazy_reference SYMBOL'
+-------------------------------
 
-To be written...
+This is a Mach-O specific assembler directive (*note
+LazyReferenceMachO::).  For historical reasons it is included in the
+standard assembler directives, so all architectures must support them.
+Assemblers generating other object formats will support this directive
+by reporting an error "unable to emit symbol attribute".
 
 
 File: llvm-assembler.info,  Node: Lcomm,  Next: Line,  Prev: LazyReference,  Up: Common Directives
@@ -2850,7 +2863,11 @@ File: llvm-assembler.info,  Node: NoDeadStrip,  Next: Octa,  Prev: Macro,  Up: C
 7.1.47 '.no_dead_strip'
 -----------------------
 
-To be written...
+This is a Mach-O specific assembler directive (*note
+NoDeadStripMachO::).  For historical reasons it is included in the
+standard assembler directives, so all architectures must support them.
+Assemblers generaring code for other object file formats will silently
+ignore this directive.
 
 
 File: llvm-assembler.info,  Node: Octa,  Next: Org,  Prev: NoDeadStrip,  Up: Common Directives
@@ -2933,10 +2950,14 @@ bytes, the fill value is undefined.
 
 File: llvm-assembler.info,  Node: PrivateExtern,  Next: Purgem,  Prev: P2align,  Up: Common Directives
 
-7.1.51 '.private_extern'
-------------------------
+7.1.51 '.private_extern NAME'
+-----------------------------
 
-To be written...
+This is a Mach-O specific assembler directive (*note
+PrivateExternMachO::).  For historical reasons it is included in the
+standard assembler directives, so all architectures must support them.
+Assemblers generating other object formats will support this directive
+by reporting an error "unable to emit symbol attribute".
 
 
 File: llvm-assembler.info,  Node: Purgem,  Next: Quad,  Prev: PrivateExtern,  Up: Common Directives
@@ -2964,10 +2985,14 @@ hence _quad_-word for 8 bytes.
 
 File: llvm-assembler.info,  Node: Reference,  Next: Rept,  Prev: Quad,  Up: Common Directives
 
-7.1.54 '.reference'
--------------------
+7.1.54 '.reference SYMBOL'
+--------------------------
 
-To be written...
+This is a Mach-O specific assembler directive (*note ReferenceMachO::).
+For historical reasons it is included in the standard assembler
+directives, so all architectures must support them.  Assemblers
+generating other object formats will support this directive by reporting
+an error "unable to emit symbol attribute".
 
 
 File: llvm-assembler.info,  Node: Rept,  Next: Set,  Prev: Reference,  Up: Common Directives
@@ -3060,10 +3085,48 @@ assumed to be zero.  This is the same as '.skip'.
 
 File: llvm-assembler.info,  Node: Stabs,  Next: String,  Prev: Space,  Up: Common Directives
 
-7.1.62 '.stabs'
----------------
+7.1.62 '.stabs STRING TYPE OTHER DESC VALUE'
+--------------------------------------------
 
-To be written...
+_Note:_ Support for STABS is still incomplete in the LLVM Integrated
+Assembler.  This directive should be used with caution.  Most
+architectures will report that this is an "unsupported directive".
+
+   Where it is supported, this directive emits symbols (*note
+Symbols::), for use by symbolic debuggers.  The five fields are:
+
+STRING
+     This is the symbol's name.  It may contain any character except
+     '\000', so is more general than ordinary symbol names.  Some
+     debuggers used to code arbitrarily complex structures into symbol
+     names using this field.
+
+TYPE
+     An absolute expression.  The symbol's type is set to the low 8 bits
+     of this expression.  Any bit pattern is permitted, but linkers and
+     debuggers choke on silly bit patterns.
+
+OTHER
+     An absolute expression.  The symbol's "other" attribute is set to
+     the low 8 bits of this expression.
+
+DESC
+     An absolute expression.  The symbol's descriptor is set to the low
+     16 bits of this expression.
+
+VALUE
+     An absolute expression which becomes the symbol's value.
+
+   If a warning is detected while reading a '.stabs' statement, the
+symbol has probably already been created; you get a half-formed symbol
+in your object file.  This is compatible with earlier assemblers!
+
+   _Note:_ The GNU assembler also supports the variant directives
+'.stabd' and '.stabn'.  '.stabd' omits the STRING and VALUE fields,
+setting them respectivel to the null pointer and the current location.
+'stabn' omits the STRING field, setting it to eht empty string '""'.
+Neither of these directives is supported by the LLVM integrated
+assembler.
 
 
 File: llvm-assembler.info,  Node: String,  Next: SymbolResolver,  Prev: Stabs,  Up: Common Directives
@@ -3084,10 +3147,14 @@ Unsupported::.
 
 File: llvm-assembler.info,  Node: SymbolResolver,  Next: Uleb128,  Prev: String,  Up: Common Directives
 
-7.1.64 '.symbol_resolver'
--------------------------
+7.1.64 '.symbol_resolver NAME'
+------------------------------
 
-To be written...
+This is an undocumented Mach-O specific assembler directive (*note
+SymbolResolverMachO::).  For historical reasons it is included in the
+standard assembler directives, so all architectures must support them.
+Assemblers generating other object formats will support this directive
+by reporting an error "unable to emit symbol attribute".
 
 
 File: llvm-assembler.info,  Node: Uleb128,  Next: Value,  Prev: SymbolResolver,  Up: Common Directives
@@ -3105,7 +3172,12 @@ File: llvm-assembler.info,  Node: Value,  Next: Warning,  Prev: Uleb128,  Up: Co
 7.1.66 '.value'
 ---------------
 
-To be written...
+This is a target dependent assembler directives for Intel i386 target,
+and is equivalent to the '.short' directive (*note Short::.  For
+historical reasons it is included in the standard assembler directives,
+so all architectures must support it.  Most architectures will either
+silently ignore this directive, or report an error along the lines of
+"value directive not supported yet".
 
 
 File: llvm-assembler.info,  Node: Warning,  Next: WeakDefCanBeHidden,  Prev: Value,  Up: Common Directives
@@ -3122,31 +3194,47 @@ File: llvm-assembler.info,  Node: WeakDefCanBeHidden,  Next: WeakDefinition,  Pr
 7.1.68 '.weak_def_can_be_hidden'
 --------------------------------
 
-To be written...
+This is an undocumented Mach-O specific assembler directive (*note
+WeakDefCanBeHiddenMachO::).  For historical reasons it is included in
+the standard assembler directives, so all architectures must support
+them.  Assemblers generating other object formats will support this
+directive by reporting an error "unable to emit symbol attribute".
 
 
 File: llvm-assembler.info,  Node: WeakDefinition,  Next: WeakReference,  Prev: WeakDefCanBeHidden,  Up: Common Directives
 
-7.1.69 '.weak_definition'
--------------------------
+7.1.69 '.weak_definition NAME'
+------------------------------
 
-To be written...
+This is a Mach-O specific assembler directive (*note
+WeakDefinitionMachO::).  For historical reasons it is included in the
+standard assembler directives, so all architectures must support them.
+Assemblers generating other object formats will support this directive
+by reporting an error "unable to emit symbol attribute".
 
 
 File: llvm-assembler.info,  Node: WeakReference,  Next: Zero,  Prev: WeakDefinition,  Up: Common Directives
 
-7.1.70 '.weak_reference'
-------------------------
+7.1.70 '.weak_reference NAME'
+-----------------------------
 
-To be written...
+This is a Mach-O specific assembler directive (*note
+WeakReferenceMachO::).  For historical reasons it is included in the
+standard assembler directives, so all architectures must support them.
+Assemblers generating ELF or COFF will implement this as equivalent to
+the '.weak' directive (*note WeakElf::, *note WeakCoff::).
 
 
 File: llvm-assembler.info,  Node: Zero,  Prev: WeakReference,  Up: Common Directives
 
-7.1.71 '.zero'
---------------
+7.1.71 '.zero SIZE'
+-------------------
 
-To be written...
+This directive emits SIZE zero-valued bytes.  SIZE must be an absolute
+expression.  This directive is actually an alias for the '.skip'
+directive (*note Skip::), so it can take an optional second argument of
+the value to store in the bytes instead of zero.  Using '.zero' in this
+way would be confusing however.
 
 
 File: llvm-assembler.info,  Node: ELF Directives,  Next: COFF Directives,  Prev: Common Directives,  Up: Pseudo Ops
@@ -3939,24 +4027,32 @@ File: llvm-assembler.info,  Node: Mach-O Directives,  Next: Deprecated,  Prev: C
 * IdentMachO::                      '.ident'
 * IosVersionMinMachO::              '.ios_version_min'
 * LazySymbolPointerMachO::          '.lazy_symbol_pointer', '.non_lazy_symbol_pointer'
+* LazyReferenceMachO::              '.lazy_reference SYMBOL'
 * LinkerOptionMachO::               '.linker_option'
 * LiteralMachO::                    '.literal4', '.literal8', '.literal16'
 * LoadMachO::                       '.load'
 * LsymMachO::                       '.lsym'
 * MacosxVersionMinMachO::           '.macosx_version_min'
 * ModInitFuncMachO::                '.mod_init_func', '.mod_term_func'
+* NoDeadStripMachO::                '.no_dead_strip'
 * ObjC::                            Mach-O Objective C Specific Directives
 * PicsymbolStubMachO::              '.picsymbol_stub'
 * PreviousMachO::                   '.previous'
+* PrivateExternMachO::              '.private_extern NAME'
+* ReferenceMachO::                  '.reference SYMBOL'
 * SectionMachO::                    '.section'
 * StaticConstMachO::                '.static_const'
 * StaticDataMachO::                 '.static_data'
+* SymbolResolverMachO::             '.symbol_resolver NAME'
 * SymbolStubMachO::                 '.symbol_stub'
 * TbssMachO::                       '.tbss'
 * TdataMachO::                      '.tdata'
 * TextMachO::                       '.text'
 * ThreadInitFuncMachO::             '.thread_init_func'
 * TlvMachO::                        '.tlv'
+* WeakDefCanBeHiddenMachO::         '.symbol_resolver NAME'
+* WeakDefinitionMachO::             '.weak_definition NAME'
+* WeakReferenceMachO::              '.weak_reference NAME'
 * ZerofillMachO::                   '.zerofill'
 
 
@@ -4056,7 +4152,7 @@ File: llvm-assembler.info,  Node: IosVersionMinMachO,  Next: LazySymbolPointerMa
 To be written...
 
 
-File: llvm-assembler.info,  Node: LazySymbolPointerMachO,  Next: LinkerOptionMachO,  Prev: IosVersionMinMachO,  Up: Mach-O Directives
+File: llvm-assembler.info,  Node: LazySymbolPointerMachO,  Next: LazyReferenceMachO,  Prev: IosVersionMinMachO,  Up: Mach-O Directives
 
 7.4.13 '.lazy_symbol_pointer', '.non_lazy_symbol_pointer'
 ---------------------------------------------------------
@@ -4064,9 +4160,17 @@ File: llvm-assembler.info,  Node: LazySymbolPointerMachO,  Next: LinkerOptionMac
 To be written...
 
 
-File: llvm-assembler.info,  Node: LinkerOptionMachO,  Next: LiteralMachO,  Prev: LazySymbolPointerMachO,  Up: Mach-O Directives
+File: llvm-assembler.info,  Node: LazyReferenceMachO,  Next: LinkerOptionMachO,  Prev: LazySymbolPointerMachO,  Up: Mach-O Directives
 
-7.4.14 '.linker_option'
+7.4.14 '.lazy_reference SYMBOL'
+-------------------------------
+
+Generic option that is Mach-O specific.  To be written...
+
+
+File: llvm-assembler.info,  Node: LinkerOptionMachO,  Next: LiteralMachO,  Prev: LazyReferenceMachO,  Up: Mach-O Directives
+
+7.4.15 '.linker_option'
 -----------------------
 
 To be written...
@@ -4074,7 +4178,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: LiteralMachO,  Next: LoadMachO,  Prev: LinkerOptionMachO,  Up: Mach-O Directives
 
-7.4.15 '.literal4', '.literal8', '.literal16'
+7.4.16 '.literal4', '.literal8', '.literal16'
 ---------------------------------------------
 
 To be written...
@@ -4082,7 +4186,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: LoadMachO,  Next: LsymMachO,  Prev: LiteralMachO,  Up: Mach-O Directives
 
-7.4.16 '.load'
+7.4.17 '.load'
 --------------
 
 To be written...
@@ -4090,7 +4194,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: LsymMachO,  Next: MacosxVersionMinMachO,  Prev: LoadMachO,  Up: Mach-O Directives
 
-7.4.17 '.lsym'
+7.4.18 '.lsym'
 --------------
 
 To be written...
@@ -4098,23 +4202,31 @@ To be written...
 
 File: llvm-assembler.info,  Node: MacosxVersionMinMachO,  Next: ModInitFuncMachO,  Prev: LsymMachO,  Up: Mach-O Directives
 
-7.4.18 '.macosx_version_min'
+7.4.19 '.macosx_version_min'
 ----------------------------
 
 To be written...
 
 
-File: llvm-assembler.info,  Node: ModInitFuncMachO,  Next: ObjC,  Prev: MacosxVersionMinMachO,  Up: Mach-O Directives
+File: llvm-assembler.info,  Node: ModInitFuncMachO,  Next: NoDeadStripMachO,  Prev: MacosxVersionMinMachO,  Up: Mach-O Directives
 
-7.4.19 '.mod_init_func', '.mod_term_func'
+7.4.20 '.mod_init_func', '.mod_term_func'
 -----------------------------------------
 
 To be written...
 
 
-File: llvm-assembler.info,  Node: ObjC,  Next: PicsymbolStubMachO,  Prev: ModInitFuncMachO,  Up: Mach-O Directives
+File: llvm-assembler.info,  Node: NoDeadStripMachO,  Next: ObjC,  Prev: ModInitFuncMachO,  Up: Mach-O Directives
 
-7.4.20 Mach-O Objective C Specific Directives
+7.4.21 '.no_dead_strip'
+-----------------------
+
+Generic option that is Mach-O specific.  To be written...
+
+
+File: llvm-assembler.info,  Node: ObjC,  Next: PicsymbolStubMachO,  Prev: NoDeadStripMachO,  Up: Mach-O Directives
+
+7.4.22 Mach-O Objective C Specific Directives
 ---------------------------------------------
 
 * Menu:
@@ -4142,7 +4254,7 @@ File: llvm-assembler.info,  Node: ObjC,  Next: PicsymbolStubMachO,  Prev: ModIni
 
 File: llvm-assembler.info,  Node: ObjcCatClsMeth,  Next: ObjcCatInstMeth,  Up: ObjC
 
-7.4.20.1 '.objc_cat_cls_meth'
+7.4.22.1 '.objc_cat_cls_meth'
 .............................
 
 To be written...
@@ -4150,7 +4262,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: ObjcCatInstMeth,  Next: ObjcCategory,  Prev: ObjcCatClsMeth,  Up: ObjC
 
-7.4.20.2 '.objc_cat_inst_meth'
+7.4.22.2 '.objc_cat_inst_meth'
 ..............................
 
 To be written...
@@ -4158,7 +4270,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: ObjcCategory,  Next: ObjcClass,  Prev: ObjcCatInstMeth,  Up: ObjC
 
-7.4.20.3 '.objc_category'
+7.4.22.3 '.objc_category'
 .........................
 
 To be written...
@@ -4166,7 +4278,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: ObjcClass,  Next: ObjcClassNames,  Prev: ObjcCategory,  Up: ObjC
 
-7.4.20.4 '.objc_class'
+7.4.22.4 '.objc_class'
 ......................
 
 To be written...
@@ -4174,7 +4286,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: ObjcClassNames,  Next: ObjcClassVars,  Prev: ObjcClass,  Up: ObjC
 
-7.4.20.5 '.objc_class_names'
+7.4.22.5 '.objc_class_names'
 ............................
 
 To be written...
@@ -4182,7 +4294,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: ObjcClassVars,  Next: ObjcClsMeth,  Prev: ObjcClassNames,  Up: ObjC
 
-7.4.20.6 '.objc_class_vars'
+7.4.22.6 '.objc_class_vars'
 ...........................
 
 To be written...
@@ -4190,7 +4302,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: ObjcClsMeth,  Next: ObjcClsRefs,  Prev: ObjcClassVars,  Up: ObjC
 
-7.4.20.7 '.objc_cls_meth'
+7.4.22.7 '.objc_cls_meth'
 .........................
 
 To be written...
@@ -4198,7 +4310,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: ObjcClsRefs,  Next: ObjcInstMeth,  Prev: ObjcClsMeth,  Up: ObjC
 
-7.4.20.8 '.objc_cls_refs'
+7.4.22.8 '.objc_cls_refs'
 .........................
 
 To be written...
@@ -4206,7 +4318,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: ObjcInstMeth,  Next: ObjcInstanceVars,  Prev: ObjcClsRefs,  Up: ObjC
 
-7.4.20.9 '.objc_inst_meth'
+7.4.22.9 '.objc_inst_meth'
 ..........................
 
 To be written...
@@ -4214,7 +4326,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: ObjcInstanceVars,  Next: ObjcMessageRefs,  Prev: ObjcInstMeth,  Up: ObjC
 
-7.4.20.10 '.objc_instance_vars'
+7.4.22.10 '.objc_instance_vars'
 ...............................
 
 To be written...
@@ -4222,7 +4334,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: ObjcMessageRefs,  Next: ObjcMetaClass,  Prev: ObjcInstanceVars,  Up: ObjC
 
-7.4.20.11 '.objc_message_refs'
+7.4.22.11 '.objc_message_refs'
 ..............................
 
 To be written...
@@ -4230,7 +4342,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: ObjcMetaClass,  Next: ObjcMethVarNames,  Prev: ObjcMessageRefs,  Up: ObjC
 
-7.4.20.12 '.objc_meta_class'
+7.4.22.12 '.objc_meta_class'
 ............................
 
 To be written...
@@ -4238,7 +4350,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: ObjcMethVarNames,  Next: ObjcMethVarTypes,  Prev: ObjcMetaClass,  Up: ObjC
 
-7.4.20.13 '.objc_meth_var_names'
+7.4.22.13 '.objc_meth_var_names'
 ................................
 
 To be written...
@@ -4246,7 +4358,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: ObjcMethVarTypes,  Next: ObjcModuleInfo,  Prev: ObjcMethVarNames,  Up: ObjC
 
-7.4.20.14 '.objc_meth_var_types'
+7.4.22.14 '.objc_meth_var_types'
 ................................
 
 To be written...
@@ -4254,7 +4366,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: ObjcModuleInfo,  Next: ObjcProtocol,  Prev: ObjcMethVarTypes,  Up: ObjC
 
-7.4.20.15 '.objc_module_info'
+7.4.22.15 '.objc_module_info'
 .............................
 
 To be written...
@@ -4262,7 +4374,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: ObjcProtocol,  Next: ObjcSelectorStrs,  Prev: ObjcModuleInfo,  Up: ObjC
 
-7.4.20.16 '.objc_protocol'
+7.4.22.16 '.objc_protocol'
 ..........................
 
 To be written...
@@ -4270,7 +4382,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: ObjcSelectorStrs,  Next: ObjcStringObject,  Prev: ObjcProtocol,  Up: ObjC
 
-7.4.20.17 '.objc_selector_strs'
+7.4.22.17 '.objc_selector_strs'
 ...............................
 
 To be written...
@@ -4278,7 +4390,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: ObjcStringObject,  Next: ObjcSymbols,  Prev: ObjcSelectorStrs,  Up: ObjC
 
-7.4.20.18 '.objc_string_object'
+7.4.22.18 '.objc_string_object'
 ...............................
 
 To be written...
@@ -4286,7 +4398,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: ObjcSymbols,  Prev: ObjcStringObject,  Up: ObjC
 
-7.4.20.19 '.objc_symbols'
+7.4.22.19 '.objc_symbols'
 .........................
 
 To be written...
@@ -4294,23 +4406,39 @@ To be written...
 
 File: llvm-assembler.info,  Node: PicsymbolStubMachO,  Next: PreviousMachO,  Prev: ObjC,  Up: Mach-O Directives
 
-7.4.21 '.picsymbol_stub'
+7.4.23 '.picsymbol_stub'
 ------------------------
 
 To be written...
 
 
-File: llvm-assembler.info,  Node: PreviousMachO,  Next: SectionMachO,  Prev: PicsymbolStubMachO,  Up: Mach-O Directives
+File: llvm-assembler.info,  Node: PreviousMachO,  Next: PrivateExternMachO,  Prev: PicsymbolStubMachO,  Up: Mach-O Directives
 
-7.4.22 '.previous'
+7.4.24 '.previous'
 ------------------
 
 To be written...
 
 
-File: llvm-assembler.info,  Node: SectionMachO,  Next: StaticConstMachO,  Prev: PreviousMachO,  Up: Mach-O Directives
+File: llvm-assembler.info,  Node: PrivateExternMachO,  Next: ReferenceMachO,  Prev: PreviousMachO,  Up: Mach-O Directives
 
-7.4.23 '.section'
+7.4.25 '.private_extern NAME'
+-----------------------------
+
+Generic option that is Mach-O specific.  To be written...
+
+
+File: llvm-assembler.info,  Node: ReferenceMachO,  Next: SectionMachO,  Prev: PrivateExternMachO,  Up: Mach-O Directives
+
+7.4.26 '.reference SYMBOL'
+--------------------------
+
+Generic option that is Mach-O specific.  To be written...
+
+
+File: llvm-assembler.info,  Node: SectionMachO,  Next: StaticConstMachO,  Prev: ReferenceMachO,  Up: Mach-O Directives
+
+7.4.27 '.section'
 -----------------
 
 To be written...
@@ -4318,23 +4446,31 @@ To be written...
 
 File: llvm-assembler.info,  Node: StaticConstMachO,  Next: StaticDataMachO,  Prev: SectionMachO,  Up: Mach-O Directives
 
-7.4.24 '.static_const'
+7.4.28 '.static_const'
 ----------------------
 
 To be written...
 
 
-File: llvm-assembler.info,  Node: StaticDataMachO,  Next: SymbolStubMachO,  Prev: StaticConstMachO,  Up: Mach-O Directives
+File: llvm-assembler.info,  Node: StaticDataMachO,  Next: SymbolResolverMachO,  Prev: StaticConstMachO,  Up: Mach-O Directives
 
-7.4.25 '.static_data'
+7.4.29 '.static_data'
 ---------------------
 
 To be written...
 
 
-File: llvm-assembler.info,  Node: SymbolStubMachO,  Next: TbssMachO,  Prev: StaticDataMachO,  Up: Mach-O Directives
+File: llvm-assembler.info,  Node: SymbolResolverMachO,  Next: SymbolStubMachO,  Prev: StaticDataMachO,  Up: Mach-O Directives
 
-7.4.26 '.symbol_stub'
+7.4.30 '.symbol_resolver'
+-------------------------
+
+To be written...
+
+
+File: llvm-assembler.info,  Node: SymbolStubMachO,  Next: TbssMachO,  Prev: SymbolResolverMachO,  Up: Mach-O Directives
+
+7.4.31 '.symbol_stub'
 ---------------------
 
 To be written...
@@ -4342,7 +4478,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: TbssMachO,  Next: TdataMachO,  Prev: SymbolStubMachO,  Up: Mach-O Directives
 
-7.4.27 '.tbss'
+7.4.32 '.tbss'
 --------------
 
 To be written...
@@ -4350,7 +4486,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: TdataMachO,  Next: TextMachO,  Prev: TbssMachO,  Up: Mach-O Directives
 
-7.4.28 '.tdata'
+7.4.33 '.tdata'
 ---------------
 
 To be written...
@@ -4358,7 +4494,7 @@ To be written...
 
 File: llvm-assembler.info,  Node: TextMachO,  Next: ThreadInitFuncMachO,  Prev: TdataMachO,  Up: Mach-O Directives
 
-7.4.29 '.text'
+7.4.34 '.text'
 --------------
 
 To be written...
@@ -4366,23 +4502,45 @@ To be written...
 
 File: llvm-assembler.info,  Node: ThreadInitFuncMachO,  Next: TlvMachO,  Prev: TextMachO,  Up: Mach-O Directives
 
-7.4.30 '.thread_init_func'
+7.4.35 '.thread_init_func'
 --------------------------
 
 To be written...
 
 
-File: llvm-assembler.info,  Node: TlvMachO,  Next: ZerofillMachO,  Prev: ThreadInitFuncMachO,  Up: Mach-O Directives
+File: llvm-assembler.info,  Node: TlvMachO,  Next: WeakDefCanBeHiddenMachO,  Prev: ThreadInitFuncMachO,  Up: Mach-O Directives
 
-7.4.31 '.tlv'
+7.4.36 '.tlv'
 -------------
 
 To be written...
 
 
-File: llvm-assembler.info,  Node: ZerofillMachO,  Prev: TlvMachO,  Up: Mach-O Directives
+File: llvm-assembler.info,  Node: WeakDefCanBeHiddenMachO,  Next: WeakDefinitionMachO,  Prev: TlvMachO,  Up: Mach-O Directives
 
-7.4.32 '.zerofill'
+7.4.37 '.weak_def_can_be_hidden'
+--------------------------------
+
+To be written...
+
+
+File: llvm-assembler.info,  Node: WeakDefinitionMachO,  Next: WeakReferenceMachO,  Prev: WeakDefCanBeHiddenMachO,  Up: Mach-O Directives
+
+7.4.38 '.weak_definition NAME'
+------------------------------
+
+To be written...
+
+
+File: llvm-assembler.info,  Node: WeakReferenceMachO,  Next: ZerofillMachO,  Prev: WeakDefinitionMachO,  Up: Mach-O Directives
+
+7.4.39 '.weak_reference NAME'
+-----------------------------
+
+
+File: llvm-assembler.info,  Node: ZerofillMachO,  Prev: WeakReferenceMachO,  Up: Mach-O Directives
+
+7.4.40 '.zerofill'
 ------------------
 
 To be written...
@@ -5481,7 +5639,7 @@ LLVM Integrated Assembler Index
 * '.cfi_val_encoded_addr' (unsupported): Unsupported.         (line  17)
 * '.cfi_window_save':                    CfiWindowSave.       (line   6)
 * '.code16':                             Code16.              (line   6)
-* '.code16gcce':                         Code16.              (line   6)
+* '.code16gcc':                          Code16.              (line   6)
 * '.comm':                               Comm.                (line   6)
 * '.common':                             Common.              (line   6)
 * '.const' (Mach-O only):                ConstMachO.          (line   6)
@@ -5552,6 +5710,7 @@ LLVM Integrated Assembler Index
 * '.irp':                                Irp.                 (line   6)
 * '.irpc':                               Irpc.                (line   6)
 * '.lazy_reference':                     LazyReference.       (line   6)
+* '.lazy_reference' (Mach-O only):       LazyReferenceMachO.  (line   6)
 * '.lazy_symbol_pointer' (Mach-O only):  LazySymbolPointerMachO.
                                                               (line   6)
 * '.lcomm':                              Lcomm.               (line   6)
@@ -5582,6 +5741,7 @@ LLVM Integrated Assembler Index
 * '.non_lazy_symbol_pointer' (Mach-O only): LazySymbolPointerMachO.
                                                               (line   6)
 * '.no_dead_strip':                      NoDeadStrip.         (line   6)
+* '.no_dead_strip' (Mach-O only):        NoDeadStripMachO.    (line   6)
 * .o:                                    Object.              (line   6)
 * '.objc_category' (Mach-O Objective C Only): ObjcCategory.   (line   6)
 * '.objc_cat_cls_meth' (Mach-O Objective C Only): ObjcCatClsMeth.
@@ -5626,12 +5786,14 @@ LLVM Integrated Assembler Index
 * '.previous' (Mach-O only):             PreviousMachO.       (line   6)
 * '.print' (unsupported):                Unsupported.         (line  70)
 * '.private_extern':                     PrivateExtern.       (line   6)
+* '.private_extern' (Mach-O only):       PrivateExternMachO.  (line   6)
 * '.protected' (ELF only):               ProtectedElf.        (line   6)
 * '.psize' (unsupported):                Unsupported.         (line  73)
 * '.purgem':                             Purgem.              (line   6)
 * '.pushsection' (ELF only):             PushSectionElf.      (line   6)
 * '.quad':                               Quad.                (line   6)
 * '.reference':                          Reference.           (line   6)
+* '.reference' (Mach-O only):            ReferenceMachO.      (line   6)
 * '.reloc' (unsupported):                Unsupported.         (line  77)
 * '.rept':                               Rept.                (line   6)
 * '.rodata' (ELF only):                  RodataElf.           (line   6)
@@ -5673,6 +5835,8 @@ LLVM Integrated Assembler Index
 * '.skip':                               Skip.                (line   6)
 * '.sleb128':                            Sleb128.             (line   6)
 * '.space':                              Space.               (line   6)
+* '.stabd' (Unsupported):                Stabs.               (line  39)
+* '.stabn' (Unsupported):                Stabs.               (line  39)
 * '.stabs':                              Stabs.               (line   6)
 * '.static_const' (Mach-O only):         StaticConstMachO.    (line   6)
 * '.static_data' (Mach-O only):          StaticDataMachO.     (line   6)
@@ -5684,6 +5848,7 @@ LLVM Integrated Assembler Index
 * '.struct' (unsupported):               Unsupported.         (line  89)
 * '.subsection' (ELF only):              SubSectionElf.       (line   6)
 * '.symbol_resolver':                    SymbolResolver.      (line   6)
+* '.symbol_resolver' (Mach-O only):      SymbolResolverMachO. (line   6)
 * '.symbol_stub' (Mach-O only):          SymbolStubMachO.     (line   6)
 * '.tbss' (ELF only):                    TbssElf.             (line   6)
 * '.tbss' (Mach-O only):                 TbssMachO.           (line   6)
@@ -5707,11 +5872,15 @@ LLVM Integrated Assembler Index
 * '.weak' (ELF only):                    WeakElf.             (line   6)
 * '.weakref' (ELF only):                 WeakrefElf.          (line   6)
 * '.weak_definition':                    WeakDefinition.      (line   6)
+* '.weak_definition' <1>:                WeakDefinitionMachO. (line   6)
 * '.weak_def_can_be_hidden':             WeakDefCanBeHidden.  (line   6)
+* '.weak_def_can_be_hidden' (Mach-O only): WeakDefCanBeHiddenMachO.
+                                                              (line   6)
 * '.weak_reference':                     WeakReference.       (line   6)
+* '.weak_reference' (Mach-O only):       WeakReferenceMachO.  (line   5)
 * '.word' (unsupported):                 Unsupported.         (line 100)
 * '.zero':                               Zero.                (line   6)
-* '.zerofill' (Mach-O only):             ZerofillMachO.       (line   6)
+* '.zerofill' (Mach-O only) (Mach-O only): ZerofillMachO.     (line   6)
 * '2byte' directive:                     2byte.               (line   6)
 * '4byte' directive:                     4byte.               (line   6)
 * '8byte' directive:                     8byte.               (line   6)
@@ -5980,6 +6149,8 @@ LLVM Integrated Assembler Index
 * label (':'):                           Statements.          (line  31)
 * labels:                                Labels.              (line   6)
 * 'lazy_reference' directive:            LazyReference.       (line   6)
+* 'lazy_reference' directive (Mach-O only): LazyReferenceMachO.
+                                                              (line   6)
 * 'lazy_symbol_pointer' directive (Mach-O only): LazySymbolPointerMachO.
                                                               (line   6)
 * 'lcomm' directive:                     Lcomm.               (line   6)
@@ -6061,6 +6232,7 @@ LLVM Integrated Assembler Index
 * 'non_lazy_symbol_pointer' directive (Mach-O only): LazySymbolPointerMachO.
                                                               (line   6)
 * 'no_dead_strip' directive:             NoDeadStrip.         (line   6)
+* 'no_dead_strip' directive (Mach-O only): NoDeadStripMachO.  (line   6)
 * null-terminated strings:               Asciz.               (line   6)
 * number constants:                      Numbers.             (line   6)
 * number of macros executed:             Macro.               (line 142)
@@ -6148,6 +6320,8 @@ LLVM Integrated Assembler Index
 * 'previous' directive (Mach-O only):    PreviousMachO.       (line   6)
 * 'print' directive (unsupported):       Unsupported.         (line  70)
 * 'private_extern' directive:            PrivateExtern.       (line   6)
+* 'private_extern' directive (Mach-O only): PrivateExternMachO.
+                                                              (line   6)
 * 'protected' directive (ELF only):      ProtectedElf.        (line   6)
 * pseudo-ops, machine independent:       Pseudo Ops.          (line   6)
 * 'psize' directive (unsupported):       Unsupported.         (line  73)
@@ -6156,6 +6330,7 @@ LLVM Integrated Assembler Index
 * 'pushsection' directive (ELF only):    PushSectionElf.      (line   6)
 * 'quad' directive:                      Quad.                (line   6)
 * 'reference' directive:                 Reference.           (line   6)
+* 'reference' directive (Mach-O only):   ReferenceMachO.      (line   6)
 * 'reloc' directive (unsupported):       Unsupported.         (line  77)
 * relocation:                            Sections.            (line   6)
 * relocation example:                    Ld Sections.         (line  38)
@@ -6217,6 +6392,8 @@ LLVM Integrated Assembler Index
 * 'sleb128' directive:                   Sleb128.             (line   6)
 * source program:                        Input Files.         (line   6)
 * 'space' directive:                     Space.               (line   6)
+* 'stabd' directive (Unsupported):       Stabs.               (line  39)
+* 'stabn' directive (Unsupported):       Stabs.               (line  39)
 * 'stabs' directive:                     Stabs.               (line   6)
 * standard assembler sections:           Secs Background.     (line  26)
 * statement separator character:         Statements.          (line   6)
@@ -6260,10 +6437,13 @@ LLVM Integrated Assembler Index
 * symbol versioning (ELF only):          SymverElf.           (line   6)
 * symbol, common:                        Comm.                (line   6)
 * symbol, making visible to linker:      Global.              (line   6)
+* symbolic debuggers, information for:   Stabs.               (line   6)
 * symbols:                               Symbols.             (line   6)
 * symbols, assigning values to:          Equ.                 (line   6)
 * symbols, local common:                 Lcomm.               (line   6)
 * 'symbol_resolver' directive:           SymbolResolver.      (line   6)
+* 'symbol_resolver' directive (Mach-O only): SymbolResolverMachO.
+                                                              (line   6)
 * 'symbol_stub' directive (Mach-O only): SymbolStubMachO.     (line   6)
 * 'symver' directive (ELF only):         SymverElf.           (line   6)
 * syntax, machine-independent:           Syntax.              (line   6)
@@ -6304,15 +6484,21 @@ LLVM Integrated Assembler Index
 * 'weak' directive (ELF only):           WeakElf.             (line   6)
 * 'weakref' directive (ELF only):        WeakrefElf.          (line   6)
 * 'weak_definition' directive:           WeakDefinition.      (line   6)
+* 'weak_definition' directive <1>:       WeakDefinitionMachO. (line   6)
 * 'weak_def_can_be_hidden' directive:    WeakDefCanBeHidden.  (line   6)
+* 'weak_def_can_be_hidden' directive (Mach-O only): WeakDefCanBeHiddenMachO.
+                                                              (line   6)
 * 'weak_reference' directive:            WeakReference.       (line   6)
+* 'weak_reference' directive (Mach-O only): WeakReferenceMachO.
+                                                              (line   6)
 * whitespace:                            Whitespace.          (line   6)
 * whitespace, removed by preprocessor:   Preprocessing.       (line   7)
 * 'word' directive (unsupported):        Unsupported.         (line 100)
 * writing patterns in memory:            Fill.                (line   6)
 * 'zero' directive:                      Zero.                (line   6)
 * zero-terminated strings:               Asciz.               (line   6)
-* 'zerofill' directive (Mach-O only):    ZerofillMachO.       (line   6)
+* 'zerofill' directive (Mach-O only) (Mach-O only): ZerofillMachO.
+                                                              (line   6)
 
 
 
@@ -6322,255 +6508,263 @@ Node: Overview1826
 Node: Manual2316
 Node: LLVM Assembler3312
 Node: Object Formats4687
-Node: Command Line5098
-Ref: cc1as5628
-Node: Input Files7675
-Node: Object10275
-Node: Errors11359
-Node: Invoking12742
-Node: common-options14424
-Node: assembler-options16898
-Node: internal-options17423
-Node: Syntax21022
-Node: Preprocessing21649
-Node: Whitespace22959
-Node: Comments23367
-Node: Symbol Intro25439
-Node: Statements26176
-Node: Constants28002
-Node: Characters28647
-Node: Strings29161
-Node: Chars31411
-Node: Numbers32309
-Node: Integers32886
-Node: Bignums33554
-Node: Flonums33922
-Node: Sections35437
-Node: Secs Background35827
-Node: Ld Sections40135
-Node: As Sections42544
-Node: Sub-Sections43541
-Node: bss46550
-Node: Symbols47447
-Node: Labels48137
-Node: Setting Symbols48578
-Node: Symbol Names49106
-Node: Dot54041
-Node: Symbol Attributes54525
-Node: Symbol Value55120
-Node: Symbol Type56189
-Node: Expressions56567
-Node: Empty Exprs57349
-Node: Integer Exprs57733
-Node: Arguments58140
-Node: Operators59283
-Node: Prefix Ops59630
-Node: Infix Ops59993
-Node: Pseudo Ops62399
-Node: Common Directives64359
-Node: 2byte68052
-Node: 4byte68368
-Node: 8byte68699
-Node: Abort69075
-Node: Align69587
-Node: Align3271633
-Node: Ascii72528
-Node: Asciz72859
-Node: Balign73127
-Node: BundleAlign75044
-Node: BundleLock76378
-Node: Byte78108
-Node: CFIDirectives78384
-Node: CfiSections79577
-Node: CfiStartproc80107
-Node: CfiEndproc80625
-Node: CfiPersonality80936
-Node: CfiLsda81703
-Node: CfiDefCfa82256
-Node: CfiDefCfaRegister82552
-Node: CfiDefCfaOffset82898
-Node: CfiAdjustCfaOffset83307
-Node: CfiOffset83622
-Node: CfiRelOffset83884
-Node: CfiRegister84354
-Node: CfiRestore84619
-Node: CfiUndefined84976
-Node: CfiSameValue85230
-Node: CfiRememberState85515
-Node: CfiSignalFrame85960
-Node: CfiWindowSave86182
-Node: CfiEscape86568
-Node: Code1686934
-Node: Comm87118
-Node: Common88446
-Node: Double88595
-Node: Else88983
-Node: Elseif89332
-Node: End89674
-Node: Endif89937
-Node: Endm90243
-Node: Endr90418
-Node: Equ90639
-Node: Equiv90905
-Node: Err91484
-Node: Error91845
-Node: Exitm92313
-Node: Extern92505
-Node: File92814
-Node: Fill93484
-Node: Float94497
-Node: Global94889
-Node: Ident95463
-Node: If95687
-Node: Incbin98928
-Node: Include99500
-Node: Int100074
-Node: Irp100473
-Node: Irpc101370
-Node: LazyReference102317
-Node: Lcomm102488
-Node: Line103154
-Node: Loc103553
-Node: Long104952
-Node: Macro105151
-Node: NoDeadStrip111135
-Node: Octa111302
-Node: Org111664
-Node: P2align113020
-Node: PrivateExtern114974
-Node: Purgem115149
-Node: Quad115394
-Node: Reference115870
-Node: Rept116026
-Node: Set116465
-Node: Short116978
-Node: Single117348
-Node: Skip117741
-Node: Sleb128118088
-Node: Space118433
-Node: Stabs118781
-Node: String118928
-Node: SymbolResolver119544
-Node: Uleb128119722
-Node: Value120079
-Node: Warning120229
-Node: WeakDefCanBeHidden120490
-Node: WeakDefinition120694
-Node: WeakReference120890
-Node: Zero121070
-Node: ELF Directives121207
-Node: BssElf122565
-Node: DataElf122691
-Node: HiddenElf123062
-Node: IdentElf123672
-Node: InternalElf123826
-Node: LocalElf124510
-Node: PopSectionElf125124
-Node: PreviousElf125669
-Node: ProtectedElf127124
-Node: PushSectionElf127813
-Node: RodataElf128606
-Node: SectionElf128769
-Node: SizeElf133773
-Node: SubSectionElf134152
-Node: SymverElf134768
-Node: TbssElf137175
-Node: TdataElf137325
-Node: TextElf137475
-Node: TypeElf137850
-Node: VersionElf139871
-Node: WeakElf140166
-Node: WeakrefElf140460
-Node: COFF Directives141436
-Node: BssCoff142024
-Node: DataCoff142153
-Node: DefCoff142300
-Node: LinkonceCoff142450
-Node: SclCoff142609
-Node: SecidxCoff142761
-Node: Secrel32Coff142919
-Node: SectionCoff143085
-Node: TextCoff143247
-Node: TypeCoff143399
-Node: Win64Coff143551
-Node: SehProc144334
-Node: SehEndPrologue144505
-Node: SehHandler144685
-Node: SehHandlerdata144862
-Node: SehPushframe145045
-Node: SehPushreg145224
-Node: SehSavereg145395
-Node: SehSavexmn145564
-Node: SehSetframe145734
-Node: SehStackalloc145909
-Node: SehChained146090
-Node: WeakCoff146310
-Node: Mach-O Directives146446
-Node: BssMachO148320
-Node: ConstMachO148454
-Node: ConstDataMachO148615
-Node: ConstructorMachO148794
-Node: CstringMachO149007
-Node: DataMachO149177
-Node: DescMachO149334
-Node: DumpMachO149488
-Node: DyldMachO149642
-Node: FvmlibInitMachO149802
-Node: IdentMachO150015
-Node: IosVersionMinMachO150189
-Node: LazySymbolPointerMachO150390
-Node: LinkerOptionMachO150662
-Node: LiteralMachO150860
-Node: LoadMachO151089
-Node: LsymMachO151248
-Node: MacosxVersionMinMachO151416
-Node: ModInitFuncMachO151619
-Node: ObjC151843
-Node: ObjcCatClsMeth152947
-Node: ObjcCatInstMeth153113
-Node: ObjcCategory153302
-Node: ObjcClass153476
-Node: ObjcClassNames153643
-Node: ObjcClassVars153823
-Node: ObjcClsMeth154003
-Node: ObjcClsRefs154176
-Node: ObjcInstMeth154348
-Node: ObjcInstanceVars154527
-Node: ObjcMessageRefs154720
-Node: ObjcMetaClass154912
-Node: ObjcMethVarNames155100
-Node: ObjcMethVarTypes155297
-Node: ObjcModuleInfo155495
-Node: ObjcProtocol155683
-Node: ObjcSelectorStrs155865
-Node: ObjcStringObject156059
-Node: ObjcSymbols156252
-Node: PicsymbolStubMachO156408
-Node: PreviousMachO156592
-Node: SectionMachO156772
-Node: StaticConstMachO156948
-Node: StaticDataMachO157136
-Node: SymbolStubMachO157325
-Node: TbssMachO157507
-Node: TdataMachO157670
-Node: TextMachO157829
-Node: ThreadInitFuncMachO157996
-Node: TlvMachO158185
-Node: ZerofillMachO158352
-Node: Deprecated158501
-Node: Unsupported158824
-Node: Object Attributes161176
-Node: Machine Dependencies161581
-Node: AAP-dependent162470
-Node: AAP Options163140
-Node: AAP Directives163458
-Node: AAP Assembler Syntax163801
-Node: Reporting Bugs164531
-Node: Bug Criteria165344
-Node: Bug Reporting166238
-Node: Acknowledgements173208
-Ref: Acknowledgements-Footnote-1178322
-Node: GNU Free Documentation License178348
-Node: AS Index203510
+Node: Command Line5180
+Ref: cc1as5710
+Node: Input Files7757
+Node: Object10357
+Node: Errors11441
+Node: Invoking12824
+Node: common-options14506
+Node: assembler-options16980
+Node: internal-options17505
+Node: Syntax21100
+Node: Preprocessing21727
+Node: Whitespace23037
+Node: Comments23445
+Node: Symbol Intro25517
+Node: Statements26254
+Node: Constants28080
+Node: Characters28725
+Node: Strings29239
+Node: Chars31489
+Node: Numbers32387
+Node: Integers32964
+Node: Bignums33632
+Node: Flonums34000
+Node: Sections35515
+Node: Secs Background35905
+Node: Ld Sections40213
+Node: As Sections42622
+Node: Sub-Sections43619
+Node: bss46628
+Node: Symbols47525
+Node: Labels48215
+Node: Setting Symbols48656
+Node: Symbol Names49184
+Node: Dot54119
+Node: Symbol Attributes54603
+Node: Symbol Value55198
+Node: Symbol Type56267
+Node: Expressions56645
+Node: Empty Exprs57427
+Node: Integer Exprs57811
+Node: Arguments58218
+Node: Operators59361
+Node: Prefix Ops59708
+Node: Infix Ops60071
+Node: Pseudo Ops62477
+Node: Common Directives64437
+Node: 2byte68200
+Node: 4byte68516
+Node: 8byte68847
+Node: Abort69223
+Node: Align69735
+Node: Align3271781
+Node: Ascii72676
+Node: Asciz73007
+Node: Balign73275
+Node: BundleAlign75192
+Node: BundleLock76526
+Node: Byte78256
+Node: CFIDirectives78532
+Node: CfiSections79725
+Node: CfiStartproc80255
+Node: CfiEndproc80773
+Node: CfiPersonality81084
+Node: CfiLsda81851
+Node: CfiDefCfa82404
+Node: CfiDefCfaRegister82700
+Node: CfiDefCfaOffset83046
+Node: CfiAdjustCfaOffset83455
+Node: CfiOffset83770
+Node: CfiRelOffset84032
+Node: CfiRegister84502
+Node: CfiRestore84767
+Node: CfiUndefined85124
+Node: CfiSameValue85378
+Node: CfiRememberState85663
+Node: CfiSignalFrame86108
+Node: CfiWindowSave86330
+Node: CfiEscape86716
+Node: Code1687082
+Node: Comm87640
+Node: Common88968
+Node: Double89292
+Node: Else89680
+Node: Elseif90029
+Node: End90371
+Node: Endif90634
+Node: Endm90940
+Node: Endr91115
+Node: Equ91336
+Node: Equiv91602
+Node: Err92181
+Node: Error92542
+Node: Exitm93010
+Node: Extern93202
+Node: File93511
+Node: Fill94181
+Node: Float95194
+Node: Global95586
+Node: Ident96160
+Node: If96384
+Node: Incbin99625
+Node: Include100197
+Node: Int100771
+Node: Irp101170
+Node: Irpc102067
+Node: LazyReference103014
+Node: Lcomm103503
+Node: Line104169
+Node: Loc104568
+Node: Long105967
+Node: Macro106166
+Node: NoDeadStrip112150
+Node: Octa112585
+Node: Org112947
+Node: P2align114303
+Node: PrivateExtern116257
+Node: Purgem116746
+Node: Quad116991
+Node: Reference117467
+Node: Rept117937
+Node: Set118376
+Node: Short118889
+Node: Single119259
+Node: Skip119652
+Node: Sleb128119999
+Node: Space120344
+Node: Stabs120692
+Node: String122498
+Node: SymbolResolver123114
+Node: Uleb128123621
+Node: Value123978
+Node: Warning124496
+Node: WeakDefCanBeHidden124757
+Node: WeakDefinition125285
+Node: WeakReference125796
+Node: Zero126292
+Node: ELF Directives126734
+Node: BssElf128092
+Node: DataElf128218
+Node: HiddenElf128589
+Node: IdentElf129199
+Node: InternalElf129353
+Node: LocalElf130037
+Node: PopSectionElf130651
+Node: PreviousElf131196
+Node: ProtectedElf132651
+Node: PushSectionElf133340
+Node: RodataElf134133
+Node: SectionElf134296
+Node: SizeElf139300
+Node: SubSectionElf139679
+Node: SymverElf140295
+Node: TbssElf142702
+Node: TdataElf142852
+Node: TextElf143002
+Node: TypeElf143377
+Node: VersionElf145398
+Node: WeakElf145693
+Node: WeakrefElf145987
+Node: COFF Directives146963
+Node: BssCoff147551
+Node: DataCoff147680
+Node: DefCoff147827
+Node: LinkonceCoff147977
+Node: SclCoff148136
+Node: SecidxCoff148288
+Node: Secrel32Coff148446
+Node: SectionCoff148612
+Node: TextCoff148774
+Node: TypeCoff148926
+Node: Win64Coff149078
+Node: SehProc149861
+Node: SehEndPrologue150032
+Node: SehHandler150212
+Node: SehHandlerdata150389
+Node: SehPushframe150572
+Node: SehPushreg150751
+Node: SehSavereg150922
+Node: SehSavexmn151091
+Node: SehSetframe151261
+Node: SehStackalloc151436
+Node: SehChained151617
+Node: WeakCoff151837
+Node: Mach-O Directives151973
+Node: BssMachO154315
+Node: ConstMachO154449
+Node: ConstDataMachO154610
+Node: ConstructorMachO154789
+Node: CstringMachO155002
+Node: DataMachO155172
+Node: DescMachO155329
+Node: DumpMachO155483
+Node: DyldMachO155637
+Node: FvmlibInitMachO155797
+Node: IdentMachO156010
+Node: IosVersionMinMachO156184
+Node: LazySymbolPointerMachO156385
+Node: LazyReferenceMachO156658
+Node: LinkerOptionMachO156919
+Node: LiteralMachO157113
+Node: LoadMachO157342
+Node: LsymMachO157501
+Node: MacosxVersionMinMachO157669
+Node: ModInitFuncMachO157872
+Node: NoDeadStripMachO158108
+Node: ObjC158332
+Node: ObjcCatClsMeth159436
+Node: ObjcCatInstMeth159602
+Node: ObjcCategory159791
+Node: ObjcClass159965
+Node: ObjcClassNames160132
+Node: ObjcClassVars160312
+Node: ObjcClsMeth160492
+Node: ObjcClsRefs160665
+Node: ObjcInstMeth160837
+Node: ObjcInstanceVars161016
+Node: ObjcMessageRefs161209
+Node: ObjcMetaClass161401
+Node: ObjcMethVarNames161589
+Node: ObjcMethVarTypes161786
+Node: ObjcModuleInfo161984
+Node: ObjcProtocol162172
+Node: ObjcSelectorStrs162354
+Node: ObjcStringObject162548
+Node: ObjcSymbols162741
+Node: PicsymbolStubMachO162897
+Node: PreviousMachO163081
+Node: PrivateExternMachO163267
+Node: ReferenceMachO163512
+Node: SectionMachO163750
+Node: StaticConstMachO163927
+Node: StaticDataMachO164115
+Node: SymbolResolverMachO164308
+Node: SymbolStubMachO164508
+Node: TbssMachO164694
+Node: TdataMachO164857
+Node: TextMachO165016
+Node: ThreadInitFuncMachO165183
+Node: TlvMachO165372
+Node: WeakDefCanBeHiddenMachO165549
+Node: WeakDefinitionMachO165764
+Node: WeakReferenceMachO165985
+Node: ZerofillMachO166176
+Node: Deprecated166335
+Node: Unsupported166658
+Node: Object Attributes169010
+Node: Machine Dependencies169415
+Node: AAP-dependent170304
+Node: AAP Options170974
+Node: AAP Directives171292
+Node: AAP Assembler Syntax171635
+Node: Reporting Bugs172365
+Node: Bug Criteria173178
+Node: Bug Reporting174072
+Node: Acknowledgements181042
+Ref: Acknowledgements-Footnote-1186156
+Node: GNU Free Documentation License186182
+Node: AS Index211344
 
 End Tag Table
