@@ -1,4 +1,10 @@
-2015-07-13  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+2015-07-20  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* llvm-assembler-manual/llvm-assembler.info: Regenerated.
+	* llvm-assembler-manual/llvm-assembler.texi
+	(Assembler Directives): Add documentation for ELF and COFF directives.
+
+2015-07-20  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* llvm-assembler-manual/llvm-assembler.info: Regenerated.
 	* llvm-assembler-manual/llvm-assembler.texi

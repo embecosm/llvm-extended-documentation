@@ -3576,8 +3576,8 @@ would be confusing however.
 @cindex assembler directives (ELF)
 
 @menu
-* BssElf::                         @code{.bss}
-* DataElf::                        @code{.data @var{subsection}}
+* BssElf::                         @code{.bss [ @var{subsection} ]}
+* DataElf::                        @code{.data [ @var{subsection} ]}
 * HiddenElf::                      @code{.hidden @var{names}}
 * IdentElf::                       @code{.ident}
 * InternalElf::                    @code{.internal @var{names}}
@@ -3586,14 +3586,14 @@ would be confusing however.
 * PreviousElf::                    @code{.previous}
 * ProtectedElf::                   @code{.protected @var{names}}
 * PushSectionElf::                 @code{.pushsection @var{name}}
-* RodataElf::                      @code{.rodata @var{subsection}}
+* RodataElf::                      @code{.rodata [ @var{subsection} ]}
 * SectionElf::                     @code{.section @var{name}[, @var{flags}]}
 * SizeElf::                        @code{.size [@var{name} , @var{expression}]}
 * SubSectionElf::                  @code{.subsection}
 * SymverElf::                      @code{.symver @var{name},@var{name2@@nodename}}
-* TbssElf::                        @code{.tbss}
-* TdataElf::                       @code{.tdata}
-* TextElf::                        @code{.text @var{subsection}}
+* TbssElf::                        @code{.tbss [ @var{subsection} ]}
+* TdataElf::                       @code{.tdata [ @var{subsection} ]}
+* TextElf::                        @code{.text [ @var{subsection} ]}
 * TypeElf::                        @code{.type <@var{int} | @var{name} , @var{type description}>}
 * VersionElf::                     @code{.version "@var{string}"}
 * WeakElf::                        @code{.weak @var{names}}
@@ -3601,14 +3601,16 @@ would be confusing however.
 @end menu
 
 @node BssElf
-@subsection @code{.bss}
+@subsection @code{.bss [ @var{subsection} ]}
 @cindex @code{bss} directive (ELF only)
 @cindex @code{.bss} (ELF only)
-
-To be written...
+@code{.bss} tells the LLVM integrated assembler to assemble the following
+statements onto the end of the BSS subsection numbered @var{subsection} (which
+is an absolute expression).  If @var{subsection} is omitted, it defaults to
+zero.
 
 @node DataElf
-@subsection @code{.data @var{subsection}}
+@subsection @code{.data [ @var{subsection} ]}
 @cindex @code{data} directive (ELF only)
 @cindex @code{.data} (ELF only)
 @code{.data} tells the LLVM integrated assembler to assemble the following
@@ -3624,7 +3626,6 @@ zero.
 This is one of the ELF visibility directives.  The other two are
 @code{.internal} (@pxref{InternalElf,,@code{.internal}}) and
 @code{.protected} (@pxref{ProtectedElf,,@code{.protected}}).
-
 This directive overrides the named symbols default visibility (which is set by
 their binding: local, global or weak).  The directive sets the visibility to
 @code{hidden} which means that the symbols are not visible to other components.
@@ -3634,8 +3635,9 @@ Such symbols are always considered to be @code{protected} as well.
 @subsection @code{.ident}
 @cindex @code{ident} directive (ELF only)
 @cindex @code{.ident} (ELF only)
-
-To be written...
+This directive is used by some assemblers to place tags in object files. The
+behavior of this directive varies depending on the target.  When using ELF,
+comments are emitted to the @code{.comment} section.
 
 @node InternalElf
 @subsection @code{.internal @var{names}}
@@ -3763,11 +3765,13 @@ subsection with @code{name} and @code{subsection}. The optional
 as in the @code{.section} (@pxref{SectionElf}) directive.
 
 @node RodataElf
-@subsection @code{.rodata}
+@subsection @code{.rodata [ @var{subsection} ]}
 @cindex @code{rodata} directive (ELF only)
 @cindex @code{.rodata} (ELF only)
-
-To be written...
+@code{.rodata} tells the LLVM integrated assembler to assemble the following
+statements onto the end of the read-only data subsection numbered
+@var{subsection} (which is an absolute expression).  If @var{subsection} is
+omitted, it defaults to zero.
 
 @node SectionElf
 @subsection @code{.section @var{name}}
@@ -3999,21 +4003,25 @@ file being assembled, it is treated as @var{name2@@nodename}. When
 name, @var{name}, will be changed to @var{name2@@@@nodename}.
 
 @node TbssElf
-@subsection @code{.tbss}
+@subsection @code{.tbss [ @var{subsection} ]}
 @cindex @code{tbss} directive (ELF only)
 @cindex @code{.tbss} (ELF only)
-
-To be written...
+@code{.tbss} tells the LLVM integrated assembler to assemble the following
+statements onto the end of the TBSS subsection numbered @var{subsection} (which
+is an absolute expression).  If @var{subsection} is omitted, it defaults to
+zero.  This section is used for unitialized thread local storage (TLS) objects.
 
 @node TdataElf
-@subsection @code{.tdata}
+@subsection @code{.tdata [ @var{subsection} ]}
 @cindex @code{tdata} directive (ELF only)
 @cindex @code{.tdata} (ELF only)
-
-To be written...
+@code{.tdata} tells the LLVM integrated assembler to assemble the following
+statements onto the end of the tdata subsection numbered @var{subsection} (which
+is an absolute expression).  If @var{subsection} is omitted, it defaults to
+zero.  This section is used for itialized thread local storage (TLS) objects.
 
 @node TextElf
-@subsection @code{.text @var{subsection}}
+@subsection @code{.text [ @var{subsection} ]}
 @cindex @code{text} directive (ELF only)
 @cindex @code{.text} (ELF only)
 Tells the LLVM integrated assembler to assemble the following statements onto
@@ -4123,178 +4131,315 @@ within the assembler.
 @section COFF Specific Directives
 
 @menu
-* BssCoff::             @code{.bss}
-* DataCoff::            @code{.data}
-* DefCoff::             @code{.def}, @code{.endef}
-* LinkonceCoff::        @code{.linkonce}
+* BssCoff::             @code{.bss [ @var{subsection} ]}
+* DataCoff::            @code{.data [ @var{subsection} ]}
+* DefCoff::             @code{.def @var{name}}, @code{.endef}
+* LinkonceCoff::        @code{.linkonce @var{type}}
 * SclCoff::             @code{.scl}
-* SecidxCoff::          @code{.secidx}
-* Secrel32Coff::        @code{.secrel32}
-* SectionCoff::         @code{.section}
-* TextCoff::            @code{.text}
+* SecidxCoff::          @code{.secidx @var{funcname}}, @code{.secrel32 @var{funcname}}
+* SectionCoff::         @code{.section @var{name} [, "@var{flags}" | , @var{subsection} ]}
+* TextCoff::            @code{.text [ @var{subsection} ]}
 * TypeCoff::            @code{.type}
-* Win64Coff::           Directives for Win64 Event Handling
+* Win64Coff::           Directives for Win64 Structured Event Handling
+* WeakCoff::            @code{.weak @var{names}}
 @end menu
 
 @node BssCoff
-@subsection @code{.bss}
+@subsection @code{.bss [ @var{subsection} ]}
 @cindex @code{bss} directive (COFF only)
 @cindex @code{.bss} (COFF only)
-
-To be written...
+@code{.bss} tells the LLVM integrated assembler to assemble the following
+statements onto the end of the BSS subsection numbered @var{subsection} (which
+is an absolute expression).  If @var{subsection} is omitted, it defaults to
+zero.
 
 @node DataCoff
-@subsection @code{.data}
+@subsection @code{.data [ @var{subsection} ]}
 @cindex @code{data} directive (COFF only)
 @cindex @code{.data} (COFF only)
-
-To be written...
+@code{.data} tells the LLVM integrated assembler to assemble the following
+statements onto the end of the data subsection numbered @var{subsection} (which
+is an absolute expression).  If @var{subsection} is omitted, it defaults to
+zero.
 
 @node DefCoff
-@subsection @code{.def}
+@subsection @code{.def @var{name}}, @code{.endef}
 @cindex @code{def} directive (COFF only)
 @cindex @code{.def} (COFF only)
-
-To be written...
+@cindex @code{endef} directive (COFF only)
+@cindex @code{.endef} (COFF only)
+Begin defining debugging information for a symbol @var{name}; the definition
+extends until the @code{.endef} directive is encountered.
 
 @node LinkonceCoff
-@subsection @code{.linkonce}
-@cindex @code{linkonce} directive (COFF only)
-@cindex @code{.linkonce} (COFF only)
+@subsection @code{.linkonce @var{type}}
+@cindex COMDAT
+@cindex @code{linkonce} directive
+@cindex @code{.linkonce}
+@cindex common sections
+Mark the current section so that the linker only includes a single copy of it.
+This may be used to include the same section in several different object files,
+but ensure that the linker will only include it once in the final output file.
+The @code{.linkonce} pseudo-op must be used for each instance of the section.
+Duplicate sections are detected based on the section name, so it should be
+unique.
 
-To be written...
+This directive is only supported by a few object file formats.  COFF support,
+other than as Windows Portable Executable format is a LLVM integrated assembler
+extension.
+
+The @var{type} argument is optional.  For example:
+@smallexample
+.linkonce same_size
+@end smallexample
+
+If specified, it must be one of the following strings.  Not all types may be
+supported on all object file formats.
+
+@table @code
+@item discard
+Silently discard duplicate sections.  This is the default.
+
+@item one_only
+Warn if there are duplicate sections, but still keep only one copy.
+
+@item same_size
+Warn if any of the duplicates have different sizes.
+
+@item same_contents
+Warn if any of the duplicates do not have exactly the same contents.
+
+@item largest
+Links the largest section from among the duplicates.
+
+@item newest
+Links the newest section from among the duplicates.
+@end table
 
 @node SclCoff
 @subsection @code{.scl}
 @cindex @code{scl} directive (COFF only)
 @cindex @code{.scl} (COFF only)
-
-To be written...
+@cindex COFF symbol storage class
+Set the storage-class value for a symbol.  This directive may only be used
+inside a @code{.def}/@code{.endef} pair (@pxref{DefCoff}.  Storage class may
+flag whether a symbol is static or external, or it may record further symbolic
+debugging information.
 
 @node SecidxCoff
-@subsection @code{.secidx}
+@subsection @code{.secidx @var{funcname}}, @code{.secrel32}
 @cindex @code{secidx} directive (COFF only)
 @cindex @code{.secidx} (COFF only)
-
-To be written...
-
-@node Secrel32Coff
-@subsection @code{.secrel32}
 @cindex @code{secrel32} directive (COFF only)
 @cindex @code{.secrel32} (COFF only)
+These are target dependent assembler directives for the Intel x86 family of
+architectures (@pxref{Machine Dependencies}.  For historical reason they are
+generic COFF directives, so must be implemented by any target that
+supports COFF.
 
-To be written...
+@code{.secrel32} generates a relocation that corresponds to the COFF relocation
+types @code{IMAGE_REL_I386_SECREL} (32-bit) or @code{IMAGE_REL_AMD64_SECREL}
+(64-bit).
+
+The @code{.secidx} relocation generates an index of the section that contains
+the target. It corresponds to the COFF relocation types
+@code{IMAGE_REL_I386_SECTION} (32-bit) or @code{IMAGE_REL_AMD64_SECTION}
+(64-bit).
+
+The following example is taken from the LLVM 3.6 documentation.
+
+@example
+.section .debug$S,"rn"
+       .long 4
+       .long 242
+       .long 40
+       .secrel32  _function_name
+       .secidx    _function_name
+       ...
+@end example
 
 @node SectionCoff
-@subsection @code{.section}
+@subsection @code{.section @var{name} [, "@var{flags}" | , @var{subsection} ]}
 @cindex @code{section} directive (COFF only)
 @cindex @code{.section} (COFF only)
+If the optional argument is quoted, it is taken as flags to use for the
+section.  Each flag is a single character.  The following flags are recognized:
+@table @code
+@item b
+bss section (uninitialized data)
+@item n
+section is not loaded
+@item w
+writable section
+@item d
+data section
+@item e
+exclude section from linking
+@item r
+read-only section
+@item x
+executable section
+@item s
+shared section (meaningful for PE targets)
+@item a
+ignored.  (For compatibility with the ELF version)
+@item y
+section is not readable (meaningful for PE targets)
+@item 0-9
+single-digit power-of-two section alignment (GNU extension)
+@end table
 
-To be written...
+If no flags are specified, the default flags depend upon the section name.  If
+the section name is not recognized, the default will be for the section to be
+loaded and writable.  Note the @code{n} and @code{w} flags remove attributes
+from the section, rather than adding them, so if they are used on their own it
+will be as if no flags had been specified at all.
+
+If the optional argument to the @code{.section} directive is not quoted, it is
+taken as a subsection number (@pxref{Sub-Sections}).
 
 @node TextCoff
-@subsection @code{.text}
+@subsection @code{.text [ @var{subsection} ]}
 @cindex @code{text} directive (COFF only)
 @cindex @code{.text} (COFF only)
-
-To be written...
+Tells the LLVM integrated assembler to assemble the following statements onto
+the end of the text subsection numbered @var{subsection}, which is an absolute
+expression.  If @var{subsection} is omitted, subsection number zero is used.
 
 @node TypeCoff
 @subsection @code{.type}
 @cindex @code{type} directive (COFF only)
 @cindex @code{.type} (COFF only)
+This directive is used to set the type of a symbol.  For COFF targets, this
+directive is permitted only within @code{.def}/@code{.endef} pairs.  It is used
+like this:
 
-To be written...
+@example
+.type @var{int}
+@end example
+
+This records the integer @var{int} as the type attribute of a symbol table
+entry.
 
 @node Win64Coff
-@subsection COFF Specific Directives for Win64 Event Handling
+@subsection COFF Specific Directives for Win64 Stuctured Event Handling
+
+The windows structure event handling (SEH) directives are implemented, but
+there seems to be no documentation for these directives.  The information in
+this section has been gleaned from looking at the source code, so should be
+treated with caution.
 
 @menu
-* SehProc::                  @code{.seh_proc}, @code{.seh_endproc}
-* SehEndPrologue::           @code{.seh_endprologue}
-* SehHandler::               @code{.seh_handler}
+* SehProc::                  @code{.seh_proc @var{name}}, @code{.seh_endproc}
+* SehEndprologue::           @code{.seh_endprologue}
+* SehHandler::               @code{.seh_handler @var{funcname} [ @var{eventtype}, @var{eventtype},... ]}
 * SehHandlerdata::           @code{.seh_handlerdata}
-* SehPushframe::             @code{.seh_pushframe}
-* SehPushreg::               @code{.seh_pushreg}
-* SehSavereg::               @code{.seh_savereg}
-* SehSavexmn::               @code{.seh_savexmm}
-* SehSetframe::              @code{.seh_setframe}
-* SehStackalloc::            @code{.seh_stackalloc}
+* SehPushframe::             @code{.seh_pushframe @var{size}}
+* SehPushreg::               @code{.seh_pushreg @var{reg}}
+* SehSavereg::               @code{.seh_savereg @var{reg} @var{offset}}
+* SehSavexmn::               @code{.seh_savexmm @var{reg} @var{offset}}
+* SehSetframe::              @code{.seh_setframe @var{reg} @var{offset}}
+* SehStackalloc::            @code{.seh_stackalloc @var{size}}
 * SehChained::               @code{.seh_startchained}, @code{.seh_endchained}
-* WeakCoff::                 @code{.weak}
 @end menu
 
 @node SehProc
-@subsubsection @code{.seh_proc}, @code{.seh_proc}
+@subsubsection @code{.seh_proc @var{name}}, @code{.seh_endproc}
 @cindex @code{seh_proc} directive (COFF Win64 event handling only)
 @cindex @code{.seh_proc} (COFF Win64 event handling only)
 @cindex @code{seh_endproc} directive (COFF Win64 event handling only)
 @cindex @code{.seh_endproc} (COFF Win64 event handling only)
+These directives mark the start and end of any function in a SEH environment.
 
-To be written...
-
-@node SehEndPrologue
-@subsubsection @code{.seh_end_prologue}
+@node SehEndprologue
+@subsubsection @code{.seh_endprologue}
 @cindex @code{seh_end_prologue} directive (COFF Win64 event handling only)
 @cindex @code{.seh_end_prologue} (COFF Win64 event handling only)
-
-To be written...
+This directive marks the end of a function prologue in a SEH environment and
+should precede the @code{seh_proc} (@pxref{SehProc}) directive of the function.
+All code from the previous @code{.seh_endproc} to @code{.seh_endprologue} is
+considered part of the function prologue.
 
 @node SehHandler
-@subsubsection @code{.seh_handler}
+@subsubsection @code{.seh_handler @var{funcname} [ @var{eventtype}, @var{eventtype},... ]}
 @cindex @code{seh_handler} directive (COFF Win64 event handling only)
 @cindex @code{.seh_handler} (COFF Win64 event handling only)
+@var{funcname} is marked as an event handler for events of type @var{eventtype}
+for the next function to be specified by @var{proc} (@pxref{SehProc}).  If
+@var{eventtype} is omitted, the handler will be for any events other than those
+for which a separate @code{.seh_handler} directive with @var{eventtype} has
+been specified.
 
-To be written...
-
+These directives should follow @code{.seh_endprologue}
+(@pxref{SehEndprologue}).
 @node SehHandlerdata
 @subsubsection @code{.seh_handlerdata}
 @cindex @code{seh_handlerdata} directive (COFF Win64 event handling only)
 @cindex @code{.seh_handlerdata} (COFF Win64 event handling only)
-
-To be written...
+This indicates that subsequent data should be written into a separate section
+for SEH handler data.
+@example
+        .seh_handler    dummy_handler, @@unwind,@@except
+        .seh_handlerdata
+        .long 0
+        .text
+        .seh_proc
+@end example
 
 @node SehPushframe
-@subsubsection @code{.seh_pushframe}
+@subsubsection @code{.seh_pushframe @var{size}}
 @cindex @code{seh_pushframe} directive (COFF Win64 event handling only)
 @cindex @code{.seh_pushframe} (COFF Win64 event handling only)
-
-To be written...
+Indicate that a frame of @var{size} bytes is used.  This directive should
+appear after the @code{.seh_endprologue} directive (@pxref{SehEndprologue}) and
+before the @code{.seh_proc} directive (@pxref{SehProc}) for the function to
+which it refers.
 
 @node SehPushreg
-@subsubsection @code{.seh_pushreg}
+@subsubsection @code{.seh_pushreg @var{reg}}
 @cindex @code{seh_pushreg} directive (COFF Win64 event handling only)
 @cindex @code{.seh_pushreg} (COFF Win64 event handling only)
-
-To be written...
+Indicate that register @var{reg} is pushed to the stack.  This directive
+should appear after the @code{.seh_endprologue} directive
+(@pxref{SehEndprologue}) and before the @code{.seh_proc} directive
+(@pxref{SehProc}) for the function to which it refers.
 
 @node SehSavereg
-@subsubsection @code{.seh_savereg}
+@subsubsection @code{.seh_savereg @var{reg} @var{offset}}
 @cindex @code{seh_savereg} directive (COFF Win64 event handling only)
 @cindex @code{.seh_savereg} (COFF Win64 event handling only)
-
-To be written...
+Indicate that general purpose register @var{reg} is save at @var{offset} on the
+stack.  This directive should appear after the @code{.seh_endprologue}
+directive (@pxref{SehEndprologue}) and before the @code{.seh_proc} directive
+(@pxref{SehProc}) for the function to which it refers.
 
 @node SehSavexmn
-@subsubsection @code{.seh_savexmn}
+@subsubsection @code{.seh_savexmn @var{reg} @var{offset}}
 @cindex @code{seh_savexmn} directive (COFF Win64 event handling only)
 @cindex @code{.seh_savexmn} (COFF Win64 event handling only)
-
-To be written...
+Indicate that XMM register @var{reg} is save at @var{offset} on the stack.
+This directive should appear after the @code{.seh_endprologue} directive
+(@pxref{SehEndprologue}) and before the @code{.seh_proc} directive
+(@pxref{SehProc}) for the function to which it refers.
 
 @node SehSetframe
-@subsubsection @code{.seh_setframe}
+@subsubsection @code{.seh_setframe @var{reg} @var{offset}}
 @cindex @code{seh_setframe} directive (COFF Win64 event handling only)
 @cindex @code{.seh_setframe} (COFF Win64 event handling only)
-
-To be written...
+Indicate that the frame pointer is in @var{reg} and initially points to
+@var{offset} on the stack.  This directive should appear after the
+@code{.seh_endprologue} directive (@pxref{SehEndprologue}) and before the
+@code{.seh_proc} directive (@pxref{SehProc}) for the function to which it
+refers.
 
 @node SehStackalloc
-@subsubsection @code{.seh_stackalloc}
+@subsubsection @code{.seh_stackalloc @var{size}}
 @cindex @code{seh_stackalloc} directive (COFF Win64 event handling only)
 @cindex @code{.seh_stackalloc} (COFF Win64 event handling only)
-
-To be written...
+Indicate further allocation of @var{size} bytes of stack has been made.  This
+directive should appear after the @code{.seh_endprologue} directive
+(@pxref{SehEndprologue}) and before the @code{.seh_proc} directive
+(@pxref{SehProc}) for the function to which it refers.
 
 @node SehChained
 @subsubsection @code{.seh_startchained}, @code{.seh_endchained}
@@ -4302,15 +4447,25 @@ To be written...
 @cindex @code{.seh_startchained} (COFF Win64 event handling only)
 @cindex @code{seh_endchained} directive (COFF Win64 event handling only)
 @cindex @code{.seh_endchained} (COFF Win64 event handling only)
-
-To be written...
+Indicate the start and end of a chained event handler.
 
 @node WeakCoff
-@subsubsection @code{.weak}
-@cindex @code{weak} directive (COFF Win64 event handling only)
-@cindex @code{.weak} (COFF Win64 event handling only)
+@subsection @code{.weak @var{names}}
+@cindex @code{weak} directive (COFF only)
+@cindex @code{.weak} (COFF only)
+@cindex @code{weak} directive
+This directive sets the weak attribute on the comma separated list of symbol
+@code{names}.  If the symbols do not already exist, they will be created.
 
-To be written...
+On a Windows Portable Executable (PE) target, weak symbols are supported
+natively as weak aliases.  When a weak symbol is created that is not an alias,
+the LLVM integrated assembler creates an alternate symbol to hold the default
+value.
+
+On COFF targets other than PE, weak symbols are a GNU extension also supported
+by the LLVM integrated assembler.  This directive sets the weak attribute on
+the comma separated list of symbol @code{names}.  If the symbols do not already
+exist, they will be created.
 
 @node Mach-O Directives
 @section Mach-O Specific Directives
@@ -4887,6 +5042,12 @@ Record a @sc{gnu} object attribute for this file.
 @cindex sixteen bit integers (unsupported)
 Emit 16-bit numbers. A synonym for @samp{.short}; depending on the target
 architecture, it may also be a synonym for @samp{.word}.
+
+@item .ident
+@cindex @code{ident} directive (unsupported for COFF only)
+@cindex @code{.ident} (unsupported for COFF only)
+Place tags in object files.  Not supported for COFF in LLVM, unlike the
+@sc{gnu} assembler.
 
 @item .lflags
 @cindex @code{lflags} directive (unsupported)

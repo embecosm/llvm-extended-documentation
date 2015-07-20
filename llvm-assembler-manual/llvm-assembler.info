@@ -3244,8 +3244,8 @@ File: llvm-assembler.info,  Node: ELF Directives,  Next: COFF Directives,  Prev:
 
 * Menu:
 
-* BssElf::                         '.bss'
-* DataElf::                        '.data SUBSECTION'
+* BssElf::                         '.bss [ SUBSECTION ]'
+* DataElf::                        '.data [ SUBSECTION ]'
 * HiddenElf::                      '.hidden NAMES'
 * IdentElf::                       '.ident'
 * InternalElf::                    '.internal NAMES'
@@ -3254,14 +3254,14 @@ File: llvm-assembler.info,  Node: ELF Directives,  Next: COFF Directives,  Prev:
 * PreviousElf::                    '.previous'
 * ProtectedElf::                   '.protected NAMES'
 * PushSectionElf::                 '.pushsection NAME'
-* RodataElf::                      '.rodata SUBSECTION'
+* RodataElf::                      '.rodata [ SUBSECTION ]'
 * SectionElf::                     '.section NAME[, FLAGS]'
 * SizeElf::                        '.size [NAME , EXPRESSION]'
 * SubSectionElf::                  '.subsection'
 * SymverElf::                      '.symver NAME,NAME2@NODENAME'
-* TbssElf::                        '.tbss'
-* TdataElf::                       '.tdata'
-* TextElf::                        '.text SUBSECTION'
+* TbssElf::                        '.tbss [ SUBSECTION ]'
+* TdataElf::                       '.tdata [ SUBSECTION ]'
+* TextElf::                        '.text [ SUBSECTION ]'
 * TypeElf::                        '.type <INT | NAME , TYPE DESCRIPTION>'
 * VersionElf::                     '.version "STRING"'
 * WeakElf::                        '.weak NAMES'
@@ -3270,16 +3270,19 @@ File: llvm-assembler.info,  Node: ELF Directives,  Next: COFF Directives,  Prev:
 
 File: llvm-assembler.info,  Node: BssElf,  Next: DataElf,  Up: ELF Directives
 
-7.2.1 '.bss'
-------------
+7.2.1 '.bss [ SUBSECTION ]'
+---------------------------
 
-To be written...
+'.bss' tells the LLVM integrated assembler to assemble the following
+statements onto the end of the BSS subsection numbered SUBSECTION (which
+is an absolute expression).  If SUBSECTION is omitted, it defaults to
+zero.
 
 
 File: llvm-assembler.info,  Node: DataElf,  Next: HiddenElf,  Prev: BssElf,  Up: ELF Directives
 
-7.2.2 '.data SUBSECTION'
-------------------------
+7.2.2 '.data [ SUBSECTION ]'
+----------------------------
 
 '.data' tells the LLVM integrated assembler to assemble the following
 statements onto the end of the data subsection numbered SUBSECTION
@@ -3294,13 +3297,11 @@ File: llvm-assembler.info,  Node: HiddenElf,  Next: IdentElf,  Prev: DataElf,  U
 
 This is one of the ELF visibility directives.  The other two are
 '.internal' (*note '.internal': InternalElf.) and '.protected' (*note
-'.protected': ProtectedElf.).
-
-   This directive overrides the named symbols default visibility (which
-is set by their binding: local, global or weak).  The directive sets the
-visibility to 'hidden' which means that the symbols are not visible to
-other components.  Such symbols are always considered to be 'protected'
-as well.
+'.protected': ProtectedElf.).  This directive overrides the named
+symbols default visibility (which is set by their binding: local, global
+or weak).  The directive sets the visibility to 'hidden' which means
+that the symbols are not visible to other components.  Such symbols are
+always considered to be 'protected' as well.
 
 
 File: llvm-assembler.info,  Node: IdentElf,  Next: InternalElf,  Prev: HiddenElf,  Up: ELF Directives
@@ -3308,7 +3309,9 @@ File: llvm-assembler.info,  Node: IdentElf,  Next: InternalElf,  Prev: HiddenElf
 7.2.4 '.ident'
 --------------
 
-To be written...
+This directive is used by some assemblers to place tags in object files.
+The behavior of this directive varies depending on the target.  When
+using ELF, comments are emitted to the '.comment' section.
 
 
 File: llvm-assembler.info,  Node: InternalElf,  Next: LocalElf,  Prev: IdentElf,  Up: ELF Directives
@@ -3441,10 +3444,13 @@ SectionElf::) directive.
 
 File: llvm-assembler.info,  Node: RodataElf,  Next: SectionElf,  Prev: PushSectionElf,  Up: ELF Directives
 
-7.2.11 '.rodata'
-----------------
+7.2.11 '.rodata [ SUBSECTION ]'
+-------------------------------
 
-To be written...
+'.rodata' tells the LLVM integrated assembler to assemble the following
+statements onto the end of the read-only data subsection numbered
+SUBSECTION (which is an absolute expression).  If SUBSECTION is omitted,
+it defaults to zero.
 
 
 File: llvm-assembler.info,  Node: SectionElf,  Next: SizeElf,  Prev: RodataElf,  Up: ELF Directives
@@ -3659,24 +3665,32 @@ assembled, the symbol name, NAME, will be changed to NAME2@@NODENAME.
 
 File: llvm-assembler.info,  Node: TbssElf,  Next: TdataElf,  Prev: SymverElf,  Up: ELF Directives
 
-7.2.16 '.tbss'
---------------
+7.2.16 '.tbss [ SUBSECTION ]'
+-----------------------------
 
-To be written...
+'.tbss' tells the LLVM integrated assembler to assemble the following
+statements onto the end of the TBSS subsection numbered SUBSECTION
+(which is an absolute expression).  If SUBSECTION is omitted, it
+defaults to zero.  This section is used for unitialized thread local
+storage (TLS) objects.
 
 
 File: llvm-assembler.info,  Node: TdataElf,  Next: TextElf,  Prev: TbssElf,  Up: ELF Directives
 
-7.2.17 '.tdata'
----------------
+7.2.17 '.tdata [ SUBSECTION ]'
+------------------------------
 
-To be written...
+'.tdata' tells the LLVM integrated assembler to assemble the following
+statements onto the end of the tdata subsection numbered SUBSECTION
+(which is an absolute expression).  If SUBSECTION is omitted, it
+defaults to zero.  This section is used for itialized thread local
+storage (TLS) objects.
 
 
 File: llvm-assembler.info,  Node: TextElf,  Next: TypeElf,  Prev: TdataElf,  Up: ELF Directives
 
-7.2.18 '.text SUBSECTION'
--------------------------
+7.2.18 '.text [ SUBSECTION ]'
+-----------------------------
 
 Tells the LLVM integrated assembler to assemble the following statements
 onto the end of the text subsection numbered SUBSECTION, which is an
@@ -3797,49 +3811,90 @@ File: llvm-assembler.info,  Node: COFF Directives,  Next: Mach-O Directives,  Pr
 
 * Menu:
 
-* BssCoff::             '.bss'
-* DataCoff::            '.data'
-* DefCoff::             '.def', '.endef'
-* LinkonceCoff::        '.linkonce'
+* BssCoff::             '.bss [ SUBSECTION ]'
+* DataCoff::            '.data [ SUBSECTION ]'
+* DefCoff::             '.def NAME', '.endef'
+* LinkonceCoff::        '.linkonce TYPE'
 * SclCoff::             '.scl'
-* SecidxCoff::          '.secidx'
-* Secrel32Coff::        '.secrel32'
-* SectionCoff::         '.section'
-* TextCoff::            '.text'
+* SecidxCoff::          '.secidx FUNCNAME', '.secrel32 FUNCNAME'
+* SectionCoff::         '.section NAME [, "FLAGS" | , SUBSECTION ]'
+* TextCoff::            '.text [ SUBSECTION ]'
 * TypeCoff::            '.type'
-* Win64Coff::           Directives for Win64 Event Handling
+* Win64Coff::           Directives for Win64 Structured Event Handling
+* WeakCoff::            '.weak NAMES'
 
 
 File: llvm-assembler.info,  Node: BssCoff,  Next: DataCoff,  Up: COFF Directives
 
-7.3.1 '.bss'
-------------
+7.3.1 '.bss [ SUBSECTION ]'
+---------------------------
 
-To be written...
+'.bss' tells the LLVM integrated assembler to assemble the following
+statements onto the end of the BSS subsection numbered SUBSECTION (which
+is an absolute expression).  If SUBSECTION is omitted, it defaults to
+zero.
 
 
 File: llvm-assembler.info,  Node: DataCoff,  Next: DefCoff,  Prev: BssCoff,  Up: COFF Directives
 
-7.3.2 '.data'
--------------
+7.3.2 '.data [ SUBSECTION ]'
+----------------------------
 
-To be written...
+'.data' tells the LLVM integrated assembler to assemble the following
+statements onto the end of the data subsection numbered SUBSECTION
+(which is an absolute expression).  If SUBSECTION is omitted, it
+defaults to zero.
 
 
 File: llvm-assembler.info,  Node: DefCoff,  Next: LinkonceCoff,  Prev: DataCoff,  Up: COFF Directives
 
-7.3.3 '.def'
-------------
+7.3.3 '.def NAME', '.endef'
+---------------------------
 
-To be written...
+Begin defining debugging information for a symbol NAME; the definition
+extends until the '.endef' directive is encountered.
 
 
 File: llvm-assembler.info,  Node: LinkonceCoff,  Next: SclCoff,  Prev: DefCoff,  Up: COFF Directives
 
-7.3.4 '.linkonce'
------------------
+7.3.4 '.linkonce TYPE'
+----------------------
 
-To be written...
+Mark the current section so that the linker only includes a single copy
+of it.  This may be used to include the same section in several
+different object files, but ensure that the linker will only include it
+once in the final output file.  The '.linkonce' pseudo-op must be used
+for each instance of the section.  Duplicate sections are detected based
+on the section name, so it should be unique.
+
+   This directive is only supported by a few object file formats.  COFF
+support, other than as Windows Portable Executable format is a LLVM
+integrated assembler extension.
+
+   The TYPE argument is optional.  For example:
+     .linkonce same_size
+
+   If specified, it must be one of the following strings.  Not all types
+may be supported on all object file formats.
+
+'discard'
+     Silently discard duplicate sections.  This is the default.
+
+'one_only'
+     Warn if there are duplicate sections, but still keep only one copy.
+
+'same_size'
+     Warn if any of the duplicates have different sizes.
+
+'same_contents'
+     Warn if any of the duplicates do not have exactly the same
+     contents.
+
+'largest'
+     Links the largest section from among the duplicates.
+
+'newest'
+     Links the newest section from among the duplicates.
 
 
 File: llvm-assembler.info,  Node: SclCoff,  Next: SecidxCoff,  Prev: LinkonceCoff,  Up: COFF Directives
@@ -3847,164 +3902,275 @@ File: llvm-assembler.info,  Node: SclCoff,  Next: SecidxCoff,  Prev: LinkonceCof
 7.3.5 '.scl'
 ------------
 
-To be written...
+Set the storage-class value for a symbol.  This directive may only be
+used inside a '.def'/'.endef' pair (*note DefCoff::.  Storage class may
+flag whether a symbol is static or external, or it may record further
+symbolic debugging information.
 
 
-File: llvm-assembler.info,  Node: SecidxCoff,  Next: Secrel32Coff,  Prev: SclCoff,  Up: COFF Directives
+File: llvm-assembler.info,  Node: SecidxCoff,  Next: SectionCoff,  Prev: SclCoff,  Up: COFF Directives
 
-7.3.6 '.secidx'
----------------
+7.3.6 '.secidx FUNCNAME', '.secrel32'
+-------------------------------------
 
-To be written...
+These are target dependent assembler directives for the Intel x86 family
+of architectures (*note Machine Dependencies::.  For historical reason
+they are generic COFF directives, so must be implemented by any target
+that supports COFF.
+
+   '.secrel32' generates a relocation that corresponds to the COFF
+relocation types 'IMAGE_REL_I386_SECREL' (32-bit) or
+'IMAGE_REL_AMD64_SECREL' (64-bit).
+
+   The '.secidx' relocation generates an index of the section that
+contains the target.  It corresponds to the COFF relocation types
+'IMAGE_REL_I386_SECTION' (32-bit) or 'IMAGE_REL_AMD64_SECTION' (64-bit).
+
+   The following example is taken from the LLVM 3.6 documentation.
+
+     .section .debug$S,"rn"
+            .long 4
+            .long 242
+            .long 40
+            .secrel32  _function_name
+            .secidx    _function_name
+            ...
 
 
-File: llvm-assembler.info,  Node: Secrel32Coff,  Next: SectionCoff,  Prev: SecidxCoff,  Up: COFF Directives
+File: llvm-assembler.info,  Node: SectionCoff,  Next: TextCoff,  Prev: SecidxCoff,  Up: COFF Directives
 
-7.3.7 '.secrel32'
------------------
+7.3.7 '.section NAME [, "FLAGS" | , SUBSECTION ]'
+-------------------------------------------------
 
-To be written...
+If the optional argument is quoted, it is taken as flags to use for the
+section.  Each flag is a single character.  The following flags are
+recognized:
+'b'
+     bss section (uninitialized data)
+'n'
+     section is not loaded
+'w'
+     writable section
+'d'
+     data section
+'e'
+     exclude section from linking
+'r'
+     read-only section
+'x'
+     executable section
+'s'
+     shared section (meaningful for PE targets)
+'a'
+     ignored.  (For compatibility with the ELF version)
+'y'
+     section is not readable (meaningful for PE targets)
+'0-9'
+     single-digit power-of-two section alignment (GNU extension)
 
-
-File: llvm-assembler.info,  Node: SectionCoff,  Next: TextCoff,  Prev: Secrel32Coff,  Up: COFF Directives
+   If no flags are specified, the default flags depend upon the section
+name.  If the section name is not recognized, the default will be for
+the section to be loaded and writable.  Note the 'n' and 'w' flags
+remove attributes from the section, rather than adding them, so if they
+are used on their own it will be as if no flags had been specified at
+all.
 
-7.3.8 '.section'
-----------------
-
-To be written...
+   If the optional argument to the '.section' directive is not quoted,
+it is taken as a subsection number (*note Sub-Sections::).
 
 
 File: llvm-assembler.info,  Node: TextCoff,  Next: TypeCoff,  Prev: SectionCoff,  Up: COFF Directives
 
-7.3.9 '.text'
--------------
+7.3.8 '.text [ SUBSECTION ]'
+----------------------------
 
-To be written...
+Tells the LLVM integrated assembler to assemble the following statements
+onto the end of the text subsection numbered SUBSECTION, which is an
+absolute expression.  If SUBSECTION is omitted, subsection number zero
+is used.
 
 
 File: llvm-assembler.info,  Node: TypeCoff,  Next: Win64Coff,  Prev: TextCoff,  Up: COFF Directives
 
-7.3.10 '.type'
---------------
+7.3.9 '.type'
+-------------
 
-To be written...
+This directive is used to set the type of a symbol.  For COFF targets,
+this directive is permitted only within '.def'/'.endef' pairs.  It is
+used like this:
+
+     .type INT
+
+   This records the integer INT as the type attribute of a symbol table
+entry.
 
 
-File: llvm-assembler.info,  Node: Win64Coff,  Prev: TypeCoff,  Up: COFF Directives
+File: llvm-assembler.info,  Node: Win64Coff,  Next: WeakCoff,  Prev: TypeCoff,  Up: COFF Directives
 
-7.3.11 COFF Specific Directives for Win64 Event Handling
---------------------------------------------------------
+7.3.10 COFF Specific Directives for Win64 Stuctured Event Handling
+------------------------------------------------------------------
+
+The windows structure event handling (SEH) directives are implemented,
+but there seems to be no documentation for these directives.  The
+information in this section has been gleaned from looking at the source
+code, so should be treated with caution.
 
 * Menu:
 
-* SehProc::                  '.seh_proc', '.seh_endproc'
-* SehEndPrologue::           '.seh_endprologue'
-* SehHandler::               '.seh_handler'
+* SehProc::                  '.seh_proc NAME', '.seh_endproc'
+* SehEndprologue::           '.seh_endprologue'
+* SehHandler::               '.seh_handler FUNCNAME [ EVENTTYPE, EVENTTYPE,... ]'
 * SehHandlerdata::           '.seh_handlerdata'
-* SehPushframe::             '.seh_pushframe'
-* SehPushreg::               '.seh_pushreg'
-* SehSavereg::               '.seh_savereg'
-* SehSavexmn::               '.seh_savexmm'
-* SehSetframe::              '.seh_setframe'
-* SehStackalloc::            '.seh_stackalloc'
+* SehPushframe::             '.seh_pushframe SIZE'
+* SehPushreg::               '.seh_pushreg REG'
+* SehSavereg::               '.seh_savereg REG OFFSET'
+* SehSavexmn::               '.seh_savexmm REG OFFSET'
+* SehSetframe::              '.seh_setframe REG OFFSET'
+* SehStackalloc::            '.seh_stackalloc SIZE'
 * SehChained::               '.seh_startchained', '.seh_endchained'
-* WeakCoff::                 '.weak'
 
 
-File: llvm-assembler.info,  Node: SehProc,  Next: SehEndPrologue,  Up: Win64Coff
+File: llvm-assembler.info,  Node: SehProc,  Next: SehEndprologue,  Up: Win64Coff
 
-7.3.11.1 '.seh_proc', '.seh_proc'
-.................................
+7.3.10.1 '.seh_proc NAME', '.seh_endproc'
+.........................................
 
-To be written...
-
-
-File: llvm-assembler.info,  Node: SehEndPrologue,  Next: SehHandler,  Prev: SehProc,  Up: Win64Coff
-
-7.3.11.2 '.seh_end_prologue'
-............................
-
-To be written...
+These directives mark the start and end of any function in a SEH
+environment.
 
 
-File: llvm-assembler.info,  Node: SehHandler,  Next: SehHandlerdata,  Prev: SehEndPrologue,  Up: Win64Coff
+File: llvm-assembler.info,  Node: SehEndprologue,  Next: SehHandler,  Prev: SehProc,  Up: Win64Coff
 
-7.3.11.3 '.seh_handler'
-.......................
+7.3.10.2 '.seh_endprologue'
+...........................
 
-To be written...
+This directive marks the end of a function prologue in a SEH environment
+and should precede the 'seh_proc' (*note SehProc::) directive of the
+function.  All code from the previous '.seh_endproc' to
+'.seh_endprologue' is considered part of the function prologue.
+
+
+File: llvm-assembler.info,  Node: SehHandler,  Next: SehHandlerdata,  Prev: SehEndprologue,  Up: Win64Coff
+
+7.3.10.3 '.seh_handler FUNCNAME [ EVENTTYPE, EVENTTYPE,... ]'
+.............................................................
+
+FUNCNAME is marked as an event handler for events of type EVENTTYPE for
+the next function to be specified by PROC (*note SehProc::).  If
+EVENTTYPE is omitted, the handler will be for any events other than
+those for which a separate '.seh_handler' directive with EVENTTYPE has
+been specified.
+
+   These directives should follow '.seh_endprologue' (*note
+SehEndprologue::).
 
 
 File: llvm-assembler.info,  Node: SehHandlerdata,  Next: SehPushframe,  Prev: SehHandler,  Up: Win64Coff
 
-7.3.11.4 '.seh_handlerdata'
+7.3.10.4 '.seh_handlerdata'
 ...........................
 
-To be written...
+This indicates that subsequent data should be written into a separate
+section for SEH handler data.
+             .seh_handler    dummy_handler, @unwind,@except
+             .seh_handlerdata
+             .long 0
+             .text
+             .seh_proc
 
 
 File: llvm-assembler.info,  Node: SehPushframe,  Next: SehPushreg,  Prev: SehHandlerdata,  Up: Win64Coff
 
-7.3.11.5 '.seh_pushframe'
-.........................
+7.3.10.5 '.seh_pushframe SIZE'
+..............................
 
-To be written...
+Indicate that a frame of SIZE bytes is used.  This directive should
+appear after the '.seh_endprologue' directive (*note SehEndprologue::)
+and before the '.seh_proc' directive (*note SehProc::) for the function
+to which it refers.
 
 
 File: llvm-assembler.info,  Node: SehPushreg,  Next: SehSavereg,  Prev: SehPushframe,  Up: Win64Coff
 
-7.3.11.6 '.seh_pushreg'
-.......................
+7.3.10.6 '.seh_pushreg REG'
+...........................
 
-To be written...
+Indicate that register REG is pushed to the stack.  This directive
+should appear after the '.seh_endprologue' directive (*note
+SehEndprologue::) and before the '.seh_proc' directive (*note SehProc::)
+for the function to which it refers.
 
 
 File: llvm-assembler.info,  Node: SehSavereg,  Next: SehSavexmn,  Prev: SehPushreg,  Up: Win64Coff
 
-7.3.11.7 '.seh_savereg'
-.......................
+7.3.10.7 '.seh_savereg REG OFFSET'
+..................................
 
-To be written...
+Indicate that general purpose register REG is save at OFFSET on the
+stack.  This directive should appear after the '.seh_endprologue'
+directive (*note SehEndprologue::) and before the '.seh_proc' directive
+(*note SehProc::) for the function to which it refers.
 
 
 File: llvm-assembler.info,  Node: SehSavexmn,  Next: SehSetframe,  Prev: SehSavereg,  Up: Win64Coff
 
-7.3.11.8 '.seh_savexmn'
-.......................
+7.3.10.8 '.seh_savexmn REG OFFSET'
+..................................
 
-To be written...
+Indicate that XMM register REG is save at OFFSET on the stack.  This
+directive should appear after the '.seh_endprologue' directive (*note
+SehEndprologue::) and before the '.seh_proc' directive (*note SehProc::)
+for the function to which it refers.
 
 
 File: llvm-assembler.info,  Node: SehSetframe,  Next: SehStackalloc,  Prev: SehSavexmn,  Up: Win64Coff
 
-7.3.11.9 '.seh_setframe'
-........................
+7.3.10.9 '.seh_setframe REG OFFSET'
+...................................
 
-To be written...
+Indicate that the frame pointer is in REG and initially points to OFFSET
+on the stack.  This directive should appear after the '.seh_endprologue'
+directive (*note SehEndprologue::) and before the '.seh_proc' directive
+(*note SehProc::) for the function to which it refers.
 
 
 File: llvm-assembler.info,  Node: SehStackalloc,  Next: SehChained,  Prev: SehSetframe,  Up: Win64Coff
 
-7.3.11.10 '.seh_stackalloc'
-...........................
+7.3.10.10 '.seh_stackalloc SIZE'
+................................
 
-To be written...
+Indicate further allocation of SIZE bytes of stack has been made.  This
+directive should appear after the '.seh_endprologue' directive (*note
+SehEndprologue::) and before the '.seh_proc' directive (*note SehProc::)
+for the function to which it refers.
 
 
-File: llvm-assembler.info,  Node: SehChained,  Next: WeakCoff,  Prev: SehStackalloc,  Up: Win64Coff
+File: llvm-assembler.info,  Node: SehChained,  Prev: SehStackalloc,  Up: Win64Coff
 
-7.3.11.11 '.seh_startchained', '.seh_endchained'
+7.3.10.11 '.seh_startchained', '.seh_endchained'
 ................................................
 
-To be written...
+Indicate the start and end of a chained event handler.
 
 
-File: llvm-assembler.info,  Node: WeakCoff,  Prev: SehChained,  Up: Win64Coff
+File: llvm-assembler.info,  Node: WeakCoff,  Prev: Win64Coff,  Up: COFF Directives
 
-7.3.11.12 '.weak'
-.................
+7.3.11 '.weak NAMES'
+--------------------
 
-To be written...
+This directive sets the weak attribute on the comma separated list of
+symbol 'names'.  If the symbols do not already exist, they will be
+created.
+
+   On a Windows Portable Executable (PE) target, weak symbols are
+supported natively as weak aliases.  When a weak symbol is created that
+is not an alias, the LLVM integrated assembler creates an alternate
+symbol to hold the default value.
+
+   On COFF targets other than PE, weak symbols are a GNU extension also
+supported by the LLVM integrated assembler.  This directive sets the
+weak attribute on the comma separated list of symbol 'names'.  If the
+symbols do not already exist, they will be created.
 
 
 File: llvm-assembler.info,  Node: Mach-O Directives,  Next: Deprecated,  Prev: COFF Directives,  Up: Pseudo Ops
@@ -4599,6 +4765,10 @@ will need modifying to eliminate the need for these directives.
 '.hword'
      Emit 16-bit numbers.  A synonym for '.short'; depending on the
      target architecture, it may also be a synonym for '.word'.
+
+'.ident'
+     Place tags in object files.  Not supported for COFF in LLVM, unlike
+     the GNU assembler.
 
 '.lflags'
      This option was ignored by the GNU assembler anyway.
@@ -5659,6 +5829,7 @@ LLVM Integrated Assembler Index
 * '.else':                               Else.                (line   6)
 * '.elseif':                             Elseif.              (line   6)
 * '.end':                                End.                 (line   6)
+* '.endef' (COFF only):                  DefCoff.             (line   6)
 * '.endfunc' (unsupported):              Unsupported.         (line  23)
 * '.endif':                              Endif.               (line   6)
 * '.endm':                               Endm.                (line   6)
@@ -5686,6 +5857,7 @@ LLVM Integrated Assembler Index
 * '.ident':                              Ident.               (line   6)
 * '.ident' (ELF only):                   IdentElf.            (line   6)
 * '.ident' (Mach-O only):                IdentMachO.          (line   6)
+* '.ident' (unsupported for COFF only):  Unsupported.         (line  42)
 * '.if':                                 If.                  (line   6)
 * '.ifb':                                If.                  (line  22)
 * '.ifc':                                If.                  (line  26)
@@ -5717,16 +5889,16 @@ LLVM Integrated Assembler Index
 * '.line' (deprecated):                  Line.                (line   6)
 * '.linet' (deprecated):                 Deprecated.          (line  12)
 * '.linker_option' (Mach-O only):        LinkerOptionMachO.   (line   6)
-* '.linkonce' (COFF only):               LinkonceCoff.        (line   6)
-* '.linkonce' (unsupported):             Unsupported.         (line  45)
-* '.list' (unsupported):                 Unsupported.         (line  49)
+* '.linkonce':                           LinkonceCoff.        (line   6)
+* '.linkonce' (unsupported):             Unsupported.         (line  49)
+* '.list' (unsupported):                 Unsupported.         (line  53)
 * '.literal16' (Mach-O only):            LiteralMachO.        (line   6)
 * '.literal4' (Mach-O only):             LiteralMachO.        (line   6)
 * '.literal8' (Mach-O only):             LiteralMachO.        (line   6)
-* '.ln' (unsupported):                   Unsupported.         (line  52)
+* '.ln' (unsupported):                   Unsupported.         (line  56)
 * '.load' (Mach-O only):                 LoadMachO.           (line   6)
 * '.local' (ELF only):                   LocalElf.            (line   6)
-* '.loc_mark_labels' (unsupported):      Unsupported.         (line  55)
+* '.loc_mark_labels' (unsupported):      Unsupported.         (line  59)
 * '.long':                               Long.                (line   6)
 * '.lsym' (Mach-O only):                 LsymMachO.           (line   6)
 * '.macosx_version_min' (Mach-O only):   MacosxVersionMinMachO.
@@ -5736,8 +5908,8 @@ LLVM Integrated Assembler Index
 * '.macros_on':                          Macro.               (line 150)
 * '.mod_init_func' (Mach-O only):        ModInitFuncMachO.    (line   6)
 * '.mod_term_func' (Mach-O only):        ModInitFuncMachO.    (line   6)
-* '.noaltmacro' (unsupported):           Unsupported.         (line  61)
-* '.nolist' (unsupported):               Unsupported.         (line  64)
+* '.noaltmacro' (unsupported):           Unsupported.         (line  65)
+* '.nolist' (unsupported):               Unsupported.         (line  68)
 * '.non_lazy_symbol_pointer' (Mach-O only): LazySymbolPointerMachO.
                                                               (line   6)
 * '.no_dead_strip':                      NoDeadStrip.         (line   6)
@@ -5775,7 +5947,7 @@ LLVM Integrated Assembler Index
                                                               (line   6)
 * '.objc_symbols' (Mach-O Objective C Only): ObjcSymbols.     (line   6)
 * '.octa':                               Octa.                (line   6)
-* '.offset' (unsupported):               Unsupported.         (line  67)
+* '.offset' (unsupported):               Unsupported.         (line  71)
 * '.org':                                Org.                 (line   6)
 * '.p2align':                            P2align.             (line   6)
 * '.p2alignl':                           P2align.             (line  28)
@@ -5784,23 +5956,23 @@ LLVM Integrated Assembler Index
 * '.popsection' (ELF only):              PopSectionElf.       (line   6)
 * '.previous' (ELF only):                PreviousElf.         (line   6)
 * '.previous' (Mach-O only):             PreviousMachO.       (line   6)
-* '.print' (unsupported):                Unsupported.         (line  70)
+* '.print' (unsupported):                Unsupported.         (line  74)
 * '.private_extern':                     PrivateExtern.       (line   6)
 * '.private_extern' (Mach-O only):       PrivateExternMachO.  (line   6)
 * '.protected' (ELF only):               ProtectedElf.        (line   6)
-* '.psize' (unsupported):                Unsupported.         (line  73)
+* '.psize' (unsupported):                Unsupported.         (line  77)
 * '.purgem':                             Purgem.              (line   6)
 * '.pushsection' (ELF only):             PushSectionElf.      (line   6)
 * '.quad':                               Quad.                (line   6)
 * '.reference':                          Reference.           (line   6)
 * '.reference' (Mach-O only):            ReferenceMachO.      (line   6)
-* '.reloc' (unsupported):                Unsupported.         (line  77)
+* '.reloc' (unsupported):                Unsupported.         (line  81)
 * '.rept':                               Rept.                (line   6)
 * '.rodata' (ELF only):                  RodataElf.           (line   6)
-* '.sbttl' (unsupported):                Unsupported.         (line  80)
+* '.sbttl' (unsupported):                Unsupported.         (line  84)
 * '.scl' (COFF only):                    SclCoff.             (line   6)
 * '.secidx' (COFF only):                 SecidxCoff.          (line   6)
-* '.secrel32' (COFF only):               Secrel32Coff.        (line   6)
+* '.secrel32' (COFF only):               SecidxCoff.          (line   6)
 * '.section' (COFF only):                SectionCoff.         (line   6)
 * '.section' (ELF only):                 SectionElf.          (line   6)
 * '.section' (ELF only) <1>:             SectionElf.          (line  18)
@@ -5808,7 +5980,7 @@ LLVM Integrated Assembler Index
 * '.seh_endchained' (COFF Win64 event handling only): SehChained.
                                                               (line   6)
 * '.seh_endproc' (COFF Win64 event handling only): SehProc.   (line   6)
-* '.seh_end_prologue' (COFF Win64 event handling only): SehEndPrologue.
+* '.seh_end_prologue' (COFF Win64 event handling only): SehEndprologue.
                                                               (line   6)
 * '.seh_handler' (COFF Win64 event handling only): SehHandler.
                                                               (line   6)
@@ -5841,11 +6013,11 @@ LLVM Integrated Assembler Index
 * '.static_const' (Mach-O only):         StaticConstMachO.    (line   6)
 * '.static_data' (Mach-O only):          StaticDataMachO.     (line   6)
 * '.string':                             String.              (line   6)
-* '.string16' (unsupported):             Unsupported.         (line  86)
-* '.string32' (unsupported):             Unsupported.         (line  86)
-* '.string64' (unsupported):             Unsupported.         (line  86)
-* '.string8' (unsupported):              Unsupported.         (line  86)
-* '.struct' (unsupported):               Unsupported.         (line  89)
+* '.string16' (unsupported):             Unsupported.         (line  90)
+* '.string32' (unsupported):             Unsupported.         (line  90)
+* '.string64' (unsupported):             Unsupported.         (line  90)
+* '.string8' (unsupported):              Unsupported.         (line  90)
+* '.struct' (unsupported):               Unsupported.         (line  93)
 * '.subsection' (ELF only):              SubSectionElf.       (line   6)
 * '.symbol_resolver':                    SymbolResolver.      (line   6)
 * '.symbol_resolver' (Mach-O only):      SymbolResolverMachO. (line   6)
@@ -5858,17 +6030,17 @@ LLVM Integrated Assembler Index
 * '.text' (ELF only):                    TextElf.             (line   6)
 * '.text' (Mach-O only):                 TextMachO.           (line   6)
 * '.thread_init_func' (Mach-O only):     ThreadInitFuncMachO. (line   6)
-* '.title' (unsupported):                Unsupported.         (line  92)
+* '.title' (unsupported):                Unsupported.         (line  96)
 * '.tlv' (Mach-O only):                  TlvMachO.            (line   6)
 * '.type' (COFF only):                   TypeCoff.            (line   6)
 * '.type' (ELF only):                    TypeElf.             (line   6)
 * '.uleb128':                            Uleb128.             (line   6)
 * '.value':                              Value.               (line   6)
 * '.version' (ELF only):                 VersionElf.          (line   6)
-* '.vtable_entry' (unsupported):         Unsupported.         (line  95)
-* '.vtable_inherit' (unsupported):       Unsupported.         (line  98)
+* '.vtable_entry' (unsupported):         Unsupported.         (line  99)
+* '.vtable_inherit' (unsupported):       Unsupported.         (line 102)
 * '.warning':                            Warning.             (line   6)
-* '.weak' (COFF Win64 event handling only): WeakCoff.         (line   6)
+* '.weak' (COFF only):                   WeakCoff.            (line   6)
 * '.weak' (ELF only):                    WeakElf.             (line   6)
 * '.weakref' (ELF only):                 WeakrefElf.          (line   6)
 * '.weak_definition':                    WeakDefinition.      (line   6)
@@ -5878,7 +6050,7 @@ LLVM Integrated Assembler Index
                                                               (line   6)
 * '.weak_reference':                     WeakReference.       (line   6)
 * '.weak_reference' (Mach-O only):       WeakReferenceMachO.  (line   5)
-* '.word' (unsupported):                 Unsupported.         (line 100)
+* '.word' (unsupported):                 Unsupported.         (line 104)
 * '.zero':                               Zero.                (line   6)
 * '.zerofill' (Mach-O only) (Mach-O only): ZerofillMachO.     (line   6)
 * '2byte' directive:                     2byte.               (line   6)
@@ -5993,14 +6165,17 @@ LLVM Integrated Assembler Index
 * characters used in symbols:            Symbol Intro.        (line   6)
 * 'code16' directive:                    Code16.              (line   6)
 * 'code16gcc' directive:                 Code16.              (line   6)
-* COMDAT:                                Unsupported.         (line  45)
+* COFF symbol storage class:             SclCoff.             (line   6)
+* COMDAT:                                LinkonceCoff.        (line   6)
+* COMDAT <1>:                            Unsupported.         (line  49)
 * 'comm' directive:                      Comm.                (line   6)
 * command line conventions:              Command Line.        (line   6)
 * command line options for AAP:          AAP Options.         (line   6)
 * comments:                              Comments.            (line   6)
 * comments, removed by preprocessor:     Preprocessing.       (line  11)
 * 'common' directive:                    Common.              (line   6)
-* common sections:                       Unsupported.         (line  45)
+* common sections:                       LinkonceCoff.        (line   6)
+* common sections <1>:                   Unsupported.         (line  49)
 * common variable storage:               bss.                 (line   6)
 * comparison expressions:                Infix Ops.           (line  56)
 * conditional assembly:                  If.                  (line   6)
@@ -6045,6 +6220,7 @@ LLVM Integrated Assembler Index
 * 'elseif' directive:                    Elseif.              (line   6)
 * empty expressions:                     Empty Exprs.         (line   6)
 * 'end' directive:                       End.                 (line   6)
+* 'endef' directive (COFF only):         DefCoff.             (line   6)
 * 'endfunc' directive (unsupported):     Unsupported.         (line  23)
 * 'endif' directive:                     Endif.               (line   6)
 * 'endm' directive:                      Endm.                (line   6)
@@ -6102,6 +6278,7 @@ LLVM Integrated Assembler Index
 * 'ident' directive:                     Ident.               (line   6)
 * 'ident' directive (ELF only):          IdentElf.            (line   6)
 * 'ident' directive (Mach-O only):       IdentMachO.          (line   6)
+* 'ident' directive (unsupported for COFF only): Unsupported. (line  42)
 * 'if' directive:                        If.                  (line   6)
 * 'ifb' directive:                       If.                  (line  22)
 * 'ifc' directive:                       If.                  (line  26)
@@ -6156,8 +6333,8 @@ LLVM Integrated Assembler Index
 * 'lcomm' directive:                     Lcomm.               (line   6)
 * ld:                                    Object.              (line  15)
 * length of symbols:                     Symbol Intro.        (line  14)
-* 'lflags' (unsupported):                Unsupported.         (line  42)
-* 'lflags' directive (unsupported):      Unsupported.         (line  42)
+* 'lflags' (unsupported):                Unsupported.         (line  46)
+* 'lflags' directive (unsupported):      Unsupported.         (line  46)
 * line comment character:                Comments.            (line  19)
 * line comment character, AAP:           AAP Assembler Syntax.
                                                               (line   9)
@@ -6172,31 +6349,31 @@ LLVM Integrated Assembler Index
 * linker:                                Object.              (line  15)
 * linker, and assembler:                 Secs Background.     (line  10)
 * 'linker_option' directive (Mach-O only): LinkerOptionMachO. (line   6)
-* 'linkonce' directive (COFF only):      LinkonceCoff.        (line   6)
-* 'linkonce' directive (unsupported):    Unsupported.         (line  45)
-* 'list' directive (unsupported):        Unsupported.         (line  49)
-* listing control, turning off:          Unsupported.         (line  64)
-* listing control, turning on:           Unsupported.         (line  49)
+* 'linkonce' directive:                  LinkonceCoff.        (line   6)
+* 'linkonce' directive (unsupported):    Unsupported.         (line  49)
+* 'list' directive (unsupported):        Unsupported.         (line  53)
+* listing control, turning off:          Unsupported.         (line  68)
+* listing control, turning on:           Unsupported.         (line  53)
 * listing control: new page (unsupported): Unsupported.       (line  20)
-* listing control: paper size (unsupported): Unsupported.     (line  73)
-* listing control: subtitle (unsupported): Unsupported.       (line  80)
-* listing control: title line (unsupported): Unsupported.     (line  92)
+* listing control: paper size (unsupported): Unsupported.     (line  77)
+* listing control: subtitle (unsupported): Unsupported.       (line  84)
+* listing control: title line (unsupported): Unsupported.     (line  96)
 * 'literal16' directive (Mach-O only):   LiteralMachO.        (line   6)
 * 'literal4' directive (Mach-O only):    LiteralMachO.        (line   6)
 * 'literal8' directive (Mach-O only):    LiteralMachO.        (line   6)
 * lld:                                   Object.              (line  15)
 * LLVM options for assembly:             common-options.      (line  40)
-* 'ln' directive (unsupported):          Unsupported.         (line  52)
+* 'ln' directive (unsupported):          Unsupported.         (line  56)
 * 'load' directive (Mach-O only):        LoadMachO.           (line   6)
 * 'loc' directive:                       Loc.                 (line   6)
 * local common symbols:                  Lcomm.               (line   6)
 * 'local' directive (ELF only):          LocalElf.            (line   6)
 * local labels:                          Symbol Names.        (line  40)
 * local symbol names:                    Symbol Names.        (line  27)
-* 'LOCAL' within macros (unsupported):   Unsupported.         (line  58)
+* 'LOCAL' within macros (unsupported):   Unsupported.         (line  62)
 * location counter:                      Dot.                 (line   6)
 * location counter, advancing:           Org.                 (line   6)
-* 'loc_mark_labels' directive (unsupported): Unsupported.     (line  55)
+* 'loc_mark_labels' directive (unsupported): Unsupported.     (line  59)
 * logical line number:                   Line.                (line   6)
 * logical line numbers:                  Comments.            (line  33)
 * 'long' directive:                      Long.                (line   6)
@@ -6212,7 +6389,7 @@ LLVM Integrated Assembler Index
 * 'macro' directive:                     Macro.               (line  28)
 * macros:                                Macro.               (line   6)
 * macros, count executed:                Macro.               (line 142)
-* macros, 'LOCAL' (unsupported):         Unsupported.         (line  58)
+* macros, 'LOCAL' (unsupported):         Unsupported.         (line  62)
 * 'macros_off' directive:                Macro.               (line 150)
 * 'macros_on' directive:                 Macro.               (line 150)
 * manual, structure and purpose:         Manual.              (line   6)
@@ -6227,8 +6404,8 @@ LLVM Integrated Assembler Index
 * new page, in listings (unsupported):   Unsupported.         (line  20)
 * newline ('\n'):                        Strings.             (line  22)
 * newline, required at file end:         Statements.          (line  14)
-* 'noaltmacro' directive (unsupported):  Unsupported.         (line  61)
-* 'nolist' directive (unsupported):      Unsupported.         (line  64)
+* 'noaltmacro' directive (unsupported):  Unsupported.         (line  65)
+* 'nolist' directive (unsupported):      Unsupported.         (line  68)
 * 'non_lazy_symbol_pointer' directive (Mach-O only): LazySymbolPointerMachO.
                                                               (line   6)
 * 'no_dead_strip' directive:             NoDeadStrip.         (line   6)
@@ -6284,7 +6461,7 @@ LLVM Integrated Assembler Index
 * 'octa' directive:                      Octa.                (line   6)
 * octal character code ('\DDD'):         Strings.             (line  31)
 * octal integers:                        Integers.            (line   9)
-* 'offset' directive (unsupported):      Unsupported.         (line  67)
+* 'offset' directive (unsupported):      Unsupported.         (line  71)
 * operands in expressions:               Arguments.           (line   6)
 * operator precedence:                   Infix Ops.           (line  11)
 * operators, in expressions:             Operators.           (line   6)
@@ -6304,7 +6481,7 @@ LLVM Integrated Assembler Index
 * padding the location counter given a power of two: P2align. (line   6)
 * padding the location counter given number of bytes: Balign. (line   6)
 * page, in listings (unsupported):       Unsupported.         (line  20)
-* paper size, for listings (unsupported): Unsupported.        (line  73)
+* paper size, for listings (unsupported): Unsupported.        (line  77)
 * paths for '.include':                  common-options.      (line  21)
 * patterns, writing in memory:           Fill.                (line   6)
 * 'picsymbol_stub' directive (Mach-O only): PicsymbolStubMachO.
@@ -6318,30 +6495,30 @@ LLVM Integrated Assembler Index
 * preprocessing, turning on and off:     Preprocessing.       (line  25)
 * 'previous' directive (ELF only):       PreviousElf.         (line   6)
 * 'previous' directive (Mach-O only):    PreviousMachO.       (line   6)
-* 'print' directive (unsupported):       Unsupported.         (line  70)
+* 'print' directive (unsupported):       Unsupported.         (line  74)
 * 'private_extern' directive:            PrivateExtern.       (line   6)
 * 'private_extern' directive (Mach-O only): PrivateExternMachO.
                                                               (line   6)
 * 'protected' directive (ELF only):      ProtectedElf.        (line   6)
 * pseudo-ops, machine independent:       Pseudo Ops.          (line   6)
-* 'psize' directive (unsupported):       Unsupported.         (line  73)
+* 'psize' directive (unsupported):       Unsupported.         (line  77)
 * 'purgem' directive:                    Purgem.              (line   6)
 * purpose of the LLVM integrated assembler: LLVM Assembler.   (line  13)
 * 'pushsection' directive (ELF only):    PushSectionElf.      (line   6)
 * 'quad' directive:                      Quad.                (line   6)
 * 'reference' directive:                 Reference.           (line   6)
 * 'reference' directive (Mach-O only):   ReferenceMachO.      (line   6)
-* 'reloc' directive (unsupported):       Unsupported.         (line  77)
+* 'reloc' directive (unsupported):       Unsupported.         (line  81)
 * relocation:                            Sections.            (line   6)
 * relocation example:                    Ld Sections.         (line  38)
 * reporting bugs in assembler:           Reporting Bugs.      (line   6)
 * 'rept' directive:                      Rept.                (line   6)
 * 'rodata' directive (ELF only):         RodataElf.           (line   6)
-* 'sbttl' directive (unsupported):       Unsupported.         (line  80)
+* 'sbttl' directive (unsupported):       Unsupported.         (line  84)
 * 'scl' directive (COFF only):           SclCoff.             (line   6)
 * search path for '.include':            common-options.      (line  21)
 * 'secidx' directive (COFF only):        SecidxCoff.          (line   6)
-* 'secrel32' directive (COFF only):      Secrel32Coff.        (line   6)
+* 'secrel32' directive (COFF only):      SecidxCoff.          (line   6)
 * 'section' directive (COFF only):       SectionCoff.         (line   6)
 * 'section' directive (ELF only):        SectionElf.          (line   6)
 * 'section' directive (ELF only) <1>:    SectionElf.          (line  18)
@@ -6359,7 +6536,7 @@ LLVM Integrated Assembler Index
                                                               (line   6)
 * 'seh_endproc' directive (COFF Win64 event handling only): SehProc.
                                                               (line   6)
-* 'seh_end_prologue' directive (COFF Win64 event handling only): SehEndPrologue.
+* 'seh_end_prologue' directive (COFF Win64 event handling only): SehEndprologue.
                                                               (line   6)
 * 'seh_handler' directive (COFF Win64 event handling only): SehHandler.
                                                               (line   6)
@@ -6407,21 +6584,21 @@ LLVM Integrated Assembler Index
 * 'string' directive:                    String.              (line   6)
 * string literals:                       Ascii.               (line   6)
 * string, copying to object file:        String.              (line   6)
-* 'string16' directive (unsupported):    Unsupported.         (line  86)
+* 'string16' directive (unsupported):    Unsupported.         (line  90)
 * string16, copying to object file (unsupported): Unsupported.
-                                                              (line  86)
-* 'string32' directive (unsupported):    Unsupported.         (line  86)
+                                                              (line  90)
+* 'string32' directive (unsupported):    Unsupported.         (line  90)
 * string32, copying to object file (unsupported): Unsupported.
-                                                              (line  86)
-* 'string64' directive (unsupported):    Unsupported.         (line  86)
+                                                              (line  90)
+* 'string64' directive (unsupported):    Unsupported.         (line  90)
 * string64, copying to object file (unsupported): Unsupported.
-                                                              (line  86)
-* 'string8' directive (unsupported):     Unsupported.         (line  86)
-* string8, copying to object file (unsupported): Unsupported. (line  86)
-* 'struct' directive (unsupported):      Unsupported.         (line  89)
+                                                              (line  90)
+* 'string8' directive (unsupported):     Unsupported.         (line  90)
+* string8, copying to object file (unsupported): Unsupported. (line  90)
+* 'struct' directive (unsupported):      Unsupported.         (line  93)
 * subexpressions:                        Arguments.           (line  25)
 * 'subsection' directive (ELF only):     SubSectionElf.       (line   6)
-* subtitles for listings (unsupported):  Unsupported.         (line  80)
+* subtitles for listings (unsupported):  Unsupported.         (line  84)
 * subtraction, permitted arguments:      Infix Ops.           (line  50)
 * supporting files, including:           Include.             (line   6)
 * symbol attributes:                     Symbol Attributes.   (line   6)
@@ -6458,7 +6635,7 @@ LLVM Integrated Assembler Index
 * 'text' directive (Mach-O only):        TextMachO.           (line   6)
 * 'thread_init_func' directive (Mach-O only): ThreadInitFuncMachO.
                                                               (line   6)
-* 'title' directive (unsupported):       Unsupported.         (line  92)
+* 'title' directive (unsupported):       Unsupported.         (line  96)
 * 'tlv' directive (Mach-O only):         TlvMachO.            (line   6)
 * turning preprocessing on and off:      Preprocessing.       (line  25)
 * 'type' directive (COFF only):          TypeCoff.            (line   6)
@@ -6474,13 +6651,13 @@ LLVM Integrated Assembler Index
 * visibility (ELF only):                 HiddenElf.           (line   6)
 * visibility (ELF only) <1>:             InternalElf.         (line   6)
 * visibility (ELF only) <2>:             ProtectedElf.        (line   6)
-* 'vtable_entry' directive (unsupported): Unsupported.        (line  95)
-* 'vtable_inherit' directive (unsupported): Unsupported.      (line  98)
+* 'vtable_entry' directive (unsupported): Unsupported.        (line  99)
+* 'vtable_inherit' directive (unsupported): Unsupported.      (line 102)
 * warning control, assembly:             internal-options.    (line  67)
 * 'warning' directive:                   Warning.             (line   6)
 * warning messages:                      Errors.              (line   6)
-* 'weak' directive (COFF Win64 event handling only): WeakCoff.
-                                                              (line   6)
+* 'weak' directive:                      WeakCoff.            (line   6)
+* 'weak' directive (COFF only):          WeakCoff.            (line   6)
 * 'weak' directive (ELF only):           WeakElf.             (line   6)
 * 'weakref' directive (ELF only):        WeakrefElf.          (line   6)
 * 'weak_definition' directive:           WeakDefinition.      (line   6)
@@ -6493,7 +6670,7 @@ LLVM Integrated Assembler Index
                                                               (line   6)
 * whitespace:                            Whitespace.          (line   6)
 * whitespace, removed by preprocessor:   Preprocessing.       (line   7)
-* 'word' directive (unsupported):        Unsupported.         (line 100)
+* 'word' directive (unsupported):        Unsupported.         (line 104)
 * writing patterns in memory:            Fill.                (line   6)
 * 'zero' directive:                      Zero.                (line   6)
 * zero-terminated strings:               Asciz.               (line   6)
@@ -6645,126 +6822,125 @@ Node: WeakDefinition125285
 Node: WeakReference125796
 Node: Zero126292
 Node: ELF Directives126734
-Node: BssElf128092
-Node: DataElf128218
-Node: HiddenElf128589
-Node: IdentElf129199
-Node: InternalElf129353
-Node: LocalElf130037
-Node: PopSectionElf130651
-Node: PreviousElf131196
-Node: ProtectedElf132651
-Node: PushSectionElf133340
-Node: RodataElf134133
-Node: SectionElf134296
-Node: SizeElf139300
-Node: SubSectionElf139679
-Node: SymverElf140295
-Node: TbssElf142702
-Node: TdataElf142852
-Node: TextElf143002
-Node: TypeElf143377
-Node: VersionElf145398
-Node: WeakElf145693
-Node: WeakrefElf145987
-Node: COFF Directives146963
-Node: BssCoff147551
-Node: DataCoff147680
-Node: DefCoff147827
-Node: LinkonceCoff147977
-Node: SclCoff148136
-Node: SecidxCoff148288
-Node: Secrel32Coff148446
-Node: SectionCoff148612
-Node: TextCoff148774
-Node: TypeCoff148926
-Node: Win64Coff149078
-Node: SehProc149861
-Node: SehEndPrologue150032
-Node: SehHandler150212
-Node: SehHandlerdata150389
-Node: SehPushframe150572
-Node: SehPushreg150751
-Node: SehSavereg150922
-Node: SehSavexmn151091
-Node: SehSetframe151261
-Node: SehStackalloc151436
-Node: SehChained151617
-Node: WeakCoff151837
-Node: Mach-O Directives151973
-Node: BssMachO154315
-Node: ConstMachO154449
-Node: ConstDataMachO154610
-Node: ConstructorMachO154789
-Node: CstringMachO155002
-Node: DataMachO155172
-Node: DescMachO155329
-Node: DumpMachO155483
-Node: DyldMachO155637
-Node: FvmlibInitMachO155797
-Node: IdentMachO156010
-Node: IosVersionMinMachO156184
-Node: LazySymbolPointerMachO156385
-Node: LazyReferenceMachO156658
-Node: LinkerOptionMachO156919
-Node: LiteralMachO157113
-Node: LoadMachO157342
-Node: LsymMachO157501
-Node: MacosxVersionMinMachO157669
-Node: ModInitFuncMachO157872
-Node: NoDeadStripMachO158108
-Node: ObjC158332
-Node: ObjcCatClsMeth159436
-Node: ObjcCatInstMeth159602
-Node: ObjcCategory159791
-Node: ObjcClass159965
-Node: ObjcClassNames160132
-Node: ObjcClassVars160312
-Node: ObjcClsMeth160492
-Node: ObjcClsRefs160665
-Node: ObjcInstMeth160837
-Node: ObjcInstanceVars161016
-Node: ObjcMessageRefs161209
-Node: ObjcMetaClass161401
-Node: ObjcMethVarNames161589
-Node: ObjcMethVarTypes161786
-Node: ObjcModuleInfo161984
-Node: ObjcProtocol162172
-Node: ObjcSelectorStrs162354
-Node: ObjcStringObject162548
-Node: ObjcSymbols162741
-Node: PicsymbolStubMachO162897
-Node: PreviousMachO163081
-Node: PrivateExternMachO163267
-Node: ReferenceMachO163512
-Node: SectionMachO163750
-Node: StaticConstMachO163927
-Node: StaticDataMachO164115
-Node: SymbolResolverMachO164308
-Node: SymbolStubMachO164508
-Node: TbssMachO164694
-Node: TdataMachO164857
-Node: TextMachO165016
-Node: ThreadInitFuncMachO165183
-Node: TlvMachO165372
-Node: WeakDefCanBeHiddenMachO165549
-Node: WeakDefinitionMachO165764
-Node: WeakReferenceMachO165985
-Node: ZerofillMachO166176
-Node: Deprecated166335
-Node: Unsupported166658
-Node: Object Attributes169010
-Node: Machine Dependencies169415
-Node: AAP-dependent170304
-Node: AAP Options170974
-Node: AAP Directives171292
-Node: AAP Assembler Syntax171635
-Node: Reporting Bugs172365
-Node: Bug Criteria173178
-Node: Bug Reporting174072
-Node: Acknowledgements181042
-Ref: Acknowledgements-Footnote-1186156
-Node: GNU Free Documentation License186182
-Node: AS Index211344
+Node: BssElf128149
+Node: DataElf128506
+Node: HiddenElf128885
+Node: IdentElf129492
+Node: InternalElf129830
+Node: LocalElf130514
+Node: PopSectionElf131128
+Node: PreviousElf131673
+Node: ProtectedElf133128
+Node: PushSectionElf133817
+Node: RodataElf134610
+Node: SectionElf135018
+Node: SizeElf140022
+Node: SubSectionElf140401
+Node: SymverElf141017
+Node: TbssElf143424
+Node: TdataElf143881
+Node: TextElf144338
+Node: TypeElf144721
+Node: VersionElf146742
+Node: WeakElf147037
+Node: WeakrefElf147331
+Node: COFF Directives148307
+Node: BssCoff149027
+Node: DataCoff149387
+Node: DefCoff149767
+Node: LinkonceCoff150054
+Node: SclCoff151431
+Node: SecidxCoff151810
+Node: SectionCoff152844
+Node: TextCoff154151
+Node: TypeCoff154538
+Node: Win64Coff154924
+Node: SehProc156048
+Node: SehEndprologue156296
+Node: SehHandler156719
+Node: SehHandlerdata157327
+Node: SehPushframe157746
+Node: SehPushreg158149
+Node: SehSavereg158548
+Node: SehSavexmn158983
+Node: SehSetframe159407
+Node: SehStackalloc159860
+Node: SehChained160286
+Node: WeakCoff160527
+Node: Mach-O Directives161308
+Node: BssMachO163650
+Node: ConstMachO163784
+Node: ConstDataMachO163945
+Node: ConstructorMachO164124
+Node: CstringMachO164337
+Node: DataMachO164507
+Node: DescMachO164664
+Node: DumpMachO164818
+Node: DyldMachO164972
+Node: FvmlibInitMachO165132
+Node: IdentMachO165345
+Node: IosVersionMinMachO165519
+Node: LazySymbolPointerMachO165720
+Node: LazyReferenceMachO165993
+Node: LinkerOptionMachO166254
+Node: LiteralMachO166448
+Node: LoadMachO166677
+Node: LsymMachO166836
+Node: MacosxVersionMinMachO167004
+Node: ModInitFuncMachO167207
+Node: NoDeadStripMachO167443
+Node: ObjC167667
+Node: ObjcCatClsMeth168771
+Node: ObjcCatInstMeth168937
+Node: ObjcCategory169126
+Node: ObjcClass169300
+Node: ObjcClassNames169467
+Node: ObjcClassVars169647
+Node: ObjcClsMeth169827
+Node: ObjcClsRefs170000
+Node: ObjcInstMeth170172
+Node: ObjcInstanceVars170351
+Node: ObjcMessageRefs170544
+Node: ObjcMetaClass170736
+Node: ObjcMethVarNames170924
+Node: ObjcMethVarTypes171121
+Node: ObjcModuleInfo171319
+Node: ObjcProtocol171507
+Node: ObjcSelectorStrs171689
+Node: ObjcStringObject171883
+Node: ObjcSymbols172076
+Node: PicsymbolStubMachO172232
+Node: PreviousMachO172416
+Node: PrivateExternMachO172602
+Node: ReferenceMachO172847
+Node: SectionMachO173085
+Node: StaticConstMachO173262
+Node: StaticDataMachO173450
+Node: SymbolResolverMachO173643
+Node: SymbolStubMachO173843
+Node: TbssMachO174029
+Node: TdataMachO174192
+Node: TextMachO174351
+Node: ThreadInitFuncMachO174518
+Node: TlvMachO174707
+Node: WeakDefCanBeHiddenMachO174884
+Node: WeakDefinitionMachO175099
+Node: WeakReferenceMachO175320
+Node: ZerofillMachO175511
+Node: Deprecated175670
+Node: Unsupported175993
+Node: Object Attributes178452
+Node: Machine Dependencies178857
+Node: AAP-dependent179746
+Node: AAP Options180416
+Node: AAP Directives180734
+Node: AAP Assembler Syntax181077
+Node: Reporting Bugs181807
+Node: Bug Criteria182620
+Node: Bug Reporting183514
+Node: Acknowledgements190484
+Ref: Acknowledgements-Footnote-1195598
+Node: GNU Free Documentation License195624
+Node: AS Index220786
 
 End Tag Table
