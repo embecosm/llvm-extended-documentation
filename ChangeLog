@@ -8,6 +8,12 @@
 
 	* llvm-assembler-manual/llvm-assembler.info: Regenerated.
 	* llvm-assembler-manual/llvm-assembler.texi
+	(Assembler Directives): Add documentation for Mach-O directives.
+
+2015-07-20  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* llvm-assembler-manual/llvm-assembler.info: Regenerated.
+	* llvm-assembler-manual/llvm-assembler.texi
 	(Assembler Directives): Add documentation for all general
 	assembler directives unique to LLVM.
 

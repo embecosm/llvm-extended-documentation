@@ -4470,6 +4470,10 @@ exist, they will be created.
 @node Mach-O Directives
 @section Mach-O Specific Directives
 
+LLVM implements all the assembler directives described by the OS X Assembler
+Reference manual.  This document only provides a summary, together with any
+LLVM specific extensions.
+
 @menu
 * BssMachO::                        @code{.bss}
 * ConstMachO::                      @code{.const}
@@ -4477,62 +4481,73 @@ exist, they will be created.
 * ConstructorMachO::                @code{.constructor}, @code{.destructor}
 * CstringMachO::                    @code{.cstring}
 * DataMachO::                       @code{.data}
-* DescMachO::                       @code{.desc}
-* DumpMachO::                       @code{.dump}
+* DescMachO::                       @code{.desc @var{symbol}, @var{expr}}
+* DumpMachO::                       @code{.dump @var{filename}}, @code{.load @var{filename}}
 * DyldMachO::                       @code{.dyld}
 * FvmlibInitMachO::                 @code{.fvmlib_init0}, @code{.fvmlib_init1}
 * IdentMachO::                      @code{.ident}
-* IosVersionMinMachO::              @code{.ios_version_min}
+* IosVersionMinMachO::              @code{.ios_version_min @var{major}, @var{minor}, @var{patch}}
 * LazySymbolPointerMachO::          @code{.lazy_symbol_pointer}, @code{.non_lazy_symbol_pointer}
 * LazyReferenceMachO::              @code{.lazy_reference @var{symbol}}
-* LinkerOptionMachO::               @code{.linker_option}
+* LinkerOptionMachO::               @code{.linker_option "@var{string}"}
 * LiteralMachO::                    @code{.literal4}, @code{.literal8}, @code{.literal16}
-* LoadMachO::                       @code{.load}
-* LsymMachO::                       @code{.lsym}
-* MacosxVersionMinMachO::           @code{.macosx_version_min}
+* LsymMachO::                       @code{.lsym @var{symbo}, @var{expression}}
+* MacosxVersionMinMachO::           @code{.macosx_version_min @var{major}, @var{minor}, @var{patch}}
 * ModInitFuncMachO::                @code{.mod_init_func}, @code{.mod_term_func}
-* NoDeadStripMachO::                @code{.no_dead_strip}
+* NoDeadStripMachO::                @code{.no_dead_strip @var{symbol}}
 * ObjC::                            Mach-O Objective C Specific Directives
 * PicsymbolStubMachO::              @code{.picsymbol_stub}
 * PreviousMachO::                   @code{.previous}
 * PrivateExternMachO::              @code{.private_extern @var{name}}
 * ReferenceMachO::                  @code{.reference @var{symbol}}
-* SectionMachO::                    @code{.section}
+* SectionMachO::                    @code{.section @var{segname}, @var{sectname} [[[, @var{type} ], @var{attribute} ], @var{sizeof_stub} ] }
 * StaticConstMachO::                @code{.static_const}
 * StaticDataMachO::                 @code{.static_data}
-* SymbolResolverMachO::             @code{.symbol_resolver @var{name}}
+* SymbolResolverMachO::             @code{.symbol_resolver @var{resolver}}
 * SymbolStubMachO::                 @code{.symbol_stub}
-* TbssMachO::                       @code{.tbss}
+* TbssMachO::                       @code{.tbss @var{symbol} @var{size} @var{align}}
 * TdataMachO::                      @code{.tdata}
 * TextMachO::                       @code{.text}
 * ThreadInitFuncMachO::             @code{.thread_init_func}
 * TlvMachO::                        @code{.tlv}
-* WeakDefCanBeHiddenMachO::         @code{.symbol_resolver @var{name}}
+* WeakDefCanBeHiddenMachO::         @code{.weak_def_can_be_hidden @var{name}}
 * WeakDefinitionMachO::             @code{.weak_definition @var{name}}
 * WeakReferenceMachO::              @code{.weak_reference @var{name}}
-* ZerofillMachO::                   @code{.zerofill}
+* ZerofillMachO::                   @code{.zerofill @var{segname}, @var{sectname} [, @var{symbol}, @var{size} [, @var{align} ]]}
 @end menu
 
 @node BssMachO
 @subsection @code{.bss}
 @cindex @code{bss} directive (Mach-O only)
 @cindex @code{.bss} (Mach-O only)
+This is a synonymn for:
+@example
+        .section  "__DATA", "__bss"
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node ConstMachO
 @subsection @code{.const}
 @cindex @code{const} directive (Mach-O only)
 @cindex @code{.const} (Mach-O only)
+This is a synonymn for:
+@example
+        .section  "__TEXT", "__const"
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node ConstDataMachO
 @subsection @code{.const_data}
 @cindex @code{const_data} directive (Mach-O only)
 @cindex @code{.const_data} (Mach-O only)
+This is a synonymn for:
+@example
+        .section  "__DATA", "__const_data"
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node ConstructorMachO
 @subsection @code{.constructor}, @code{.destructor}
@@ -4540,43 +4555,62 @@ To be written...
 @cindex @code{.constructor} (Mach-O only)
 @cindex @code{destructor} directive (Mach-O only)
 @cindex @code{.destructor} (Mach-O only)
+These are synonymns respectively for:
+@example
+        .section  "__TEXT", "__constructor"
+        .section  "__TEXT", "__destructor"
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node CstringMachO
 @subsection @code{.cstring}
 @cindex @code{cstring} directive (Mach-O only)
 @cindex @code{.cstring} (Mach-O only)
+This is a synonymn for:
+@example
+        .section  "__TEXT", "__cstring"
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node DataMachO
 @subsection @code{.data}
 @cindex @code{data} directive (Mach-O only)
 @cindex @code{.data} (Mach-O only)
+This is a synonymn for:
+@example
+        .section  "__DATA", "__data"
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node DescMachO
-@subsection @code{.desc}
+@subsection @code{.desc @var{symbol}, @var{expr}}
 @cindex @code{desc} directive (Mach-O only)
 @cindex @code{.desc} (Mach-O only)
-
-To be written...
+Set the @code{n_desc} field for the specified @var{symbo} to the specified
+absolute expression.
 
 @node DumpMachO
-@subsection @code{.dump}
+@subsection @code{.dump @var{filename}},  @code{.load @var{filename}}
 @cindex @code{dump} directive (Mach-O only)
 @cindex @code{.dump} (Mach-O only)
-
-To be written...
+@cindex @code{load} directive (Mach-O only)
+@cindex @code{.load} (Mach-O only)
+These directives dump and load aboslute symbols and macro definitions to and
+from a file.
 
 @node DyldMachO
 @subsection @code{.dyld}
 @cindex @code{dyld} directive (Mach-O only)
 @cindex @code{.dyld} (Mach-O only)
+This is a synonymn for:
+@example
+        .section  "__DATA", "__dyld"
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node FvmlibInitMachO
 @subsection @code{.fvmlib_init0}, @code{.fvmlib_init0}
@@ -4584,22 +4618,26 @@ To be written...
 @cindex @code{.fvmlib_init0} (Mach-O only)
 @cindex @code{fvmlib_init1} directive (Mach-O only)
 @cindex @code{.fvmlib_init1} (Mach-O only)
+These are synonymns respectively for:
+@example
+        .section  "__TEXT", "__fvmlib_init0"
+        .section  "__TEXT", "__fvmlib_init1"
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node IdentMachO
 @subsection @code{.ident}
 @cindex @code{ident} directive (Mach-O only)
 @cindex @code{.ident} (Mach-O only)
-
-To be written...
+This directive is ignored.
 
 @node IosVersionMinMachO
-@subsection @code{.ios_version_min}
+@subsection @code{.ios_version_min @var{major}, @var{minor}, @var{patch}}
 @cindex @code{ios_version_min} directive (Mach-O only)
 @cindex @code{.ios_version_min} (Mach-O only)
-
-To be written...
+Verify that the version of IOS for which the code is being assembled has at
+least the specified @var{major}, @var{minor} and @var{patch} versions.
 
 @node LazySymbolPointerMachO
 @subsection @code{.lazy_symbol_pointer}, @code{.non_lazy_symbol_pointer}
@@ -4607,22 +4645,25 @@ To be written...
 @cindex @code{.lazy_symbol_pointer} (Mach-O only)
 @cindex @code{non_lazy_symbol_pointer} directive (Mach-O only)
 @cindex @code{.non_lazy_symbol_pointer} (Mach-O only)
+This is a synonymn for:
+@example
+        .section  "__DATA", "__ni_symbol_pointer"
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node LazyReferenceMachO
 @subsection @code{.lazy_reference @var{symbol}}
 @cindex @code{lazy_reference} directive (Mach-O only)
 @cindex @code{.lazy_reference} (Mach-O only)
-
-Generic option that is Mach-O specific. To be written...
+This is a Generic option that is Mach-O specific.  The specified @var{symbol}
+is marked to be a lazy undefined symbol.
 
 @node LinkerOptionMachO
-@subsection @code{.linker_option}
+@subsection @code{.linker_option "@var{string}"}
 @cindex @code{linker_option} directive (Mach-O only)
 @cindex @code{.linker_option} (Mach-O only)
-
-To be written...
+Pass the specified string as an option to any subsequent linking step.
 
 @node LiteralMachO
 @subsection @code{.literal4}, @code{.literal8}, @code{.literal16}
@@ -4632,29 +4673,29 @@ To be written...
 @cindex @code{.literal8} (Mach-O only)
 @cindex @code{literal16} directive (Mach-O only)
 @cindex @code{.literal16} (Mach-O only)
+These are synonyms for respectively:
+@example
+        .section  "__TEXT", "__literal4"
+        .section  "__TEXT", "__literal8"
+        .section  "__TEXT", "__literal16"
+@end example
 
-To be written...
-
-@node LoadMachO
-@subsection @code{.load}
-@cindex @code{load} directive (Mach-O only)
-@cindex @code{.load} (Mach-O only)
-
-To be written...
+@xref{SectionMachO}.
 
 @node LsymMachO
-@subsection @code{.lsym}
+@subsection @code{.lsym @var{symbo}, @var{expression}}
 @cindex @code{lsym} directive (Mach-O only)
 @cindex @code{.lsym} (Mach-O only)
-
-To be written...
+Create a unique and othersize unreferenceable symbol with the name @var{symbol}
+and value @var{expression}.  The symbol is a static symbol of type
+@code{N_ABS}.
 
 @node MacosxVersionMinMachO
-@subsection @code{.macosx_version_min}
+@subsection @code{.macosx_version_min @var{major}, @var{minor}, @var{patch}}
 @cindex @code{macosx_version_min} directive (Mach-O only)
 @cindex @code{.macosx_version_min} (Mach-O only)
-
-To be written...
+Verify that the version of MacOS for which the code is being assembled has at
+least the specified @var{major}, @var{minor} and @var{patch} versions.
 
 @node ModInitFuncMachO
 @subsection @code{.mod_init_func}, @code{.mod_term_func}
@@ -4662,15 +4703,20 @@ To be written...
 @cindex @code{.mod_init_func} (Mach-O only)
 @cindex @code{mod_term_func} directive (Mach-O only)
 @cindex @code{.mod_term_func} (Mach-O only)
+These are synonymns for respectively:
+@example
+        .section  "__DATA", "__mod_init_func"
+        .section  "__DATA", "__mod_term_func"
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node NoDeadStripMachO
-@subsection @code{.no_dead_strip}
+@subsection @code{.no_dead_strip @var{symbol}}
 @cindex @code{no_dead_strip} directive (Mach-O only)
 @cindex @code{.no_dead_strip} (Mach-O only)
-
-Generic option that is Mach-O specific. To be written...
+Generic option that is Mach-O specific.  Indicate that the specified symbol is
+not to be dead stripped.
 
 @node ObjC
 @subsection Mach-O Objective C Specific Directives
@@ -4703,258 +4749,378 @@ Generic option that is Mach-O specific. To be written...
 @subsubsection @code{.objc_cat_cls_meth}
 @cindex @code{objc_cat_cls_meth} directive (Mach-O Objective C Only)
 @cindex @code{.objc_cat_cls_meth} (Mach-O Objective C Only)
+This is a synonymn for:
+@example
+        .section  __OBJC, __cat_cls_meth
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node ObjcCatInstMeth
 @subsubsection @code{.objc_cat_inst_meth}
 @cindex @code{objc_cat_inst_meth} directive (Mach-O Objective C Only)
 @cindex @code{.objc_cat_inst_meth} (Mach-O Objective C Only)
+This is a synonymn for:
+@example
+        .section  __OBJC, __cat_inst_meth
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node ObjcCategory
 @subsubsection @code{.objc_category}
 @cindex @code{objc_category} directive (Mach-O Objective C Only)
 @cindex @code{.objc_category} (Mach-O Objective C Only)
+This is a synonymn for:
+@example
+        .section  __OBJC, __category
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node ObjcClass
 @subsubsection @code{.objc_class}
 @cindex @code{objc_class} directive (Mach-O Objective C Only)
 @cindex @code{.objc_class} (Mach-O Objective C Only)
+This is a synonymn for:
+@example
+        .section  __OBJC, __class
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node ObjcClassNames
 @subsubsection @code{.objc_class_names}
 @cindex @code{objc_class_names} directive (Mach-O Objective C Only)
 @cindex @code{.objc_class_names} (Mach-O Objective C Only)
+This is a synonymn for:
+@example
+        .section  __OBJC, __class_names
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node ObjcClassVars
 @subsubsection @code{.objc_class_vars}
 @cindex @code{objc_class_vars} directive (Mach-O Objective C Only)
 @cindex @code{.objc_class_vars} (Mach-O Objective C Only)
+This is a synonymn for:
+@example
+        .section  __OBJC, __class_vars
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node ObjcClsMeth
 @subsubsection @code{.objc_cls_meth}
 @cindex @code{objc_cls_meth} directive (Mach-O Objective C Only)
 @cindex @code{.objc_cls_meth} (Mach-O Objective C Only)
+This is a synonymn for:
+@example
+        .section  __OBJC, __cls_meth
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node ObjcClsRefs
 @subsubsection @code{.objc_cls_refs}
 @cindex @code{objc_cls_refs} directive (Mach-O Objective C Only)
 @cindex @code{.objc_cls_refs} (Mach-O Objective C Only)
+This is a synonymn for:
+@example
+        .section  __OBJC, __cls_refs
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node ObjcInstMeth
 @subsubsection @code{.objc_inst_meth}
 @cindex @code{objc_inst_meth} directive (Mach-O Objective C Only)
 @cindex @code{.objc_inst_meth} (Mach-O Objective C Only)
+This is a synonymn for:
+@example
+        .section  __OBJC, __inst_meth
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node ObjcInstanceVars
 @subsubsection @code{.objc_instance_vars}
 @cindex @code{objc_instance_vars} directive (Mach-O Objective C Only)
 @cindex @code{.objc_instance_vars} (Mach-O Objective C Only)
+This is a synonymn for:
+@example
+        .section  __OBJC, __instance_vars
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node ObjcMessageRefs
 @subsubsection @code{.objc_message_refs}
 @cindex @code{objc_message_refs} directive (Mach-O Objective C Only)
 @cindex @code{.objc_message_refs} (Mach-O Objective C Only)
+This is a synonymn for:
+@example
+        .section  __OBJC, __message_refs
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node ObjcMetaClass
 @subsubsection @code{.objc_meta_class}
 @cindex @code{objc_meta_class} directive (Mach-O Objective C Only)
 @cindex @code{.objc_meta_class} (Mach-O Objective C Only)
+This is a synonymn for:
+@example
+        .section  __OBJC, __meta_class
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node ObjcMethVarNames
 @subsubsection @code{.objc_meth_var_names}
 @cindex @code{objc_meth_var_names} directive (Mach-O Objective C Only)
 @cindex @code{.objc_meth_var_names} (Mach-O Objective C Only)
+This is a synonymn for:
+@example
+        .section  __OBJC, __meth_var_names
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node ObjcMethVarTypes
 @subsubsection @code{.objc_meth_var_types}
 @cindex @code{objc_meth_var_types} directive (Mach-O Objective C Only)
 @cindex @code{.objc_meth_var_types} (Mach-O Objective C Only)
+This is a synonymn for:
+@example
+        .section  __OBJC, __meth_var_types
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node ObjcModuleInfo
 @subsubsection @code{.objc_module_info}
 @cindex @code{objc_module_info} directive (Mach-O Objective C Only)
 @cindex @code{.objc_module_info} (Mach-O Objective C Only)
+This is a synonymn for:
+@example
+        .section  __OBJC, __module_info
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node ObjcProtocol
 @subsubsection @code{.objc_protocol}
 @cindex @code{objc_protocol} directive (Mach-O Objective C Only)
 @cindex @code{.objc_protocol} (Mach-O Objective C Only)
+This is a synonymn for:
+@example
+        .section  __OBJC, __protocol
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node ObjcSelectorStrs
 @subsubsection @code{.objc_selector_strs}
 @cindex @code{objc_selector_strs} directive (Mach-O Objective C Only)
 @cindex @code{.objc_selector_strs} (Mach-O Objective C Only)
+This is a synonymn for:
+@example
+        .section  __OBJC, __selector_strs
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node ObjcStringObject
 @subsubsection @code{.objc_string_object}
 @cindex @code{objc_string_object} directive (Mach-O Objective C Only)
 @cindex @code{.objc_string_object} (Mach-O Objective C Only)
+This is a synonymn for:
+@example
+        .section  __OBJC, __string_object
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node ObjcSymbols
 @subsubsection @code{.objc_symbols}
 @cindex @code{objc_symbols} directive (Mach-O Objective C Only)
 @cindex @code{.objc_symbols} (Mach-O Objective C Only)
+This is a synonymn for:
+@example
+        .section  __OBJC, __symbols
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node PicsymbolStubMachO
 @subsection @code{.picsymbol_stub}
 @cindex @code{picsymbol_stub} directive (Mach-O only)
 @cindex @code{.picsymbol_stub} (Mach-O only)
+This is a synonymn for one of:
+@example
+        .section  "__TEXT", "__picsymbolstub1"
+        .section  "__TEXT", "__picsymbol_stub"
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node PreviousMachO
 @subsection @code{.previous}
 @cindex @code{previous} directive (Mach-O only)
 @cindex @code{.previous} (Mach-O only)
-
-To be written...
+This directive swaps the current section with the most recently referenced
+section prior to this one.  Multiple @code{.previous} directives in a row will
+flip between two sections.
 
 @node PrivateExternMachO
 @subsection @code{.private_extern @var{name}}
 @cindex @code{private_extern} directive (Mach-O only)
 @cindex @code{.private_extern} (Mach-O only)
-
-Generic option that is Mach-O specific. To be written...
+Generic option that is Mach-O specific.  Mark @var{symbol} as a private
+external symbol.
 
 @node ReferenceMachO
 @subsection @code{.reference @var{symbol}}
 @cindex @code{reference} directive (Mach-O only)
 @cindex @code{.reference} (Mach-O only)
-
-Generic option that is Mach-O specific. To be written...
+Generic option that is Mach-O specific.  Mark @var{symbol} as an undefined
+symbol in the output symbol table.
 
 @node SectionMachO
-@subsection @code{.section}
+@subsection @code{.section @var{segname}, @var{sectname} [[[, @var{type} ], @var{attribute} ], @var{sizeof_stub} ] }
 @cindex @code{section} directive (Mach-O only)
 @cindex @code{.section} (Mach-O only)
-
-To be written...
+Start assembling in the section specified by @var{segname} and @var{sectname}
+with the optional @var{type} and @var{attribute}. If given @var{sizeof_stub} is
+the size in bytes of symbol stubs in the section.
 
 @node StaticConstMachO
 @subsection @code{.static_const}
 @cindex @code{static_const} directive (Mach-O only)
 @cindex @code{.static_const} (Mach-O only)
+This is a synonymn for:
+@example
+        .section  "__TEXT", "__static_const"
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node StaticDataMachO
 @subsection @code{.static_data}
 @cindex @code{static_data} directive (Mach-O only)
 @cindex @code{.static_data} (Mach-O only)
+This is a synonymn for:
+@example
+        .section  "__DATA", "__static_data"
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node SymbolResolverMachO
-@subsection @code{.symbol_resolver}
+@subsection @code{.symbol_resolver @var{resolver}}
 @cindex @code{symbol_resolver} directive (Mach-O only)
 @cindex @code{.symbol_resolver} (Mach-O only)
-
-To be written...
+Specify a symbol resolver to be used by the LLVM linker, @command{lld}.
 
 @node SymbolStubMachO
 @subsection @code{.symbol_stub}
 @cindex @code{symbol_stub} directive (Mach-O only)
 @cindex @code{.symbol_stub} (Mach-O only)
+This is a synonymn for one of:
+@example
+        .section  "__TEXT", "__symbol_stub"
+        .section  "__TEXT", "__jump_table"
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node TbssMachO
-@subsection @code{.tbss}
+@subsection @code{.tbss @var{symbol} @var{size} @var{align}}
 @cindex @code{tbss} directive (Mach-O only)
 @cindex @code{.tbss} (Mach-O only)
-
-To be written...
+Create @var{symbol} as an entry of @var{size} bytes with alignment @var{align}
+in the Thread Local Storage BSS section.
 
 @node TdataMachO
 @subsection @code{.tdata}
 @cindex @code{tdata} directive (Mach-O only)
 @cindex @code{.tdata} (Mach-O only)
+This is a synonymn for:
+@example
+        .section  "__DATA", "__thread_data"
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node TextMachO
 @subsection @code{.text}
 @cindex @code{text} directive (Mach-O only)
 @cindex @code{.text} (Mach-O only)
+For static code this is a synonym for:
+@example
+        .section  __TEXT, __text, regular
+@end example
 
-To be written...
+For dynamic code it is a synonymn for:
+@example
+        .section  __TEXT, __text, regular, pure_instructions
+@end example
+
+@xref{SectionMachO}.
 
 @node ThreadInitFuncMachO
 @subsection @code{.thread_init_func}
 @cindex @code{thread_init_func} directive (Mach-O only)
 @cindex @code{.thread_init_func} (Mach-O only)
+This is a synonymn for:
+@example
+        .section  "__DATA", "__thread_init"
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node TlvMachO
 @subsection @code{.tlv}
 @cindex @code{tlv} directive (Mach-O only)
 @cindex @code{.tlv} (Mach-O only)
+This is a synonymn for:
+@example
+        .section  "__DATA", "__thread_vars"
+@end example
 
-To be written...
+@xref{SectionMachO}.
 
 @node WeakDefCanBeHiddenMachO
-@subsection @code{.weak_def_can_be_hidden}
+@subsection @code{.weak_def_can_be_hidden @var{name}}
 @cindex @code{weak_def_can_be_hidden} directive (Mach-O only)
 @cindex @code{.weak_def_can_be_hidden} (Mach-O only)
-
-To be written...
+Undocumented generic option that is Mach-O specific.  This is a variant of
+@code{.weak_definition} to define symbols which can be hidden under some
+circumstances.  @xref{WeakDefinitionMachO}.
 
 @node WeakDefinitionMachO
 @subsection @code{.weak_definition @var{name}}
 @cindex @code{weak_definition} directive
 @cindex @code{.weak_definition}
-
-To be written...
+Generic option that is Mach-O specific.  Mark symbol @var{name} as a weak
+definition.
 
 @node WeakReferenceMachO
 @subsection @code{.weak_reference @var{name}}
 @cindex @code{weak_reference} directive (Mach-O only)
 @cindex @code{.weak_reference} (Mach-O only)
+Generic option that is Mach-O specific.  Mark symbol @var{name} as a weak
+undefined symbol in the output symbol table.
 
 @node ZerofillMachO
-@subsection @code{.zerofill}
+@subsection @code{.zerofill @var{segname}, @var{sectname} [, @var{symbol}, @var{size} [, @var{align} ]]}
 @cindex @code{zerofill} directive (Mach-O only) (Mach-O only)
 @cindex @code{.zerofill} (Mach-O only) (Mach-O only)
-
-To be written...
+Create @var{symbol} as uninitialized data in the section given by @var{segname}
+and @var{sectname} with a size of @var{size} bytes.  If given @var{align} is a
+power of 2 indicating byte alignment.
 
 @node Deprecated
 @section Deprecated Directives

@@ -4178,6 +4178,10 @@ File: llvm-assembler.info,  Node: Mach-O Directives,  Next: Deprecated,  Prev: C
 7.4 Mach-O Specific Directives
 ==============================
 
+LLVM implements all the assembler directives described by the OS X
+Assembler Reference manual.  This document only provides a summary,
+together with any LLVM specific extensions.
+
 * Menu:
 
 * BssMachO::                        '.bss'
@@ -4186,40 +4190,39 @@ File: llvm-assembler.info,  Node: Mach-O Directives,  Next: Deprecated,  Prev: C
 * ConstructorMachO::                '.constructor', '.destructor'
 * CstringMachO::                    '.cstring'
 * DataMachO::                       '.data'
-* DescMachO::                       '.desc'
-* DumpMachO::                       '.dump'
+* DescMachO::                       '.desc SYMBOL, EXPR'
+* DumpMachO::                       '.dump FILENAME', '.load FILENAME'
 * DyldMachO::                       '.dyld'
 * FvmlibInitMachO::                 '.fvmlib_init0', '.fvmlib_init1'
 * IdentMachO::                      '.ident'
-* IosVersionMinMachO::              '.ios_version_min'
+* IosVersionMinMachO::              '.ios_version_min MAJOR, MINOR, PATCH'
 * LazySymbolPointerMachO::          '.lazy_symbol_pointer', '.non_lazy_symbol_pointer'
 * LazyReferenceMachO::              '.lazy_reference SYMBOL'
-* LinkerOptionMachO::               '.linker_option'
+* LinkerOptionMachO::               '.linker_option "STRING"'
 * LiteralMachO::                    '.literal4', '.literal8', '.literal16'
-* LoadMachO::                       '.load'
-* LsymMachO::                       '.lsym'
-* MacosxVersionMinMachO::           '.macosx_version_min'
+* LsymMachO::                       '.lsym SYMBO, EXPRESSION'
+* MacosxVersionMinMachO::           '.macosx_version_min MAJOR, MINOR, PATCH'
 * ModInitFuncMachO::                '.mod_init_func', '.mod_term_func'
-* NoDeadStripMachO::                '.no_dead_strip'
+* NoDeadStripMachO::                '.no_dead_strip SYMBOL'
 * ObjC::                            Mach-O Objective C Specific Directives
 * PicsymbolStubMachO::              '.picsymbol_stub'
 * PreviousMachO::                   '.previous'
 * PrivateExternMachO::              '.private_extern NAME'
 * ReferenceMachO::                  '.reference SYMBOL'
-* SectionMachO::                    '.section'
+* SectionMachO::                    '.section SEGNAME, SECTNAME [[[, TYPE ], ATTRIBUTE ], SIZEOF_STUB ] '
 * StaticConstMachO::                '.static_const'
 * StaticDataMachO::                 '.static_data'
-* SymbolResolverMachO::             '.symbol_resolver NAME'
+* SymbolResolverMachO::             '.symbol_resolver RESOLVER'
 * SymbolStubMachO::                 '.symbol_stub'
-* TbssMachO::                       '.tbss'
+* TbssMachO::                       '.tbss SYMBOL SIZE ALIGN'
 * TdataMachO::                      '.tdata'
 * TextMachO::                       '.text'
 * ThreadInitFuncMachO::             '.thread_init_func'
 * TlvMachO::                        '.tlv'
-* WeakDefCanBeHiddenMachO::         '.symbol_resolver NAME'
+* WeakDefCanBeHiddenMachO::         '.weak_def_can_be_hidden NAME'
 * WeakDefinitionMachO::             '.weak_definition NAME'
 * WeakReferenceMachO::              '.weak_reference NAME'
-* ZerofillMachO::                   '.zerofill'
+* ZerofillMachO::                   '.zerofill SEGNAME, SECTNAME [, SYMBOL, SIZE [, ALIGN ]]'
 
 
 File: llvm-assembler.info,  Node: BssMachO,  Next: ConstMachO,  Up: Mach-O Directives
@@ -4227,7 +4230,10 @@ File: llvm-assembler.info,  Node: BssMachO,  Next: ConstMachO,  Up: Mach-O Direc
 7.4.1 '.bss'
 ------------
 
-To be written...
+This is a synonymn for:
+             .section  "__DATA", "__bss"
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ConstMachO,  Next: ConstDataMachO,  Prev: BssMachO,  Up: Mach-O Directives
@@ -4235,7 +4241,10 @@ File: llvm-assembler.info,  Node: ConstMachO,  Next: ConstDataMachO,  Prev: BssM
 7.4.2 '.const'
 --------------
 
-To be written...
+This is a synonymn for:
+             .section  "__TEXT", "__const"
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ConstDataMachO,  Next: ConstructorMachO,  Prev: ConstMachO,  Up: Mach-O Directives
@@ -4243,7 +4252,10 @@ File: llvm-assembler.info,  Node: ConstDataMachO,  Next: ConstructorMachO,  Prev
 7.4.3 '.const_data'
 -------------------
 
-To be written...
+This is a synonymn for:
+             .section  "__DATA", "__const_data"
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ConstructorMachO,  Next: CstringMachO,  Prev: ConstDataMachO,  Up: Mach-O Directives
@@ -4251,7 +4263,11 @@ File: llvm-assembler.info,  Node: ConstructorMachO,  Next: CstringMachO,  Prev: 
 7.4.4 '.constructor', '.destructor'
 -----------------------------------
 
-To be written...
+These are synonymns respectively for:
+             .section  "__TEXT", "__constructor"
+             .section  "__TEXT", "__destructor"
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: CstringMachO,  Next: DataMachO,  Prev: ConstructorMachO,  Up: Mach-O Directives
@@ -4259,7 +4275,10 @@ File: llvm-assembler.info,  Node: CstringMachO,  Next: DataMachO,  Prev: Constru
 7.4.5 '.cstring'
 ----------------
 
-To be written...
+This is a synonymn for:
+             .section  "__TEXT", "__cstring"
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: DataMachO,  Next: DescMachO,  Prev: CstringMachO,  Up: Mach-O Directives
@@ -4267,23 +4286,28 @@ File: llvm-assembler.info,  Node: DataMachO,  Next: DescMachO,  Prev: CstringMac
 7.4.6 '.data'
 -------------
 
-To be written...
+This is a synonymn for:
+             .section  "__DATA", "__data"
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: DescMachO,  Next: DumpMachO,  Prev: DataMachO,  Up: Mach-O Directives
 
-7.4.7 '.desc'
--------------
+7.4.7 '.desc SYMBOL, EXPR'
+--------------------------
 
-To be written...
+Set the 'n_desc' field for the specified SYMBO to the specified absolute
+expression.
 
 
 File: llvm-assembler.info,  Node: DumpMachO,  Next: DyldMachO,  Prev: DescMachO,  Up: Mach-O Directives
 
-7.4.8 '.dump'
--------------
+7.4.8 '.dump FILENAME', '.load FILENAME'
+----------------------------------------
 
-To be written...
+These directives dump and load aboslute symbols and macro definitions to
+and from a file.
 
 
 File: llvm-assembler.info,  Node: DyldMachO,  Next: FvmlibInitMachO,  Prev: DumpMachO,  Up: Mach-O Directives
@@ -4291,7 +4315,10 @@ File: llvm-assembler.info,  Node: DyldMachO,  Next: FvmlibInitMachO,  Prev: Dump
 7.4.9 '.dyld'
 -------------
 
-To be written...
+This is a synonymn for:
+             .section  "__DATA", "__dyld"
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: FvmlibInitMachO,  Next: IdentMachO,  Prev: DyldMachO,  Up: Mach-O Directives
@@ -4299,7 +4326,11 @@ File: llvm-assembler.info,  Node: FvmlibInitMachO,  Next: IdentMachO,  Prev: Dyl
 7.4.10 '.fvmlib_init0', '.fvmlib_init0'
 ---------------------------------------
 
-To be written...
+These are synonymns respectively for:
+             .section  "__TEXT", "__fvmlib_init0"
+             .section  "__TEXT", "__fvmlib_init1"
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: IdentMachO,  Next: IosVersionMinMachO,  Prev: FvmlibInitMachO,  Up: Mach-O Directives
@@ -4307,15 +4338,16 @@ File: llvm-assembler.info,  Node: IdentMachO,  Next: IosVersionMinMachO,  Prev: 
 7.4.11 '.ident'
 ---------------
 
-To be written...
+This directive is ignored.
 
 
 File: llvm-assembler.info,  Node: IosVersionMinMachO,  Next: LazySymbolPointerMachO,  Prev: IdentMachO,  Up: Mach-O Directives
 
-7.4.12 '.ios_version_min'
--------------------------
+7.4.12 '.ios_version_min MAJOR, MINOR, PATCH'
+---------------------------------------------
 
-To be written...
+Verify that the version of IOS for which the code is being assembled has
+at least the specified MAJOR, MINOR and PATCH versions.
 
 
 File: llvm-assembler.info,  Node: LazySymbolPointerMachO,  Next: LazyReferenceMachO,  Prev: IosVersionMinMachO,  Up: Mach-O Directives
@@ -4323,7 +4355,10 @@ File: llvm-assembler.info,  Node: LazySymbolPointerMachO,  Next: LazyReferenceMa
 7.4.13 '.lazy_symbol_pointer', '.non_lazy_symbol_pointer'
 ---------------------------------------------------------
 
-To be written...
+This is a synonymn for:
+             .section  "__DATA", "__ni_symbol_pointer"
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: LazyReferenceMachO,  Next: LinkerOptionMachO,  Prev: LazySymbolPointerMachO,  Up: Mach-O Directives
@@ -4331,68 +4366,74 @@ File: llvm-assembler.info,  Node: LazyReferenceMachO,  Next: LinkerOptionMachO, 
 7.4.14 '.lazy_reference SYMBOL'
 -------------------------------
 
-Generic option that is Mach-O specific.  To be written...
+This is a Generic option that is Mach-O specific.  The specified SYMBOL
+is marked to be a lazy undefined symbol.
 
 
 File: llvm-assembler.info,  Node: LinkerOptionMachO,  Next: LiteralMachO,  Prev: LazyReferenceMachO,  Up: Mach-O Directives
 
-7.4.15 '.linker_option'
------------------------
+7.4.15 '.linker_option "STRING"'
+--------------------------------
 
-To be written...
+Pass the specified string as an option to any subsequent linking step.
 
 
-File: llvm-assembler.info,  Node: LiteralMachO,  Next: LoadMachO,  Prev: LinkerOptionMachO,  Up: Mach-O Directives
+File: llvm-assembler.info,  Node: LiteralMachO,  Next: LsymMachO,  Prev: LinkerOptionMachO,  Up: Mach-O Directives
 
 7.4.16 '.literal4', '.literal8', '.literal16'
 ---------------------------------------------
 
-To be written...
+These are synonyms for respectively:
+             .section  "__TEXT", "__literal4"
+             .section  "__TEXT", "__literal8"
+             .section  "__TEXT", "__literal16"
+
+   *Note SectionMachO::.
 
 
-File: llvm-assembler.info,  Node: LoadMachO,  Next: LsymMachO,  Prev: LiteralMachO,  Up: Mach-O Directives
+File: llvm-assembler.info,  Node: LsymMachO,  Next: MacosxVersionMinMachO,  Prev: LiteralMachO,  Up: Mach-O Directives
 
-7.4.17 '.load'
---------------
+7.4.17 '.lsym SYMBO, EXPRESSION'
+--------------------------------
 
-To be written...
-
-
-File: llvm-assembler.info,  Node: LsymMachO,  Next: MacosxVersionMinMachO,  Prev: LoadMachO,  Up: Mach-O Directives
-
-7.4.18 '.lsym'
---------------
-
-To be written...
+Create a unique and othersize unreferenceable symbol with the name
+SYMBOL and value EXPRESSION.  The symbol is a static symbol of type
+'N_ABS'.
 
 
 File: llvm-assembler.info,  Node: MacosxVersionMinMachO,  Next: ModInitFuncMachO,  Prev: LsymMachO,  Up: Mach-O Directives
 
-7.4.19 '.macosx_version_min'
-----------------------------
+7.4.18 '.macosx_version_min MAJOR, MINOR, PATCH'
+------------------------------------------------
 
-To be written...
+Verify that the version of MacOS for which the code is being assembled
+has at least the specified MAJOR, MINOR and PATCH versions.
 
 
 File: llvm-assembler.info,  Node: ModInitFuncMachO,  Next: NoDeadStripMachO,  Prev: MacosxVersionMinMachO,  Up: Mach-O Directives
 
-7.4.20 '.mod_init_func', '.mod_term_func'
+7.4.19 '.mod_init_func', '.mod_term_func'
 -----------------------------------------
 
-To be written...
+These are synonymns for respectively:
+             .section  "__DATA", "__mod_init_func"
+             .section  "__DATA", "__mod_term_func"
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: NoDeadStripMachO,  Next: ObjC,  Prev: ModInitFuncMachO,  Up: Mach-O Directives
 
-7.4.21 '.no_dead_strip'
------------------------
+7.4.20 '.no_dead_strip SYMBOL'
+------------------------------
 
-Generic option that is Mach-O specific.  To be written...
+Generic option that is Mach-O specific.  Indicate that the specified
+symbol is not to be dead stripped.
 
 
 File: llvm-assembler.info,  Node: ObjC,  Next: PicsymbolStubMachO,  Prev: NoDeadStripMachO,  Up: Mach-O Directives
 
-7.4.22 Mach-O Objective C Specific Directives
+7.4.21 Mach-O Objective C Specific Directives
 ---------------------------------------------
 
 * Menu:
@@ -4420,296 +4461,397 @@ File: llvm-assembler.info,  Node: ObjC,  Next: PicsymbolStubMachO,  Prev: NoDead
 
 File: llvm-assembler.info,  Node: ObjcCatClsMeth,  Next: ObjcCatInstMeth,  Up: ObjC
 
-7.4.22.1 '.objc_cat_cls_meth'
+7.4.21.1 '.objc_cat_cls_meth'
 .............................
 
-To be written...
+This is a synonymn for:
+             .section  __OBJC, __cat_cls_meth
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ObjcCatInstMeth,  Next: ObjcCategory,  Prev: ObjcCatClsMeth,  Up: ObjC
 
-7.4.22.2 '.objc_cat_inst_meth'
+7.4.21.2 '.objc_cat_inst_meth'
 ..............................
 
-To be written...
+This is a synonymn for:
+             .section  __OBJC, __cat_inst_meth
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ObjcCategory,  Next: ObjcClass,  Prev: ObjcCatInstMeth,  Up: ObjC
 
-7.4.22.3 '.objc_category'
+7.4.21.3 '.objc_category'
 .........................
 
-To be written...
+This is a synonymn for:
+             .section  __OBJC, __category
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ObjcClass,  Next: ObjcClassNames,  Prev: ObjcCategory,  Up: ObjC
 
-7.4.22.4 '.objc_class'
+7.4.21.4 '.objc_class'
 ......................
 
-To be written...
+This is a synonymn for:
+             .section  __OBJC, __class
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ObjcClassNames,  Next: ObjcClassVars,  Prev: ObjcClass,  Up: ObjC
 
-7.4.22.5 '.objc_class_names'
+7.4.21.5 '.objc_class_names'
 ............................
 
-To be written...
+This is a synonymn for:
+             .section  __OBJC, __class_names
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ObjcClassVars,  Next: ObjcClsMeth,  Prev: ObjcClassNames,  Up: ObjC
 
-7.4.22.6 '.objc_class_vars'
+7.4.21.6 '.objc_class_vars'
 ...........................
 
-To be written...
+This is a synonymn for:
+             .section  __OBJC, __class_vars
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ObjcClsMeth,  Next: ObjcClsRefs,  Prev: ObjcClassVars,  Up: ObjC
 
-7.4.22.7 '.objc_cls_meth'
+7.4.21.7 '.objc_cls_meth'
 .........................
 
-To be written...
+This is a synonymn for:
+             .section  __OBJC, __cls_meth
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ObjcClsRefs,  Next: ObjcInstMeth,  Prev: ObjcClsMeth,  Up: ObjC
 
-7.4.22.8 '.objc_cls_refs'
+7.4.21.8 '.objc_cls_refs'
 .........................
 
-To be written...
+This is a synonymn for:
+             .section  __OBJC, __cls_refs
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ObjcInstMeth,  Next: ObjcInstanceVars,  Prev: ObjcClsRefs,  Up: ObjC
 
-7.4.22.9 '.objc_inst_meth'
+7.4.21.9 '.objc_inst_meth'
 ..........................
 
-To be written...
+This is a synonymn for:
+             .section  __OBJC, __inst_meth
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ObjcInstanceVars,  Next: ObjcMessageRefs,  Prev: ObjcInstMeth,  Up: ObjC
 
-7.4.22.10 '.objc_instance_vars'
+7.4.21.10 '.objc_instance_vars'
 ...............................
 
-To be written...
+This is a synonymn for:
+             .section  __OBJC, __instance_vars
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ObjcMessageRefs,  Next: ObjcMetaClass,  Prev: ObjcInstanceVars,  Up: ObjC
 
-7.4.22.11 '.objc_message_refs'
+7.4.21.11 '.objc_message_refs'
 ..............................
 
-To be written...
+This is a synonymn for:
+             .section  __OBJC, __message_refs
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ObjcMetaClass,  Next: ObjcMethVarNames,  Prev: ObjcMessageRefs,  Up: ObjC
 
-7.4.22.12 '.objc_meta_class'
+7.4.21.12 '.objc_meta_class'
 ............................
 
-To be written...
+This is a synonymn for:
+             .section  __OBJC, __meta_class
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ObjcMethVarNames,  Next: ObjcMethVarTypes,  Prev: ObjcMetaClass,  Up: ObjC
 
-7.4.22.13 '.objc_meth_var_names'
+7.4.21.13 '.objc_meth_var_names'
 ................................
 
-To be written...
+This is a synonymn for:
+             .section  __OBJC, __meth_var_names
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ObjcMethVarTypes,  Next: ObjcModuleInfo,  Prev: ObjcMethVarNames,  Up: ObjC
 
-7.4.22.14 '.objc_meth_var_types'
+7.4.21.14 '.objc_meth_var_types'
 ................................
 
-To be written...
+This is a synonymn for:
+             .section  __OBJC, __meth_var_types
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ObjcModuleInfo,  Next: ObjcProtocol,  Prev: ObjcMethVarTypes,  Up: ObjC
 
-7.4.22.15 '.objc_module_info'
+7.4.21.15 '.objc_module_info'
 .............................
 
-To be written...
+This is a synonymn for:
+             .section  __OBJC, __module_info
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ObjcProtocol,  Next: ObjcSelectorStrs,  Prev: ObjcModuleInfo,  Up: ObjC
 
-7.4.22.16 '.objc_protocol'
+7.4.21.16 '.objc_protocol'
 ..........................
 
-To be written...
+This is a synonymn for:
+             .section  __OBJC, __protocol
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ObjcSelectorStrs,  Next: ObjcStringObject,  Prev: ObjcProtocol,  Up: ObjC
 
-7.4.22.17 '.objc_selector_strs'
+7.4.21.17 '.objc_selector_strs'
 ...............................
 
-To be written...
+This is a synonymn for:
+             .section  __OBJC, __selector_strs
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ObjcStringObject,  Next: ObjcSymbols,  Prev: ObjcSelectorStrs,  Up: ObjC
 
-7.4.22.18 '.objc_string_object'
+7.4.21.18 '.objc_string_object'
 ...............................
 
-To be written...
+This is a synonymn for:
+             .section  __OBJC, __string_object
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ObjcSymbols,  Prev: ObjcStringObject,  Up: ObjC
 
-7.4.22.19 '.objc_symbols'
+7.4.21.19 '.objc_symbols'
 .........................
 
-To be written...
+This is a synonymn for:
+             .section  __OBJC, __symbols
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: PicsymbolStubMachO,  Next: PreviousMachO,  Prev: ObjC,  Up: Mach-O Directives
 
-7.4.23 '.picsymbol_stub'
+7.4.22 '.picsymbol_stub'
 ------------------------
 
-To be written...
+This is a synonymn for one of:
+             .section  "__TEXT", "__picsymbolstub1"
+             .section  "__TEXT", "__picsymbol_stub"
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: PreviousMachO,  Next: PrivateExternMachO,  Prev: PicsymbolStubMachO,  Up: Mach-O Directives
 
-7.4.24 '.previous'
+7.4.23 '.previous'
 ------------------
 
-To be written...
+This directive swaps the current section with the most recently
+referenced section prior to this one.  Multiple '.previous' directives
+in a row will flip between two sections.
 
 
 File: llvm-assembler.info,  Node: PrivateExternMachO,  Next: ReferenceMachO,  Prev: PreviousMachO,  Up: Mach-O Directives
 
-7.4.25 '.private_extern NAME'
+7.4.24 '.private_extern NAME'
 -----------------------------
 
-Generic option that is Mach-O specific.  To be written...
+Generic option that is Mach-O specific.  Mark SYMBOL as a private
+external symbol.
 
 
 File: llvm-assembler.info,  Node: ReferenceMachO,  Next: SectionMachO,  Prev: PrivateExternMachO,  Up: Mach-O Directives
 
-7.4.26 '.reference SYMBOL'
+7.4.25 '.reference SYMBOL'
 --------------------------
 
-Generic option that is Mach-O specific.  To be written...
+Generic option that is Mach-O specific.  Mark SYMBOL as an undefined
+symbol in the output symbol table.
 
 
 File: llvm-assembler.info,  Node: SectionMachO,  Next: StaticConstMachO,  Prev: ReferenceMachO,  Up: Mach-O Directives
 
-7.4.27 '.section'
------------------
+7.4.26 '.section SEGNAME, SECTNAME [[[, TYPE ], ATTRIBUTE ], SIZEOF_STUB ] '
+----------------------------------------------------------------------------
 
-To be written...
+Start assembling in the section specified by SEGNAME and SECTNAME with
+the optional TYPE and ATTRIBUTE.  If given SIZEOF_STUB is the size in
+bytes of symbol stubs in the section.
 
 
 File: llvm-assembler.info,  Node: StaticConstMachO,  Next: StaticDataMachO,  Prev: SectionMachO,  Up: Mach-O Directives
 
-7.4.28 '.static_const'
+7.4.27 '.static_const'
 ----------------------
 
-To be written...
+This is a synonymn for:
+             .section  "__TEXT", "__static_const"
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: StaticDataMachO,  Next: SymbolResolverMachO,  Prev: StaticConstMachO,  Up: Mach-O Directives
 
-7.4.29 '.static_data'
+7.4.28 '.static_data'
 ---------------------
 
-To be written...
+This is a synonymn for:
+             .section  "__DATA", "__static_data"
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: SymbolResolverMachO,  Next: SymbolStubMachO,  Prev: StaticDataMachO,  Up: Mach-O Directives
 
-7.4.30 '.symbol_resolver'
--------------------------
+7.4.29 '.symbol_resolver RESOLVER'
+----------------------------------
 
-To be written...
+Specify a symbol resolver to be used by the LLVM linker, 'lld'.
 
 
 File: llvm-assembler.info,  Node: SymbolStubMachO,  Next: TbssMachO,  Prev: SymbolResolverMachO,  Up: Mach-O Directives
 
-7.4.31 '.symbol_stub'
+7.4.30 '.symbol_stub'
 ---------------------
 
-To be written...
+This is a synonymn for one of:
+             .section  "__TEXT", "__symbol_stub"
+             .section  "__TEXT", "__jump_table"
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: TbssMachO,  Next: TdataMachO,  Prev: SymbolStubMachO,  Up: Mach-O Directives
 
-7.4.32 '.tbss'
---------------
+7.4.31 '.tbss SYMBOL SIZE ALIGN'
+--------------------------------
 
-To be written...
+Create SYMBOL as an entry of SIZE bytes with alignment ALIGN in the
+Thread Local Storage BSS section.
 
 
 File: llvm-assembler.info,  Node: TdataMachO,  Next: TextMachO,  Prev: TbssMachO,  Up: Mach-O Directives
 
-7.4.33 '.tdata'
+7.4.32 '.tdata'
 ---------------
 
-To be written...
+This is a synonymn for:
+             .section  "__DATA", "__thread_data"
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: TextMachO,  Next: ThreadInitFuncMachO,  Prev: TdataMachO,  Up: Mach-O Directives
 
-7.4.34 '.text'
+7.4.33 '.text'
 --------------
 
-To be written...
+For static code this is a synonym for:
+             .section  __TEXT, __text, regular
+
+   For dynamic code it is a synonymn for:
+             .section  __TEXT, __text, regular, pure_instructions
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: ThreadInitFuncMachO,  Next: TlvMachO,  Prev: TextMachO,  Up: Mach-O Directives
 
-7.4.35 '.thread_init_func'
+7.4.34 '.thread_init_func'
 --------------------------
 
-To be written...
+This is a synonymn for:
+             .section  "__DATA", "__thread_init"
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: TlvMachO,  Next: WeakDefCanBeHiddenMachO,  Prev: ThreadInitFuncMachO,  Up: Mach-O Directives
 
-7.4.36 '.tlv'
+7.4.35 '.tlv'
 -------------
 
-To be written...
+This is a synonymn for:
+             .section  "__DATA", "__thread_vars"
+
+   *Note SectionMachO::.
 
 
 File: llvm-assembler.info,  Node: WeakDefCanBeHiddenMachO,  Next: WeakDefinitionMachO,  Prev: TlvMachO,  Up: Mach-O Directives
 
-7.4.37 '.weak_def_can_be_hidden'
---------------------------------
+7.4.36 '.weak_def_can_be_hidden NAME'
+-------------------------------------
 
-To be written...
+Undocumented generic option that is Mach-O specific.  This is a variant
+of '.weak_definition' to define symbols which can be hidden under some
+circumstances.  *Note WeakDefinitionMachO::.
 
 
 File: llvm-assembler.info,  Node: WeakDefinitionMachO,  Next: WeakReferenceMachO,  Prev: WeakDefCanBeHiddenMachO,  Up: Mach-O Directives
 
-7.4.38 '.weak_definition NAME'
+7.4.37 '.weak_definition NAME'
 ------------------------------
 
-To be written...
+Generic option that is Mach-O specific.  Mark symbol NAME as a weak
+definition.
 
 
 File: llvm-assembler.info,  Node: WeakReferenceMachO,  Next: ZerofillMachO,  Prev: WeakDefinitionMachO,  Up: Mach-O Directives
 
-7.4.39 '.weak_reference NAME'
+7.4.38 '.weak_reference NAME'
 -----------------------------
+
+Generic option that is Mach-O specific.  Mark symbol NAME as a weak
+undefined symbol in the output symbol table.
 
 
 File: llvm-assembler.info,  Node: ZerofillMachO,  Prev: WeakReferenceMachO,  Up: Mach-O Directives
 
-7.4.40 '.zerofill'
-------------------
+7.4.39 '.zerofill SEGNAME, SECTNAME [, SYMBOL, SIZE [, ALIGN ]]'
+----------------------------------------------------------------
 
-To be written...
+Create SYMBOL as uninitialized data in the section given by SEGNAME and
+SECTNAME with a size of SIZE bytes.  If given ALIGN is a power of 2
+indicating byte alignment.
 
 
 File: llvm-assembler.info,  Node: Deprecated,  Next: Unsupported,  Prev: Mach-O Directives,  Up: Pseudo Ops
@@ -5896,7 +6038,7 @@ LLVM Integrated Assembler Index
 * '.literal4' (Mach-O only):             LiteralMachO.        (line   6)
 * '.literal8' (Mach-O only):             LiteralMachO.        (line   6)
 * '.ln' (unsupported):                   Unsupported.         (line  56)
-* '.load' (Mach-O only):                 LoadMachO.           (line   6)
+* '.load' (Mach-O only):                 DumpMachO.           (line   6)
 * '.local' (ELF only):                   LocalElf.            (line   6)
 * '.loc_mark_labels' (unsupported):      Unsupported.         (line  59)
 * '.long':                               Long.                (line   6)
@@ -6049,7 +6191,7 @@ LLVM Integrated Assembler Index
 * '.weak_def_can_be_hidden' (Mach-O only): WeakDefCanBeHiddenMachO.
                                                               (line   6)
 * '.weak_reference':                     WeakReference.       (line   6)
-* '.weak_reference' (Mach-O only):       WeakReferenceMachO.  (line   5)
+* '.weak_reference' (Mach-O only):       WeakReferenceMachO.  (line   6)
 * '.word' (unsupported):                 Unsupported.         (line 104)
 * '.zero':                               Zero.                (line   6)
 * '.zerofill' (Mach-O only) (Mach-O only): ZerofillMachO.     (line   6)
@@ -6364,7 +6506,7 @@ LLVM Integrated Assembler Index
 * lld:                                   Object.              (line  15)
 * LLVM options for assembly:             common-options.      (line  40)
 * 'ln' directive (unsupported):          Unsupported.         (line  56)
-* 'load' directive (Mach-O only):        LoadMachO.           (line   6)
+* 'load' directive (Mach-O only):        DumpMachO.           (line   6)
 * 'loc' directive:                       Loc.                 (line   6)
 * local common symbols:                  Lcomm.               (line   6)
 * 'local' directive (ELF only):          LocalElf.            (line   6)
@@ -6868,79 +7010,78 @@ Node: SehStackalloc159860
 Node: SehChained160286
 Node: WeakCoff160527
 Node: Mach-O Directives161308
-Node: BssMachO163650
-Node: ConstMachO163784
-Node: ConstDataMachO163945
-Node: ConstructorMachO164124
-Node: CstringMachO164337
-Node: DataMachO164507
-Node: DescMachO164664
-Node: DumpMachO164818
-Node: DyldMachO164972
-Node: FvmlibInitMachO165132
-Node: IdentMachO165345
-Node: IosVersionMinMachO165519
-Node: LazySymbolPointerMachO165720
-Node: LazyReferenceMachO165993
-Node: LinkerOptionMachO166254
-Node: LiteralMachO166448
-Node: LoadMachO166677
-Node: LsymMachO166836
-Node: MacosxVersionMinMachO167004
-Node: ModInitFuncMachO167207
-Node: NoDeadStripMachO167443
-Node: ObjC167667
-Node: ObjcCatClsMeth168771
-Node: ObjcCatInstMeth168937
-Node: ObjcCategory169126
-Node: ObjcClass169300
-Node: ObjcClassNames169467
-Node: ObjcClassVars169647
-Node: ObjcClsMeth169827
-Node: ObjcClsRefs170000
-Node: ObjcInstMeth170172
-Node: ObjcInstanceVars170351
-Node: ObjcMessageRefs170544
-Node: ObjcMetaClass170736
-Node: ObjcMethVarNames170924
-Node: ObjcMethVarTypes171121
-Node: ObjcModuleInfo171319
-Node: ObjcProtocol171507
-Node: ObjcSelectorStrs171689
-Node: ObjcStringObject171883
-Node: ObjcSymbols172076
-Node: PicsymbolStubMachO172232
-Node: PreviousMachO172416
-Node: PrivateExternMachO172602
-Node: ReferenceMachO172847
-Node: SectionMachO173085
-Node: StaticConstMachO173262
-Node: StaticDataMachO173450
-Node: SymbolResolverMachO173643
-Node: SymbolStubMachO173843
-Node: TbssMachO174029
-Node: TdataMachO174192
-Node: TextMachO174351
-Node: ThreadInitFuncMachO174518
-Node: TlvMachO174707
-Node: WeakDefCanBeHiddenMachO174884
-Node: WeakDefinitionMachO175099
-Node: WeakReferenceMachO175320
-Node: ZerofillMachO175511
-Node: Deprecated175670
-Node: Unsupported175993
-Node: Object Attributes178452
-Node: Machine Dependencies178857
-Node: AAP-dependent179746
-Node: AAP Options180416
-Node: AAP Directives180734
-Node: AAP Assembler Syntax181077
-Node: Reporting Bugs181807
-Node: Bug Criteria182620
-Node: Bug Reporting183514
-Node: Acknowledgements190484
-Ref: Acknowledgements-Footnote-1195598
-Node: GNU Free Documentation License195624
-Node: AS Index220786
+Node: BssMachO164034
+Node: ConstMachO164242
+Node: ConstDataMachO164479
+Node: ConstructorMachO164739
+Node: CstringMachO165096
+Node: DataMachO165344
+Node: DescMachO165576
+Node: DumpMachO165824
+Node: DyldMachO166105
+Node: FvmlibInitMachO166340
+Node: IdentMachO166700
+Node: IosVersionMinMachO166884
+Node: LazySymbolPointerMachO167237
+Node: LazyReferenceMachO167598
+Node: LinkerOptionMachO167914
+Node: LiteralMachO168180
+Node: LsymMachO168594
+Node: MacosxVersionMinMachO168928
+Node: ModInitFuncMachO169285
+Node: NoDeadStripMachO169670
+Node: ObjC169954
+Node: ObjcCatClsMeth171058
+Node: ObjcCatInstMeth171303
+Node: ObjcCategory171572
+Node: ObjcClass171821
+Node: ObjcClassNames172060
+Node: ObjcClassVars172318
+Node: ObjcClsMeth172575
+Node: ObjcClsRefs172823
+Node: ObjcInstMeth173070
+Node: ObjcInstanceVars173325
+Node: ObjcMessageRefs173598
+Node: ObjcMetaClass173869
+Node: ObjcMethVarNames174134
+Node: ObjcMethVarTypes174412
+Node: ObjcModuleInfo174691
+Node: ObjcProtocol174957
+Node: ObjcSelectorStrs175214
+Node: ObjcStringObject175488
+Node: ObjcSymbols175761
+Node: PicsymbolStubMachO175991
+Node: PreviousMachO176319
+Node: PrivateExternMachO176664
+Node: ReferenceMachO176934
+Node: SectionMachO177218
+Node: StaticConstMachO177675
+Node: StaticDataMachO177946
+Node: SymbolResolverMachO178221
+Node: SymbolStubMachO178486
+Node: TbssMachO178809
+Node: TdataMachO179093
+Node: TextMachO179334
+Node: ThreadInitFuncMachO179705
+Node: TlvMachO179976
+Node: WeakDefCanBeHiddenMachO180235
+Node: WeakDefinitionMachO180631
+Node: WeakReferenceMachO180915
+Node: ZerofillMachO181220
+Node: Deprecated181621
+Node: Unsupported181944
+Node: Object Attributes184403
+Node: Machine Dependencies184808
+Node: AAP-dependent185697
+Node: AAP Options186367
+Node: AAP Directives186685
+Node: AAP Assembler Syntax187028
+Node: Reporting Bugs187758
+Node: Bug Criteria188571
+Node: Bug Reporting189465
+Node: Acknowledgements196435
+Ref: Acknowledgements-Footnote-1201549
+Node: GNU Free Documentation License201575
+Node: AS Index226737
 
 End Tag Table
