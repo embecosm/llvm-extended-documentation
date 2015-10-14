@@ -21,37 +21,52 @@ The LLVM integrated assembler for AAP has relatively few custom features.
 @end menu
 
 @node AAP Options
+
+@c AAP is used as the reference achitecture for the LLVM version of
+@c the manual, so includes placeholder comments to show what to add.
+
 @subsection AAP Specific Commmand Line Options
 @cindex command line options for AAP
 @cindex AAP, command line options
-AAP configurations of the LLVM integrated assembler support these
-special options:
 
-@table @code
-@item -Q @var{num}
-@cindex @code{-Q} option (AAP)
-An example option to complete the template.
-@end table
+There are no AAP specific options to the LLVM integrated assember.
+
+@c This is generally the case.  However if there were some, we could
+@c use the following:
+@c
+@c The following AAP specific options are provided by the LLVM
+@c integrated assembler.
+
+@c @table @code
+@c @item -Q @var{num}
+@c @cindex @code{-Q} option (AAP)
+@c An example option to complete the template.
+@c @end table
 
 @node AAP Directives
 @subsection AAP Specific Assembler Directives
 @cindex assembler directives for AAP
 @cindex AAP, assembler directives
 
-AAP configurations of the LLVM integrated assembler support these
-special assembler directives and variants of standard directives.
+There are no AAP specific directives in the LLVM integrated assembler.
 
-@table @code
-@item .AAP
-@cindex @code{AAP} directive (AAP)
-@cindex @code{.AAP} (AAP)
-
-@end table
+@c This is generally the case.  However if there were some, we could
+@c use the following:
+@c
+@c The following AAP specific directives are provided by the LLVM
+@c integrated assembler.
+@c
+@c @table @code
+@c @item .AAP
+@c @cindex @code{AAP} directive (AAP)
+@c @cindex @code{.AAP} (AAP)
+@c
+@c @end table
 
 @node AAP Assembler Syntax
 @subsection AAP Assembler Syntax
 
-The following are custom assembler syntax.
+AAP offers the following custom assembler syntax.
 
 @table @strong
 @item line comment character

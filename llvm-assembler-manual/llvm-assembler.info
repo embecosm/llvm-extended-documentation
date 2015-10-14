@@ -5035,11 +5035,7 @@ File: llvm-assembler.info,  Node: AAP Options,  Next: AAP Directives,  Up: AAP-d
 9.1.1 AAP Specific Commmand Line Options
 ----------------------------------------
 
-AAP configurations of the LLVM integrated assembler support these
-special options:
-
-'-Q NUM'
-     An example option to complete the template.
+There are no AAP specific options to the LLVM integrated assember.
 
 
 File: llvm-assembler.info,  Node: AAP Directives,  Next: AAP Assembler Syntax,  Prev: AAP Options,  Up: AAP-dependent
@@ -5047,10 +5043,7 @@ File: llvm-assembler.info,  Node: AAP Directives,  Next: AAP Assembler Syntax,  
 9.1.2 AAP Specific Assembler Directives
 ---------------------------------------
 
-AAP configurations of the LLVM integrated assembler support these
-special assembler directives and variants of standard directives.
-
-'.AAP'
+There are no AAP specific directives in the LLVM integrated assembler.
 
 
 File: llvm-assembler.info,  Node: AAP Assembler Syntax,  Prev: AAP Directives,  Up: AAP-dependent
@@ -5058,7 +5051,7 @@ File: llvm-assembler.info,  Node: AAP Assembler Syntax,  Prev: AAP Directives,  
 9.1.3 AAP Assembler Syntax
 --------------------------
 
-The following are custom assembler syntax.
+AAP offers the following custom assembler syntax.
 
 *line comment character*
      The presence of a '#' on a line indicates the start of a comment
@@ -5901,7 +5894,6 @@ LLVM Integrated Assembler Index
 * -n:                                    internal-options.    (line  85)
 * -o FILE:                               common-options.      (line  53)
 * -output-asm-variant VALUE:             internal-options.    (line  88)
-* '-Q' option (AAP):                     AAP Options.         (line  10)
 * -show-encoding:                        internal-options.    (line  82)
 * -show-inst:                            internal-options.    (line  93)
 * -target-abi VALUE:                     internal-options.    (line  96)
@@ -5913,7 +5905,6 @@ LLVM Integrated Assembler Index
 * '.2byte':                              2byte.               (line   6)
 * '.4byte':                              4byte.               (line   6)
 * '.8byte':                              8byte.               (line   6)
-* '.AAP' (AAP):                          AAP Directives.      (line  10)
 * '.abort' (deprecated):                 Abort.               (line   6)
 * '.abort' (deprecated) <1>:             Deprecated.          (line   9)
 * '.align':                              Align.               (line   6)
@@ -6210,7 +6201,6 @@ LLVM Integrated Assembler Index
 * '\\' ('\' character):                  Strings.             (line  41)
 * a.out:                                 Object.              (line   6)
 * AAP:                                   AAP-dependent.       (line   6)
-* 'AAP' directive (AAP):                 AAP Directives.      (line  10)
 * AAP line comment character:            AAP Assembler Syntax.
                                                               (line   9)
 * AAP line separator:                    AAP Assembler Syntax.
@@ -7074,14 +7064,14 @@ Node: Object Attributes184403
 Node: Machine Dependencies184808
 Node: AAP-dependent185697
 Node: AAP Options186367
-Node: AAP Directives186685
-Node: AAP Assembler Syntax187028
-Node: Reporting Bugs187758
-Node: Bug Criteria188571
-Node: Bug Reporting189465
-Node: Acknowledgements196435
-Ref: Acknowledgements-Footnote-1201549
-Node: GNU Free Documentation License201575
-Node: AS Index226737
+Node: AAP Directives186610
+Node: AAP Assembler Syntax186884
+Node: Reporting Bugs187621
+Node: Bug Criteria188434
+Node: Bug Reporting189328
+Node: Acknowledgements196298
+Ref: Acknowledgements-Footnote-1201412
+Node: GNU Free Documentation License201438
+Node: AS Index226600
 
 End Tag Table

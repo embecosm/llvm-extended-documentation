@@ -1,3 +1,9 @@
+2015-10-14  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* llvm-assembler-manual/c-aap.texi: Corrected to have actual
+	details.  Commenting provides template for other architectures.
+	* llvm-assembler-manual/llvm-assembler.info: Regenerated.
+
 2015-07-20  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* llvm-assembler-manual/llvm-assembler.info: Regenerated.
