@@ -1,3 +1,10 @@
+2015-10-16  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	Work in progress on adding Eclipse help.
+
+	* Makefile.am: Add support for Eclipse help generation.
+	* llvm-assembler-manual/Makefile.am: Likewise.
+
 2015-10-14  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* llvm-assembler-manual/c-aap.texi: Corrected to have actual

@@ -13,3 +13,16 @@ ACLOCAL_AMFLAGS = -I m4
 
 # Common flags for all programs
 SUBDIRS = llvm-assembler-manual llvm-user-manual
+
+# Targets to generate docbook and html
+
+am__extra_recursive_targets = install-docbook-recursive docbook-recursive \
+                             install-eclipse-recursive eclipse-recursive
+
+install-docbook: install-docbook-recursive
+
+install-eclipse: install-eclipse-recursive
+
+docbook: docbook-recursive
+
+eclipse: eclipse-recursive
