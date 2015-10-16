@@ -80,8 +80,7 @@ spell:
 		--add-texinfo-ignore acronym --add-texinfo-ignore abbrev \
 		--add-texinfo-ignore ifset --add-texinfo-ignore ifclear \
 		--add-texinfo-ignore node --add-texinfo-ignore printindex \
-		--add-texinfo-ignore sub --add-texinfo-ignore sup \
-		--add-texinfo-ignore value \
+		--add-texinfo-ignore value --add-texinfo-ignore math \
 		--add-texinfo-ignore-env menu --add-texinfo-ignore-env tex
 
 mostlyclean-local:

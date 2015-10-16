@@ -137,7 +137,7 @@ section entitled ``GNU Free Documentation License''.
 * Pseudo Ops::                  Assembler Directives
 * Machine Dependencies::        Machine Dependent Features
 * Reporting Bugs::              Reporting Bugs
-* Acknowledgements::            Who Did What
+* Acknowledgments::             Who Did What
 * GNU Free Documentation License::  GNU Free Documentation License
 * AS Index::                    LLVM Integrated Assembler Index
 @end menu
@@ -1649,14 +1649,14 @@ of the same name.  The character has ASCII value of @samp{\002} (control-B).
 
 @item @emph{ordinal number}
 This is a serial number to keep the labels distinct.  The first definition of
-@samp{0:} gets the number @samp{1}.  The 15@sup{th} definition of @samp{0:}
+@samp{0:} gets the number @samp{1}.  The 15th definition of @samp{0:}
 gets the number @samp{15}, and so on.  Likewise the first definition of
-@samp{1:} gets the number @samp{1} and its 15@sup{th} definition gets @samp{15}
+@samp{1:} gets the number @samp{1} and its 15th definition gets @samp{15}
 as well.
 @end table
 
 So for example, the first @code{1:} may be named @code{.L1@kbd{C-B}1}, and
-the 44@sup{th} @code{3:} may be named @code{.L3@kbd{C-B}44}.
+the 44th @code{3:} may be named @code{.L3@kbd{C-B}44}.
 
 @subheading Dollar Local Labels
 @cindex dollar local symbols
@@ -4395,6 +4395,7 @@ appear after the @code{.seh_endprologue} directive (@pxref{SehEndprologue}) and
 before the @code{.seh_proc} directive (@pxref{SehProc}) for the function to
 which it refers.
 
+@node SehPushreg
 @subsubsection @code{.seh_pushreg @var{reg}}
 @cindex @code{seh_pushreg} directive (COFF Win64 event handling only)
 @cindex @code{.seh_pushreg} (COFF Win64 event handling only)
@@ -5581,6 +5582,8 @@ know about it.  Send mail to the author, and we'll correct the situation.  As
 of October 2015, the author of the version of the manual for the LLVM
 Integrated Assembler is Jeremy Bennett (email address
 @uref{mailto:jeremy.bennett@@embecosm.com, jeremy.bennett@@embecosm.com}).
+
+@section Orginal GAS Acknowledgments
 
 If you have contributed to GAS and your name isn't listed here,
 it is not meant as a slight.  We just don't know about it.  Send mail to the

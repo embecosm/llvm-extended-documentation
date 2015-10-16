@@ -41,7 +41,7 @@ entitled "GNU Free Documentation License".
 * Pseudo Ops::                  Assembler Directives
 * Machine Dependencies::        Machine Dependent Features
 * Reporting Bugs::              Reporting Bugs
-* Acknowledgements::            Who Did What
+* Acknowledgments::             Who Did What
 * GNU Free Documentation License::  GNU Free Documentation License
 * AS Index::                    LLVM Integrated Assembler Index
 
@@ -147,7 +147,7 @@ to LLVM.
    In this case only one source file is given, and any assembled output
 is sent to standard output.
 
-   Unless otherwise indiated, clang will use the default architecture.
+   Unless otherwise indicated, clang will use the default architecture.
 This can be changed using the '-target' option.
      clang -target ARCH ... MYFILE.s
 
@@ -216,7 +216,7 @@ pre-processor.  For example
    will pass 'hello.s' through the C pre-processor, then assemble it.
 
    The suffix can be overridden using Clang's '-x' option to specify the
-language of succeeding files on the commmand line.  For the integrated
+language of succeeding files on the command line.  For the integrated
 assembler, the two useful arguments to the '-x' option are 'assembler'
 and 'assembler-with-cpp'.  So for example, the following would ensure
 'hello.s' is passed through the C pre-processor before assembling:
@@ -242,7 +242,7 @@ directives; they bear no relation to physical files.  Logical file names
 help error messages reflect the original source file, when assembler
 source is itself synthesized from other files.  The LLVM integrated
 assembler understands the '#' directives emitted by the LLVM C
-preprocessor.  See also *note '.file': File.
+pre-processor.  See also *note '.file': File.
 
 
 File: llvm-assembler.info,  Node: Object,  Next: Errors,  Prev: Input Files,  Up: Overview
@@ -327,7 +327,7 @@ automatically interpreted as assembler options.
 
    _Note:_ Some options to the LLVM integrated assembler are considered
 part of the internal interface between the clang driver and the LLVM
-integratated assembler component.  These options are not accesible via
+integrated assembler component.  These options are not accessible via
 '-Wa' or '-Xassembler', and can only be used when the assembler is
 invoked directly using '-cc1as'.  Avoid using such options-since they
 are part of an internal interface they are subject to change or removal
@@ -376,7 +376,7 @@ on from Clang to the assembler when processing any assembler files.
           clang -IDIR1 -Wa,-IDIR2 MYFILE.S
 
      will search for any files in '#include' directives in DIR1 and any
-     files in '.include' directives in DIR1 amd then DIR2.
+     files in '.include' directives in DIR1 and then DIR2.
 
 '-llvm VALUE'
      Pass the specified VALUE to the LLVM option processing system.  In
@@ -389,7 +389,7 @@ on from Clang to the assembler when processing any assembler files.
 
      _Note:_ Some architectures generate long instructions and then
      relax to shorter instructions.  This is simpler to implement, but
-     suboptimal.  For these architectures, this flag has no effect.
+     sub-optimal.  For these architectures, this flag has no effect.
 
 '-o FILE'
      Specify FILE as the output file.  If not specified output will by
@@ -534,7 +534,7 @@ turns is inspired by the BSD 4.2 VAX assembler.
 
 * Menu:
 
-* Preprocessing::               Preprocessing
+* Preprocessing::               Pre-Processing
 * Whitespace::                  Whitespace
 * Comments::                    Comments
 * Symbol Intro::                Symbols
@@ -544,10 +544,10 @@ turns is inspired by the BSD 4.2 VAX assembler.
 
 File: llvm-assembler.info,  Node: Preprocessing,  Next: Whitespace,  Up: Syntax
 
-3.1 Preprocessing
-=================
+3.1 Pre-Processing
+==================
 
-The LLVM integrated assembler internal preprocessor:
+The LLVM integrated assembler internal pre-processor:
    * adjusts and removes extra whitespace.  It leaves one space or tab
      before the keywords on a line, and turns any other whitespace on
      the line into a single space.
@@ -558,13 +558,13 @@ The LLVM integrated assembler internal preprocessor:
    * converts character constants into the appropriate numeric values.
 
    It does not do macro processing, include file handling, or anything
-else you may get from your C compiler's preprocessor.  You can do
+else you may get from your C compiler's pre-processor.  You can do
 include file processing with the '.include' directive (*note '.include':
-Include.).  You can use Clang to get other "CPP" style preprocessing by
+Include.).  You can use Clang to get other "CPP" style pre-processing by
 giving the input file a '.S' suffix.  *Note Input Files: Input Files.
 
    Excess whitespace, comments, and character constants cannot be used
-in the portions of the input text that are not preprocessed.
+in the portions of the input text that are not pre-processed.
 
    Unlike the GNU assembler, '#NO_APP' and '#APP' before the text that
 may contain whitespace or comments, and putting a line that says
@@ -613,7 +613,7 @@ have been used.  For more details see the _Syntax_ section in the
 documentation for individual targets.
 
    If the line comment character is the hash sign ('#') then it still
-has the special ability to enable and disable preprocessing (*note
+has the special ability to enable and disable pre-processing (*note
 Preprocessing::) and to specify logical line numbers:
 
    To be compatible with past assemblers, lines that begin with '#' have
@@ -643,7 +643,7 @@ A "symbol" is one or more characters chosen from the set of all letters
 most machines, you can also use '$' in symbol names; exceptions are
 noted in *note Machine Dependencies::.  No symbol may begin with a
 digit.  Case is significant.  There is no length limit: all characters
-are significant.  Multibyte characters are supported.  Symbols are
+are significant.  Multi-Byte characters are supported.  Symbols are
 delimited by characters not in that set, or by the beginning of a file
 (since the source program must end with a newline, the end of a file is
 not a possible symbol delimiter).  *Note Symbols::.
@@ -743,7 +743,7 @@ specific.  The following list of escapes are commonly recognized.
      Mnemonic for backspace; for ASCII this is octal code 010.
 
 '\f'
-     Mnemonic for FormFeed; for ASCII this is octal code 014.
+     Mnemonic for formfeed; for ASCII this is octal code 014.
 
 '\n'
      Mnemonic for newline; for ASCII this is octal code 012.
@@ -1227,9 +1227,9 @@ target machine), and underscores.
    Case of letters is significant: 'foo' is a different symbol name than
 'Foo'.
 
-   Multibyte characters are supported.  To generate a symbol name
-containing multibyte characters enclose it within double quotes and use
-escape codes.  cf *Note Strings::.  Generating a multibyte symbol name
+   Multi-Byte characters are supported.  To generate a symbol name
+containing multi-byte characters enclose it within double quotes and use
+escape codes.  cf *Note Strings::.  Generating a multi-byte symbol name
 from a label is not currently supported.
 
    Each symbol has exactly one name.  Each name in an assembly language
@@ -1791,7 +1791,7 @@ if you want the alignment to be filled with no-op instructions when
 appropriate.
 
    The way the required alignment is specified is target specific.
-Commonly it is the byte boundary on which to align.  Very occasionaly
+Commonly it is the byte boundary on which to align.  Very occasionally
 the word boundary on which to align.  On other systems, it is the number
 of low-order zero bits the location counter must have after advancement.
 So for example '.align 3' advances the location counter until it a
@@ -1820,7 +1820,7 @@ However, on some systems, if the section is marked as containing code
 and the fill value is omitted, the space is filled with no-op
 instructions.  This behavior may also differ between '.align' and
 '.align32' directives--for example '.align' may fill with no-op
-insturctions, while '.align32' fills with zero.
+instructions, while '.align32' fills with zero.
 
    The interpretation of the fill value when less than 32-bits need to
 be filled is target specific.  *Note Machine Dependencies::.
@@ -1874,10 +1874,10 @@ appropriate.
    The '.balignw' and '.balignl' directives are variants of the
 '.balign' directive.  The '.balignw' directive treats the fill pattern
 as a two byte word value.  The '.balignl' directives treats the fill
-pattern as a four byte longword value.  For example, '.balignw 4,0x368d'
-will align to a multiple of 4.  If it skips two bytes, they will be
-filled in with the value 0x368d (the exact placement of the bytes
-depends upon the endianness of the processor).  If it skips 1 or 3
+pattern as a four byte long word value.  For example, '.balignw
+4,0x368d' will align to a multiple of 4.  If it skips two bytes, they
+will be filled in with the value 0x368d (the exact placement of the
+bytes depends upon the endianness of the processor).  If it skips 1 or 3
 bytes, the fill value is undefined.
 
 
@@ -2074,7 +2074,7 @@ File: llvm-assembler.info,  Node: CfiAdjustCfaOffset,  Next: CfiOffset,  Prev: C
 ........................................
 
 Same as '.cfi_def_cfa_offset' but OFFSET is a relative value that is
-added/substracted from the previous offset.
+added/subtracted from the previous offset.
 
 
 File: llvm-assembler.info,  Node: CfiOffset,  Next: CfiRelOffset,  Prev: CfiAdjustCfaOffset,  Up: CFIDirectives
@@ -2529,7 +2529,7 @@ You can control the search paths used with the '-I' command-line option
 (*note Command-Line Options: Invoking.).  Quotation marks are required
 around FILE.
 
-   _Note:_ Unlike the GNU assember, the LLVM integrated assembler does
+   _Note:_ Unlike the GNU assembler, the LLVM integrated assembler does
 not have optional second and third arguments to skip bytes from the
 start of the file, or to specify a maximum number of bytes.
 
@@ -2793,7 +2793,7 @@ With that definition, 'SUM 0,5' is equivalent to this assembly input:
      might not work as expected.  Invoking 'label foo' might not create
      a label called 'foo' but instead just insert the text '\l:' into
      the assembler source, probably generating an error about an
-     unrecognised identifier.
+     unrecognized identifier.
 
      Similarly problems might occur with the period character ('.')
      which is often allowed inside opcode names (and hence identifier
@@ -2812,7 +2812,7 @@ With that definition, 'SUM 0,5' is equivalent to this assembly input:
 
      'Insert white space'
           If it is possible to use white space characters then this is
-          the simplest solution.  eg:
+          the simplest solution.  e.g.:
 
                	.macro label l
                \l :
@@ -2820,7 +2820,7 @@ With that definition, 'SUM 0,5' is equivalent to this assembly input:
 
      'Use '\()''
           The string '\()' can be used to separate the end of a macro
-          argument from the following text.  eg:
+          argument from the following text.  e.g.:
 
                	.macro opcode base length
                        \base\().\length
@@ -2828,7 +2828,7 @@ With that definition, 'SUM 0,5' is equivalent to this assembly input:
 
      'Use the alternate macro syntax mode'
           In the alternative macro syntax mode the ampersand character
-          ('&') can be used as a separator.  eg:
+          ('&') can be used as a separator.  e.g.:
 
                	.altmacro
                	.macro label l
@@ -2865,7 +2865,7 @@ File: llvm-assembler.info,  Node: NoDeadStrip,  Next: Octa,  Prev: Macro,  Up: C
 This is a Mach-O specific assembler directive (*note
 NoDeadStripMachO::).  For historical reasons it is included in the
 standard assembler directives, so all architectures must support them.
-Assemblers generaring code for other object file formats will silently
+Assemblers generating code for other object file formats will silently
 ignore this directive.
 
 
@@ -2940,7 +2940,7 @@ appropriate.
    The '.p2alignw' and '.p2alignl' directives are variants of the
 '.p2align' directive.  The '.p2alignw' directive treats the fill pattern
 as a two byte word value.  The '.p2alignl' directives treats the fill
-pattern as a four byte longword value.  For example, '.p2alignw
+pattern as a four byte long word value.  For example, '.p2alignw
 2,0x368d' will align to a multiple of 4.  If it skips two bytes, they
 will be filled in with the value 0x368d (the exact placement of the
 bytes depends upon the endianness of the processor).  If it skips 1 or 3
@@ -3122,8 +3122,8 @@ in your object file.  This is compatible with earlier assemblers!
 
    _Note:_ The GNU assembler also supports the variant directives
 '.stabd' and '.stabn'.  '.stabd' omits the STRING and VALUE fields,
-setting them respectivel to the null pointer and the current location.
-'stabn' omits the STRING field, setting it to eht empty string '""'.
+setting them respectively to the null pointer and the current location.
+'stabn' omits the STRING field, setting it to the empty string '""'.
 Neither of these directives is supported by the LLVM integrated
 assembler.
 
@@ -3517,7 +3517,7 @@ constants:
    Many targets only support the first three section types.
 
    _Note:_ On targets where the '@' character is the start of a comment
-(eg ARM) then another character is used instead.  For example the ARM
+(e.g.  ARM) then another character is used instead.  For example the ARM
 port uses the '%' character.
 
    If FLAGS contains the 'M' symbol then the TYPE argument must be
@@ -3641,7 +3641,7 @@ function is being mentioned.  The NODENAME portion of the alias should
 be the name of a node specified in the version script supplied to the
 linker when building a shared library.  If you are attempting to
 override a versioned symbol from a shared library, then NODENAME should
-correspond to the nodename of the symbol you are trying to override.
+correspond to the node name of the symbol you are trying to override.
 
    If the symbol NAME is not defined within the file being assembled,
 all references to NAME will be changed to NAME2@NODENAME.  If no
@@ -3670,7 +3670,7 @@ File: llvm-assembler.info,  Node: TbssElf,  Next: TdataElf,  Prev: SymverElf,  U
 '.tbss' tells the LLVM integrated assembler to assemble the following
 statements onto the end of the TBSS subsection numbered SUBSECTION
 (which is an absolute expression).  If SUBSECTION is omitted, it
-defaults to zero.  This section is used for unitialized thread local
+defaults to zero.  This section is used for uninitialized thread local
 storage (TLS) objects.
 
 
@@ -3682,7 +3682,7 @@ File: llvm-assembler.info,  Node: TdataElf,  Next: TextElf,  Prev: TbssElf,  Up:
 '.tdata' tells the LLVM integrated assembler to assemble the following
 statements onto the end of the tdata subsection numbered SUBSECTION
 (which is an absolute expression).  If SUBSECTION is omitted, it
-defaults to zero.  This section is used for itialized thread local
+defaults to zero.  This section is used for initialized thread local
 storage (TLS) objects.
 
 
@@ -3730,9 +3730,9 @@ to assemble your code with other assemblers.
 
 'STT_GNU_IFUNC'
 'gnu_indirect_function'
-     Mark the symbol as an indirect function when evaluated during reloc
-     processing.  (This is only supported on assemblers targeting GNU
-     systems).
+     Mark the symbol as an indirect function when evaluated during
+     relocation processing.  (This is only supported on assemblers
+     targeting GNU systems).
 
 'STT_OBJECT'
 'object'
@@ -3740,7 +3740,7 @@ to assemble your code with other assemblers.
 
 'STT_TLS'
 'tls_object'
-     Mark the symbol as being a thead-local data object.
+     Mark the symbol as being a thread-local data object.
 
 'STT_COMMON'
 'common'
@@ -4006,8 +4006,8 @@ entry.
 
 File: llvm-assembler.info,  Node: Win64Coff,  Next: WeakCoff,  Prev: TypeCoff,  Up: COFF Directives
 
-7.3.10 COFF Specific Directives for Win64 Stuctured Event Handling
-------------------------------------------------------------------
+7.3.10 COFF Specific Directives for Win64 Structured Event Handling
+-------------------------------------------------------------------
 
 The windows structure event handling (SEH) directives are implemented,
 but there seems to be no documentation for these directives.  The
@@ -4229,7 +4229,7 @@ File: llvm-assembler.info,  Node: BssMachO,  Next: ConstMachO,  Up: Mach-O Direc
 7.4.1 '.bss'
 ------------
 
-This is a synonymn for:
+This is a synonym for:
              .section  "__DATA", "__bss"
 
    *Note SectionMachO::.
@@ -4240,7 +4240,7 @@ File: llvm-assembler.info,  Node: ConstMachO,  Next: ConstDataMachO,  Prev: BssM
 7.4.2 '.const'
 --------------
 
-This is a synonymn for:
+This is a synonym for:
              .section  "__TEXT", "__const"
 
    *Note SectionMachO::.
@@ -4251,7 +4251,7 @@ File: llvm-assembler.info,  Node: ConstDataMachO,  Next: ConstructorMachO,  Prev
 7.4.3 '.const_data'
 -------------------
 
-This is a synonymn for:
+This is a synonym for:
              .section  "__DATA", "__const_data"
 
    *Note SectionMachO::.
@@ -4262,7 +4262,7 @@ File: llvm-assembler.info,  Node: ConstructorMachO,  Next: CstringMachO,  Prev: 
 7.4.4 '.constructor', '.destructor'
 -----------------------------------
 
-These are synonymns respectively for:
+These are synonyms respectively for:
              .section  "__TEXT", "__constructor"
              .section  "__TEXT", "__destructor"
 
@@ -4274,7 +4274,7 @@ File: llvm-assembler.info,  Node: CstringMachO,  Next: DataMachO,  Prev: Constru
 7.4.5 '.cstring'
 ----------------
 
-This is a synonymn for:
+This is a synonym for:
              .section  "__TEXT", "__cstring"
 
    *Note SectionMachO::.
@@ -4285,7 +4285,7 @@ File: llvm-assembler.info,  Node: DataMachO,  Next: DescMachO,  Prev: CstringMac
 7.4.6 '.data'
 -------------
 
-This is a synonymn for:
+This is a synonym for:
              .section  "__DATA", "__data"
 
    *Note SectionMachO::.
@@ -4305,7 +4305,7 @@ File: llvm-assembler.info,  Node: DumpMachO,  Next: DyldMachO,  Prev: DescMachO,
 7.4.8 '.dump FILENAME', '.load FILENAME'
 ----------------------------------------
 
-These directives dump and load aboslute symbols and macro definitions to
+These directives dump and load absolute symbols and macro definitions to
 and from a file.
 
 
@@ -4314,7 +4314,7 @@ File: llvm-assembler.info,  Node: DyldMachO,  Next: FvmlibInitMachO,  Prev: Dump
 7.4.9 '.dyld'
 -------------
 
-This is a synonymn for:
+This is a synonym for:
              .section  "__DATA", "__dyld"
 
    *Note SectionMachO::.
@@ -4325,7 +4325,7 @@ File: llvm-assembler.info,  Node: FvmlibInitMachO,  Next: IdentMachO,  Prev: Dyl
 7.4.10 '.fvmlib_init0', '.fvmlib_init0'
 ---------------------------------------
 
-These are synonymns respectively for:
+These are synonyms respectively for:
              .section  "__TEXT", "__fvmlib_init0"
              .section  "__TEXT", "__fvmlib_init1"
 
@@ -4354,7 +4354,7 @@ File: llvm-assembler.info,  Node: LazySymbolPointerMachO,  Next: LazyReferenceMa
 7.4.13 '.lazy_symbol_pointer', '.non_lazy_symbol_pointer'
 ---------------------------------------------------------
 
-This is a synonymn for:
+This is a synonym for:
              .section  "__DATA", "__ni_symbol_pointer"
 
    *Note SectionMachO::.
@@ -4395,7 +4395,7 @@ File: llvm-assembler.info,  Node: LsymMachO,  Next: MacosxVersionMinMachO,  Prev
 7.4.17 '.lsym SYMBO, EXPRESSION'
 --------------------------------
 
-Create a unique and othersize unreferenceable symbol with the name
+Create a unique and otherwise unreferenceable symbol with the name
 SYMBOL and value EXPRESSION.  The symbol is a static symbol of type
 'N_ABS'.
 
@@ -4414,7 +4414,7 @@ File: llvm-assembler.info,  Node: ModInitFuncMachO,  Next: NoDeadStripMachO,  Pr
 7.4.19 '.mod_init_func', '.mod_term_func'
 -----------------------------------------
 
-These are synonymns for respectively:
+These are synonyms for respectively:
              .section  "__DATA", "__mod_init_func"
              .section  "__DATA", "__mod_term_func"
 
@@ -4463,7 +4463,7 @@ File: llvm-assembler.info,  Node: ObjcCatClsMeth,  Next: ObjcCatInstMeth,  Up: O
 7.4.21.1 '.objc_cat_cls_meth'
 .............................
 
-This is a synonymn for:
+This is a synonym for:
              .section  __OBJC, __cat_cls_meth
 
    *Note SectionMachO::.
@@ -4474,7 +4474,7 @@ File: llvm-assembler.info,  Node: ObjcCatInstMeth,  Next: ObjcCategory,  Prev: O
 7.4.21.2 '.objc_cat_inst_meth'
 ..............................
 
-This is a synonymn for:
+This is a synonym for:
              .section  __OBJC, __cat_inst_meth
 
    *Note SectionMachO::.
@@ -4485,7 +4485,7 @@ File: llvm-assembler.info,  Node: ObjcCategory,  Next: ObjcClass,  Prev: ObjcCat
 7.4.21.3 '.objc_category'
 .........................
 
-This is a synonymn for:
+This is a synonym for:
              .section  __OBJC, __category
 
    *Note SectionMachO::.
@@ -4496,7 +4496,7 @@ File: llvm-assembler.info,  Node: ObjcClass,  Next: ObjcClassNames,  Prev: ObjcC
 7.4.21.4 '.objc_class'
 ......................
 
-This is a synonymn for:
+This is a synonym for:
              .section  __OBJC, __class
 
    *Note SectionMachO::.
@@ -4507,7 +4507,7 @@ File: llvm-assembler.info,  Node: ObjcClassNames,  Next: ObjcClassVars,  Prev: O
 7.4.21.5 '.objc_class_names'
 ............................
 
-This is a synonymn for:
+This is a synonym for:
              .section  __OBJC, __class_names
 
    *Note SectionMachO::.
@@ -4518,7 +4518,7 @@ File: llvm-assembler.info,  Node: ObjcClassVars,  Next: ObjcClsMeth,  Prev: Objc
 7.4.21.6 '.objc_class_vars'
 ...........................
 
-This is a synonymn for:
+This is a synonym for:
              .section  __OBJC, __class_vars
 
    *Note SectionMachO::.
@@ -4529,7 +4529,7 @@ File: llvm-assembler.info,  Node: ObjcClsMeth,  Next: ObjcClsRefs,  Prev: ObjcCl
 7.4.21.7 '.objc_cls_meth'
 .........................
 
-This is a synonymn for:
+This is a synonym for:
              .section  __OBJC, __cls_meth
 
    *Note SectionMachO::.
@@ -4540,7 +4540,7 @@ File: llvm-assembler.info,  Node: ObjcClsRefs,  Next: ObjcInstMeth,  Prev: ObjcC
 7.4.21.8 '.objc_cls_refs'
 .........................
 
-This is a synonymn for:
+This is a synonym for:
              .section  __OBJC, __cls_refs
 
    *Note SectionMachO::.
@@ -4551,7 +4551,7 @@ File: llvm-assembler.info,  Node: ObjcInstMeth,  Next: ObjcInstanceVars,  Prev: 
 7.4.21.9 '.objc_inst_meth'
 ..........................
 
-This is a synonymn for:
+This is a synonym for:
              .section  __OBJC, __inst_meth
 
    *Note SectionMachO::.
@@ -4562,7 +4562,7 @@ File: llvm-assembler.info,  Node: ObjcInstanceVars,  Next: ObjcMessageRefs,  Pre
 7.4.21.10 '.objc_instance_vars'
 ...............................
 
-This is a synonymn for:
+This is a synonym for:
              .section  __OBJC, __instance_vars
 
    *Note SectionMachO::.
@@ -4573,7 +4573,7 @@ File: llvm-assembler.info,  Node: ObjcMessageRefs,  Next: ObjcMetaClass,  Prev: 
 7.4.21.11 '.objc_message_refs'
 ..............................
 
-This is a synonymn for:
+This is a synonym for:
              .section  __OBJC, __message_refs
 
    *Note SectionMachO::.
@@ -4584,7 +4584,7 @@ File: llvm-assembler.info,  Node: ObjcMetaClass,  Next: ObjcMethVarNames,  Prev:
 7.4.21.12 '.objc_meta_class'
 ............................
 
-This is a synonymn for:
+This is a synonym for:
              .section  __OBJC, __meta_class
 
    *Note SectionMachO::.
@@ -4595,7 +4595,7 @@ File: llvm-assembler.info,  Node: ObjcMethVarNames,  Next: ObjcMethVarTypes,  Pr
 7.4.21.13 '.objc_meth_var_names'
 ................................
 
-This is a synonymn for:
+This is a synonym for:
              .section  __OBJC, __meth_var_names
 
    *Note SectionMachO::.
@@ -4606,7 +4606,7 @@ File: llvm-assembler.info,  Node: ObjcMethVarTypes,  Next: ObjcModuleInfo,  Prev
 7.4.21.14 '.objc_meth_var_types'
 ................................
 
-This is a synonymn for:
+This is a synonym for:
              .section  __OBJC, __meth_var_types
 
    *Note SectionMachO::.
@@ -4617,7 +4617,7 @@ File: llvm-assembler.info,  Node: ObjcModuleInfo,  Next: ObjcProtocol,  Prev: Ob
 7.4.21.15 '.objc_module_info'
 .............................
 
-This is a synonymn for:
+This is a synonym for:
              .section  __OBJC, __module_info
 
    *Note SectionMachO::.
@@ -4628,7 +4628,7 @@ File: llvm-assembler.info,  Node: ObjcProtocol,  Next: ObjcSelectorStrs,  Prev: 
 7.4.21.16 '.objc_protocol'
 ..........................
 
-This is a synonymn for:
+This is a synonym for:
              .section  __OBJC, __protocol
 
    *Note SectionMachO::.
@@ -4639,7 +4639,7 @@ File: llvm-assembler.info,  Node: ObjcSelectorStrs,  Next: ObjcStringObject,  Pr
 7.4.21.17 '.objc_selector_strs'
 ...............................
 
-This is a synonymn for:
+This is a synonym for:
              .section  __OBJC, __selector_strs
 
    *Note SectionMachO::.
@@ -4650,7 +4650,7 @@ File: llvm-assembler.info,  Node: ObjcStringObject,  Next: ObjcSymbols,  Prev: O
 7.4.21.18 '.objc_string_object'
 ...............................
 
-This is a synonymn for:
+This is a synonym for:
              .section  __OBJC, __string_object
 
    *Note SectionMachO::.
@@ -4661,7 +4661,7 @@ File: llvm-assembler.info,  Node: ObjcSymbols,  Prev: ObjcStringObject,  Up: Obj
 7.4.21.19 '.objc_symbols'
 .........................
 
-This is a synonymn for:
+This is a synonym for:
              .section  __OBJC, __symbols
 
    *Note SectionMachO::.
@@ -4672,7 +4672,7 @@ File: llvm-assembler.info,  Node: PicsymbolStubMachO,  Next: PreviousMachO,  Pre
 7.4.22 '.picsymbol_stub'
 ------------------------
 
-This is a synonymn for one of:
+This is a synonym for one of:
              .section  "__TEXT", "__picsymbolstub1"
              .section  "__TEXT", "__picsymbol_stub"
 
@@ -4722,7 +4722,7 @@ File: llvm-assembler.info,  Node: StaticConstMachO,  Next: StaticDataMachO,  Pre
 7.4.27 '.static_const'
 ----------------------
 
-This is a synonymn for:
+This is a synonym for:
              .section  "__TEXT", "__static_const"
 
    *Note SectionMachO::.
@@ -4733,7 +4733,7 @@ File: llvm-assembler.info,  Node: StaticDataMachO,  Next: SymbolResolverMachO,  
 7.4.28 '.static_data'
 ---------------------
 
-This is a synonymn for:
+This is a synonym for:
              .section  "__DATA", "__static_data"
 
    *Note SectionMachO::.
@@ -4752,7 +4752,7 @@ File: llvm-assembler.info,  Node: SymbolStubMachO,  Next: TbssMachO,  Prev: Symb
 7.4.30 '.symbol_stub'
 ---------------------
 
-This is a synonymn for one of:
+This is a synonym for one of:
              .section  "__TEXT", "__symbol_stub"
              .section  "__TEXT", "__jump_table"
 
@@ -4773,7 +4773,7 @@ File: llvm-assembler.info,  Node: TdataMachO,  Next: TextMachO,  Prev: TbssMachO
 7.4.32 '.tdata'
 ---------------
 
-This is a synonymn for:
+This is a synonym for:
              .section  "__DATA", "__thread_data"
 
    *Note SectionMachO::.
@@ -4787,7 +4787,7 @@ File: llvm-assembler.info,  Node: TextMachO,  Next: ThreadInitFuncMachO,  Prev: 
 For static code this is a synonym for:
              .section  __TEXT, __text, regular
 
-   For dynamic code it is a synonymn for:
+   For dynamic code it is a synonym for:
              .section  __TEXT, __text, regular, pure_instructions
 
    *Note SectionMachO::.
@@ -4798,7 +4798,7 @@ File: llvm-assembler.info,  Node: ThreadInitFuncMachO,  Next: TlvMachO,  Prev: T
 7.4.34 '.thread_init_func'
 --------------------------
 
-This is a synonymn for:
+This is a synonym for:
              .section  "__DATA", "__thread_init"
 
    *Note SectionMachO::.
@@ -4809,7 +4809,7 @@ File: llvm-assembler.info,  Node: TlvMachO,  Next: WeakDefCanBeHiddenMachO,  Pre
 7.4.35 '.tlv'
 -------------
 
-This is a synonymn for:
+This is a synonym for:
              .section  "__DATA", "__thread_vars"
 
    *Note SectionMachO::.
@@ -4950,7 +4950,7 @@ will need modifying to eliminate the need for these directives.
      Generate a relocation.
 
 '.sbttl'
-     Generate a subheadng in a listing.
+     Generate a subheading in a listing.
 
 '.string8'
 '.string16'
@@ -5054,7 +5054,7 @@ AAP offers the following custom assembler syntax.
      statement must be on its own line.
 
 
-File: llvm-assembler.info,  Node: Reporting Bugs,  Next: Acknowledgements,  Prev: Machine Dependencies,  Up: Top
+File: llvm-assembler.info,  Node: Reporting Bugs,  Next: Acknowledgments,  Prev: Machine Dependencies,  Up: Top
 
 9 Reporting Bugs
 ****************
@@ -5246,10 +5246,10 @@ might as well expedite matters by sending them to begin with.
      such things without first using the debugger to find the facts.
 
 
-File: llvm-assembler.info,  Node: Acknowledgements,  Next: GNU Free Documentation License,  Prev: Reporting Bugs,  Up: Top
+File: llvm-assembler.info,  Node: Acknowledgments,  Next: GNU Free Documentation License,  Prev: Reporting Bugs,  Up: Top
 
-10 Acknowledgements
-*******************
+10 Acknowledgments
+******************
 
 This user guide to the LLVM Integrated Assembler is based on the guide
 to the GNU Assembler (GAS), and thus depends on all those who
@@ -5267,7 +5267,10 @@ of the version of the manual for the LLVM Integrated Assembler is Jeremy
 Bennett (email address jeremy.bennett@embecosm.com
 (mailto:jeremy.bennett@embecosm.com)).
 
-   If you have contributed to GAS and your name isn't listed here, it is
+10.1 Orginal GAS Acknowledgments
+================================
+
+If you have contributed to GAS and your name isn't listed here, it is
 not meant as a slight.  We just don't know about it.  Send mail to the
 maintainer, and we'll correct the situation.  Currently the maintainer
 is Nick Clifton (email address 'nickc@redhat.com').
@@ -5276,13 +5279,13 @@ is Nick Clifton (email address 'nickc@redhat.com').
 
    Jay Fenlason maintained GAS for a while, adding support for
 GDB-specific debug information and the 68k series machines, most of the
-preprocessing pass, and extensive changes in 'messages.c',
+pre-processing pass, and extensive changes in 'messages.c',
 'input-file.c', 'write.c'.
 
    K. Richard Pixley maintained GAS for a while, adding various
 enhancements and many bug fixes, including merging support for several
 processors, breaking GAS up to handle multiple object file format back
-ends (including heavy rewrite, testing, an integration of the coff and
+ends (including heavy rewrite, testing, an integration of the COFF and
 b.out back ends), adding configuration including heavy testing and
 verification of cross assemblers and file splits and renaming, converted
 GAS to strictly ANSI C including full prototypes, added support for
@@ -5344,7 +5347,7 @@ Software Science at the University of Utah and Cygnus Support.
 Cygnus Support (original, incomplete implementation for SPARC), Pete
 Hoogenboom and Jeff Law at the University of Utah (HPPA mainly), Michael
 Meissner of the Open Software Foundation (i386 mainly), and Ken Raeburn
-of Cygnus Support (sparc, and some initial 64-bit support).
+of Cygnus Support (SPARC, and some initial 64-bit support).
 
    Linas Vepstas added GAS support for the ESA/390 "IBM 370"
 architecture.
@@ -5366,7 +5369,7 @@ fixes and configuration enhancements.
    Jeremy Bennett of Embecosm created the version for the LLVM
 Integrated Assembler as a derived document of the GNU Assembler Manual.
 
-   Many others have contributed large or small bugfixes and
+   Many others have contributed large or small bug fixes and
 enhancements.  If you have contributed significant work and are not
 mentioned on this list, and want to be, let us know.  Some of the
 history has been lost; we are not intentionally leaving anyone out.
@@ -5376,7 +5379,7 @@ history has been lost; we are not intentionally leaving anyone out.
    (1) Any more details?
 
 
-File: llvm-assembler.info,  Node: GNU Free Documentation License,  Next: AS Index,  Prev: Acknowledgements,  Up: Top
+File: llvm-assembler.info,  Node: GNU Free Documentation License,  Next: AS Index,  Prev: Acknowledgments,  Up: Top
 
 Appendix A GNU Free Documentation License
 *****************************************
@@ -6302,7 +6305,7 @@ LLVM Integrated Assembler Index
 * command line conventions:              Command Line.        (line   6)
 * command line options for AAP:          AAP Options.         (line   6)
 * comments:                              Comments.            (line   6)
-* comments, removed by preprocessor:     Preprocessing.       (line  11)
+* comments, removed by pre-processor:    Preprocessing.       (line  11)
 * 'common' directive:                    Common.              (line   6)
 * common sections:                       LinkonceCoff.        (line   6)
 * common sections <1>:                   Unsupported.         (line  49)
@@ -6314,7 +6317,7 @@ LLVM Integrated Assembler Index
 * constants:                             Constants.           (line   6)
 * constants, bignum:                     Bignums.             (line   6)
 * constants, character:                  Characters.          (line   6)
-* constants, converted by preprocessor:  Preprocessing.       (line  14)
+* constants, converted by pre-processor: Preprocessing.       (line  14)
 * constants, floating point:             Flonums.             (line   6)
 * constants, integer:                    Integers.            (line   6)
 * constants, number:                     Numbers.             (line   6)
@@ -6328,7 +6331,7 @@ LLVM Integrated Assembler Index
 * 'data' directive (COFF only):          DataCoff.            (line   6)
 * 'data' directive (ELF only):           DataElf.             (line   6)
 * 'data' directive (Mach-O only):        DataMachO.           (line   6)
-* debug for register windws:             CfiWindowSave.       (line   6)
+* debug for register windows:            CfiWindowSave.       (line   6)
 * debuggers, and symbol order:           Symbols.             (line  10)
 * decimal integers:                      Integers.            (line  12)
 * 'def' directive (COFF only):           DefCoff.             (line   6)
@@ -6429,7 +6432,7 @@ LLVM Integrated Assembler Index
 * 'include' directive search path:       common-options.      (line  21)
 * infix operators:                       Infix Ops.           (line   6)
 * input:                                 Input Files.         (line   6)
-* input file linenumbers:                Input Files.         (line  41)
+* input file line numbers:               Input Files.         (line  41)
 * instruction bundle:                    BundleAlign.         (line   6)
 * instructions and directives:           Statements.          (line  20)
 * 'int' directive:                       Int.                 (line   6)
@@ -6616,11 +6619,11 @@ LLVM Integrated Assembler Index
                                                               (line   6)
 * plus, permitted arguments:             Infix Ops.           (line  45)
 * 'popsection' directive (ELF only):     PopSectionElf.       (line   6)
+* pre-processing:                        Preprocessing.       (line   6)
+* pre-processing, turning on and off:    Preprocessing.       (line  25)
 * precedence of operators:               Infix Ops.           (line  11)
 * precision, floating point:             Flonums.             (line   6)
 * prefix operators:                      Prefix Ops.          (line   6)
-* preprocessing:                         Preprocessing.       (line   6)
-* preprocessing, turning on and off:     Preprocessing.       (line  25)
 * 'previous' directive (ELF only):       PreviousElf.         (line   6)
 * 'previous' directive (Mach-O only):    PreviousMachO.       (line   6)
 * 'print' directive (unsupported):       Unsupported.         (line  74)
@@ -6765,7 +6768,7 @@ LLVM Integrated Assembler Index
                                                               (line   6)
 * 'title' directive (unsupported):       Unsupported.         (line  96)
 * 'tlv' directive (Mach-O only):         TlvMachO.            (line   6)
-* turning preprocessing on and off:      Preprocessing.       (line  25)
+* turning pre-processing on and off:     Preprocessing.       (line  25)
 * 'type' directive (COFF only):          TypeCoff.            (line   6)
 * 'type' directive (ELF only):           TypeElf.             (line   6)
 * type of a symbol:                      Symbol Type.         (line   6)
@@ -6797,7 +6800,7 @@ LLVM Integrated Assembler Index
 * 'weak_reference' directive (Mach-O only): WeakReferenceMachO.
                                                               (line   6)
 * whitespace:                            Whitespace.          (line   6)
-* whitespace, removed by preprocessor:   Preprocessing.       (line   7)
+* whitespace, removed by pre-processor:  Preprocessing.       (line   7)
 * 'word' directive (unsupported):        Unsupported.         (line 105)
 * writing patterns in memory:            Fill.                (line   6)
 * 'zero' directive:                      Zero.                (line   6)
@@ -6815,258 +6818,258 @@ Node: LLVM Assembler3262
 Node: Object Formats4637
 Node: Command Line5130
 Ref: cc1as5660
-Node: Input Files7708
-Node: Object10308
-Node: Errors11392
-Node: Invoking12775
+Node: Input Files7709
+Node: Object10309
+Node: Errors11393
+Node: Invoking12776
 Node: common-options14457
-Node: assembler-options16931
-Node: internal-options17456
-Node: Syntax21052
-Node: Preprocessing21679
-Node: Whitespace22989
-Node: Comments23397
-Node: Symbol Intro25469
-Node: Statements26206
-Node: Constants28032
-Node: Characters28677
-Node: Strings29191
-Node: Chars31441
-Node: Numbers32339
-Node: Integers32916
-Node: Bignums33584
-Node: Flonums33952
-Node: Sections35467
-Node: Secs Background35857
-Node: Ld Sections40165
-Node: As Sections42574
-Node: Sub-Sections43571
-Node: bss46580
-Node: Symbols47477
-Node: Labels48167
-Node: Setting Symbols48608
-Node: Symbol Names49136
-Node: Dot54071
-Node: Symbol Attributes54555
-Node: Symbol Value55150
-Node: Symbol Type56219
-Node: Expressions56597
-Node: Empty Exprs57379
-Node: Integer Exprs57763
-Node: Arguments58170
-Node: Operators59313
-Node: Prefix Ops59660
-Node: Infix Ops60023
-Node: Pseudo Ops62429
-Node: Common Directives64392
-Node: 2byte68155
-Node: 4byte68471
-Node: 8byte68802
-Node: Abort69178
-Node: Align69690
-Node: Align3271736
-Node: Ascii72631
-Node: Asciz72962
-Node: Balign73230
-Node: BundleAlign75147
-Node: BundleLock76481
-Node: Byte78211
-Node: CFIDirectives78487
-Node: CfiSections79680
-Node: CfiStartproc80210
-Node: CfiEndproc80728
-Node: CfiPersonality81039
-Node: CfiLsda81806
-Node: CfiDefCfa82359
-Node: CfiDefCfaRegister82655
-Node: CfiDefCfaOffset83001
-Node: CfiAdjustCfaOffset83410
-Node: CfiOffset83725
-Node: CfiRelOffset83987
-Node: CfiRegister84457
-Node: CfiRestore84722
-Node: CfiUndefined85079
-Node: CfiSameValue85333
-Node: CfiRememberState85618
-Node: CfiSignalFrame86063
-Node: CfiWindowSave86285
-Node: CfiEscape86671
-Node: Code1687037
-Node: Comm87595
-Node: Common88923
-Node: Double89247
-Node: Else89635
-Node: Elseif89984
-Node: End90326
-Node: Endif90589
-Node: Endm90895
-Node: Endr91070
-Node: Equ91291
-Node: Equiv91557
-Node: Err92136
-Node: Error92497
-Node: Exitm92965
-Node: Extern93157
-Node: File93466
-Node: Fill94136
-Node: Float95149
-Node: Global95541
-Node: Ident96115
-Node: If96339
-Node: Incbin99580
-Node: Include100152
-Node: Int100726
-Node: Irp101125
-Node: Irpc102022
-Node: LazyReference102969
-Node: Lcomm103458
-Node: Line104124
-Node: Loc104523
-Node: Long105922
-Node: Macro106121
-Node: NoDeadStrip112105
-Node: Octa112540
-Node: Org112902
-Node: P2align114258
-Node: PrivateExtern116212
-Node: Purgem116701
-Node: Quad116946
-Node: Reference117422
-Node: Rept117892
-Node: Set118331
-Node: Short118844
-Node: Single119214
-Node: Skip119607
-Node: Sleb128119954
-Node: Space120299
-Node: Stabs120647
-Node: String122453
-Node: SymbolResolver123069
-Node: Uleb128123576
-Node: Value123933
-Node: Warning124451
-Node: WeakDefCanBeHidden124712
-Node: WeakDefinition125240
-Node: WeakReference125751
-Node: Zero126247
-Node: ELF Directives126689
-Node: BssElf128104
-Node: DataElf128461
-Node: HiddenElf128840
-Node: IdentElf129447
-Node: InternalElf129785
-Node: LocalElf130469
-Node: PopSectionElf131083
-Node: PreviousElf131628
-Node: ProtectedElf133083
-Node: PushSectionElf133772
-Node: RodataElf134565
-Node: SectionElf134973
-Node: SizeElf139977
-Node: SubSectionElf140356
-Node: SymverElf140972
-Node: TbssElf143379
-Node: TdataElf143836
-Node: TextElf144293
-Node: TypeElf144676
-Node: VersionElf146697
-Node: WeakElf146992
-Node: WeakrefElf147286
-Node: COFF Directives148262
-Node: BssCoff148982
-Node: DataCoff149342
-Node: DefCoff149722
-Node: LinkonceCoff150009
-Node: SclCoff151386
-Node: SecidxCoff151765
-Node: SectionCoff152799
-Node: TextCoff154106
-Node: TypeCoff154493
-Node: Win64Coff154879
-Node: SehProc156003
-Node: SehEndprologue156251
-Node: SehHandler156674
-Node: SehHandlerdata157282
-Node: SehPushframe157701
-Node: SehPushreg158104
-Node: SehSavereg158503
-Node: SehSavexmn158938
-Node: SehSetframe159362
-Node: SehStackalloc159815
-Node: SehChained160241
-Node: WeakCoff160482
-Node: Mach-O Directives161263
-Node: BssMachO163989
-Node: ConstMachO164197
-Node: ConstDataMachO164434
-Node: ConstructorMachO164694
-Node: CstringMachO165051
-Node: DataMachO165299
-Node: DescMachO165531
-Node: DumpMachO165779
-Node: DyldMachO166060
-Node: FvmlibInitMachO166295
-Node: IdentMachO166655
-Node: IosVersionMinMachO166839
-Node: LazySymbolPointerMachO167192
-Node: LazyReferenceMachO167553
-Node: LinkerOptionMachO167869
-Node: LiteralMachO168135
-Node: LsymMachO168549
-Node: MacosxVersionMinMachO168883
-Node: ModInitFuncMachO169240
-Node: NoDeadStripMachO169625
-Node: ObjC169909
-Node: ObjcCatClsMeth171013
-Node: ObjcCatInstMeth171258
-Node: ObjcCategory171527
-Node: ObjcClass171776
-Node: ObjcClassNames172015
-Node: ObjcClassVars172273
-Node: ObjcClsMeth172530
-Node: ObjcClsRefs172778
-Node: ObjcInstMeth173025
-Node: ObjcInstanceVars173280
-Node: ObjcMessageRefs173553
-Node: ObjcMetaClass173824
-Node: ObjcMethVarNames174089
-Node: ObjcMethVarTypes174367
-Node: ObjcModuleInfo174646
-Node: ObjcProtocol174912
-Node: ObjcSelectorStrs175169
-Node: ObjcStringObject175443
-Node: ObjcSymbols175716
-Node: PicsymbolStubMachO175946
-Node: PreviousMachO176274
-Node: PrivateExternMachO176619
-Node: ReferenceMachO176889
-Node: SectionMachO177173
-Node: StaticConstMachO177630
-Node: StaticDataMachO177901
-Node: SymbolResolverMachO178176
-Node: SymbolStubMachO178441
-Node: TbssMachO178764
-Node: TdataMachO179048
-Node: TextMachO179289
-Node: ThreadInitFuncMachO179660
-Node: TlvMachO179931
-Node: WeakDefCanBeHiddenMachO180190
-Node: WeakDefinitionMachO180586
-Node: WeakReferenceMachO180870
-Node: ZerofillMachO181175
-Node: Deprecated181576
-Node: Unsupported181899
-Node: Machine Dependencies184354
-Node: AAP-dependent185236
-Node: AAP Options185906
-Node: AAP Directives186149
-Node: AAP Assembler Syntax186423
-Node: Reporting Bugs187160
-Node: Bug Criteria187971
-Node: Bug Reporting188863
-Node: Acknowledgements195611
-Ref: Acknowledgements-Footnote-1201614
-Node: GNU Free Documentation License201640
-Node: AS Index226802
+Node: assembler-options16932
+Node: internal-options17457
+Node: Syntax21053
+Node: Preprocessing21681
+Node: Whitespace22997
+Node: Comments23405
+Node: Symbol Intro25478
+Node: Statements26216
+Node: Constants28042
+Node: Characters28687
+Node: Strings29201
+Node: Chars31451
+Node: Numbers32349
+Node: Integers32926
+Node: Bignums33594
+Node: Flonums33962
+Node: Sections35477
+Node: Secs Background35867
+Node: Ld Sections40175
+Node: As Sections42584
+Node: Sub-Sections43581
+Node: bss46590
+Node: Symbols47487
+Node: Labels48177
+Node: Setting Symbols48618
+Node: Symbol Names49146
+Node: Dot54084
+Node: Symbol Attributes54568
+Node: Symbol Value55163
+Node: Symbol Type56232
+Node: Expressions56610
+Node: Empty Exprs57392
+Node: Integer Exprs57776
+Node: Arguments58183
+Node: Operators59326
+Node: Prefix Ops59673
+Node: Infix Ops60036
+Node: Pseudo Ops62442
+Node: Common Directives64405
+Node: 2byte68168
+Node: 4byte68484
+Node: 8byte68815
+Node: Abort69191
+Node: Align69703
+Node: Align3271750
+Node: Ascii72645
+Node: Asciz72976
+Node: Balign73244
+Node: BundleAlign75162
+Node: BundleLock76496
+Node: Byte78226
+Node: CFIDirectives78502
+Node: CfiSections79695
+Node: CfiStartproc80225
+Node: CfiEndproc80743
+Node: CfiPersonality81054
+Node: CfiLsda81821
+Node: CfiDefCfa82374
+Node: CfiDefCfaRegister82670
+Node: CfiDefCfaOffset83016
+Node: CfiAdjustCfaOffset83425
+Node: CfiOffset83739
+Node: CfiRelOffset84001
+Node: CfiRegister84471
+Node: CfiRestore84736
+Node: CfiUndefined85093
+Node: CfiSameValue85347
+Node: CfiRememberState85632
+Node: CfiSignalFrame86077
+Node: CfiWindowSave86299
+Node: CfiEscape86685
+Node: Code1687051
+Node: Comm87609
+Node: Common88937
+Node: Double89261
+Node: Else89649
+Node: Elseif89998
+Node: End90340
+Node: Endif90603
+Node: Endm90909
+Node: Endr91084
+Node: Equ91305
+Node: Equiv91571
+Node: Err92150
+Node: Error92511
+Node: Exitm92979
+Node: Extern93171
+Node: File93480
+Node: Fill94150
+Node: Float95163
+Node: Global95555
+Node: Ident96129
+Node: If96353
+Node: Incbin99594
+Node: Include100167
+Node: Int100741
+Node: Irp101140
+Node: Irpc102037
+Node: LazyReference102984
+Node: Lcomm103473
+Node: Line104139
+Node: Loc104538
+Node: Long105937
+Node: Macro106136
+Node: NoDeadStrip112126
+Node: Octa112561
+Node: Org112923
+Node: P2align114279
+Node: PrivateExtern116234
+Node: Purgem116723
+Node: Quad116968
+Node: Reference117444
+Node: Rept117914
+Node: Set118353
+Node: Short118866
+Node: Single119236
+Node: Skip119629
+Node: Sleb128119976
+Node: Space120321
+Node: Stabs120669
+Node: String122476
+Node: SymbolResolver123092
+Node: Uleb128123599
+Node: Value123956
+Node: Warning124474
+Node: WeakDefCanBeHidden124735
+Node: WeakDefinition125263
+Node: WeakReference125774
+Node: Zero126270
+Node: ELF Directives126712
+Node: BssElf128127
+Node: DataElf128484
+Node: HiddenElf128863
+Node: IdentElf129470
+Node: InternalElf129808
+Node: LocalElf130492
+Node: PopSectionElf131106
+Node: PreviousElf131651
+Node: ProtectedElf133106
+Node: PushSectionElf133795
+Node: RodataElf134588
+Node: SectionElf134996
+Node: SizeElf140003
+Node: SubSectionElf140382
+Node: SymverElf140998
+Node: TbssElf143406
+Node: TdataElf143865
+Node: TextElf144324
+Node: TypeElf144707
+Node: VersionElf146734
+Node: WeakElf147029
+Node: WeakrefElf147323
+Node: COFF Directives148299
+Node: BssCoff149019
+Node: DataCoff149379
+Node: DefCoff149759
+Node: LinkonceCoff150046
+Node: SclCoff151423
+Node: SecidxCoff151802
+Node: SectionCoff152836
+Node: TextCoff154143
+Node: TypeCoff154530
+Node: Win64Coff154916
+Node: SehProc156042
+Node: SehEndprologue156290
+Node: SehHandler156713
+Node: SehHandlerdata157321
+Node: SehPushframe157740
+Node: SehPushreg158143
+Node: SehSavereg158542
+Node: SehSavexmn158977
+Node: SehSetframe159401
+Node: SehStackalloc159854
+Node: SehChained160280
+Node: WeakCoff160521
+Node: Mach-O Directives161302
+Node: BssMachO164028
+Node: ConstMachO164235
+Node: ConstDataMachO164471
+Node: ConstructorMachO164730
+Node: CstringMachO165086
+Node: DataMachO165333
+Node: DescMachO165564
+Node: DumpMachO165812
+Node: DyldMachO166093
+Node: FvmlibInitMachO166327
+Node: IdentMachO166686
+Node: IosVersionMinMachO166870
+Node: LazySymbolPointerMachO167223
+Node: LazyReferenceMachO167583
+Node: LinkerOptionMachO167899
+Node: LiteralMachO168165
+Node: LsymMachO168579
+Node: MacosxVersionMinMachO168913
+Node: ModInitFuncMachO169270
+Node: NoDeadStripMachO169654
+Node: ObjC169938
+Node: ObjcCatClsMeth171042
+Node: ObjcCatInstMeth171286
+Node: ObjcCategory171554
+Node: ObjcClass171802
+Node: ObjcClassNames172040
+Node: ObjcClassVars172297
+Node: ObjcClsMeth172553
+Node: ObjcClsRefs172800
+Node: ObjcInstMeth173046
+Node: ObjcInstanceVars173300
+Node: ObjcMessageRefs173572
+Node: ObjcMetaClass173842
+Node: ObjcMethVarNames174106
+Node: ObjcMethVarTypes174383
+Node: ObjcModuleInfo174661
+Node: ObjcProtocol174926
+Node: ObjcSelectorStrs175182
+Node: ObjcStringObject175455
+Node: ObjcSymbols175727
+Node: PicsymbolStubMachO175956
+Node: PreviousMachO176283
+Node: PrivateExternMachO176628
+Node: ReferenceMachO176898
+Node: SectionMachO177182
+Node: StaticConstMachO177639
+Node: StaticDataMachO177909
+Node: SymbolResolverMachO178183
+Node: SymbolStubMachO178448
+Node: TbssMachO178770
+Node: TdataMachO179054
+Node: TextMachO179294
+Node: ThreadInitFuncMachO179664
+Node: TlvMachO179934
+Node: WeakDefCanBeHiddenMachO180192
+Node: WeakDefinitionMachO180588
+Node: WeakReferenceMachO180872
+Node: ZerofillMachO181177
+Node: Deprecated181578
+Node: Unsupported181901
+Node: Machine Dependencies184357
+Node: AAP-dependent185239
+Node: AAP Options185909
+Node: AAP Directives186152
+Node: AAP Assembler Syntax186426
+Node: Reporting Bugs187163
+Node: Bug Criteria187973
+Node: Bug Reporting188865
+Node: Acknowledgments195613
+Ref: Acknowledgments-Footnote-1201679
+Node: GNU Free Documentation License201705
+Node: AS Index226866
 
 End Tag Table

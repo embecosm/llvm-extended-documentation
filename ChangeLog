@@ -1,5 +1,15 @@
 2015-10-16  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
+	* llvm-assembler-manual/Makefile.am: Remove sup/sub texinfo ignores.
+	* llvm-assembler-manual/Makefile.in: Regenerated.
+	* llvm-assembler-manual/custom.wordlist: Add th for suffixes.
+	* llvm-assembler-manual/llvm-assembler.info: Regenerated.
+	* llvm-assembler-manual/llvm-assembler.texi: Omit use of @sup
+	- needs TexInfo 6.  Split acknowledgments chapter.  Correct some
+	sectioning glitches.
+
+2015-10-16  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
 	* Makefile.in: Regenerated.
 	* configure: Likewise.
 	* configure.ac: Add BUGURL_TEXI.
