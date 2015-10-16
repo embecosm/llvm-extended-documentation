@@ -76,7 +76,7 @@ llvm.info-3: 622587
 llvm.info-4: 904245
 llvm.info-5: 1330734
 llvm.info-6: 1502859
-llvm.info-7: 1832564
+llvm.info-7: 1832614
 
 Tag Table:
 (Indirect)
@@ -359,14 +359,14 @@ Node: Warnings and Errors1589535
 Node: Bugs1591298
 Node: Bug Criteria1591766
 Node: Bug Reporting1593977
-Node: Service1594169
-Node: Contributing1594989
-Node: Funding1595730
-Node: GNU Project1598221
-Node: Copying1598868
-Node: GNU Free Documentation License1636378
-Node: Contributors1661497
-Node: Option Index1699503
-Node: Keyword Index1832564
+Node: Service1594219
+Node: Contributing1595039
+Node: Funding1595780
+Node: GNU Project1598271
+Node: Copying1598918
+Node: GNU Free Documentation License1636428
+Node: Contributors1661547
+Node: Option Index1699553
+Node: Keyword Index1832614
 
 End Tag Table

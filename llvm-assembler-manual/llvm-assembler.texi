@@ -135,7 +135,6 @@ section entitled ``GNU Free Documentation License''.
 * Symbols::                     Symbols
 * Expressions::                 Expressions
 * Pseudo Ops::                  Assembler Directives
-* Object Attributes::           Object Attributes
 * Machine Dependencies::        Machine Dependent Features
 * Reporting Bugs::              Reporting Bugs
 * Acknowledgements::            Who Did What
@@ -266,7 +265,7 @@ clang -cc1as ...
 In this case only one source file is given, and any assembled output is sent to
 standard output.
 
-Unless otherwise indiated, clang will use the default architecture.  This can
+Unless otherwise indicated, clang will use the default architecture.  This can
 be changed using the @samp{-target} option.
 @example
 clang -target @var{arch} ... @var{myfile}.s
@@ -292,7 +291,7 @@ Note in particular that using -cc1as means any clang options are ignored, so
 will invoke the assembler for the default architecture, @emph{not} the
 @var{arch} architecture.
 
-After the program name @command{clang} or @command{@var{arc}-cc}, the command
+After the program name @command{clang} or @command{@var{arch}-cc}, the command
 line may contain options and file names.  Options may appear in any order, and
 may be before, after, or between file names.  The order of file names is not
 significant.
@@ -348,7 +347,7 @@ will assembler the code in @file{hello.s}, while:
 will pass @file{hello.s} through the C pre-processor, then assemble it.
 
 The suffix can be overridden using Clang's @samp{-x} option to specify the
-language of succeeding files on the commmand line.  For the integrated
+language of succeeding files on the command line.  For the integrated
 assembler, the two useful arguments to the @samp{-x} option are
 @samp{assembler} and @samp{assembler-with-cpp}.  So for example, the following
 would ensure @file{hello.s} is passed through the C pre-processor before
@@ -365,7 +364,7 @@ argument to assemble.  It can also be used as a pipe:
 
 @subheading Filenames and Line-numbers
 
-@cindex input file linenumbers
+@cindex input file line numbers
 @cindex line numbers, in input files
 There are two ways of locating a line in the input file (or files) and
 either may be used in reporting error messages.  One way refers to a line
@@ -379,7 +378,7 @@ to the LLVM integrated assembler.
 directives; they bear no relation to physical files.  Logical file names help
 error messages reflect the original source file, when assembler source is
 itself synthesized from other files.  The LLVM integrated assembler understands
-the @samp{#} directives emitted by the LLVM C preprocessor.  See also
+the @samp{#} directives emitted by the LLVM C pre-processor.  See also
 @ref{File,,@code{.file}}.
 
 @node Object
@@ -487,8 +486,8 @@ clang -cc1as -help
 @end example
 
 @emph{Note:}  Some options to the LLVM integrated assembler are considered part
-of the internal interface between the clang driver and the LLVM integratated
-assembler component.  These options are not accesible via @samp{-Wa} or
+of the internal interface between the clang driver and the LLVM integrated
+assembler component.  These options are not accessible via @samp{-Wa} or
 @samp{-Xassembler}, and can only be used when the assembler is invoked directly
 using @code{-cc1as}.  Avoid using such options--since they are part of an
 internal interface they are subject to change or removal without warning.
@@ -543,12 +542,12 @@ clang -I@var{dir1} -Wa,-I@var{dir2} @var{myfile}.S
 @end example
 
 will search for any files in @code{#include} directives in @var{dir1} and any
-files in @code{.include} directives in @var{dir1} amd then @var{dir2}.
+files in @code{.include} directives in @var{dir1} and then @var{dir2}.
 
 @item -llvm @var{value}
 @cindex assembly, additional LLVM options
 @cindex LLVM options for assembly
-@kindex -mllvm @var{value}
+@kindex -llvm @var{value}
 Pass the specified @var{value} to the LLVM option processing system.  In
 general this is only of value to compiler developers.
 
@@ -559,7 +558,7 @@ longer instructions, this option says to relax all instructions to their long
 form, not just those that have to be.
 
 @emph{Note:}  Some architectures generate long instructions and then relax to
-shorter instructions.  This is simpler to implement, but suboptimal.  For these
+shorter instructions.  This is simpler to implement, but sub-optimal.  For these
 architectures, this flag has no effect.
 
 @item -o @var{file}
@@ -619,7 +618,7 @@ warning.
 @kindex -fdebug-compilation-dir @var{value}
 @var{value} is the compilation directory to embed in the debug info.
 
-@item filetype @var{type}
+@item -filetype @var{type}
 @cindex assembler output type
 Specify the output file type
 
@@ -738,7 +737,7 @@ it is inspired by the @sc{gnu} assembler, which in turns is inspired by the BSD
 4.2 VAX assembler.
 
 @menu
-* Preprocessing::               Preprocessing
+* Preprocessing::               Pre-Processing
 * Whitespace::                  Whitespace
 * Comments::                    Comments
 * Symbol Intro::                Symbols
@@ -747,40 +746,40 @@ it is inspired by the @sc{gnu} assembler, which in turns is inspired by the BSD
 @end menu
 
 @node Preprocessing
-@section Preprocessing
+@section Pre-Processing
 
-@cindex preprocessing
-The LLVM integrated assembler internal preprocessor:
+@cindex pre-processing
+The LLVM integrated assembler internal pre-processor:
 @itemize @bullet
-@cindex whitespace, removed by preprocessor
+@cindex whitespace, removed by pre-processor
 @item
 adjusts and removes extra whitespace.  It leaves one space or tab before
 the keywords on a line, and turns any other whitespace on the line into
 a single space.
 
-@cindex comments, removed by preprocessor
+@cindex comments, removed by pre-processor
 @item
 removes all comments, replacing them with a single space, or an
 appropriate number of newlines.
 
-@cindex constants, converted by preprocessor
+@cindex constants, converted by pre-processor
 @item
 converts character constants into the appropriate numeric values.
 @end itemize
 
 It does not do macro processing, include file handling, or anything else you
-may get from your C compiler's preprocessor.  You can do include file
+may get from your C compiler's pre-processor.  You can do include file
 processing with the @code{.include} directive
 (@pxref{Include,,@code{.include}}).  You can use Clang to get other ``CPP''
-style preprocessing by giving the input file a @samp{.S} suffix.  @xref{Input
+style pre-processing by giving the input file a @samp{.S} suffix.  @xref{Input
 Files, ,Input Files}.
 
 Excess whitespace, comments, and character constants
 cannot be used in the portions of the input text that are not
-preprocessed.
+pre-processed.
 
-@cindex turning preprocessing on and off
-@cindex preprocessing, turning on and off
+@cindex turning pre-processing on and off
+@cindex pre-processing, turning on and off
 @kindex #NO_APP
 @kindex #APP
 Unlike the @sc{gnu} assembler, @code{#NO_APP} and @code{#APP} before the
@@ -829,7 +828,7 @@ upon command line options that have been used.  For more details see the
 @emph{Syntax} section in the documentation for individual targets.
 
 If the line comment character is the hash sign (@samp{#}) then it still has the
-special ability to enable and disable preprocessing (@pxref{Preprocessing}) and
+special ability to enable and disable pre-processing (@pxref{Preprocessing}) and
 to specify logical line numbers:
 
 @kindex #
@@ -862,7 +861,7 @@ letters (both upper and lower case), digits and the three characters
 On most machines, you can also use @code{$} in symbol names; exceptions
 are noted in @ref{Machine Dependencies}.
 No symbol may begin with a digit.  Case is significant.
-There is no length limit: all characters are significant.  Multibyte characters
+There is no length limit: all characters are significant.  Multi-Byte characters
 are supported.  Symbols are delimited by characters not in that set, or by the
 beginning of a file (since the source program must end with a newline, the end
 of a file is not a possible symbol delimiter).  @xref{Symbols}.
@@ -987,7 +986,7 @@ Mnemonic for backspace; for ASCII this is octal code 010.
 @cindex @code{\f} (formfeed character)
 @cindex formfeed (@code{\f})
 @item \f
-Mnemonic for FormFeed; for ASCII this is octal code 014.
+Mnemonic for formfeed; for ASCII this is octal code 014.
 
 @cindex @code{\n} (newline character)
 @cindex newline (@code{\n})
@@ -1561,9 +1560,9 @@ particular target machine), and underscores.
 Case of letters is significant: @code{foo} is a different symbol name
 than @code{Foo}.
 
-Multibyte characters are supported.  To generate a symbol name containing
-multibyte characters enclose it within double quotes and use escape codes. cf
-@xref{Strings}.  Generating a multibyte symbol name from a label is not
+Multi-Byte characters are supported.  To generate a symbol name containing
+multi-byte characters enclose it within double quotes and use escape codes. cf
+@xref{Strings}.  Generating a multi-byte symbol name from a label is not
 currently supported.
 
 Each symbol has exactly one name.  Each name in an assembly language program
@@ -1650,13 +1649,14 @@ of the same name.  The character has ASCII value of @samp{\002} (control-B).
 
 @item @emph{ordinal number}
 This is a serial number to keep the labels distinct.  The first definition of
-@samp{0:} gets the number @samp{1}.  The 15th definition of @samp{0:} gets the
-number @samp{15}, and so on.  Likewise the first definition of @samp{1:} gets
-the number @samp{1} and its 15th definition gets @samp{15} as well.
+@samp{0:} gets the number @samp{1}.  The 15@sup{th} definition of @samp{0:}
+gets the number @samp{15}, and so on.  Likewise the first definition of
+@samp{1:} gets the number @samp{1} and its 15@sup{th} definition gets @samp{15}
+as well.
 @end table
 
 So for example, the first @code{1:} may be named @code{.L1@kbd{C-B}1}, and
-the 44th @code{3:} may be named @code{.L3@kbd{C-B}44}.
+the 44@sup{th} @code{3:} may be named @code{.L3@kbd{C-B}44}.
 
 @subheading Dollar Local Labels
 @cindex dollar local symbols
@@ -2145,7 +2145,7 @@ required alignment; this can be useful if you want the alignment to be filled
 with no-op instructions when appropriate.
 
 The way the required alignment is specified is target specific.  Commonly it is
-the byte boundary on which to align. Very occasionaly the word boundary on
+the byte boundary on which to align. Very occasionally the word boundary on
 which to align. On other systems, it is the number of low-order zero bits the
 location counter must have after advancement.  So for example @samp{.align 3}
 advances the location counter until it a multiple of 8.  If the location
@@ -2171,7 +2171,7 @@ If no value is omitted, the padding bytes are normally zero.  However, on some
 systems, if the section is marked as containing code and the fill value is
 omitted, the space is filled with no-op instructions.  This behavior may also
 differ between @code{.align} and @code{.align32} directives---for example
-@code{.align} may fill with no-op insturctions, while @code{.align32} fills
+@code{.align} may fill with no-op instructions, while @code{.align32} fills
 with zero.
 
 The interpretation of the fill value when less than 32-bits need to be filled
@@ -2231,7 +2231,7 @@ with no-op instructions when appropriate.
 The @code{.balignw} and @code{.balignl} directives are variants of the
 @code{.balign} directive.  The @code{.balignw} directive treats the fill
 pattern as a two byte word value.  The @code{.balignl} directives treats the
-fill pattern as a four byte longword value.  For example, @code{.balignw
+fill pattern as a four byte long word value.  For example, @code{.balignw
 4,0x368d} will align to a multiple of 4.  If it skips two bytes, they will be
 filled in with the value 0x368d (the exact placement of the bytes depends upon
 the endianness of the processor).  If it skips 1 or 3 bytes, the fill value is
@@ -2415,7 +2415,7 @@ CFA address.
 @cindex @code{cfi_adjust_cfa_offset} directive
 @cindex @code{.cfi_adjust_cfa_offset}
 Same as @code{.cfi_def_cfa_offset} but @var{offset} is a relative
-value that is added/substracted from the previous offset.
+value that is added/subtracted from the previous offset.
 
 @node CfiOffset
 @subsubsection @code{.cfi_offset @var{register}, @var{offset}}
@@ -2481,7 +2481,7 @@ Mark current function as signal handler.
 @subsubsection @code{.cfi_window_save}
 @cindex @code{cfi_window_save} directive
 @cindex @code{.cfi_window_save}
-@cindex debug for register windws
+@cindex debug for register windows
 Save a complete register window.  This directive is generically recognized, but
 its function, if any, is unclear, since few architectures now support register
 windows.  SPARC is an example of such an architecture.
@@ -2851,7 +2851,7 @@ location. You can control the search paths used with the @samp{-I} command-line
 option (@pxref{Invoking,,Command-Line Options}).  Quotation marks are required
 around @var{file}.
 
-@emph{Note:} Unlike the @sc{gnu} assember, the LLVM integrated assembler does
+@emph{Note:} Unlike the @sc{gnu} assembler, the LLVM integrated assembler does
 not have optional second and third arguments to skip bytes from the start of
 the file, or to specify a maximum number of bytes.
 
@@ -3122,7 +3122,7 @@ this macro definition:
 
 might not work as expected.  Invoking @samp{label foo} might not create a label
 called @samp{foo} but instead just insert the text @samp{\l:} into the
-assembler source, probably generating an error about an unrecognised
+assembler source, probably generating an error about an unrecognized
 identifier.
 
 Similarly problems might occur with the period character (@samp{.})
@@ -3145,7 +3145,7 @@ There are several possible ways around this problem:
 @table @code
 @item Insert white space
 If it is possible to use white space characters then this is the simplest
-solution.  eg:
+solution.  e.g.:
 
 @example
 	.macro label l
@@ -3155,7 +3155,7 @@ solution.  eg:
 
 @item Use @samp{\()}
 The string @samp{\()} can be used to separate the end of a macro argument from
-the following text.  eg:
+the following text.  e.g.:
 
 @example
 	.macro opcode base length
@@ -3165,7 +3165,7 @@ the following text.  eg:
 
 @item Use the alternate macro syntax mode
 In the alternative macro syntax mode the ampersand character (@samp{&}) can be
-used as a separator.  eg:
+used as a separator.  e.g.:
 
 @example
 	.altmacro
@@ -3213,7 +3213,7 @@ in the code.
 
 This is a Mach-O specific assembler directive (@pxref{NoDeadStripMachO}).  For
 historical reasons it is included in the standard assembler directives, so all
-architectures must support them.  Assemblers generaring code for other object
+architectures must support them.  Assemblers generating code for other object
 file formats will silently ignore this directive.
 
 @node Octa
@@ -3297,7 +3297,7 @@ with no-op instructions when appropriate.
 The @code{.p2alignw} and @code{.p2alignl} directives are variants of the
 @code{.p2align} directive.  The @code{.p2alignw} directive treats the fill
 pattern as a two byte word value.  The @code{.p2alignl} directives treats the
-fill pattern as a four byte longword value.  For example, @code{.p2alignw
+fill pattern as a four byte long word value.  For example, @code{.p2alignw
 2,0x368d} will align to a multiple of 4.  If it skips two bytes, they will be
 filled in with the value 0x368d (the exact placement of the bytes depends upon
 the endianness of the processor).  If it skips 1 or 3 bytes, the fill value is
@@ -3475,8 +3475,8 @@ file.  This is compatible with earlier assemblers!
 @cindex @code{.stabn} (Unsupported)
 @emph{Note:} The @sc{GNU} assembler also supports the variant directives
 @code{.stabd} and @code{.stabn}. @code{.stabd} omits the @var{string} and
-@var{value} fields, setting them respectivel to the null pointer and the
-current location.  @code{stabn} omits the @var{string} field, setting it to eht
+@var{value} fields, setting them respectively to the null pointer and the
+current location.  @code{stabn} omits the @var{string} field, setting it to the
 empty string @code{""}.  Neither of these directives is supported by the LLVM
 integrated assembler.
 
@@ -3844,7 +3844,7 @@ section contains an array of pointers to pre-init functions
 Many targets only support the first three section types.
 
 @emph{Note:} On targets where the @code{@@} character is the start of a comment
-(eg ARM) then another character is used instead.  For example the ARM port uses
+(e.g. ARM) then another character is used instead.  For example the ARM port uses
 the @code{%} character.
 
 If @var{flags} contains the @code{M} symbol then the @var{type} argument must
@@ -3977,7 +3977,7 @@ function is being mentioned.  The @var{nodename} portion of the alias should be
 the name of a node specified in the version script supplied to the linker when
 building a shared library.  If you are attempting to override a versioned
 symbol from a shared library, then @var{nodename} should correspond to the
-nodename of the symbol you are trying to override.
+node name of the symbol you are trying to override.
 
 If the symbol @var{name} is not defined within the file being assembled, all
 references to @var{name} will be changed to @var{name2@@nodename}.  If no
@@ -4009,7 +4009,7 @@ name, @var{name}, will be changed to @var{name2@@@@nodename}.
 @code{.tbss} tells the LLVM integrated assembler to assemble the following
 statements onto the end of the TBSS subsection numbered @var{subsection} (which
 is an absolute expression).  If @var{subsection} is omitted, it defaults to
-zero.  This section is used for unitialized thread local storage (TLS) objects.
+zero.  This section is used for uninitialized thread local storage (TLS) objects.
 
 @node TdataElf
 @subsection @code{.tdata [ @var{subsection} ]}
@@ -4018,7 +4018,7 @@ zero.  This section is used for unitialized thread local storage (TLS) objects.
 @code{.tdata} tells the LLVM integrated assembler to assemble the following
 statements onto the end of the tdata subsection numbered @var{subsection} (which
 is an absolute expression).  If @var{subsection} is omitted, it defaults to
-zero.  This section is used for itialized thread local storage (TLS) objects.
+zero.  This section is used for initialized thread local storage (TLS) objects.
 
 @node TextElf
 @subsection @code{.text [ @var{subsection} ]}
@@ -4064,7 +4064,7 @@ Mark the symbol as being a function name.
 
 @item STT_GNU_IFUNC
 @itemx gnu_indirect_function
-Mark the symbol as an indirect function when evaluated during reloc
+Mark the symbol as an indirect function when evaluated during relocation
 processing.  (This is only supported on assemblers targeting GNU systems).
 
 @item STT_OBJECT
@@ -4073,7 +4073,7 @@ Mark the symbol as being a data object.
 
 @item STT_TLS
 @itemx tls_object
-Mark the symbol as being a thead-local data object.
+Mark the symbol as being a thread-local data object.
 
 @item STT_COMMON
 @itemx common
@@ -4322,7 +4322,7 @@ This records the integer @var{int} as the type attribute of a symbol table
 entry.
 
 @node Win64Coff
-@subsection COFF Specific Directives for Win64 Stuctured Event Handling
+@subsection COFF Specific Directives for Win64 Structured Event Handling
 
 The windows structure event handling (SEH) directives are implemented, but
 there seems to be no documentation for these directives.  The information in
@@ -4395,7 +4395,6 @@ appear after the @code{.seh_endprologue} directive (@pxref{SehEndprologue}) and
 before the @code{.seh_proc} directive (@pxref{SehProc}) for the function to
 which it refers.
 
-@node SehPushreg
 @subsubsection @code{.seh_pushreg @var{reg}}
 @cindex @code{seh_pushreg} directive (COFF Win64 event handling only)
 @cindex @code{.seh_pushreg} (COFF Win64 event handling only)
@@ -4520,7 +4519,7 @@ LLVM specific extensions.
 @subsection @code{.bss}
 @cindex @code{bss} directive (Mach-O only)
 @cindex @code{.bss} (Mach-O only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  "__DATA", "__bss"
 @end example
@@ -4531,7 +4530,7 @@ This is a synonymn for:
 @subsection @code{.const}
 @cindex @code{const} directive (Mach-O only)
 @cindex @code{.const} (Mach-O only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  "__TEXT", "__const"
 @end example
@@ -4542,7 +4541,7 @@ This is a synonymn for:
 @subsection @code{.const_data}
 @cindex @code{const_data} directive (Mach-O only)
 @cindex @code{.const_data} (Mach-O only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  "__DATA", "__const_data"
 @end example
@@ -4555,7 +4554,7 @@ This is a synonymn for:
 @cindex @code{.constructor} (Mach-O only)
 @cindex @code{destructor} directive (Mach-O only)
 @cindex @code{.destructor} (Mach-O only)
-These are synonymns respectively for:
+These are synonyms respectively for:
 @example
         .section  "__TEXT", "__constructor"
         .section  "__TEXT", "__destructor"
@@ -4567,7 +4566,7 @@ These are synonymns respectively for:
 @subsection @code{.cstring}
 @cindex @code{cstring} directive (Mach-O only)
 @cindex @code{.cstring} (Mach-O only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  "__TEXT", "__cstring"
 @end example
@@ -4578,7 +4577,7 @@ This is a synonymn for:
 @subsection @code{.data}
 @cindex @code{data} directive (Mach-O only)
 @cindex @code{.data} (Mach-O only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  "__DATA", "__data"
 @end example
@@ -4598,14 +4597,14 @@ absolute expression.
 @cindex @code{.dump} (Mach-O only)
 @cindex @code{load} directive (Mach-O only)
 @cindex @code{.load} (Mach-O only)
-These directives dump and load aboslute symbols and macro definitions to and
+These directives dump and load absolute symbols and macro definitions to and
 from a file.
 
 @node DyldMachO
 @subsection @code{.dyld}
 @cindex @code{dyld} directive (Mach-O only)
 @cindex @code{.dyld} (Mach-O only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  "__DATA", "__dyld"
 @end example
@@ -4618,7 +4617,7 @@ This is a synonymn for:
 @cindex @code{.fvmlib_init0} (Mach-O only)
 @cindex @code{fvmlib_init1} directive (Mach-O only)
 @cindex @code{.fvmlib_init1} (Mach-O only)
-These are synonymns respectively for:
+These are synonyms respectively for:
 @example
         .section  "__TEXT", "__fvmlib_init0"
         .section  "__TEXT", "__fvmlib_init1"
@@ -4636,7 +4635,7 @@ This directive is ignored.
 @subsection @code{.ios_version_min @var{major}, @var{minor}, @var{patch}}
 @cindex @code{ios_version_min} directive (Mach-O only)
 @cindex @code{.ios_version_min} (Mach-O only)
-Verify that the version of IOS for which the code is being assembled has at
+Verify that the version of iOS for which the code is being assembled has at
 least the specified @var{major}, @var{minor} and @var{patch} versions.
 
 @node LazySymbolPointerMachO
@@ -4645,7 +4644,7 @@ least the specified @var{major}, @var{minor} and @var{patch} versions.
 @cindex @code{.lazy_symbol_pointer} (Mach-O only)
 @cindex @code{non_lazy_symbol_pointer} directive (Mach-O only)
 @cindex @code{.non_lazy_symbol_pointer} (Mach-O only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  "__DATA", "__ni_symbol_pointer"
 @end example
@@ -4686,7 +4685,7 @@ These are synonyms for respectively:
 @subsection @code{.lsym @var{symbo}, @var{expression}}
 @cindex @code{lsym} directive (Mach-O only)
 @cindex @code{.lsym} (Mach-O only)
-Create a unique and othersize unreferenceable symbol with the name @var{symbol}
+Create a unique and otherwise unreferenceable symbol with the name @var{symbol}
 and value @var{expression}.  The symbol is a static symbol of type
 @code{N_ABS}.
 
@@ -4703,7 +4702,7 @@ least the specified @var{major}, @var{minor} and @var{patch} versions.
 @cindex @code{.mod_init_func} (Mach-O only)
 @cindex @code{mod_term_func} directive (Mach-O only)
 @cindex @code{.mod_term_func} (Mach-O only)
-These are synonymns for respectively:
+These are synonyms for respectively:
 @example
         .section  "__DATA", "__mod_init_func"
         .section  "__DATA", "__mod_term_func"
@@ -4749,7 +4748,7 @@ not to be dead stripped.
 @subsubsection @code{.objc_cat_cls_meth}
 @cindex @code{objc_cat_cls_meth} directive (Mach-O Objective C Only)
 @cindex @code{.objc_cat_cls_meth} (Mach-O Objective C Only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  __OBJC, __cat_cls_meth
 @end example
@@ -4760,7 +4759,7 @@ This is a synonymn for:
 @subsubsection @code{.objc_cat_inst_meth}
 @cindex @code{objc_cat_inst_meth} directive (Mach-O Objective C Only)
 @cindex @code{.objc_cat_inst_meth} (Mach-O Objective C Only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  __OBJC, __cat_inst_meth
 @end example
@@ -4771,7 +4770,7 @@ This is a synonymn for:
 @subsubsection @code{.objc_category}
 @cindex @code{objc_category} directive (Mach-O Objective C Only)
 @cindex @code{.objc_category} (Mach-O Objective C Only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  __OBJC, __category
 @end example
@@ -4782,7 +4781,7 @@ This is a synonymn for:
 @subsubsection @code{.objc_class}
 @cindex @code{objc_class} directive (Mach-O Objective C Only)
 @cindex @code{.objc_class} (Mach-O Objective C Only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  __OBJC, __class
 @end example
@@ -4793,7 +4792,7 @@ This is a synonymn for:
 @subsubsection @code{.objc_class_names}
 @cindex @code{objc_class_names} directive (Mach-O Objective C Only)
 @cindex @code{.objc_class_names} (Mach-O Objective C Only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  __OBJC, __class_names
 @end example
@@ -4804,7 +4803,7 @@ This is a synonymn for:
 @subsubsection @code{.objc_class_vars}
 @cindex @code{objc_class_vars} directive (Mach-O Objective C Only)
 @cindex @code{.objc_class_vars} (Mach-O Objective C Only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  __OBJC, __class_vars
 @end example
@@ -4815,7 +4814,7 @@ This is a synonymn for:
 @subsubsection @code{.objc_cls_meth}
 @cindex @code{objc_cls_meth} directive (Mach-O Objective C Only)
 @cindex @code{.objc_cls_meth} (Mach-O Objective C Only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  __OBJC, __cls_meth
 @end example
@@ -4826,7 +4825,7 @@ This is a synonymn for:
 @subsubsection @code{.objc_cls_refs}
 @cindex @code{objc_cls_refs} directive (Mach-O Objective C Only)
 @cindex @code{.objc_cls_refs} (Mach-O Objective C Only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  __OBJC, __cls_refs
 @end example
@@ -4837,7 +4836,7 @@ This is a synonymn for:
 @subsubsection @code{.objc_inst_meth}
 @cindex @code{objc_inst_meth} directive (Mach-O Objective C Only)
 @cindex @code{.objc_inst_meth} (Mach-O Objective C Only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  __OBJC, __inst_meth
 @end example
@@ -4848,7 +4847,7 @@ This is a synonymn for:
 @subsubsection @code{.objc_instance_vars}
 @cindex @code{objc_instance_vars} directive (Mach-O Objective C Only)
 @cindex @code{.objc_instance_vars} (Mach-O Objective C Only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  __OBJC, __instance_vars
 @end example
@@ -4859,7 +4858,7 @@ This is a synonymn for:
 @subsubsection @code{.objc_message_refs}
 @cindex @code{objc_message_refs} directive (Mach-O Objective C Only)
 @cindex @code{.objc_message_refs} (Mach-O Objective C Only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  __OBJC, __message_refs
 @end example
@@ -4870,7 +4869,7 @@ This is a synonymn for:
 @subsubsection @code{.objc_meta_class}
 @cindex @code{objc_meta_class} directive (Mach-O Objective C Only)
 @cindex @code{.objc_meta_class} (Mach-O Objective C Only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  __OBJC, __meta_class
 @end example
@@ -4881,7 +4880,7 @@ This is a synonymn for:
 @subsubsection @code{.objc_meth_var_names}
 @cindex @code{objc_meth_var_names} directive (Mach-O Objective C Only)
 @cindex @code{.objc_meth_var_names} (Mach-O Objective C Only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  __OBJC, __meth_var_names
 @end example
@@ -4892,7 +4891,7 @@ This is a synonymn for:
 @subsubsection @code{.objc_meth_var_types}
 @cindex @code{objc_meth_var_types} directive (Mach-O Objective C Only)
 @cindex @code{.objc_meth_var_types} (Mach-O Objective C Only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  __OBJC, __meth_var_types
 @end example
@@ -4903,7 +4902,7 @@ This is a synonymn for:
 @subsubsection @code{.objc_module_info}
 @cindex @code{objc_module_info} directive (Mach-O Objective C Only)
 @cindex @code{.objc_module_info} (Mach-O Objective C Only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  __OBJC, __module_info
 @end example
@@ -4914,7 +4913,7 @@ This is a synonymn for:
 @subsubsection @code{.objc_protocol}
 @cindex @code{objc_protocol} directive (Mach-O Objective C Only)
 @cindex @code{.objc_protocol} (Mach-O Objective C Only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  __OBJC, __protocol
 @end example
@@ -4925,7 +4924,7 @@ This is a synonymn for:
 @subsubsection @code{.objc_selector_strs}
 @cindex @code{objc_selector_strs} directive (Mach-O Objective C Only)
 @cindex @code{.objc_selector_strs} (Mach-O Objective C Only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  __OBJC, __selector_strs
 @end example
@@ -4936,7 +4935,7 @@ This is a synonymn for:
 @subsubsection @code{.objc_string_object}
 @cindex @code{objc_string_object} directive (Mach-O Objective C Only)
 @cindex @code{.objc_string_object} (Mach-O Objective C Only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  __OBJC, __string_object
 @end example
@@ -4947,7 +4946,7 @@ This is a synonymn for:
 @subsubsection @code{.objc_symbols}
 @cindex @code{objc_symbols} directive (Mach-O Objective C Only)
 @cindex @code{.objc_symbols} (Mach-O Objective C Only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  __OBJC, __symbols
 @end example
@@ -4958,7 +4957,7 @@ This is a synonymn for:
 @subsection @code{.picsymbol_stub}
 @cindex @code{picsymbol_stub} directive (Mach-O only)
 @cindex @code{.picsymbol_stub} (Mach-O only)
-This is a synonymn for one of:
+This is a synonym for one of:
 @example
         .section  "__TEXT", "__picsymbolstub1"
         .section  "__TEXT", "__picsymbol_stub"
@@ -5000,7 +4999,7 @@ the size in bytes of symbol stubs in the section.
 @subsection @code{.static_const}
 @cindex @code{static_const} directive (Mach-O only)
 @cindex @code{.static_const} (Mach-O only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  "__TEXT", "__static_const"
 @end example
@@ -5011,7 +5010,7 @@ This is a synonymn for:
 @subsection @code{.static_data}
 @cindex @code{static_data} directive (Mach-O only)
 @cindex @code{.static_data} (Mach-O only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  "__DATA", "__static_data"
 @end example
@@ -5028,7 +5027,7 @@ Specify a symbol resolver to be used by the LLVM linker, @command{lld}.
 @subsection @code{.symbol_stub}
 @cindex @code{symbol_stub} directive (Mach-O only)
 @cindex @code{.symbol_stub} (Mach-O only)
-This is a synonymn for one of:
+This is a synonym for one of:
 @example
         .section  "__TEXT", "__symbol_stub"
         .section  "__TEXT", "__jump_table"
@@ -5047,7 +5046,7 @@ in the Thread Local Storage BSS section.
 @subsection @code{.tdata}
 @cindex @code{tdata} directive (Mach-O only)
 @cindex @code{.tdata} (Mach-O only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  "__DATA", "__thread_data"
 @end example
@@ -5063,7 +5062,7 @@ For static code this is a synonym for:
         .section  __TEXT, __text, regular
 @end example
 
-For dynamic code it is a synonymn for:
+For dynamic code it is a synonym for:
 @example
         .section  __TEXT, __text, regular, pure_instructions
 @end example
@@ -5074,7 +5073,7 @@ For dynamic code it is a synonymn for:
 @subsection @code{.thread_init_func}
 @cindex @code{thread_init_func} directive (Mach-O only)
 @cindex @code{.thread_init_func} (Mach-O only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  "__DATA", "__thread_init"
 @end example
@@ -5085,7 +5084,7 @@ This is a synonymn for:
 @subsection @code{.tlv}
 @cindex @code{tlv} directive (Mach-O only)
 @cindex @code{.tlv} (Mach-O only)
-This is a synonymn for:
+This is a synonym for:
 @example
         .section  "__DATA", "__thread_vars"
 @end example
@@ -5287,7 +5286,7 @@ Generate a relocation.
 @cindex @code{.sbttl} (unsupported)
 @cindex subtitles for listings (unsupported)
 @cindex listing control: subtitle (unsupported)
-Generate a subheadng in a listing.
+Generate a subheading in a listing.
 
 @item .string8
 @itemx .string16
@@ -5328,24 +5327,12 @@ Create VTABLE_ENTRY relocation.
 @cindex @code{.vtable_inherit} (unsupported)
 Create VTABLE_INHERIT relocation.
 
-@@item .word
+@item .word
 @cindex @code{word} directive (unsupported)
 @cindex @code{.word} (unsupported)
 Emit words in a machine dependent way.
 
 @end table
-
-
-@node Object Attributes
-@chapter Object Attributes
-@cindex object attributes
-
-@cindex @sc{gnu} object attributes
-Object attributes are a concept introduced by the @sc{gnu} assembler, to
-provide information about architecture variations and compatibility that could
-be of use to the linker.
-
-@sc{gnu} object attributes are not supported by the LLVM integrated assembler.
 
 @node Machine Dependencies
 @chapter Machine Dependent Features
@@ -5430,17 +5417,14 @@ of the LLVM integrated assembler are welcome in any case.
 @cindex bug reports
 @cindex assembler bugs, reporting
 
-A number of companies and individuals offer support for @sc{gnu} products.  If
+A number of companies and individuals offer support for the LLVM integrated
+assembler.  If
 you obtained the LLVM integrated assembler from a support organization, we
 recommend you contact that organization first.
 
-You can find contact information for many support companies and
-individuals in the file @file{etc/SERVICE} in the @sc{gnu} Emacs
-distribution.
-
-@ifset BUGURL
+@ifset BUGURL_TEXI
 In any event, we also recommend that you send bug reports for the LLVM
-integrated assembler to @value{BUGURL}.
+integrated assembler to @value{BUGURL_TEXI}.
 @end ifset
 
 The fundamental principle of reporting bugs usefully is this:
@@ -5580,8 +5564,23 @@ Such guesses are usually wrong.  Even we cannot guess right about such
 things without first using the debugger to find the facts.
 @end itemize
 
-@node Acknowledgements
-@chapter Acknowledgements
+@node Acknowledgments
+@chapter Acknowledgments
+
+This user guide to the LLVM Integrated Assembler is based on the guide to the
+@sc{gnu} Assembler (GAS), and thus depends on all those who contributed to GAS.
+The modification was done by Jeremy Bennett at @uref{http://www.embecosm.com,
+Embecosm}, with the help of Simon Cook and Ed Jones from the Embecosm LLVM
+team.
+
+This manual does not list the numerous contributors the LLVM Integrated
+Assembler itself---that is covered elsewhere in the LLVM project.  If you have
+contributed to the version of this manual for the LLVM Integrated Assembler,
+and your name is not listed above, it is not meant as a slight.  We just don't
+know about it.  Send mail to the author, and we'll correct the situation.  As
+of October 2015, the author of the version of the manual for the LLVM
+Integrated Assembler is Jeremy Bennett (email address
+@uref{mailto:jeremy.bennett@@embecosm.com, jeremy.bennett@@embecosm.com}).
 
 If you have contributed to GAS and your name isn't listed here,
 it is not meant as a slight.  We just don't know about it.  Send mail to the
@@ -5593,13 +5592,13 @@ Dean Elsner wrote the original @sc{gnu} assembler for the VAX.@footnote{Any
 more details?}
 
 Jay Fenlason maintained GAS for a while, adding support for GDB-specific debug
-information and the 68k series machines, most of the preprocessing pass, and
+information and the 68k series machines, most of the pre-processing pass, and
 extensive changes in @file{messages.c}, @file{input-file.c}, @file{write.c}.
 
 K. Richard Pixley maintained GAS for a while, adding various enhancements and
 many bug fixes, including merging support for several processors, breaking GAS
 up to handle multiple object file format back ends (including heavy rewrite,
-testing, an integration of the coff and b.out back ends), adding configuration
+testing, an integration of the COFF and b.out back ends), adding configuration
 including heavy testing and verification of cross assemblers and file splits
 and renaming, converted GAS to strictly ANSI C including full prototypes, added
 support for m680[34]0 and cpu32, did considerable work on i960 including a COFF
@@ -5656,7 +5655,7 @@ the University of Utah and Cygnus Support.
 Support for ELF format files has been worked on by Mark Eichin of Cygnus
 Support (original, incomplete implementation for SPARC), Pete Hoogenboom and
 Jeff Law at the University of Utah (HPPA mainly), Michael Meissner of the Open
-Software Foundation (i386 mainly), and Ken Raeburn of Cygnus Support (sparc,
+Software Foundation (i386 mainly), and Ken Raeburn of Cygnus Support (SPARC,
 and some initial 64-bit support).
 
 Linas Vepstas added GAS support for the ESA/390 ``IBM 370'' architecture.
@@ -5678,7 +5677,7 @@ Jon Beniston added support for the Lattice Mico32 architecture.
 Jeremy Bennett of Embecosm created the version for the LLVM Integrated
 Assembler as a derived document of the @sc{gnu} Assembler Manual.
 
-Many others have contributed large or small bugfixes and enhancements.  If
+Many others have contributed large or small bug fixes and enhancements.  If
 you have contributed significant work and are not mentioned on this list, and
 want to be, let us know.  Some of the history has been lost; we are not
 intentionally leaving anyone out.

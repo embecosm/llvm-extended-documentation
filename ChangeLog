@@ -1,5 +1,19 @@
 2015-10-16  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
+	* Makefile.in: Regenerated.
+	* configure: Likewise.
+	* configure.ac: Add BUGURL_TEXI.
+	* llvm-assembler-manual/Makefile.am: Add spell checking.
+	* llvm-assembler-manual/Makefile.in: Regenerated.
+	* llvm-assembler-manual/custom.wordlist: Created.
+	* llvm-assembler-manual/llvm-assembler.info: Regenerated
+	* llvm-assembler-manual/llvm-assembler.texi: Complete spell-check.
+	* llvm-user-manual/Makefile.in: Regenerated.
+	* llvm-user-manual/llvm.info: Likewise.
+	* llvm-user-manual/llvm.info-6: Likewise.
+
+2015-10-16  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
 	Work in progress on adding Eclipse help.
 
 	* Makefile.am: Add support for Eclipse help generation.

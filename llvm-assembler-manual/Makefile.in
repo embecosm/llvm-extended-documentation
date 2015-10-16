@@ -193,6 +193,7 @@ AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 BUGURL = @BUGURL@
+BUGURL_TEXI = @BUGURL_TEXI@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 ECHO_C = @ECHO_C@
@@ -264,6 +265,15 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 TEXINFO_TEX = $(top_srcdir)/texinfo/texinfo.tex
 AM_MAKEINFOFLAGS = -I . -I $(srcdir) -I $(srcdir)/include
+
+# Eclipse help via Docbook
+ECLIPSE_DIR = llvm-assember-eclipse
+DOCBOOKS = llvm-assembler.docbook
+MAKEINFODOCBOOK = $(MAKEINFO) --docbook
+AM_MAKEINFODOCBOOKFLAGS = $(AM_MAKEINFOFLAGS)
+ECLIPSE_NAME = "LLVM Assembler User Manual"
+ECLIPSE_ID = "org.fsf.help.llvm-assembler"
+ECLIPSE_PROVIDER = "Free Software Foundation"
 info_TEXINFOS = llvm-assembler.texi
 
 # Included files in the texinfo source
@@ -672,7 +682,8 @@ maintainer-clean-am: distclean-am maintainer-clean-aminfo \
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-aminfo mostlyclean-generic
+mostlyclean-am: mostlyclean-aminfo mostlyclean-generic \
+	mostlyclean-local
 
 pdf: pdf-am
 
@@ -697,10 +708,12 @@ uninstall-am: uninstall-dvi-am uninstall-html-am uninstall-info-am \
 	install-strip installcheck installcheck-am installdirs \
 	maintainer-clean maintainer-clean-aminfo \
 	maintainer-clean-generic mostlyclean mostlyclean-aminfo \
-	mostlyclean-generic pdf pdf-am ps ps-am tags-am uninstall \
-	uninstall-am uninstall-dvi-am uninstall-html-am \
-	uninstall-info-am uninstall-pdf-am uninstall-ps-am
+	mostlyclean-generic mostlyclean-local pdf pdf-am ps ps-am \
+	tags-am uninstall uninstall-am uninstall-dvi-am \
+	uninstall-html-am uninstall-info-am uninstall-pdf-am \
+	uninstall-ps-am
 
+ECLIPSE_STYLE ?= http://docbook.sourceforge.net/release/xsl/current/eclipse/eclipse.xsl
 
 # Images
 # EXTRA_DIST = images/
@@ -711,6 +724,52 @@ llvm-vers.texi: $(top_srcdir)/configure
 	echo "@set version-LLVM $(LLVM_VERSION)" >> $@
 	echo "@set VERSION_PACKAGE $(PKGVERSION)" >> $@
 	echo "@set BUGURL $(BUGURL_TEXI)" >> $@
+
+docbook: docbook-am
+
+docbook-am: $(DOCBOOKS)
+
+$(DOCBOOKS): $(info_TEXINFOS) $(llvm_assembler_TEXINFOS)
+	$(AM_V_MAKEINFO)rm -rf $(@:.docbook=.dtp)
+	$(AM_V_at)if $(MAKEINFODOCBOOK) $(AM_MAKEINFODOCBOOKFLAGS) $(MAKEINFOFLAGS) -I $(srcdir) \
+	 -o $(@:.docbook=.dtp) $<; \
+	then \
+	  rm -rf $@ && mv $(@:.docbook=.dtp) $@; \
+	else \
+	  rm -rf $(@:.docbook=.dtp); exit 1; \
+	fi
+
+eclipse: eclipse-am
+
+eclipse-am: $(ECLIPSE_DIR) $(ECLIPSE_DIR)/index.html
+
+$(ECLIPSE_DIR):
+	mkdir -p $(ECLIPSE_DIR)
+
+$(ECLIPSE_DIR)/index.html: $(DOCBOOKS)
+	xsltproc --stringparam base.dir                "$(ECLIPSE_DIR)/"     \
+		 --stringparam eclipse.plugin.name     "$(ECLIPSE_NAME)"     \
+		 --stringparam eclipse.plugin.id       "$(ECLIPSE_ID)"       \
+		 --stringparam eclipse.plugin.provider "$(ECLIPSE_PROVIDER)" \
+		 $(ECLIPSE_STYLE) $(DOCBOOKS)
+
+.PHONY: spell
+spell:
+	aspell --lang=en create master ${builddir}/custom.dict \
+		< ${srcdir}/custom.wordlist
+	aspell --master=en_US --add-extra-dicts=${builddir}/custom.dict \
+		--mode=texinfo -c ${srcdir}/$(info_TEXINFOS) \
+		--add-texinfo-ignore include --add-texinfo-ignore c \
+		--add-texinfo-ignore setfilename --add-texinfo-ignore kindex \
+		--add-texinfo-ignore acronym --add-texinfo-ignore abbrev \
+		--add-texinfo-ignore ifset --add-texinfo-ignore ifclear \
+		--add-texinfo-ignore node --add-texinfo-ignore printindex \
+		--add-texinfo-ignore sub --add-texinfo-ignore sup \
+		--add-texinfo-ignore value \
+		--add-texinfo-ignore-env menu --add-texinfo-ignore-env tex
+
+mostlyclean-local:
+	-rm custom.dict
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

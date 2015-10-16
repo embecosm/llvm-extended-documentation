@@ -27,10 +27,12 @@ GCC_VERSION_DATE="16 Mar 2015, commit ID 9dbe51a"
 LLVM_VERSION="3.7"
 PKGVERSION="3.7"
 BUGURL="www.embecosm.com"
+BUGURL_TEXI="@uref{mailto:support@@embecosm.com,support@@embecosm.com}"
 AC_SUBST(GCC_VERSION_DATE)
 AC_SUBST(LLVM_VERSION)
 AC_SUBST(PKGVERSION)
 AC_SUBST(BUGURL)
+AC_SUBST(BUGURL_TEXI)
 
 # We want to create a Makefile
 AC_CONFIG_FILES([Makefile                       \

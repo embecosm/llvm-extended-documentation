@@ -2222,7 +2222,8 @@ File: llvm.info,  Node: Bug Reporting,  Prev: Bug Criteria,  Up: Bugs
 11.2 How and Where to Report Bugs
 =================================
 
-Bugs should be reported to the bug database at .
+Bugs should be reported to the bug database at support@embecosm.com
+(mailto:support@embecosm.com).
 
 
 File: llvm.info,  Node: Service,  Next: Contributing,  Prev: Bugs,  Up: Top

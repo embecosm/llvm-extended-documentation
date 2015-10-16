@@ -589,6 +589,7 @@ PACKAGE_URL=''
 
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
+BUGURL_TEXI
 BUGURL
 PKGVERSION
 LLVM_VERSION
@@ -2421,6 +2422,8 @@ GCC_VERSION_DATE="16 Mar 2015, commit ID 9dbe51a"
 LLVM_VERSION="3.7"
 PKGVERSION="3.7"
 BUGURL="www.embecosm.com"
+BUGURL_TEXI="@uref{mailto:support@@embecosm.com,support@@embecosm.com}"
+
 
 
 

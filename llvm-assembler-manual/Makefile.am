@@ -68,3 +68,21 @@ $(ECLIPSE_DIR)/index.html: $(DOCBOOKS)
 		 --stringparam eclipse.plugin.id       "$(ECLIPSE_ID)"       \
 		 --stringparam eclipse.plugin.provider "$(ECLIPSE_PROVIDER)" \
 		 $(ECLIPSE_STYLE) $(DOCBOOKS)
+
+.PHONY: spell
+spell:
+	aspell --lang=en create master ${builddir}/custom.dict \
+		< ${srcdir}/custom.wordlist
+	aspell --master=en_US --add-extra-dicts=${builddir}/custom.dict \
+		--mode=texinfo -c ${srcdir}/$(info_TEXINFOS) \
+		--add-texinfo-ignore include --add-texinfo-ignore c \
+		--add-texinfo-ignore setfilename --add-texinfo-ignore kindex \
+		--add-texinfo-ignore acronym --add-texinfo-ignore abbrev \
+		--add-texinfo-ignore ifset --add-texinfo-ignore ifclear \
+		--add-texinfo-ignore node --add-texinfo-ignore printindex \
+		--add-texinfo-ignore sub --add-texinfo-ignore sup \
+		--add-texinfo-ignore value \
+		--add-texinfo-ignore-env menu --add-texinfo-ignore-env tex
+
+mostlyclean-local:
+	-rm custom.dict

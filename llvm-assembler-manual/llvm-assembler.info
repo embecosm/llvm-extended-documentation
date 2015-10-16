@@ -39,7 +39,6 @@ entitled "GNU Free Documentation License".
 * Symbols::                     Symbols
 * Expressions::                 Expressions
 * Pseudo Ops::                  Assembler Directives
-* Object Attributes::           Object Attributes
 * Machine Dependencies::        Machine Dependent Features
 * Reporting Bugs::              Reporting Bugs
 * Acknowledgements::            Who Did What
@@ -167,7 +166,7 @@ ignored, so
    will invoke the assembler for the default architecture, _not_ the
 ARCH architecture.
 
-   After the program name 'clang' or 'ARC-cc', the command line may
+   After the program name 'clang' or 'ARCH-cc', the command line may
 contain options and file names.  Options may appear in any order, and
 may be before, after, or between file names.  The order of file names is
 not significant.
@@ -438,7 +437,7 @@ warning, so should be avoided.
 '-fdebug-compilation-dir VALUE'
      VALUE is the compilation directory to embed in the debug info.
 
-'filetype TYPE'
+'-filetype TYPE'
      Specify the output file type
 
      'asm'
@@ -1594,7 +1593,7 @@ address; you can only have a defined section in one of the two
 arguments.
 
 
-File: llvm-assembler.info,  Node: Pseudo Ops,  Next: Object Attributes,  Prev: Expressions,  Up: Top
+File: llvm-assembler.info,  Node: Pseudo Ops,  Next: Machine Dependencies,  Prev: Expressions,  Up: Top
 
 7 Assembler Directives
 **********************
@@ -4346,7 +4345,7 @@ File: llvm-assembler.info,  Node: IosVersionMinMachO,  Next: LazySymbolPointerMa
 7.4.12 '.ios_version_min MAJOR, MINOR, PATCH'
 ---------------------------------------------
 
-Verify that the version of IOS for which the code is being assembled has
+Verify that the version of iOS for which the code is being assembled has
 at least the specified MAJOR, MINOR and PATCH versions.
 
 
@@ -4971,25 +4970,13 @@ will need modifying to eliminate the need for these directives.
 '.vtableinherit'
      Create VTABLE_INHERIT relocation.
 
-     @item .word Emit words in a machine dependent way.
+'.word'
+     Emit words in a machine dependent way.
 
 
-File: llvm-assembler.info,  Node: Object Attributes,  Next: Machine Dependencies,  Prev: Pseudo Ops,  Up: Top
+File: llvm-assembler.info,  Node: Machine Dependencies,  Next: Reporting Bugs,  Prev: Pseudo Ops,  Up: Top
 
-8 Object Attributes
-*******************
-
-Object attributes are a concept introduced by the GNU assembler, to
-provide information about architecture variations and compatibility that
-could be of use to the linker.
-
-   GNU object attributes are not supported by the LLVM integrated
-assembler.
-
-
-File: llvm-assembler.info,  Node: Machine Dependencies,  Next: Reporting Bugs,  Prev: Object Attributes,  Up: Top
-
-9 Machine Dependent Features
+8 Machine Dependent Features
 ****************************
 
 The machine instruction sets are (almost by definition) different on
@@ -5011,7 +4998,7 @@ subject, see the hardware manufacturer's manual.
 
 File: llvm-assembler.info,  Node: AAP-dependent,  Up: Machine Dependencies
 
-9.1 AAP Dependent Features
+8.1 AAP Dependent Features
 ==========================
 
 AAP is a free and open source 16/32-bit word-addressed Harvard
@@ -5032,7 +5019,7 @@ features.
 
 File: llvm-assembler.info,  Node: AAP Options,  Next: AAP Directives,  Up: AAP-dependent
 
-9.1.1 AAP Specific Commmand Line Options
+8.1.1 AAP Specific Commmand Line Options
 ----------------------------------------
 
 There are no AAP specific options to the LLVM integrated assember.
@@ -5040,7 +5027,7 @@ There are no AAP specific options to the LLVM integrated assember.
 
 File: llvm-assembler.info,  Node: AAP Directives,  Next: AAP Assembler Syntax,  Prev: AAP Options,  Up: AAP-dependent
 
-9.1.2 AAP Specific Assembler Directives
+8.1.2 AAP Specific Assembler Directives
 ---------------------------------------
 
 There are no AAP specific directives in the LLVM integrated assembler.
@@ -5048,7 +5035,7 @@ There are no AAP specific directives in the LLVM integrated assembler.
 
 File: llvm-assembler.info,  Node: AAP Assembler Syntax,  Prev: AAP Directives,  Up: AAP-dependent
 
-9.1.3 AAP Assembler Syntax
+8.1.3 AAP Assembler Syntax
 --------------------------
 
 AAP offers the following custom assembler syntax.
@@ -5069,8 +5056,8 @@ AAP offers the following custom assembler syntax.
 
 File: llvm-assembler.info,  Node: Reporting Bugs,  Next: Acknowledgements,  Prev: Machine Dependencies,  Up: Top
 
-10 Reporting Bugs
-*****************
+9 Reporting Bugs
+****************
 
 Your bug reports play an essential role in making the LLVM integrated
 assembler reliable.
@@ -5092,8 +5079,8 @@ information that enables us to fix the bug.
 
 File: llvm-assembler.info,  Node: Bug Criteria,  Next: Bug Reporting,  Up: Reporting Bugs
 
-10.1 Have You Found a Bug?
-==========================
+9.1 Have You Found a Bug?
+=========================
 
 If you are not sure whether you have found a bug, here are some
 guidelines:
@@ -5117,18 +5104,13 @@ guidelines:
 
 File: llvm-assembler.info,  Node: Bug Reporting,  Prev: Bug Criteria,  Up: Reporting Bugs
 
-10.2 How to Report Bugs
-=======================
+9.2 How to Report Bugs
+======================
 
-A number of companies and individuals offer support for GNU products.
-If you obtained the LLVM integrated assembler from a support
-organization, we recommend you contact that organization first.
-
-   You can find contact information for many support companies and
-individuals in the file 'etc/SERVICE' in the GNU Emacs distribution.
-
-   In any event, we also recommend that you send bug reports for the
-LLVM integrated assembler to .
+A number of companies and individuals offer support for the LLVM
+integrated assembler.  If you obtained the LLVM integrated assembler
+from a support organization, we recommend you contact that organization
+first.
 
    The fundamental principle of reporting bugs usefully is this: *report
 all the facts*.  If you are not sure whether to state a fact or leave it
@@ -5266,10 +5248,26 @@ might as well expedite matters by sending them to begin with.
 
 File: llvm-assembler.info,  Node: Acknowledgements,  Next: GNU Free Documentation License,  Prev: Reporting Bugs,  Up: Top
 
-11 Acknowledgements
+10 Acknowledgements
 *******************
 
-If you have contributed to GAS and your name isn't listed here, it is
+This user guide to the LLVM Integrated Assembler is based on the guide
+to the GNU Assembler (GAS), and thus depends on all those who
+contributed to GAS. The modification was done by Jeremy Bennett at
+Embecosm (http://www.embecosm.com), with the help of Simon Cook and Ed
+Jones from the Embecosm LLVM team.
+
+   This manual does not list the numerous contributors the LLVM
+Integrated Assembler itself--that is covered elsewhere in the LLVM
+project.  If you have contributed to the version of this manual for the
+LLVM Integrated Assembler, and your name is not listed above, it is not
+meant as a slight.  We just don't know about it.  Send mail to the
+author, and we'll correct the situation.  As of October 2015, the author
+of the version of the manual for the LLVM Integrated Assembler is Jeremy
+Bennett (email address jeremy.bennett@embecosm.com
+(mailto:jeremy.bennett@embecosm.com)).
+
+   If you have contributed to GAS and your name isn't listed here, it is
 not meant as a slight.  We just don't know about it.  Send mail to the
 maintainer, and we'll correct the situation.  Currently the maintainer
 is Nick Clifton (email address 'nickc@redhat.com').
@@ -5885,9 +5883,9 @@ LLVM Integrated Assembler Index
 * -gdwarf-4:                             common-options.      (line  17)
 * -help:                                 internal-options.    (line  43)
 * -I PATH:                               common-options.      (line  21)
+* -llvm VALUE:                           common-options.      (line  40)
 * -main-file-name VALUE:                 internal-options.    (line  64)
 * -massembler-fatal-warnings:            internal-options.    (line  67)
-* -mllvm VALUE:                          common-options.      (line  40)
 * -mnoexecstack:                         internal-options.    (line  70)
 * -mrelax-all:                           common-options.      (line  44)
 * -msave-temp-labels:                    internal-options.    (line  76)
@@ -6183,7 +6181,7 @@ LLVM Integrated Assembler Index
                                                               (line   6)
 * '.weak_reference':                     WeakReference.       (line   6)
 * '.weak_reference' (Mach-O only):       WeakReferenceMachO.  (line   6)
-* '.word' (unsupported):                 Unsupported.         (line 104)
+* '.word' (unsupported):                 Unsupported.         (line 105)
 * '.zero':                               Zero.                (line   6)
 * '.zerofill' (Mach-O only) (Mach-O only): ZerofillMachO.     (line   6)
 * '2byte' directive:                     2byte.               (line   6)
@@ -6399,7 +6397,6 @@ LLVM Integrated Assembler Index
 * 'fvmlib_init1' directive (Mach-O only): FvmlibInitMachO.    (line   6)
 * 'global' directive:                    Global.              (line   6)
 * GNU assembler directives, unsupported: Unsupported.         (line   6)
-* GNU object attributes:                 Object Attributes.   (line   6)
 * 'gnu_attribute' directive (unsupported): Unsupported.       (line  35)
 * gold:                                  Object.              (line  15)
 * grouping data:                         Sub-Sections.        (line   6)
@@ -6586,7 +6583,6 @@ LLVM Integrated Assembler Index
                                                               (line   6)
 * 'objc_symbols' directive (Mach-O Objective C Only): ObjcSymbols.
                                                               (line   6)
-* object attributes:                     Object Attributes.   (line   6)
 * object file:                           Object.              (line   6)
 * object file format:                    Object Formats.      (line   6)
 * obsolescent directives:                Deprecated.          (line   6)
@@ -6802,7 +6798,7 @@ LLVM Integrated Assembler Index
                                                               (line   6)
 * whitespace:                            Whitespace.          (line   6)
 * whitespace, removed by preprocessor:   Preprocessing.       (line   7)
-* 'word' directive (unsupported):        Unsupported.         (line 104)
+* 'word' directive (unsupported):        Unsupported.         (line 105)
 * writing patterns in memory:            Fill.                (line   6)
 * 'zero' directive:                      Zero.                (line   6)
 * zero-terminated strings:               Asciz.               (line   6)
@@ -6813,265 +6809,264 @@ LLVM Integrated Assembler Index
 
 Tag Table:
 Node: Top761
-Node: Overview1826
-Node: Manual2316
-Node: LLVM Assembler3312
-Node: Object Formats4687
-Node: Command Line5180
-Ref: cc1as5710
-Node: Input Files7757
-Node: Object10357
-Node: Errors11441
-Node: Invoking12824
-Node: common-options14506
-Node: assembler-options16980
-Node: internal-options17505
-Node: Syntax21100
-Node: Preprocessing21727
-Node: Whitespace23037
-Node: Comments23445
-Node: Symbol Intro25517
-Node: Statements26254
-Node: Constants28080
-Node: Characters28725
-Node: Strings29239
-Node: Chars31489
-Node: Numbers32387
-Node: Integers32964
-Node: Bignums33632
-Node: Flonums34000
-Node: Sections35515
-Node: Secs Background35905
-Node: Ld Sections40213
-Node: As Sections42622
-Node: Sub-Sections43619
-Node: bss46628
-Node: Symbols47525
-Node: Labels48215
-Node: Setting Symbols48656
-Node: Symbol Names49184
-Node: Dot54119
-Node: Symbol Attributes54603
-Node: Symbol Value55198
-Node: Symbol Type56267
-Node: Expressions56645
-Node: Empty Exprs57427
-Node: Integer Exprs57811
-Node: Arguments58218
-Node: Operators59361
-Node: Prefix Ops59708
-Node: Infix Ops60071
-Node: Pseudo Ops62477
-Node: Common Directives64437
-Node: 2byte68200
-Node: 4byte68516
-Node: 8byte68847
-Node: Abort69223
-Node: Align69735
-Node: Align3271781
-Node: Ascii72676
-Node: Asciz73007
-Node: Balign73275
-Node: BundleAlign75192
-Node: BundleLock76526
-Node: Byte78256
-Node: CFIDirectives78532
-Node: CfiSections79725
-Node: CfiStartproc80255
-Node: CfiEndproc80773
-Node: CfiPersonality81084
-Node: CfiLsda81851
-Node: CfiDefCfa82404
-Node: CfiDefCfaRegister82700
-Node: CfiDefCfaOffset83046
-Node: CfiAdjustCfaOffset83455
-Node: CfiOffset83770
-Node: CfiRelOffset84032
-Node: CfiRegister84502
-Node: CfiRestore84767
-Node: CfiUndefined85124
-Node: CfiSameValue85378
-Node: CfiRememberState85663
-Node: CfiSignalFrame86108
-Node: CfiWindowSave86330
-Node: CfiEscape86716
-Node: Code1687082
-Node: Comm87640
-Node: Common88968
-Node: Double89292
-Node: Else89680
-Node: Elseif90029
-Node: End90371
-Node: Endif90634
-Node: Endm90940
-Node: Endr91115
-Node: Equ91336
-Node: Equiv91602
-Node: Err92181
-Node: Error92542
-Node: Exitm93010
-Node: Extern93202
-Node: File93511
-Node: Fill94181
-Node: Float95194
-Node: Global95586
-Node: Ident96160
-Node: If96384
-Node: Incbin99625
-Node: Include100197
-Node: Int100771
-Node: Irp101170
-Node: Irpc102067
-Node: LazyReference103014
-Node: Lcomm103503
-Node: Line104169
-Node: Loc104568
-Node: Long105967
-Node: Macro106166
-Node: NoDeadStrip112150
-Node: Octa112585
-Node: Org112947
-Node: P2align114303
-Node: PrivateExtern116257
-Node: Purgem116746
-Node: Quad116991
-Node: Reference117467
-Node: Rept117937
-Node: Set118376
-Node: Short118889
-Node: Single119259
-Node: Skip119652
-Node: Sleb128119999
-Node: Space120344
-Node: Stabs120692
-Node: String122498
-Node: SymbolResolver123114
-Node: Uleb128123621
-Node: Value123978
-Node: Warning124496
-Node: WeakDefCanBeHidden124757
-Node: WeakDefinition125285
-Node: WeakReference125796
-Node: Zero126292
-Node: ELF Directives126734
-Node: BssElf128149
-Node: DataElf128506
-Node: HiddenElf128885
-Node: IdentElf129492
-Node: InternalElf129830
-Node: LocalElf130514
-Node: PopSectionElf131128
-Node: PreviousElf131673
-Node: ProtectedElf133128
-Node: PushSectionElf133817
-Node: RodataElf134610
-Node: SectionElf135018
-Node: SizeElf140022
-Node: SubSectionElf140401
-Node: SymverElf141017
-Node: TbssElf143424
-Node: TdataElf143881
-Node: TextElf144338
-Node: TypeElf144721
-Node: VersionElf146742
-Node: WeakElf147037
-Node: WeakrefElf147331
-Node: COFF Directives148307
-Node: BssCoff149027
-Node: DataCoff149387
-Node: DefCoff149767
-Node: LinkonceCoff150054
-Node: SclCoff151431
-Node: SecidxCoff151810
-Node: SectionCoff152844
-Node: TextCoff154151
-Node: TypeCoff154538
-Node: Win64Coff154924
-Node: SehProc156048
-Node: SehEndprologue156296
-Node: SehHandler156719
-Node: SehHandlerdata157327
-Node: SehPushframe157746
-Node: SehPushreg158149
-Node: SehSavereg158548
-Node: SehSavexmn158983
-Node: SehSetframe159407
-Node: SehStackalloc159860
-Node: SehChained160286
-Node: WeakCoff160527
-Node: Mach-O Directives161308
-Node: BssMachO164034
-Node: ConstMachO164242
-Node: ConstDataMachO164479
-Node: ConstructorMachO164739
-Node: CstringMachO165096
-Node: DataMachO165344
-Node: DescMachO165576
-Node: DumpMachO165824
-Node: DyldMachO166105
-Node: FvmlibInitMachO166340
-Node: IdentMachO166700
-Node: IosVersionMinMachO166884
-Node: LazySymbolPointerMachO167237
-Node: LazyReferenceMachO167598
-Node: LinkerOptionMachO167914
-Node: LiteralMachO168180
-Node: LsymMachO168594
-Node: MacosxVersionMinMachO168928
-Node: ModInitFuncMachO169285
-Node: NoDeadStripMachO169670
-Node: ObjC169954
-Node: ObjcCatClsMeth171058
-Node: ObjcCatInstMeth171303
-Node: ObjcCategory171572
-Node: ObjcClass171821
-Node: ObjcClassNames172060
-Node: ObjcClassVars172318
-Node: ObjcClsMeth172575
-Node: ObjcClsRefs172823
-Node: ObjcInstMeth173070
-Node: ObjcInstanceVars173325
-Node: ObjcMessageRefs173598
-Node: ObjcMetaClass173869
-Node: ObjcMethVarNames174134
-Node: ObjcMethVarTypes174412
-Node: ObjcModuleInfo174691
-Node: ObjcProtocol174957
-Node: ObjcSelectorStrs175214
-Node: ObjcStringObject175488
-Node: ObjcSymbols175761
-Node: PicsymbolStubMachO175991
-Node: PreviousMachO176319
-Node: PrivateExternMachO176664
-Node: ReferenceMachO176934
-Node: SectionMachO177218
-Node: StaticConstMachO177675
-Node: StaticDataMachO177946
-Node: SymbolResolverMachO178221
-Node: SymbolStubMachO178486
-Node: TbssMachO178809
-Node: TdataMachO179093
-Node: TextMachO179334
-Node: ThreadInitFuncMachO179705
-Node: TlvMachO179976
-Node: WeakDefCanBeHiddenMachO180235
-Node: WeakDefinitionMachO180631
-Node: WeakReferenceMachO180915
-Node: ZerofillMachO181220
-Node: Deprecated181621
-Node: Unsupported181944
-Node: Object Attributes184403
-Node: Machine Dependencies184808
-Node: AAP-dependent185697
-Node: AAP Options186367
-Node: AAP Directives186610
-Node: AAP Assembler Syntax186884
-Node: Reporting Bugs187621
-Node: Bug Criteria188434
-Node: Bug Reporting189328
-Node: Acknowledgements196298
-Ref: Acknowledgements-Footnote-1201412
-Node: GNU Free Documentation License201438
-Node: AS Index226600
+Node: Overview1776
+Node: Manual2266
+Node: LLVM Assembler3262
+Node: Object Formats4637
+Node: Command Line5130
+Ref: cc1as5660
+Node: Input Files7708
+Node: Object10308
+Node: Errors11392
+Node: Invoking12775
+Node: common-options14457
+Node: assembler-options16931
+Node: internal-options17456
+Node: Syntax21052
+Node: Preprocessing21679
+Node: Whitespace22989
+Node: Comments23397
+Node: Symbol Intro25469
+Node: Statements26206
+Node: Constants28032
+Node: Characters28677
+Node: Strings29191
+Node: Chars31441
+Node: Numbers32339
+Node: Integers32916
+Node: Bignums33584
+Node: Flonums33952
+Node: Sections35467
+Node: Secs Background35857
+Node: Ld Sections40165
+Node: As Sections42574
+Node: Sub-Sections43571
+Node: bss46580
+Node: Symbols47477
+Node: Labels48167
+Node: Setting Symbols48608
+Node: Symbol Names49136
+Node: Dot54071
+Node: Symbol Attributes54555
+Node: Symbol Value55150
+Node: Symbol Type56219
+Node: Expressions56597
+Node: Empty Exprs57379
+Node: Integer Exprs57763
+Node: Arguments58170
+Node: Operators59313
+Node: Prefix Ops59660
+Node: Infix Ops60023
+Node: Pseudo Ops62429
+Node: Common Directives64392
+Node: 2byte68155
+Node: 4byte68471
+Node: 8byte68802
+Node: Abort69178
+Node: Align69690
+Node: Align3271736
+Node: Ascii72631
+Node: Asciz72962
+Node: Balign73230
+Node: BundleAlign75147
+Node: BundleLock76481
+Node: Byte78211
+Node: CFIDirectives78487
+Node: CfiSections79680
+Node: CfiStartproc80210
+Node: CfiEndproc80728
+Node: CfiPersonality81039
+Node: CfiLsda81806
+Node: CfiDefCfa82359
+Node: CfiDefCfaRegister82655
+Node: CfiDefCfaOffset83001
+Node: CfiAdjustCfaOffset83410
+Node: CfiOffset83725
+Node: CfiRelOffset83987
+Node: CfiRegister84457
+Node: CfiRestore84722
+Node: CfiUndefined85079
+Node: CfiSameValue85333
+Node: CfiRememberState85618
+Node: CfiSignalFrame86063
+Node: CfiWindowSave86285
+Node: CfiEscape86671
+Node: Code1687037
+Node: Comm87595
+Node: Common88923
+Node: Double89247
+Node: Else89635
+Node: Elseif89984
+Node: End90326
+Node: Endif90589
+Node: Endm90895
+Node: Endr91070
+Node: Equ91291
+Node: Equiv91557
+Node: Err92136
+Node: Error92497
+Node: Exitm92965
+Node: Extern93157
+Node: File93466
+Node: Fill94136
+Node: Float95149
+Node: Global95541
+Node: Ident96115
+Node: If96339
+Node: Incbin99580
+Node: Include100152
+Node: Int100726
+Node: Irp101125
+Node: Irpc102022
+Node: LazyReference102969
+Node: Lcomm103458
+Node: Line104124
+Node: Loc104523
+Node: Long105922
+Node: Macro106121
+Node: NoDeadStrip112105
+Node: Octa112540
+Node: Org112902
+Node: P2align114258
+Node: PrivateExtern116212
+Node: Purgem116701
+Node: Quad116946
+Node: Reference117422
+Node: Rept117892
+Node: Set118331
+Node: Short118844
+Node: Single119214
+Node: Skip119607
+Node: Sleb128119954
+Node: Space120299
+Node: Stabs120647
+Node: String122453
+Node: SymbolResolver123069
+Node: Uleb128123576
+Node: Value123933
+Node: Warning124451
+Node: WeakDefCanBeHidden124712
+Node: WeakDefinition125240
+Node: WeakReference125751
+Node: Zero126247
+Node: ELF Directives126689
+Node: BssElf128104
+Node: DataElf128461
+Node: HiddenElf128840
+Node: IdentElf129447
+Node: InternalElf129785
+Node: LocalElf130469
+Node: PopSectionElf131083
+Node: PreviousElf131628
+Node: ProtectedElf133083
+Node: PushSectionElf133772
+Node: RodataElf134565
+Node: SectionElf134973
+Node: SizeElf139977
+Node: SubSectionElf140356
+Node: SymverElf140972
+Node: TbssElf143379
+Node: TdataElf143836
+Node: TextElf144293
+Node: TypeElf144676
+Node: VersionElf146697
+Node: WeakElf146992
+Node: WeakrefElf147286
+Node: COFF Directives148262
+Node: BssCoff148982
+Node: DataCoff149342
+Node: DefCoff149722
+Node: LinkonceCoff150009
+Node: SclCoff151386
+Node: SecidxCoff151765
+Node: SectionCoff152799
+Node: TextCoff154106
+Node: TypeCoff154493
+Node: Win64Coff154879
+Node: SehProc156003
+Node: SehEndprologue156251
+Node: SehHandler156674
+Node: SehHandlerdata157282
+Node: SehPushframe157701
+Node: SehPushreg158104
+Node: SehSavereg158503
+Node: SehSavexmn158938
+Node: SehSetframe159362
+Node: SehStackalloc159815
+Node: SehChained160241
+Node: WeakCoff160482
+Node: Mach-O Directives161263
+Node: BssMachO163989
+Node: ConstMachO164197
+Node: ConstDataMachO164434
+Node: ConstructorMachO164694
+Node: CstringMachO165051
+Node: DataMachO165299
+Node: DescMachO165531
+Node: DumpMachO165779
+Node: DyldMachO166060
+Node: FvmlibInitMachO166295
+Node: IdentMachO166655
+Node: IosVersionMinMachO166839
+Node: LazySymbolPointerMachO167192
+Node: LazyReferenceMachO167553
+Node: LinkerOptionMachO167869
+Node: LiteralMachO168135
+Node: LsymMachO168549
+Node: MacosxVersionMinMachO168883
+Node: ModInitFuncMachO169240
+Node: NoDeadStripMachO169625
+Node: ObjC169909
+Node: ObjcCatClsMeth171013
+Node: ObjcCatInstMeth171258
+Node: ObjcCategory171527
+Node: ObjcClass171776
+Node: ObjcClassNames172015
+Node: ObjcClassVars172273
+Node: ObjcClsMeth172530
+Node: ObjcClsRefs172778
+Node: ObjcInstMeth173025
+Node: ObjcInstanceVars173280
+Node: ObjcMessageRefs173553
+Node: ObjcMetaClass173824
+Node: ObjcMethVarNames174089
+Node: ObjcMethVarTypes174367
+Node: ObjcModuleInfo174646
+Node: ObjcProtocol174912
+Node: ObjcSelectorStrs175169
+Node: ObjcStringObject175443
+Node: ObjcSymbols175716
+Node: PicsymbolStubMachO175946
+Node: PreviousMachO176274
+Node: PrivateExternMachO176619
+Node: ReferenceMachO176889
+Node: SectionMachO177173
+Node: StaticConstMachO177630
+Node: StaticDataMachO177901
+Node: SymbolResolverMachO178176
+Node: SymbolStubMachO178441
+Node: TbssMachO178764
+Node: TdataMachO179048
+Node: TextMachO179289
+Node: ThreadInitFuncMachO179660
+Node: TlvMachO179931
+Node: WeakDefCanBeHiddenMachO180190
+Node: WeakDefinitionMachO180586
+Node: WeakReferenceMachO180870
+Node: ZerofillMachO181175
+Node: Deprecated181576
+Node: Unsupported181899
+Node: Machine Dependencies184354
+Node: AAP-dependent185236
+Node: AAP Options185906
+Node: AAP Directives186149
+Node: AAP Assembler Syntax186423
+Node: Reporting Bugs187160
+Node: Bug Criteria187971
+Node: Bug Reporting188863
+Node: Acknowledgements195611
+Ref: Acknowledgements-Footnote-1201614
+Node: GNU Free Documentation License201640
+Node: AS Index226802
 
 End Tag Table
