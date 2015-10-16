@@ -5583,7 +5583,7 @@ of October 2015, the author of the version of the manual for the LLVM
 Integrated Assembler is Jeremy Bennett (email address
 @uref{mailto:jeremy.bennett@@embecosm.com, jeremy.bennett@@embecosm.com}).
 
-@section Orginal GAS Acknowledgments
+@section Original GAS Acknowledgments
 
 If you have contributed to GAS and your name isn't listed here,
 it is not meant as a slight.  We just don't know about it.  Send mail to the
