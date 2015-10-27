@@ -1,5 +1,16 @@
 2015-10-27  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
+	* Makefile.am: Move definitions for DITA here.
+	* Makefile.in: Regenerated.
+	* aclocal.m4: Likewise.
+	* configure: Likewise.
+	* configure.ac: Move defintions for DITA into Makefile and add
+	conditionals.
+	* llvm-assembler-manual/Makefile.in: Regenerated.
+	* llvm-user-manual/Makefile.in: Likewise.
+
+2015-10-27  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
 	Framework support for DITA documentation, using the DITA Open
 	Toolkit version 1.8
 

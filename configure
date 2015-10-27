@@ -594,11 +594,17 @@ BUGURL
 PKGVERSION
 LLVM_VERSION
 GCC_VERSION_DATE
-CLASSPATH
-PATH
-ANT_HOME
-ANT_OPTS
+FOPCONF
 DITA18DIR
+JAVALIBDIR
+HAVE_CLASSPATH_FALSE
+HAVE_CLASSPATH_TRUE
+HAVE_FOPCONF_FALSE
+HAVE_FOPCONF_TRUE
+HAVE_DITA18DIR_FALSE
+HAVE_DITA18DIR_TRUE
+HAVE_JAVALIBDIR_FALSE
+HAVE_JAVALIBDIR_TRUE
 AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
@@ -670,6 +676,7 @@ enable_option_checking
 enable_silent_rules
 with_javalibdir
 with_ditadir
+with_fopconf
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1297,6 +1304,7 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-javalibdir=dir   absolute location of external Java libraries
   --with-dita18dir=dir    absolute location of DITA Open Toolkit version 1.8
+  --with-fopconf=dir      absolute location of DITA Open Toolkit version 1.8
 
 Report bugs to <support@embecosm.com>.
 _ACEOF
@@ -2430,67 +2438,68 @@ fi
 # Make sure we are using a reasonably recent autoconf version
 
 
-# Allow the user to override defaults
+# Allow the user to override defaults for DITA processing
 
 # Check whether --with-javalibdir was given.
 if test "${with_javalibdir+set}" = set; then :
-  withval=$with_javalibdir; javalibdir=$withval
+  withval=$with_javalibdir; JAVALIBDIR=$withval
 else
-  javalibdir=""
+  JAVALIBDIR=""
 fi
 
 
-if test x"$javalibdir" = x
-then
-    JAVALIBDIR=/usr/share/java
+ if test x$JAVALIBDIR != x; then
+  HAVE_JAVALIBDIR_TRUE=
+  HAVE_JAVALIBDIR_FALSE='#'
 else
-    JAVALIBDIR=$javalibdir
+  HAVE_JAVALIBDIR_TRUE='#'
+  HAVE_JAVALIBDIR_FALSE=
 fi
+
 
 
 # Check whether --with-ditadir was given.
 if test "${with_ditadir+set}" = set; then :
   withval=$with_ditadir; DITA18DIR=$withval
 else
-  DITA18DIR="$abs_top_srcdir/DITA-OT1.8"
+  DITA18DIR=""
 fi
 
 
-# Set up Java and Ant
-ANT_OPTS="-Xmx512m $ANT_OPTS"
-ANT_OPTS="$ANT_OPTS -Djava.awt.headless=true"
-ANT_OPTS="$ANT_OPTS -Djavax.xml.transform.TransformerFactory=net.sf.saxon.TransformerFactoryImpl"
-
-ANT_HOME="$DITA18DIR"/tools/ant
-PATH="$DITA18DIR"/tools/ant/bin:"$PATH"
-
-new_classpath="$DITA18DIR/lib/dost.jar"
-new_classpath="$DITA18DIR/lib:$new_classpath"
-new_classpath="$DITA18DIR/lib/commons-codec-1.4.jar:$new_classpath"
-new_classpath="$DITA18DIR/lib/resolver.jar:$new_classpath"
-new_classpath="$DITA18DIR/lib/icu4j.jar:$new_classpath"
-new_classpath="$DITA18DIR/lib/xercesImpl.jar:$new_classpath"
-new_classpath="$DITA18DIR/lib/xml-apis.jar:$new_classpath"
-new_classpath="$DITA18DIR/lib/saxon/saxon9.jar:$new_classpath"
-new_classpath="$DITA18DIR/lib/saxon/saxon9-dom.jar:$new_classpath"
-
-new_classpath="$JAVALIBDIR/ant-contrib/ant-contrib.jar":$new_classpath
-new_classpath="$JAVALIBDIR/fop.jar":$new_classpath
-new_classpath="$JAVALIBDIR/commons-logging.jar":$new_classpath
-new_classpath="$JAVALIBDIR/xmlgraphics-commons.jar":$new_classpath
-new_classpath="$JAVALIBDIR/xml-commons-apis-ext.jar":$new_classpath
-new_classpath="$JAVALIBDIR/commons-io.jar":$new_classpath
-new_classpath="$JAVALIBDIR/avalon-framework-api.jar":$new_classpath
-new_classpath="$JAVALIBDIR/avalon-framework.jar":$new_classpath
-new_classpath="$JAVALIBDIR/batik-all.jar":$new_classpath
-new_classpath="$DITA18DIR/plugins/org.dita.pdf2/lib/fo.jar":$new_classpath
-
-if test -n "$CLASSPATH"; then
-  CLASSPATH="$new_classpath":"$CLASSPATH"
+ if test x$DITA18DIR != x; then
+  HAVE_DITA18DIR_TRUE=
+  HAVE_DITA18DIR_FALSE='#'
 else
-  CLASSPATH="$new_classpath"
+  HAVE_DITA18DIR_TRUE='#'
+  HAVE_DITA18DIR_FALSE=
 fi
 
+
+
+# Check whether --with-fopconf was given.
+if test "${with_fopconf+set}" = set; then :
+  withval=$with_fopconf; FOPCONF=$withval
+else
+  FOPCONF=""
+fi
+
+
+ if test x$FOPCONF != x; then
+  HAVE_FOPCONF_TRUE=
+  HAVE_FOPCONF_FALSE='#'
+else
+  HAVE_FOPCONF_TRUE='#'
+  HAVE_FOPCONF_FALSE=
+fi
+
+
+ if test x$CLASSPATH != x; then
+  HAVE_CLASSPATH_TRUE=
+  HAVE_CLASSPATH_FALSE='#'
+else
+  HAVE_CLASSPATH_TRUE='#'
+  HAVE_CLASSPATH_FALSE=
+fi
 
 
 
@@ -2668,6 +2677,22 @@ $as_echo_n "checking that generated files are newer than configure... " >&6; }
    { $as_echo "$as_me:${as_lineno-$LINENO}: result: done" >&5
 $as_echo "done" >&6; }
 
+if test -z "${HAVE_JAVALIBDIR_TRUE}" && test -z "${HAVE_JAVALIBDIR_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_JAVALIBDIR\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_DITA18DIR_TRUE}" && test -z "${HAVE_DITA18DIR_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_DITA18DIR\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_FOPCONF_TRUE}" && test -z "${HAVE_FOPCONF_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_FOPCONF\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_CLASSPATH_TRUE}" && test -z "${HAVE_CLASSPATH_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_CLASSPATH\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 
 : "${CONFIG_STATUS=./config.status}"
 ac_write_fail=0

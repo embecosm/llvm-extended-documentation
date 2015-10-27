@@ -14,6 +14,58 @@ ACLOCAL_AMFLAGS = -I m4
 # Common flags for all programs
 SUBDIRS = llvm-assembler-manual llvm-user-manual
 
+# Set up Java and Ant
+if !HAVE_JAVALIBDIR
+  JAVALIBDIR ::= /usr/share/java
+endif
+
+if !HAVE_DITA18DIR
+  DITA18DIR ::= $(abs_top_srcdir)/DITA-OT1.8
+endif
+
+if !HAVE_FOPCONF
+  FOPCONF ::= $(abs_top_srcdir)/local-fonts/fop.xconf
+endif
+
+export DITA18DIR
+export FOPCONF
+
+ANT_OPTS ::= "-Xmx512m $(ANT_OPTS)"
+ANT_OPTS ::= "$(ANT_OPTS) -Djava.awt.headless=true"
+ANT_OPTS ::= "$(ANT_OPTS) -Djavax.xml.transform.TransformerFactory=net.sf.saxon.TransformerFactoryImpl"
+export ANT_OPTS
+
+export ANT_HOME ::= "($DITA18DIR)"/tools/ant
+export PATH ::= "($DITA18DIR)"/tools/ant/bin:"$(PATH)"
+
+new_classpath ::= "$(DITA18DIR)/lib/dost.jar"
+new_classpath ::= "$(DITA18DIR)/lib:$(new_classpath)"
+new_classpath ::= "$(DITA18DIR)/lib/commons-codec-1.4.jar:$(new_classpath)"
+new_classpath ::= "$(DITA18DIR)/lib/resolver.jar:$(new_classpath)"
+new_classpath ::= "$(DITA18DIR)/lib/icu4j.jar:$(new_classpath)"
+new_classpath ::= "$(DITA18DIR)/lib/xercesImpl.jar:$(new_classpath)"
+new_classpath ::= "$(DITA18DIR)/lib/xml-apis.jar:$(new_classpath)"
+new_classpath ::= "$(DITA18DIR)/lib/saxon/saxon9.jar:$(new_classpath)"
+new_classpath ::= "$(DITA18DIR)/lib/saxon/saxon9-dom.jar:$(new_classpath)"
+
+new_classpath ::= "$(JAVALIBDIR)/ant-contrib/ant-contrib.jar":$(new_classpath)
+new_classpath ::= "$(JAVALIBDIR)/fop.jar":$(new_classpath)
+new_classpath ::= "$(JAVALIBDIR)/commons-logging.jar":$(new_classpath)
+new_classpath ::= "$(JAVALIBDIR)/xmlgraphics-commons.jar":$(new_classpath)
+new_classpath ::= "$(JAVALIBDIR)/xml-commons-apis-ext.jar":$(new_classpath)
+new_classpath ::= "$(JAVALIBDIR)/commons-io.jar":$(new_classpath)
+new_classpath ::= "$(JAVALIBDIR)/avalon-framework-api.jar":$(new_classpath)
+new_classpath ::= "$(JAVALIBDIR)/avalon-framework.jar":$(new_classpath)
+new_classpath ::= "$(JAVALIBDIR)/batik-all.jar":$(new_classpath)
+
+new_classpath ::= "$(DITA18DIR)/plugins/org.dita.pdf2/lib/fo.jar":$(new_classpath)
+
+if HAVE_CLASSPATH
+  export CLASSPATH ::= "$(new_classpath)":"$CLASSPATH"
+else
+  export CLASSPATH ::= "$(new_classpath)"
+endif
+
 # Targets to generate docbook and html
 
 am__extra_recursive_targets = install-docbook-recursive docbook-recursive \
