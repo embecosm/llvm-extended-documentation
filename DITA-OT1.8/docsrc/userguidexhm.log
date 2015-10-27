@@ -1,0 +1,769 @@
+========================================================================
+IBM Corporation : ID Workbench V4.4.6 (05/22/2013)
+========================================================================
+PROCESS INFORMATION : 
+   Start Time    : 06/06/13 10:41:52
+   O/S           : Windows 7 6.1 build 7601 Service Pack 1
+   REXX Ver      : 2.1.3
+   Client Name   : IBM-HIE0L2DQSML.rchland.ibm.com
+   Process       : DITA map input to XHTML output
+   Processor     : map2xhtml
+   User          : robander
+   Base Dir      : C:\Users\IBM_ADMIN\github\develop\src\main\docsrc
+   Temp Dir      : C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc
+   Bgn Drv Spc   : 291371 M
+   FileAdd       : xhm
+   IDWBCODE      : C:\DITATools\IDWB\bin
+   LOCPATH       : C:\DITATools\IDWB\locale;
+   file.encoding : Cp1252
+   Processors    : 8
+   JVM MaxMemory : 1638 M
+   Jar version   : 4.5.0-20130522-0753
+   Internal BOM  : idwbtmlt.bom
+   Internal LOG  : idwbtmlt.log
+   Parameters    : "C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\userguide.ditamap" /OUTDIR:".\out" /WL:ERROR /COPYCSS /OUTEXT:html /VO /L
+      Parm: Input File                  (/I:)  [/IDINPUTFILE] Value: C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\userguide.ditamap
+      Parm: Output directory            (/OUTDIR:)  [/IDOUTDIR] Value: .\out
+      Parm: Warning Level               (/WL:)  [/IDWL] Value: ERROR
+      Parm: Copy Cascading Style Sheet  (/COPYCSS)  [/XHTML_IDCOPYCSS] Value: ON
+      Parm: Default Output Extension    (/OUTEXT:)  [/XHTML_IDOUTEXT] Value: html
+      Parm: View Output                 (/VO)  [/IDVO] Value: ON
+      Parm: Local Processing            (/L)  [/IDL]   Value: ON
+      Parm: Placement of files in the output directory (/OUTDIRSCOPE:)  [/XHTML_IDOUTDIRSCOPE] Value: ADJUST
+      Parm: Navigation Type             (/NAVTYPE:)  [/XHTML_IDNAVTYPE] Value: NONE
+------------------------------------------------------------------------
+<<< BEGIN DITA Search file contents. (ditadflt.dsh)
+DIR:C:\Users\IBM_ADMIN\github\develop\src\main\docsrc
+<<< END DITA Search file contents.
+ ... ID Initialization/Verification Complete ... (0)                  10:41:54
+(START) -------------------- Step: 1 of 22 --------------------
+Target idwbinit:
+ Start Process: 1 of 22 ...                                           10:41:55
+Executing the following target and its dependencies: map2xhtml_init
+Target map2xhtml_init:
+ End Process: 1 of 22 (0)                                             10:41:55
+(END) -------------------- Step: 1 of 22 --------------------
+(START) -------------------- Step: 2 of 22 --------------------
+Target resolvesidefiles:
+ Start Process: 2 of 22 ...                                           10:41:55
+ End Process: 2 of 22 (0)                                             10:41:55
+(END) -------------------- Step: 2 of 22 --------------------
+(START) -------------------- Step: 3 of 22 --------------------
+Target ditapreprocess:
+ Start Process: 3 of 22 ...                                           10:41:55
+    Your files are being retrieved. They are not all being shown in   10:41:55
+    this console in order to speed up the processing and retrieval of 10:41:55
+    the files. For the complete list of files, see the processing log 10:41:55
+....................DITA Preprocessor Exec Command Information Process Log ....................
+Executing 'C:\DITATools\IDWB\bin\omspvm.exe' with arguments:
+'-load'
+'C:\DITATools\IDWB\bin\hrefscan.xvc'
+'-licto'
+'3600'
+'-f'
+'C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\omni1248074755.args'
+
+The ' characters around the executable and arguments are
+not part of the command.
+
+Omnimark args file contents
+-l C:\DITATools\IDWB\dita\plugins\AuthoringTools\dtd\
+-l C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\
+-library C:\DITATools\IDWB\dita\plugins\AuthoringTools\dtd\dita.lib
+-library C:\DITATools\IDWB\dita\usertest.lib
+-library C:\DITATools\IDWB\dita\plugins\installedspec.lib
+-d inputFile userguide.ditamap
+-d IDPROCESSOR map2xhtml
+-d workingDirectory \TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\
+-d final-output-type XHTML
+-d fmgr-prog-filename C:\DITATools\IDWB\bin\idwbfmgr.exe
+-d startFromPath Users\IBM_ADMIN\github\develop\src\main\docsrc\
+-d searchPathFile ditadflt.dsh
+-d knownSpecList C:\DITATools\IDWB\bin\idsp_catalog.xml
+-d copynondita NONE
+-d op-system WINDOWS
+-d userdir C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\
+-d pluginInstallFile C:\DITATools\IDWB\install\plugin_install.xml
+-d atopicExtension atp
+-log C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\id291519520.log.out
+....................DITA Preprocessor Exec Command Information Process Log ....................
+
+    Retrieving Entity: exploring-the-dita-ot.dita  ,  exploring-the-dita-ot.dita , quickstartguide\ ... 10:41:58
+Entity retrieval for exploring-the-dita-ot.dita  ,  exploring-the-dita-ot.dita , quickstartguide\ . Return code: 0.     
+    ...Entity Retrieval Completed.(0)                                 10:41:58
+    Retrieving Entity: installing-full-easy.dita  ,  installing-full-easy.dita , readme\ ... 10:41:59
+Entity retrieval for installing-full-easy.dita  ,  installing-full-easy.dita , readme\ . Return code: 0.     
+    ...Entity Retrieval Completed.(0)                                 10:41:59
+    Retrieving Entity: dev_ref.ditamap  ,  dev_ref.ditamap , dev_ref\ ... 10:42:11
+Entity retrieval for dev_ref.ditamap  ,  dev_ref.ditamap , dev_ref\ . Return code: 0.     
+    ...Entity Retrieval Completed.(0)                                 10:42:11
+    Retrieving Entity: project-management.ditamap  ,  project-management.ditamap , admin\ ... 10:42:25
+Entity retrieval for project-management.ditamap  ,  project-management.ditamap , admin\ . Return code: 0.     
+    ...Entity Retrieval Completed.(0)                                 10:42:25
+    Retrieving Entity: dita-and-dita-ot-resources.dita  ,  dita-and-dita-ot-resources.dita , articles\ ... 10:42:28
+Entity retrieval for dita-and-dita-ot-resources.dita  ,  dita-and-dita-ot-resources.dita , articles\ . Return code: 0.     
+    ...Entity Retrieval Completed.(0)                                 10:42:28
+    Retrieving Entity: rel1.8.xml  ,  rel1.8.xml , readme\changes\ ... 10:42:31
+Entity retrieval for rel1.8.xml  ,  rel1.8.xml , readme\changes\ . Return code: 0.     
+    ...Entity Retrieval Completed.(0)                                 10:42:31
+    Retrieving Entity: DITA1-2.xml  ,  DITA1-2.xml , specification\ ... 10:42:31
+Entity retrieval for DITA1-2.xml  ,  DITA1-2.xml , specification\ . Return code: 0.     
+    ...Entity Retrieval Completed.(0)                                 10:42:32
+..................... DITA Preprocessor Error Log .....................
+
+
+------------------------------------------------------------------
+IDWT326I Information: (File = readme/installing-full-easy.dita, Element = task:1)
+Property 'windows' present on attribute platform. No condition set
+for this in filter file; information included in output unless removed later
+during Branch Filtering process.
+
+------------------------------------------------------------------
+IDWT326I Information: (File = readme/installing-full-easy.dita, Element = chrow:1)
+Property 'linux' present on attribute platform. No condition set
+for this in filter file; information included in output unless removed later
+during Branch Filtering process.
+
+------------------------------------------------------------------
+IDWT369I Information: (File = readme.ditamap, Element = title:1)
+A map contains both a title element and a title attribute. The title attribute will be ignored.
+
+------------------------------------------------------------------
+IDWT327I Information: (File = readme/ant-parameters-pdf2-transformation.dita, Element = row:2)
+The revision value '1.5.4' was used, but no condition was set for this
+in the filter file; the information will not be marked in the output.
+
+------------------------------------------------------------------
+IDWT326I Information: (File = readme/ant-parameters-pdf2-transformation.dita, Element = row:8)
+Property 'xslt-customizer' present on attribute audience. No condition set
+for this in filter file; information included in output unless removed later
+during Branch Filtering process.
+
+------------------------------------------------------------------
+IDWT327I Information: (File = readme/ant-parameters-all-transformation-types.dita, Element = row:5)
+The revision value '1.6' was used, but no condition was set for this
+in the filter file; the information will not be marked in the output.
+
+------------------------------------------------------------------
+IDWT327I Information: (File = dev_ref/preprocess-flagging.dita, Element = reference:1)
+The revision value '1.7' was used, but no condition was set for this
+in the filter file; the information will not be marked in the output.
+
+------------------------------------------------------------------
+IDWT326I Information: (File = readme/installing-minimal-package-on-linux.dita, Element = task:1)
+Property 'osx' present on attribute platform. No condition set
+for this in filter file; information included in output unless removed later
+during Branch Filtering process.
+
+------------------------------------------------------------------
+IDWT326I Information: (File = readme/increasing-the-jvm.dita, Element = chrow:2)
+Property 'unix' present on attribute platform. No condition set
+for this in filter file; information included in output unless removed later
+during Branch Filtering process.
+
+------------------------------------------------------------------
+IDWT300I Information:
+One or more files were found during processing which do not set any language.
+These files will default to US English (xml:lang="en-us").
+In other locations, the following languages were used:
+en-us, en, vi
+The following files did not set the language on the root element (for example: <map>,
+<concept>, or <dita>) at the top of the file:
+quickstartguide/exploring-the-dita-ot.dita, readme/ant.dita, readme/creating-an-ant-build-script.dita, readme/ant-parameters-eclipse-content-transformation.dita, readme/ant-parameters-eclipse-help-transformation.dita
+readme/ant-parameters-html-help-transformation.dita, readme/ant-parameters-javahelp-transformation.dita, readme/ant-parameters-legacypdf-transformation.dita, readme/ant-parameters-odt-transformation.dita, readme/ant-parameters-pdf2-transformation.dita
+readme/ant-parameters-xhtml-transformation.dita, readme/command-line-tool.dita, readme/building-output-using-cl-tool.dita, readme/tool-parameters-eclipsecontent-transformation.dita, readme/tool-parameters-eclipsehelp-transformation.dita
+readme/tool-parameters-htmlhelp-transformation.dita, readme/tool-parameters-javahelp-transformation.dita, readme/tool-parameters-odt-transformation.dita, readme/tool-parameters-pdf-transformation.dita, readme/tool-parameters-xhtml-transformation.dita
+readme/ant-parameters-all-transformation-types.dita, readme/tool-parameters-all-transformation.dita, readme/ant-parameters-common-html-transtypes.dita, readme/tool-parameters-common-html-transformation.dita, readme/overview-of-dita-ot.dita
+dev_ref/developer-reference.dita, dev_ref/processing-structure.dita, dev_ref/XhtmlCommon.dita, dev_ref/rebuilding-the-dita-ot-documentation.dita, dev_ref/configuring-the-dita-ot.dita
+dev_ref/lib-org.dita.dost.platform-plugin.properties.dita, dev_ref/ant-properties.dita, dev_ref/DITA1.2-implementation-dependent-features.dita, dev_ref/extended-functionality.dita, readme/distribution_packages.dita
+articles/dita-and-dita-ot-resources.dita, articles/web-based-resources.dita, readme/prerequisite-software.dita, readme/installing-minimal-package-on-linux.dita, readme/installing-minimal-package-windows.dita
+readme/tranforming-dita-content.dita, readme/globalization-supported-in-dita-ot.dita, readme/troubleshooting-overview.dita, readme/DITA-messages.xml, readme/accessing-help-from-the-cl-tool.dita
+readme/determining-version-of-ditaot.dita, readme/enabling-debug-mode.dita, readme/increasing-the-jvm.dita, readme/reference.dita, readme/generate-copy-outer.dita
+readme/ant-parameters-other.dita, readme/conref-task.dita, readme/conref-dita-ot-parameters.dita, readme/conref-installing.dita
+<I>Source used for build:
+DITA files: 145
+Topics: 149
+
+------------------------------------------------------------------
+..................... DITA Preprocessor Error Log .....................
+
+ Entity retrieval for DITA-OTProjectHome.xml  ,  DITA-OTProjectHome.xml . Return code: 0.
+ Entity retrieval for keyrefs.ditamap  ,  keyrefs.ditamap . Return code: 0.
+ Entity retrieval for quickstart.ditamap  ,  quickstart.ditamap . Return code: 0.
+ Entity retrieval for rundemo.dita  ,  rundemo.dita , quickstartguide\ . Return code: 0.
+ Entity retrieval for conref-task.dita  ,  conref-task.dita , readme\ . Return code: 0.
+ Entity retrieval for runmore.dita  ,  runmore.dita , quickstartguide\ . Return code: 0.
+ Entity retrieval for readme.ditamap  ,  readme.ditamap . Return code: 0.
+ Entity retrieval for DITA-readme.xml  ,  DITA-readme.xml , readme\ . Return code: 0.
+ Entity retrieval for ant.dita  ,  ant.dita , readme\ . Return code: 0.
+ Entity retrieval for DITA-antuse.xml  ,  DITA-antuse.xml , readme\ . Return code: 0.
+ Entity retrieval for creating-an-ant-build-script.dita  ,  creating-an-ant-build-script.dita , readme\ . Return code: 0.
+ Entity retrieval for dita-ot_ant_properties.dita  ,  dita-ot_ant_properties.dita , readme\ . Return code: 0.
+ Entity retrieval for DITA-ant.xml  ,  DITA-ant.xml , readme\ . Return code: 0.
+ Entity retrieval for dita2eclipsecontent.dita  ,  dita2eclipsecontent.dita , readme\ . Return code: 0.
+ Entity retrieval for ant-parameters-eclipse-content-transformation.dita  ,  ant-parameters-eclipse-content-transformation.dita , readme\ . Return code: 0.
+ Entity retrieval for dita2eclipsehelp.dita  ,  dita2eclipsehelp.dita , readme\ . Return code: 0.
+ Entity retrieval for ant-parameters-eclipse-help-transformation.dita  ,  ant-parameters-eclipse-help-transformation.dita , readme\ . Return code: 0.
+ Entity retrieval for dita2htmlhelp.dita  ,  dita2htmlhelp.dita , readme\ . Return code: 0.
+ Entity retrieval for ant-parameters-html-help-transformation.dita  ,  ant-parameters-html-help-transformation.dita , readme\ . Return code: 0.
+ Entity retrieval for dita2javahelp.dita  ,  dita2javahelp.dita , readme\ . Return code: 0.
+ Entity retrieval for ant-parameters-javahelp-transformation.dita  ,  ant-parameters-javahelp-transformation.dita , readme\ . Return code: 0.
+ Entity retrieval for dita2legacypdf.dita  ,  dita2legacypdf.dita , readme\ . Return code: 0.
+ Entity retrieval for ant-parameters-legacypdf-transformation.dita  ,  ant-parameters-legacypdf-transformation.dita , readme\ . Return code: 0.
+ Entity retrieval for conref-dita-ot-parameters.dita  ,  conref-dita-ot-parameters.dita , readme\ . Return code: 0.
+ Entity retrieval for dita2odt.dita  ,  dita2odt.dita , readme\ . Return code: 0.
+ Entity retrieval for ant-parameters-odt-transformation.dita  ,  ant-parameters-odt-transformation.dita , readme\ . Return code: 0.
+ Entity retrieval for dita2pdf.dita  ,  dita2pdf.dita , readme\ . Return code: 0.
+ Entity retrieval for ant-parameters-pdf2-transformation.dita  ,  ant-parameters-pdf2-transformation.dita , readme\ . Return code: 0.
+ Entity retrieval for dita2xhtml.dita  ,  dita2xhtml.dita , readme\ . Return code: 0.
+ Entity retrieval for ant-parameters-xhtml-transformation.dita  ,  ant-parameters-xhtml-transformation.dita , readme\ . Return code: 0.
+ Entity retrieval for command-line-tool.dita  ,  command-line-tool.dita , readme\ . Return code: 0.
+ Entity retrieval for building-output-using-cl-tool.dita  ,  building-output-using-cl-tool.dita , readme\ . Return code: 0.
+ Entity retrieval for dita-ot_java_properties.dita  ,  dita-ot_java_properties.dita , readme\ . Return code: 0.
+ Entity retrieval for DITA-javacmd.xml  ,  DITA-javacmd.xml , readme\ . Return code: 0.
+ Entity retrieval for tool-parameters-eclipsecontent-transformation.dita  ,  tool-parameters-eclipsecontent-transformation.dita , readme\ . Return code: 0.
+ Entity retrieval for tool-parameters-eclipsehelp-transformation.dita  ,  tool-parameters-eclipsehelp-transformation.dita , readme\ . Return code: 0.
+ Entity retrieval for tool-parameters-htmlhelp-transformation.dita  ,  tool-parameters-htmlhelp-transformation.dita , readme\ . Return code: 0.
+ Entity retrieval for tool-parameters-javahelp-transformation.dita  ,  tool-parameters-javahelp-transformation.dita , readme\ . Return code: 0.
+ Entity retrieval for tool-parameters-odt-transformation.dita  ,  tool-parameters-odt-transformation.dita , readme\ . Return code: 0.
+ Entity retrieval for tool-parameters-pdf-transformation.dita  ,  tool-parameters-pdf-transformation.dita , readme\ . Return code: 0.
+ Entity retrieval for tool-parameters-xhtml-transformation.dita  ,  tool-parameters-xhtml-transformation.dita , readme\ . Return code: 0.
+ Entity retrieval for ant-parameters-all-transformation-types.dita  ,  ant-parameters-all-transformation-types.dita , readme\ . Return code: 0.
+ Entity retrieval for tool-parameters-all-transformation.dita  ,  tool-parameters-all-transformation.dita , readme\ . Return code: 0.
+ Entity retrieval for ant-parameters-common-html-transtypes.dita  ,  ant-parameters-common-html-transtypes.dita , readme\ . Return code: 0.
+ Entity retrieval for tool-parameters-common-html-transformation.dita  ,  tool-parameters-common-html-transformation.dita , readme\ . Return code: 0.
+ Entity retrieval for overview-of-dita-ot.dita  ,  overview-of-dita-ot.dita , readme\ . Return code: 0.
+ Entity retrieval for DITA-globalization.dita  ,  DITA-globalization.dita , readme\ . Return code: 0.
+ Entity retrieval for developer-reference.dita  ,  developer-reference.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for DITA-OTArchitecture.dita  ,  DITA-OTArchitecture.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for processing-structure.dita  ,  processing-structure.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for processing-pipeline-modules.dita  ,  processing-pipeline-modules.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for processing-order.dita  ,  processing-order.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for DITA-OTPreprocess.dita  ,  DITA-OTPreprocess.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for preprocess-genlist.dita  ,  preprocess-genlist.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for preprocess-debugfilter.dita  ,  preprocess-debugfilter.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for preprocess-copyfiles.dita  ,  preprocess-copyfiles.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for preprocess-conrefpush.dita  ,  preprocess-conrefpush.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for preprocess-conref.dita  ,  preprocess-conref.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for preprocess-metadata.dita  ,  preprocess-metadata.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for preprocess-keyref.dita  ,  preprocess-keyref.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for preprocess-coderef.dita  ,  preprocess-coderef.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for preprocess-mapref.dita  ,  preprocess-mapref.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for preprocess-mappull.dita  ,  preprocess-mappull.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for preprocess-chunk.dita  ,  preprocess-chunk.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for preprocess-maplink.dita  ,  preprocess-maplink.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for preprocess-topicpull.dita  ,  preprocess-topicpull.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for preprocess-flagging.dita  ,  preprocess-flagging.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for XhtmlWithNavigation.dita  ,  XhtmlWithNavigation.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for XhtmlCommon.dita  ,  XhtmlCommon.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for XhtmlDefault.dita  ,  XhtmlDefault.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for XhtmlEclipse.dita  ,  XhtmlEclipse.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for XhtmlTocjs.dita  ,  XhtmlTocjs.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for XhtmlCHM.dita  ,  XhtmlCHM.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for XhtmlJavahelp.dita  ,  XhtmlJavahelp.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for PdfDefault.dita  ,  PdfDefault.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for OdtDefault.dita  ,  OdtDefault.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for extending-the-ot.dita  ,  extending-the-ot.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for plugins-installing.dita  ,  plugins-installing.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for plugins-removing.dita  ,  plugins-removing.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for rebuilding-the-dita-ot-documentation.dita  ,  rebuilding-the-dita-ot-documentation.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for configuring-the-dita-ot.dita  ,  configuring-the-dita-ot.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for lib-org.dita.dost.platform-plugin.properties.dita  ,  lib-org.dita.dost.platform-plugin.properties.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for plugins-overview.dita  ,  plugins-overview.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for plugin-configfile.dita  ,  plugin-configfile.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for plugin-xmlcatalog.dita  ,  plugin-xmlcatalog.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for plugin-anttarget.dita  ,  plugin-anttarget.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for plugin-antpreprocess.dita  ,  plugin-antpreprocess.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for plugin-newtranstype.dita  ,  plugin-newtranstype.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for plugin-overridestyle.dita  ,  plugin-overridestyle.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for plugin-addgeneratedtext.dita  ,  plugin-addgeneratedtext.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for plugin-xsltparams.dita  ,  plugin-xsltparams.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for plugin-javalib.dita  ,  plugin-javalib.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for plugin-messages.dita  ,  plugin-messages.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for plugin-dependencies.dita  ,  plugin-dependencies.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for plugin-support.dita  ,  plugin-support.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for plugin-newextensions.dita  ,  plugin-newextensions.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for plugin-sample.dita  ,  plugin-sample.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for flagging-migration.dita  ,  flagging-migration.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for dita2pdf-customization.dita  ,  dita2pdf-customization.dita , readme\ . Return code: 0.
+ Entity retrieval for ant-properties.dita  ,  ant-properties.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for DITA1.2-implementation-dependent-features.dita  ,  DITA1.2-implementation-dependent-features.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for extended-functionality.dita  ,  extended-functionality.dita , dev_ref\ . Return code: 0.
+ Entity retrieval for DITA-OTProjectManagement.xml  ,  DITA-OTProjectManagement.xml , admin\ . Return code: 0.
+ Entity retrieval for DITA-OTProjectGoals.xml  ,  DITA-OTProjectGoals.xml , admin\ . Return code: 0.
+ Entity retrieval for DevelopmentProcess.xml  ,  DevelopmentProcess.xml , admin\ . Return code: 0.
+ Entity retrieval for ProjectRoles.xml  ,  ProjectRoles.xml , admin\ . Return code: 0.
+ Entity retrieval for ReleaseLifeCycle.xml  ,  ReleaseLifeCycle.xml , admin\ . Return code: 0.
+ Entity retrieval for FixesAndFeatures.xml  ,  FixesAndFeatures.xml , admin\ . Return code: 0.
+ Entity retrieval for HowToParticipate.xml  ,  HowToParticipate.xml , admin\ . Return code: 0.
+ Entity retrieval for BugFixGuidelines-NoCLA.xml  ,  BugFixGuidelines-NoCLA.xml , admin\ . Return code: 0.
+ Entity retrieval for ContributionPolicy.xml  ,  ContributionPolicy.xml , admin\ . Return code: 0.
+ Entity retrieval for ContributionForm.xml  ,  ContributionForm.xml , admin\ . Return code: 0.
+ Entity retrieval for distribution_packages.dita  ,  distribution_packages.dita , readme\ . Return code: 0.
+ Entity retrieval for dita-resources.ditamap  ,  dita-resources.ditamap . Return code: 0.
+ Entity retrieval for web-based-resources.dita  ,  web-based-resources.dita , articles\ . Return code: 0.
+ Entity retrieval for DITA-dWarticles.xml  ,  DITA-dWarticles.xml , articles\ . Return code: 0.
+ Entity retrieval for subjectscheme.ditamap  ,  subjectscheme.ditamap . Return code: 0.
+ Entity retrieval for reltable.ditamap  ,  reltable.ditamap . Return code: 0.
+ Entity retrieval for DITA-globalization-xhtml.dita  ,  DITA-globalization-xhtml.dita , readme\ . Return code: 0.
+ Entity retrieval for overview.ditamap  ,  overview.ditamap , readme\ . Return code: 0.
+ Entity retrieval for DITA-tested.xml  ,  DITA-tested.xml , readme\ . Return code: 0.
+ Entity retrieval for installing.ditamap  ,  installing.ditamap , readme\ . Return code: 0.
+ Entity retrieval for DITA-installation.xml  ,  DITA-installation.xml , readme\ . Return code: 0.
+ Entity retrieval for prerequisite-software.dita  ,  prerequisite-software.dita , readme\ . Return code: 0.
+ Entity retrieval for installing-minimal-package-on-linux.dita  ,  installing-minimal-package-on-linux.dita , readme\ . Return code: 0.
+ Entity retrieval for conref-installing.dita  ,  conref-installing.dita , readme\ . Return code: 0.
+ Entity retrieval for installing-minimal-package-windows.dita  ,  installing-minimal-package-windows.dita , readme\ . Return code: 0.
+ Entity retrieval for publishing.ditamap  ,  publishing.ditamap , readme\ . Return code: 0.
+ Entity retrieval for tranforming-dita-content.dita  ,  tranforming-dita-content.dita , readme\ . Return code: 0.
+ Entity retrieval for AvailableTransforms.dita  ,  AvailableTransforms.dita , readme\ . Return code: 0.
+ Entity retrieval for dita2docbook.dita  ,  dita2docbook.dita , readme\ . Return code: 0.
+ Entity retrieval for dita2word.xml  ,  dita2word.xml , readme\ . Return code: 0.
+ Entity retrieval for dita2tocjs.dita  ,  dita2tocjs.dita , readme\ . Return code: 0.
+ Entity retrieval for dita2troff.dita  ,  dita2troff.dita , readme\ . Return code: 0.
+ Entity retrieval for globalizing.ditamap  ,  globalizing.ditamap , readme\ . Return code: 0.
+ Entity retrieval for globalization-supported-in-dita-ot.dita  ,  globalization-supported-in-dita-ot.dita , readme\ . Return code: 0.
+ Entity retrieval for DITA-globalization-pdf.dita  ,  DITA-globalization-pdf.dita , readme\ . Return code: 0.
+ Entity retrieval for troubleshooting.ditamap  ,  troubleshooting.ditamap , readme\ . Return code: 0.
+ Entity retrieval for troubleshooting-overview.dita  ,  troubleshooting-overview.dita , readme\ . Return code: 0.
+ Entity retrieval for DITA-messages.xml  ,  DITA-messages.xml , readme\ . Return code: 0.
+ Entity retrieval for DITA-messages-details.xml  ,  DITA-messages-details.xml , readme\ . Return code: 0.
+ Entity retrieval for DITA-troubleshooting.xml  ,  DITA-troubleshooting.xml , readme\ . Return code: 0.
+ Entity retrieval for DITA-log.xml  ,  DITA-log.xml , readme\ . Return code: 0.
+ Entity retrieval for accessing-help-from-the-cl-tool.dita  ,  accessing-help-from-the-cl-tool.dita , readme\ . Return code: 0.
+ Entity retrieval for determining-version-of-ditaot.dita  ,  determining-version-of-ditaot.dita , readme\ . Return code: 0.
+ Entity retrieval for enabling-debug-mode.dita  ,  enabling-debug-mode.dita , readme\ . Return code: 0.
+ Entity retrieval for increasing-the-jvm.dita  ,  increasing-the-jvm.dita , readme\ . Return code: 0.
+ Entity retrieval for reference.ditamap  ,  reference.ditamap , readme\ . Return code: 0.
+ Entity retrieval for reference.dita  ,  reference.dita , readme\ . Return code: 0.
+ Entity retrieval for generate-copy-outer.dita  ,  generate-copy-outer.dita , readme\ . Return code: 0.
+ Entity retrieval for ant-parameters-other.dita  ,  ant-parameters-other.dita , readme\ . Return code: 0.
+ Entity retrieval for configuration.dita  ,  configuration.dita , readme\ . Return code: 0.
+Entity retrieval for sout.gif  ,  sout.gif . Return code: 7000.     
+    Retrieving Entity: sout.gif  ,  sout.gif ...                      10:42:48
+    ...Entity Retrieval Completed.(7000)                              10:42:48
+ File sout.gif retrieved from C:\DITATools\IDWB\bin\sout.gif
+ Entity retrieval for xhtml-output.png  ,  xhtml-output.png , quickstartguide\images\ . Return code: 0.
+ Entity retrieval for mainarch.gif  ,  mainarch.gif , dev_ref\images\ . Return code: 0.
+Entity retrieval for pdf.gif  ,  pdf.gif . Return code: 7000.     
+    Retrieving Entity: pdf.gif  ,  pdf.gif ...                        10:42:48
+    ...Entity Retrieval Completed.(7000)                              10:42:48
+ File pdf.gif retrieved from C:\DITATools\IDWB\bin\pdf.gif
+ End Process: 3 of 22 (IDWT326I)                                      10:42:49
+(END) -------------------- Step: 3 of 22 --------------------
+(START) -------------------- Step: 4 of 22 --------------------
+Target init-URIResolver:
+ Start Process: 4 of 22 ...                                           10:42:49
+ End Process: 4 of 22 (0)                                             10:42:49
+(END) -------------------- Step: 4 of 22 --------------------
+(START) -------------------- Step: 5 of 22 --------------------
+Target dost_conrefpush:
+ Start Process: 5 of 22 ...                                           10:42:49
+ End Process: 5 of 22 (0)                                             10:42:50
+(END) -------------------- Step: 5 of 22 --------------------
+(START) -------------------- Step: 6 of 22 --------------------
+Target resolveconref:
+ Start Process: 6 of 22 ...                                           10:42:50
+ End Process: 6 of 22 (0)                                             10:42:50
+(END) -------------------- Step: 6 of 22 --------------------
+(START) -------------------- Step: 7 of 22 --------------------
+Target conreftopic:
+ Start Process: 7 of 22 ...                                           10:42:50
+ End Process: 7 of 22 (0)                                             10:42:56
+(END) -------------------- Step: 7 of 22 --------------------
+(START) -------------------- Step: 8 of 22 --------------------
+Target dost_movemeta:
+ Start Process: 8 of 22 ...                                           10:42:56
+ End Process: 8 of 22 (0)                                             10:42:57
+(END) -------------------- Step: 8 of 22 --------------------
+(START) -------------------- Step: 9 of 22 --------------------
+Target resolvekeyref:
+ Start Process: 9 of 22 ...                                           10:42:57
+Executing the following target and its dependencies: combine.keyref.lists
+Target combine.keyref.lists:
+....................... resolvekeyref Error Log .......................
+
+IDW0714E Error
+ java.io.FileNotFoundException:
+ C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\readme\reference.dtd (The system cannot find the file specified.)
+ While processing C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\readme\DITA-messages-details.xml: java.io.FileNotFoundException: C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\readme\reference.dtd (The system cannot find the file specified.)
+ 
+....................... resolvekeyref Error Log .......................
+
+<I><I><I><I><I><I><I><I><I><I><I><I><I><I><I><I><I><I><I><I>
+IDW0710I "resolvekeyref" process reported 1 error(s),
+IDW0710I and 0 warning(s).
+<I><I><I><I><I><I><I><I><I><I><I><I><I><I><I><I><I><I><I><I>
+ End Process: 9 of 22 (IDW0710I)                                      10:43:02
+(END) -------------------- Step: 9 of 22 --------------------
+(START) -------------------- Step: 10 of 22 --------------------
+Target dost_keyref:
+ Start Process: 10 of 22 ...                                          10:43:02
+ End Process: 10 of 22 (0)                                            10:43:03
+(END) -------------------- Step: 10 of 22 --------------------
+(START) -------------------- Step: 11 of 22 --------------------
+Target dost_coderef:
+ Start Process: 11 of 22 ...                                          10:43:03
+ End Process: 11 of 22 (0)                                            10:43:03
+(END) -------------------- Step: 11 of 22 --------------------
+(START) -------------------- Step: 12 of 22 --------------------
+Target genmaptitlemetadata:
+ Start Process: 12 of 22 ...                                          10:43:03
+.......................... Map Pull Error Log ..........................
+
+ Processing file: userguide.ditamap Iteration (1)
+ SMem: 238224/28192256
+ EMem: 30595936/43636224
+ Processing file: userguide.ditamap Iteration (2)
+ SMem: 30595936/43636224
+ EMem: 10227280/43439616
+.......................... Map Pull Error Log ..........................
+
+....................Push filter attributes from map to topics Exec Command Information Process Log ....................
+Executing 'C:\DITATools\IDWB\bin\omspvm.exe' with arguments:
+'-load'
+'C:\DITATools\IDWB\bin\pushattr.xvc'
+'-licto'
+'3600'
+'-f'
+'C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\omni522546938.args'
+
+The ' characters around the executable and arguments are
+not part of the command.
+
+Omnimark args file contents
+-l C:\DITATools\IDWB\dita\plugins\AuthoringTools\dtd\
+-l C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\
+-library C:\DITATools\IDWB\dita\plugins\AuthoringTools\dtd\dita.lib
+-library C:\DITATools\IDWB\dita\usertest.lib
+-library C:\DITATools\IDWB\dita\plugins\installedspec.lib
+-d inputFile C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\ditamapfiles.lst
+-d taxonomyFile C:\DITATools\IDWB\dita\/KC_taxonomy.ditamap
+-d workingDirectory \TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\
+-d final-output-type XHTML
+-d pushgroup kc
+-d pushstyle override
+-log C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\id291519520.log.out
+....................Push filter attributes from map to topics Exec Command Information Process Log ....................
+
+ End Process: 12 of 22 (0)                                            10:43:14
+(END) -------------------- Step: 12 of 22 --------------------
+(START) -------------------- Step: 13 of 22 --------------------
+Target branchfilter:
+ Start Process: 13 of 22 ...                                          10:43:14
+ End Process: 13 of 22 (0)                                            10:43:14
+(END) -------------------- Step: 13 of 22 --------------------
+(START) -------------------- Step: 14 of 22 --------------------
+Target dost_chunk:
+ Start Process: 14 of 22 ...                                          10:43:14
+Executing the following target and its dependencies: dost_chunk_default
+Target dost_chunk_default:
+....................Create chunk list Exec Command Information Process Log ....................
+Executing 'C:\DITATools\IDWB\bin\omspvm.exe' with arguments:
+'-load'
+'C:\DITATools\IDWB\bin\chunklist.xvc'
+'-licto'
+'3600'
+'-f'
+'C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\omni1774165963.args'
+
+The ' characters around the executable and arguments are
+not part of the command.
+
+Omnimark args file contents
+-d jobxml .job.xml
+-d getlist chunkedtopiclist
+-d createlist chunkedtopic.list
+-log C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\id291519520.log.out
+....................Create chunk list Exec Command Information Process Log ....................
+
+ End Process: 14 of 22 (0)                                            10:43:17
+(END) -------------------- Step: 14 of 22 --------------------
+(START) -------------------- Step: 15 of 22 --------------------
+Target genmaplinks:
+ Start Process: 15 of 22 ...                                          10:43:17
+ End Process: 15 of 22 (0)                                            10:43:18
+(END) -------------------- Step: 15 of 22 --------------------
+(START) -------------------- Step: 16 of 22 --------------------
+Target updatemaplinks:
+ Start Process: 16 of 22 ...                                          10:43:18
+....................update map links Exec Command Information Process Log ....................
+Executing 'C:\DITATools\IDWB\bin\omspvm.exe' with arguments:
+'-load'
+'C:\DITATools\IDWB\bin\movelink.xvc'
+'-licto'
+'3600'
+'-f'
+'C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\omni955245824.args'
+
+The ' characters around the executable and arguments are
+not part of the command.
+
+Omnimark args file contents
+-l C:\DITATools\IDWB\dita\plugins\AuthoringTools\dtd\
+-l C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\
+-library C:\DITATools\IDWB\dita\plugins\AuthoringTools\dtd\dita.lib
+-library C:\DITATools\IDWB\dita\usertest.lib
+-library C:\DITATools\IDWB\dita\plugins\installedspec.lib
+-d inputFile maplinks.unordered
+-d workingDirectory \TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\
+-d startFromPath Users\IBM_ADMIN\github\develop\src\main\docsrc\
+-log C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\id291519520.log.out
+....................update map links Exec Command Information Process Log ....................
+
+ End Process: 16 of 22 (0)                                            10:43:22
+(END) -------------------- Step: 16 of 22 --------------------
+(START) -------------------- Step: 17 of 22 --------------------
+Target topicpull:
+ Start Process: 17 of 22 ...                                          10:43:22
+ End Process: 17 of 22 (0)                                            10:43:30
+(END) -------------------- Step: 17 of 22 --------------------
+(START) -------------------- Step: 18 of 22 --------------------
+Target flagtopics:
+ Start Process: 18 of 22 ...                                          10:43:30
+ End Process: 18 of 22 (0)                                            10:43:30
+(END) -------------------- Step: 18 of 22 --------------------
+(START) -------------------- Step: 19 of 22 --------------------
+Target map2xhtml_common_preprocess:
+ Start Process: 19 of 22 ...                                          10:43:30
+ End Process: 19 of 22 (0)                                            10:43:30
+(END) -------------------- Step: 19 of 22 --------------------
+(START) -------------------- Step: 20 of 22 --------------------
+Target genindex:
+ Start Process: 20 of 22 ...                                          10:43:30
+....................Fix unicode header/footer chars Exec Command Information Process Log ....................
+Executing 'C:\DITATools\IDWB\bin\omspvm.exe' with arguments:
+'-load'
+'C:\DITATools\IDWB\bin\fixchars.xvc'
+'-licto'
+'3600'
+
+The ' characters around the executable and arguments are
+not part of the command.
+
+Omnimark args file contents
+....................Fix unicode header/footer chars Exec Command Information Process Log ....................
+
+....................genindex Exec Command Information Process Log ....................
+Executing 'C:\DITATools\IDWB\bin\omspvm.exe' with arguments:
+'-load'
+'C:\DITATools\IDWB\bin\ditaindex.xvc'
+'-licto'
+'3600'
+'-f'
+'C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\omni403274752.args'
+
+The ' characters around the executable and arguments are
+not part of the command.
+
+Omnimark args file contents
+-l C:\DITATools\IDWB\dita\plugins\AuthoringTools\dtd\
+-l C:\DITATools\IDWB\dita\plugins\AuthoringTools\xsl\
+-l C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\
+-library C:\DITATools\IDWB\dita\plugins\AuthoringTools\dtd\dita.lib
+-library C:\DITATools\IDWB\dita\plugins\installedspec.lib
+-d inputFilename userguide.ditamap
+-d outext html
+-d startFromPath Users\IBM_ADMIN\github\develop\src\main\docsrc\
+-log C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\id291519520.log.out
+....................genindex Exec Command Information Process Log ....................
+
+.......................... genindex Error Log ..........................
+
+
+------------------------------------------------------------------
+IDWT311I Information: (File = readme/changes/rel1.8.xml, Element = reference:1)
+The XHTML index can only be sorted based on a single language. The index
+will be sorted based on the first language encountered (en-us).
+The language "en" was also found.
+
+------------------------------------------------------------------
+.......................... genindex Error Log ..........................
+
+ End Process: 20 of 22 (IDWT311I)                                     10:43:35
+(END) -------------------- Step: 20 of 22 --------------------
+(START) -------------------- Step: 21 of 22 --------------------
+Target ditatoxhtml:
+ Start Process: 21 of 22 ...                                          10:43:35
+........................ ditatoxhtml Error Log ........................
+
+ ------------------------------------------------------------------
+IDXS037I Information: (File = admin/project-management.ditamap, Element = topicref:17)
+ The link to https://github.com/dita-ot/dita-ot/issues may appear more than once in FixesAndFeatures.html.
+ 
+........................ ditatoxhtml Error Log ........................
+
+ End Process: 21 of 22 (0)                                            10:43:57
+(END) -------------------- Step: 21 of 22 --------------------
+(START) -------------------- Step: 22 of 22 --------------------
+Target map2xhtml:
+ Start Process: 22 of 22 ...                                          10:43:57
+    Post processing                                                   10:43:58
+    Copying 142 output files to the output directory C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out 10:43:58
+    Copying 4 image files to the output directory C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out 10:43:59
+    Copying 1 css file to the output directory C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out 10:43:59
+Output File userguideindex.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\userguideindex.html
+Output File quickstartguide\exploring-the-dita-ot.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\quickstartguide\exploring-the-dita-ot.html
+Output File readme\installing-full-easy.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\installing-full-easy.html
+Output File quickstartguide\rundemo.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\quickstartguide\rundemo.html
+Output File quickstartguide\runmore.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\quickstartguide\runmore.html
+Output File readme\ant.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\ant.html
+Output File readme\creating-an-ant-build-script.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\creating-an-ant-build-script.html
+Output File readme\dita-ot_ant_properties.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\dita-ot_ant_properties.html
+Output File readme\dita2eclipsecontent.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\dita2eclipsecontent.html
+Output File readme\ant-parameters-eclipse-content-transformation.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\ant-parameters-eclipse-content-transformation.html
+Output File readme\dita2eclipsehelp.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\dita2eclipsehelp.html
+Output File readme\ant-parameters-eclipse-help-transformation.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\ant-parameters-eclipse-help-transformation.html
+Output File readme\dita2htmlhelp.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\dita2htmlhelp.html
+Output File readme\ant-parameters-html-help-transformation.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\ant-parameters-html-help-transformation.html
+Output File readme\dita2javahelp.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\dita2javahelp.html
+Output File readme\ant-parameters-javahelp-transformation.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\ant-parameters-javahelp-transformation.html
+Output File readme\dita2legacypdf.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\dita2legacypdf.html
+Output File readme\ant-parameters-legacypdf-transformation.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\ant-parameters-legacypdf-transformation.html
+Output File readme\dita2odt.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\dita2odt.html
+Output File readme\ant-parameters-odt-transformation.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\ant-parameters-odt-transformation.html
+Output File readme\dita2pdf.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\dita2pdf.html
+Output File readme\ant-parameters-pdf2-transformation.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\ant-parameters-pdf2-transformation.html
+Output File readme\dita2xhtml.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\dita2xhtml.html
+Output File readme\ant-parameters-xhtml-transformation.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\ant-parameters-xhtml-transformation.html
+Output File readme\command-line-tool.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\command-line-tool.html
+Output File readme\building-output-using-cl-tool.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\building-output-using-cl-tool.html
+Output File readme\dita-ot_java_properties.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\dita-ot_java_properties.html
+Output File readme\tool-parameters-eclipsecontent-transformation.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\tool-parameters-eclipsecontent-transformation.html
+Output File readme\tool-parameters-eclipsehelp-transformation.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\tool-parameters-eclipsehelp-transformation.html
+Output File readme\tool-parameters-htmlhelp-transformation.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\tool-parameters-htmlhelp-transformation.html
+Output File readme\tool-parameters-javahelp-transformation.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\tool-parameters-javahelp-transformation.html
+Output File readme\tool-parameters-odt-transformation.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\tool-parameters-odt-transformation.html
+Output File readme\tool-parameters-pdf-transformation.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\tool-parameters-pdf-transformation.html
+Output File readme\tool-parameters-xhtml-transformation.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\tool-parameters-xhtml-transformation.html
+Output File readme\ant-parameters-all-transformation-types.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\ant-parameters-all-transformation-types.html
+Output File readme\tool-parameters-all-transformation.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\tool-parameters-all-transformation.html
+Output File readme\ant-parameters-common-html-transtypes.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\ant-parameters-common-html-transtypes.html
+Output File readme\tool-parameters-common-html-transformation.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\tool-parameters-common-html-transformation.html
+Output File readme\overview-of-dita-ot.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\overview-of-dita-ot.html
+Output File readme\DITA-globalization.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\DITA-globalization.html
+Output File dev_ref\developer-reference.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\developer-reference.html
+Output File dev_ref\DITA-OTArchitecture.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\DITA-OTArchitecture.html
+Output File dev_ref\processing-structure.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\processing-structure.html
+Output File dev_ref\processing-pipeline-modules.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\processing-pipeline-modules.html
+Output File dev_ref\processing-order.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\processing-order.html
+Output File dev_ref\DITA-OTPreprocess.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\DITA-OTPreprocess.html
+Output File dev_ref\preprocess-genlist.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\preprocess-genlist.html
+Output File dev_ref\preprocess-debugfilter.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\preprocess-debugfilter.html
+Output File dev_ref\preprocess-copyfiles.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\preprocess-copyfiles.html
+Output File dev_ref\preprocess-conrefpush.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\preprocess-conrefpush.html
+Output File dev_ref\preprocess-conref.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\preprocess-conref.html
+Output File dev_ref\preprocess-metadata.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\preprocess-metadata.html
+Output File dev_ref\preprocess-keyref.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\preprocess-keyref.html
+Output File dev_ref\preprocess-coderef.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\preprocess-coderef.html
+Output File dev_ref\preprocess-mapref.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\preprocess-mapref.html
+Output File dev_ref\preprocess-mappull.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\preprocess-mappull.html
+Output File dev_ref\preprocess-chunk.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\preprocess-chunk.html
+Output File dev_ref\preprocess-maplink.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\preprocess-maplink.html
+Output File dev_ref\preprocess-topicpull.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\preprocess-topicpull.html
+Output File dev_ref\preprocess-flagging.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\preprocess-flagging.html
+Output File dev_ref\XhtmlWithNavigation.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\XhtmlWithNavigation.html
+Output File dev_ref\XhtmlCommon.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\XhtmlCommon.html
+Output File dev_ref\XhtmlDefault.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\XhtmlDefault.html
+Output File dev_ref\XhtmlEclipse.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\XhtmlEclipse.html
+Output File dev_ref\XhtmlTocjs.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\XhtmlTocjs.html
+Output File dev_ref\XhtmlCHM.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\XhtmlCHM.html
+Output File dev_ref\XhtmlJavahelp.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\XhtmlJavahelp.html
+Output File dev_ref\PdfDefault.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\PdfDefault.html
+Output File dev_ref\OdtDefault.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\OdtDefault.html
+Output File dev_ref\extending-the-ot.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\extending-the-ot.html
+Output File dev_ref\plugins-installing.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\plugins-installing.html
+Output File dev_ref\plugins-removing.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\plugins-removing.html
+Output File dev_ref\rebuilding-the-dita-ot-documentation.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\rebuilding-the-dita-ot-documentation.html
+Output File dev_ref\configuring-the-dita-ot.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\configuring-the-dita-ot.html
+Output File dev_ref\lib-org.dita.dost.platform-plugin.properties.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\lib-org.dita.dost.platform-plugin.properties.html
+Output File dev_ref\plugins-overview.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\plugins-overview.html
+Output File dev_ref\plugin-configfile.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\plugin-configfile.html
+Output File dev_ref\plugin-xmlcatalog.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\plugin-xmlcatalog.html
+Output File dev_ref\plugin-anttarget.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\plugin-anttarget.html
+Output File dev_ref\plugin-antpreprocess.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\plugin-antpreprocess.html
+Output File dev_ref\plugin-newtranstype.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\plugin-newtranstype.html
+Output File dev_ref\plugin-overridestyle.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\plugin-overridestyle.html
+Output File dev_ref\plugin-addgeneratedtext.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\plugin-addgeneratedtext.html
+Output File dev_ref\plugin-xsltparams.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\plugin-xsltparams.html
+Output File dev_ref\plugin-javalib.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\plugin-javalib.html
+Output File dev_ref\plugin-messages.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\plugin-messages.html
+Output File dev_ref\plugin-dependencies.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\plugin-dependencies.html
+Output File dev_ref\plugin-support.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\plugin-support.html
+Output File dev_ref\plugin-newextensions.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\plugin-newextensions.html
+Output File dev_ref\plugin-sample.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\plugin-sample.html
+Output File dev_ref\flagging-migration.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\flagging-migration.html
+Output File readme\dita2pdf-customization.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\dita2pdf-customization.html
+Output File dev_ref\ant-properties.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\ant-properties.html
+Output File dev_ref\DITA1.2-implementation-dependent-features.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\DITA1.2-implementation-dependent-features.html
+Output File dev_ref\extended-functionality.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\extended-functionality.html
+Output File readme\distribution_packages.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\distribution_packages.html
+Output File articles\dita-and-dita-ot-resources.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\articles\dita-and-dita-ot-resources.html
+Output File articles\web-based-resources.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\articles\web-based-resources.html
+Output File readme\DITA-globalization-xhtml.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\DITA-globalization-xhtml.html
+Output File readme\prerequisite-software.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\prerequisite-software.html
+Output File readme\installing-minimal-package-on-linux.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\installing-minimal-package-on-linux.html
+Output File readme\installing-minimal-package-windows.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\installing-minimal-package-windows.html
+Output File readme\tranforming-dita-content.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\tranforming-dita-content.html
+Output File readme\AvailableTransforms.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\AvailableTransforms.html
+Output File readme\dita2docbook.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\dita2docbook.html
+Output File readme\dita2tocjs.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\dita2tocjs.html
+Output File readme\dita2troff.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\dita2troff.html
+Output File readme\globalization-supported-in-dita-ot.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\globalization-supported-in-dita-ot.html
+Output File readme\DITA-globalization-pdf.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\DITA-globalization-pdf.html
+Output File readme\troubleshooting-overview.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\troubleshooting-overview.html
+Output File readme\accessing-help-from-the-cl-tool.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\accessing-help-from-the-cl-tool.html
+Output File readme\determining-version-of-ditaot.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\determining-version-of-ditaot.html
+Output File readme\enabling-debug-mode.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\enabling-debug-mode.html
+Output File readme\increasing-the-jvm.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\increasing-the-jvm.html
+Output File readme\reference.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\reference.html
+Output File readme\generate-copy-outer.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\generate-copy-outer.html
+Output File readme\ant-parameters-other.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\ant-parameters-other.html
+Output File readme\configuration.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\configuration.html
+Output File DITA-OTProjectHome.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\DITA-OTProjectHome.html
+Output File readme\DITA-readme.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\DITA-readme.html
+Output File readme\DITA-antuse.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\DITA-antuse.html
+Output File readme\DITA-ant.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\DITA-ant.html
+Output File readme\DITA-javacmd.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\DITA-javacmd.html
+Output File admin\DITA-OTProjectManagement.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\admin\DITA-OTProjectManagement.html
+Output File admin\DITA-OTProjectGoals.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\admin\DITA-OTProjectGoals.html
+Output File admin\DevelopmentProcess.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\admin\DevelopmentProcess.html
+Output File admin\ProjectRoles.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\admin\ProjectRoles.html
+Output File admin\ReleaseLifeCycle.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\admin\ReleaseLifeCycle.html
+Output File admin\FixesAndFeatures.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\admin\FixesAndFeatures.html
+Output File admin\HowToParticipate.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\admin\HowToParticipate.html
+Output File admin\BugFixGuidelines-NoCLA.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\admin\BugFixGuidelines-NoCLA.html
+Output File admin\ContributionPolicy.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\admin\ContributionPolicy.html
+Output File admin\ContributionForm.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\admin\ContributionForm.html
+Output File articles\DITA-dWarticles.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\articles\DITA-dWarticles.html
+Output File readme\changes\rel1.8.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\changes\rel1.8.html
+Output File specification\DITA1-2.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\specification\DITA1-2.html
+Output File readme\DITA-tested.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\DITA-tested.html
+Output File readme\DITA-installation.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\DITA-installation.html
+Output File readme\dita2word.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\dita2word.html
+Output File readme\DITA-messages.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\DITA-messages.html
+Output File readme\DITA-troubleshooting.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\DITA-troubleshooting.html
+Output File readme\DITA-log.html copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\readme\DITA-log.html
+Output File sout.gif copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\sout.gif
+Output File quickstartguide\images\xhtml-output.png copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\quickstartguide\images\xhtml-output.png
+Output File dev_ref\images\mainarch.gif copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\dev_ref\images\mainarch.gif
+Output File pdf.gif copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\pdf.gif
+Output File ibmdita.css copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out\ibmdita.css
+ End Process: 22 of 22 (0)                                            10:43:59
+(END) -------------------- Step: 22 of 22 --------------------
+ BUILD SUCCESSFUL. 2 minutes 6 seconds                                10:43:59
+<I><I><I><I><I><I><I><I><I><I><I><I><I><I><I><I><I><I><I><I>
+BUILD SUCCESSFUL. Total build time: 2 minutes 6 seconds
+<I><I><I><I><I><I><I><I><I><I><I><I><I><I><I><I><I><I><I><I>
+ 
+*** STATISTICS ***
+Number of Fatals Reported: 0
+Number of Errors Reported: 1
+Number of Warnings Reported: 0
+Number of Information messages: 13
+ 
+ INFO: Log Name is: userguidexhm.log                                  10:43:59
+Log File C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\idwbtmlt.log copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\userguidexhm.log
+Bom File C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc\idwbtmlt.bom copied to C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\userguidexhm.bom
+End Time: 06/06/13 10:43:59
+<<< END OF LOG FILE >>>

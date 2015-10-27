@@ -594,6 +594,11 @@ BUGURL
 PKGVERSION
 LLVM_VERSION
 GCC_VERSION_DATE
+CLASSPATH
+PATH
+ANT_HOME
+ANT_OPTS
+DITA18DIR
 AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
@@ -663,6 +668,8 @@ ac_subst_files=''
 ac_user_opts='
 enable_option_checking
 enable_silent_rules
+with_javalibdir
+with_ditadir
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1285,6 +1292,12 @@ Optional Features:
   --enable-silent-rules   less verbose build output (undo: "make V=1")
   --disable-silent-rules  verbose build output (undo: "make V=0")
 
+Optional Packages:
+  --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
+  --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-javalibdir=dir   absolute location of external Java libraries
+  --with-dita18dir=dir    absolute location of DITA Open Toolkit version 1.8
+
 Report bugs to <support@embecosm.com>.
 _ACEOF
 ac_status=$?
@@ -1717,7 +1730,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 # Default tar only allows 21-bit UIDs.
-am__api_version='1.14'
+am__api_version='1.15'
 
 ac_aux_dir=
 for ac_dir in "$srcdir" "$srcdir/.." "$srcdir/../.."; do
@@ -1918,8 +1931,8 @@ test "$program_suffix" != NONE &&
 ac_script='s/[\\$]/&&/g;s/;s,x,x,$//'
 program_transform_name=`$as_echo "$program_transform_name" | sed "$ac_script"`
 
-# expand $ac_aux_dir to an absolute path
-am_aux_dir=`cd $ac_aux_dir && pwd`
+# Expand $ac_aux_dir to an absolute path.
+am_aux_dir=`cd "$ac_aux_dir" && pwd`
 
 if test x"${MISSING+set}" != xset; then
   case $am_aux_dir in
@@ -1938,7 +1951,7 @@ else
 $as_echo "$as_me: WARNING: 'missing' script is too old or missing" >&2;}
 fi
 
-if test x"${install_sh}" != xset; then
+if test x"${install_sh+set}" != xset; then
   case $am_aux_dir in
   *\ * | *\	*)
     install_sh="\${SHELL} '$am_aux_dir/install-sh'" ;;
@@ -2266,8 +2279,8 @@ MAKEINFO=${MAKEINFO-"${am_missing_run}makeinfo"}
 # <http://lists.gnu.org/archive/html/automake/2012-07/msg00014.html>
 mkdir_p='$(MKDIR_P)'
 
-# We need awk for the "check" target.  The system "awk" is bad on
-# some platforms.
+# We need awk for the "check" target (and possibly the TAP driver).  The
+# system "awk" is bad on some platforms.
 # Always define AMTAR for backward compatibility.  Yes, it's still used
 # in the wild :-(  We should find a proper way to deprecate it ...
 AMTAR='$${TAR-tar}'
@@ -2417,7 +2430,74 @@ fi
 # Make sure we are using a reasonably recent autoconf version
 
 
-# Set some variables.  We'll think about a better way to do this.
+# Allow the user to override defaults
+
+# Check whether --with-javalibdir was given.
+if test "${with_javalibdir+set}" = set; then :
+  withval=$with_javalibdir; javalibdir=$withval
+else
+  javalibdir=""
+fi
+
+
+if test x"$javalibdir" = x
+then
+    JAVALIBDIR=/usr/share/java
+else
+    JAVALIBDIR=$javalibdir
+fi
+
+
+# Check whether --with-ditadir was given.
+if test "${with_ditadir+set}" = set; then :
+  withval=$with_ditadir; DITA18DIR=$withval
+else
+  DITA18DIR="$abs_top_srcdir/DITA-OT1.8"
+fi
+
+
+# Set up Java and Ant
+ANT_OPTS="-Xmx512m $ANT_OPTS"
+ANT_OPTS="$ANT_OPTS -Djava.awt.headless=true"
+ANT_OPTS="$ANT_OPTS -Djavax.xml.transform.TransformerFactory=net.sf.saxon.TransformerFactoryImpl"
+
+ANT_HOME="$DITA18DIR"/tools/ant
+PATH="$DITA18DIR"/tools/ant/bin:"$PATH"
+
+new_classpath="$DITA18DIR/lib/dost.jar"
+new_classpath="$DITA18DIR/lib:$new_classpath"
+new_classpath="$DITA18DIR/lib/commons-codec-1.4.jar:$new_classpath"
+new_classpath="$DITA18DIR/lib/resolver.jar:$new_classpath"
+new_classpath="$DITA18DIR/lib/icu4j.jar:$new_classpath"
+new_classpath="$DITA18DIR/lib/xercesImpl.jar:$new_classpath"
+new_classpath="$DITA18DIR/lib/xml-apis.jar:$new_classpath"
+new_classpath="$DITA18DIR/lib/saxon/saxon9.jar:$new_classpath"
+new_classpath="$DITA18DIR/lib/saxon/saxon9-dom.jar:$new_classpath"
+
+new_classpath="$JAVALIBDIR/ant-contrib/ant-contrib.jar":$new_classpath
+new_classpath="$JAVALIBDIR/fop.jar":$new_classpath
+new_classpath="$JAVALIBDIR/commons-logging.jar":$new_classpath
+new_classpath="$JAVALIBDIR/xmlgraphics-commons.jar":$new_classpath
+new_classpath="$JAVALIBDIR/xml-commons-apis-ext.jar":$new_classpath
+new_classpath="$JAVALIBDIR/commons-io.jar":$new_classpath
+new_classpath="$JAVALIBDIR/avalon-framework-api.jar":$new_classpath
+new_classpath="$JAVALIBDIR/avalon-framework.jar":$new_classpath
+new_classpath="$JAVALIBDIR/batik-all.jar":$new_classpath
+new_classpath="$DITA18DIR/plugins/org.dita.pdf2/lib/fo.jar":$new_classpath
+
+if test -n "$CLASSPATH"; then
+  CLASSPATH="$new_classpath":"$CLASSPATH"
+else
+  CLASSPATH="$new_classpath"
+fi
+
+
+
+
+
+
+
+# Set some TexInfo variables.  We'll think about a better way to do this.
 GCC_VERSION_DATE="16 Mar 2015, commit ID 9dbe51a"
 LLVM_VERSION="3.7"
 PKGVERSION="3.7"

@@ -1,0 +1,634 @@
+========================================================================
+IBM Corporation : ID Workbench V4.4.6 (05/22/2013)
+                : ID Workbench BOM V2.2.1 (04/09/97)
+========================================================================
+Created: 06/06/13 10:41:52
+========================================================================
+Process: DITA map input to XHTML output
+========================================================================
+PRCCELL
+ <PATH> C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc
+TRANSFORMPKG
+ ID Workbench Transforms: V4.4.6 (05/22/2013)
+PRIMARYFILE (Input File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> userguide.ditamap <SIZE> 751 <DATE> 06-06-13 09:42:25
+PRIMARYFILE (DITA Default Search File)
+ <URL>  <PATH> C:\TEMP\IDWB\idwt1098406468\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> ditadflt.dsh <SIZE> 55 <DATE> 06-06-13 10:41:54
+DEPENDFILE (idwbditafmgr)
+  <URL>  DIR:C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <PATH>  <FILE> quickstartguide\exploring-the-dita-ot.dita <SIZE>  <DATE> 
+DEPENDFILE (idwbditafmgr)
+  <URL>  DIR:C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <PATH>  <FILE> readme\installing-full-easy.dita <SIZE>  <DATE> 
+DEPENDFILE (idwbditafmgr)
+  <URL>  DIR:C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <PATH>  <FILE> dev_ref\dev_ref.ditamap <SIZE>  <DATE> 
+DEPENDFILE (idwbditafmgr)
+  <URL>  DIR:C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <PATH>  <FILE> admin\project-management.ditamap <SIZE>  <DATE> 
+DEPENDFILE (idwbditafmgr)
+  <URL>  DIR:C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <PATH>  <FILE> articles\dita-and-dita-ot-resources.dita <SIZE>  <DATE> 
+DEPENDFILE (idwbditafmgr)
+  <URL>  DIR:C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <PATH>  <FILE> readme\changes\rel1.8.xml <SIZE>  <DATE> 
+DEPENDFILE (idwbditafmgr)
+  <URL>  DIR:C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <PATH>  <FILE> specification\DITA1-2.xml <SIZE>  <DATE> 
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> DITA-OTProjectHome.xml <SIZE> 2995 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> keyrefs.ditamap <SIZE> 5682 <DATE> 06-06-13 10:01:20
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> quickstart.ditamap <SIZE> 593 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> quickstartguide/rundemo.dita <SIZE> 2817 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/conref-task.dita <SIZE> 2991 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> quickstartguide/runmore.dita <SIZE> 2567 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme.ditamap <SIZE> 12873 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/DITA-readme.xml <SIZE> 829 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/ant.dita <SIZE> 1160 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/DITA-antuse.xml <SIZE> 2067 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/creating-an-ant-build-script.dita <SIZE> 6179 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/dita-ot_ant_properties.dita <SIZE> 528 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/DITA-ant.xml <SIZE> 462 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/dita2eclipsecontent.dita <SIZE> 1427 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/ant-parameters-eclipse-content-transformation.dita <SIZE> 1369 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/dita2eclipsehelp.dita <SIZE> 2434 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/ant-parameters-eclipse-help-transformation.dita <SIZE> 5123 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/dita2htmlhelp.dita <SIZE> 1525 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/ant-parameters-html-help-transformation.dita <SIZE> 1435 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/dita2javahelp.dita <SIZE> 1153 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/ant-parameters-javahelp-transformation.dita <SIZE> 2625 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/dita2legacypdf.dita <SIZE> 1045 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/ant-parameters-legacypdf-transformation.dita <SIZE> 1941 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/conref-dita-ot-parameters.dita <SIZE> 2255 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/dita2odt.dita <SIZE> 916 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/ant-parameters-odt-transformation.dita <SIZE> 1422 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/dita2pdf.dita <SIZE> 883 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/ant-parameters-pdf2-transformation.dita <SIZE> 5318 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/dita2xhtml.dita <SIZE> 1223 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/ant-parameters-xhtml-transformation.dita <SIZE> 2295 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/command-line-tool.dita <SIZE> 1178 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/building-output-using-cl-tool.dita <SIZE> 1543 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/dita-ot_java_properties.dita <SIZE> 889 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/DITA-javacmd.xml <SIZE> 517 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/tool-parameters-eclipsecontent-transformation.dita <SIZE> 1497 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/tool-parameters-eclipsehelp-transformation.dita <SIZE> 2057 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/tool-parameters-htmlhelp-transformation.dita <SIZE> 1436 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/tool-parameters-javahelp-transformation.dita <SIZE> 1704 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/tool-parameters-odt-transformation.dita <SIZE> 1372 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/tool-parameters-pdf-transformation.dita <SIZE> 2138 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/tool-parameters-xhtml-transformation.dita <SIZE> 1375 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/ant-parameters-all-transformation-types.dita <SIZE> 11326 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/tool-parameters-all-transformation.dita <SIZE> 5665 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/ant-parameters-common-html-transtypes.dita <SIZE> 13216 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/tool-parameters-common-html-transformation.dita <SIZE> 5910 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/overview-of-dita-ot.dita <SIZE> 945 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/DITA-globalization.dita <SIZE> 566 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/developer-reference.dita <SIZE> 625 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/DITA-OTArchitecture.dita <SIZE> 536 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/processing-structure.dita <SIZE> 1573 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/processing-pipeline-modules.dita <SIZE> 2330 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/processing-order.dita <SIZE> 2915 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/DITA-OTPreprocess.dita <SIZE> 488 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/preprocess-genlist.dita <SIZE> 7762 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/preprocess-debugfilter.dita <SIZE> 1511 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/preprocess-copyfiles.dita <SIZE> 445 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/preprocess-conrefpush.dita <SIZE> 464 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/preprocess-conref.dita <SIZE> 2763 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/preprocess-metadata.dita <SIZE> 587 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/preprocess-keyref.dita <SIZE> 559 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/preprocess-coderef.dita <SIZE> 635 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/preprocess-mapref.dita <SIZE> 888 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/preprocess-mappull.dita <SIZE> 1526 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/preprocess-chunk.dita <SIZE> 721 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/preprocess-maplink.dita <SIZE> 898 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/preprocess-topicpull.dita <SIZE> 1302 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/preprocess-flagging.dita <SIZE> 12008 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/XhtmlWithNavigation.dita <SIZE> 792 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/XhtmlCommon.dita <SIZE> 1679 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/XhtmlDefault.dita <SIZE> 528 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/XhtmlEclipse.dita <SIZE> 2570 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/XhtmlTocjs.dita <SIZE> 1488 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/XhtmlCHM.dita <SIZE> 1214 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/XhtmlJavahelp.dita <SIZE> 964 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/PdfDefault.dita <SIZE> 3215 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/OdtDefault.dita <SIZE> 1528 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/extending-the-ot.dita <SIZE> 2182 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/plugins-installing.dita <SIZE> 2753 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/plugins-removing.dita <SIZE> 615 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/rebuilding-the-dita-ot-documentation.dita <SIZE> 1386 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/configuring-the-dita-ot.dita <SIZE> 523 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/lib-org.dita.dost.platform-plugin.properties.dita <SIZE> 884 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/plugins-overview.dita <SIZE> 2117 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/plugin-configfile.dita <SIZE> 5076 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/plugin-xmlcatalog.dita <SIZE> 2281 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/plugin-anttarget.dita <SIZE> 1955 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/plugin-antpreprocess.dita <SIZE> 4223 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/plugin-newtranstype.dita <SIZE> 1947 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/plugin-overridestyle.dita <SIZE> 3648 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/plugin-addgeneratedtext.dita <SIZE> 7715 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/plugin-xsltparams.dita <SIZE> 3045 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/plugin-javalib.dita <SIZE> 2698 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/plugin-messages.dita <SIZE> 2205 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/plugin-dependencies.dita <SIZE> 2510 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/plugin-support.dita <SIZE> 1548 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/plugin-newextensions.dita <SIZE> 7575 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/plugin-sample.dita <SIZE> 1366 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/flagging-migration.dita <SIZE> 11650 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/dita2pdf-customization.dita <SIZE> 5024 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/ant-properties.dita <SIZE> 4002 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/DITA1.2-implementation-dependent-features.dita <SIZE> 3497 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref/extended-functionality.dita <SIZE> 1820 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> admin/DITA-OTProjectManagement.xml <SIZE> 944 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> admin/DITA-OTProjectGoals.xml <SIZE> 1592 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> admin/DevelopmentProcess.xml <SIZE> 634 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> admin/ProjectRoles.xml <SIZE> 2280 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> admin/ReleaseLifeCycle.xml <SIZE> 2547 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> admin/FixesAndFeatures.xml <SIZE> 2241 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> admin/HowToParticipate.xml <SIZE> 1723 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> admin/BugFixGuidelines-NoCLA.xml <SIZE> 1947 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> admin/ContributionPolicy.xml <SIZE> 7030 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> admin/ContributionForm.xml <SIZE> 8021 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/distribution_packages.dita <SIZE> 4963 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dita-resources.ditamap <SIZE> 2005 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> articles/web-based-resources.dita <SIZE> 1713 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> articles/DITA-dWarticles.xml <SIZE> 2152 <DATE> 06-06-13 09:42:23
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> subjectscheme.ditamap <SIZE> 624 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> reltable.ditamap <SIZE> 2852 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/DITA-globalization-xhtml.dita <SIZE> 4621 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/overview.ditamap <SIZE> 495 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/DITA-tested.xml <SIZE> 2337 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/installing.ditamap <SIZE> 653 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/DITA-installation.xml <SIZE> 506 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/prerequisite-software.dita <SIZE> 3587 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/installing-minimal-package-on-linux.dita <SIZE> 9279 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/conref-installing.dita <SIZE> 2088 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/installing-minimal-package-windows.dita <SIZE> 9488 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/publishing.ditamap <SIZE> 1411 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/tranforming-dita-content.dita <SIZE> 392 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/AvailableTransforms.dita <SIZE> 459 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/dita2docbook.dita <SIZE> 644 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/dita2word.xml <SIZE> 1649 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/dita2tocjs.dita <SIZE> 999 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/dita2troff.dita <SIZE> 924 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/globalizing.ditamap <SIZE> 381 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/globalization-supported-in-dita-ot.dita <SIZE> 2293 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/DITA-globalization-pdf.dita <SIZE> 2401 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/troubleshooting.ditamap <SIZE> 747 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/troubleshooting-overview.dita <SIZE> 334 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/DITA-messages.xml <SIZE> 46308 <DATE> 06-06-13 10:18:41
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/DITA-messages-details.xml <SIZE> 48783 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/DITA-troubleshooting.xml <SIZE> 3822 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/DITA-log.xml <SIZE> 3717 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/accessing-help-from-the-cl-tool.dita <SIZE> 984 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/determining-version-of-ditaot.dita <SIZE> 769 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/enabling-debug-mode.dita <SIZE> 1530 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/increasing-the-jvm.dita <SIZE> 2230 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/reference.ditamap <SIZE> 2600 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/reference.dita <SIZE> 411 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/generate-copy-outer.dita <SIZE> 3411 <DATE> 06-06-13 09:42:25
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/ant-parameters-other.dita <SIZE> 3306 <DATE> 06-06-13 09:42:24
+DEPENDFILE (idwbditafmgr)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> readme/configuration.dita <SIZE> 9027 <DATE> 06-06-13 09:42:25
+DEPENDFILE (Graphic)
+ <URL>  <PATH> C:\DITATools\IDWB\bin <FILE> sout.gif <SIZE> 73 <DATE> 05-22-13 10:19:28
+DEPENDFILE (Graphic)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> quickstartguide\images\xhtml-output.png <SIZE> 17824 <DATE> 06-06-13 09:42:24
+DEPENDFILE (Graphic)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> dev_ref\images\mainarch.gif <SIZE> 12425 <DATE> 06-06-13 09:42:23
+DEPENDFILE (Graphic)
+ <URL>  <PATH> C:\DITATools\IDWB\bin <FILE> pdf.gif <SIZE> 114 <DATE> 05-22-13 10:19:28
+DEPENDFILE (Style Sheet)
+ <URL>  <PATH> C:\DITATools\IDWB\dita\plugins\AuthoringTools\xsl <FILE> ibmdita.css <SIZE> 11177 <DATE> 05-22-13 10:16:36
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> userguideindex.html <SIZE> 21919 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> quickstartguide\exploring-the-dita-ot.html <SIZE> 3670 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\installing-full-easy.html <SIZE> 6566 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> quickstartguide\rundemo.html <SIZE> 7347 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> quickstartguide\runmore.html <SIZE> 7264 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\ant.html <SIZE> 5243 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\creating-an-ant-build-script.html <SIZE> 9628 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\dita-ot_ant_properties.html <SIZE> 7391 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\dita2eclipsecontent.html <SIZE> 4397 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\ant-parameters-eclipse-content-transformation.html <SIZE> 4785 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\dita2eclipsehelp.html <SIZE> 5019 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\ant-parameters-eclipse-help-transformation.html <SIZE> 8613 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\dita2htmlhelp.html <SIZE> 4788 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\ant-parameters-html-help-transformation.html <SIZE> 4626 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\dita2javahelp.html <SIZE> 3160 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\ant-parameters-javahelp-transformation.html <SIZE> 5094 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\dita2legacypdf.html <SIZE> 3164 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\ant-parameters-legacypdf-transformation.html <SIZE> 4843 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\dita2odt.html <SIZE> 3364 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\ant-parameters-odt-transformation.html <SIZE> 4050 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\dita2pdf.html <SIZE> 3241 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\ant-parameters-pdf2-transformation.html <SIZE> 10269 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\dita2xhtml.html <SIZE> 3997 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\ant-parameters-xhtml-transformation.html <SIZE> 5786 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\command-line-tool.html <SIZE> 4680 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\building-output-using-cl-tool.html <SIZE> 5573 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\dita-ot_java_properties.html <SIZE> 7409 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\tool-parameters-eclipsecontent-transformation.html <SIZE> 4713 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\tool-parameters-eclipsehelp-transformation.html <SIZE> 5664 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\tool-parameters-htmlhelp-transformation.html <SIZE> 4558 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\tool-parameters-javahelp-transformation.html <SIZE> 4956 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\tool-parameters-odt-transformation.html <SIZE> 4047 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\tool-parameters-pdf-transformation.html <SIZE> 5916 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\tool-parameters-xhtml-transformation.html <SIZE> 4563 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\ant-parameters-all-transformation-types.html <SIZE> 15637 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\tool-parameters-all-transformation.html <SIZE> 12730 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\ant-parameters-common-html-transtypes.html <SIZE> 21681 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\tool-parameters-common-html-transformation.html <SIZE> 15477 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\overview-of-dita-ot.html <SIZE> 5542 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\DITA-globalization.html <SIZE> 5007 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\developer-reference.html <SIZE> 5678 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\DITA-OTArchitecture.html <SIZE> 6876 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\processing-structure.html <SIZE> 4178 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\processing-pipeline-modules.html <SIZE> 5196 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\processing-order.html <SIZE> 5600 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\DITA-OTPreprocess.html <SIZE> 9593 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\preprocess-genlist.html <SIZE> 14480 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\preprocess-debugfilter.html <SIZE> 5075 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\preprocess-copyfiles.html <SIZE> 3694 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\preprocess-conrefpush.html <SIZE> 3586 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\preprocess-conref.html <SIZE> 6191 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\preprocess-metadata.html <SIZE> 4020 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\preprocess-keyref.html <SIZE> 3968 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\preprocess-coderef.html <SIZE> 3703 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\preprocess-mapref.html <SIZE> 3843 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\preprocess-mappull.html <SIZE> 4569 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\preprocess-chunk.html <SIZE> 4345 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\preprocess-maplink.html <SIZE> 4173 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\preprocess-topicpull.html <SIZE> 4660 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\preprocess-flagging.html <SIZE> 16574 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\XhtmlWithNavigation.html <SIZE> 6071 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\XhtmlCommon.html <SIZE> 4004 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\XhtmlDefault.html <SIZE> 2881 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\XhtmlEclipse.html <SIZE> 5247 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\XhtmlTocjs.html <SIZE> 4001 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\XhtmlCHM.html <SIZE> 3548 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\XhtmlJavahelp.html <SIZE> 3202 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\PdfDefault.html <SIZE> 6320 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\OdtDefault.html <SIZE> 3774 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\extending-the-ot.html <SIZE> 5670 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\plugins-installing.html <SIZE> 5097 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\plugins-removing.html <SIZE> 2679 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\rebuilding-the-dita-ot-documentation.html <SIZE> 3615 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\configuring-the-dita-ot.html <SIZE> 3501 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\lib-org.dita.dost.platform-plugin.properties.html <SIZE> 3151 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\plugins-overview.html <SIZE> 11525 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\plugin-configfile.html <SIZE> 10795 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\plugin-xmlcatalog.html <SIZE> 4909 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\plugin-anttarget.html <SIZE> 4678 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\plugin-antpreprocess.html <SIZE> 7277 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\plugin-newtranstype.html <SIZE> 4480 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\plugin-overridestyle.html <SIZE> 6626 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\plugin-addgeneratedtext.html <SIZE> 11312 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\plugin-xsltparams.html <SIZE> 5724 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\plugin-javalib.html <SIZE> 5280 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\plugin-messages.html <SIZE> 4730 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\plugin-dependencies.html <SIZE> 5106 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\plugin-support.html <SIZE> 3954 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\plugin-newextensions.html <SIZE> 11706 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\plugin-sample.html <SIZE> 3648 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\flagging-migration.html <SIZE> 16359 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\dita2pdf-customization.html <SIZE> 7713 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\ant-properties.html <SIZE> 2660 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\DITA1.2-implementation-dependent-features.html <SIZE> 5792 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> dev_ref\extended-functionality.html <SIZE> 3619 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\distribution_packages.html <SIZE> 7378 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> articles\dita-and-dita-ot-resources.html <SIZE> 4096 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> articles\web-based-resources.html <SIZE> 3541 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\DITA-globalization-xhtml.html <SIZE> 13573 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\prerequisite-software.html <SIZE> 6354 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\installing-minimal-package-on-linux.html <SIZE> 13887 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\installing-minimal-package-windows.html <SIZE> 14081 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\tranforming-dita-content.html <SIZE> 3957 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\AvailableTransforms.html <SIZE> 7200 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\dita2docbook.html <SIZE> 2562 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\dita2tocjs.html <SIZE> 3148 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\dita2troff.html <SIZE> 2794 <DATE> 06-06-13 10:43:58
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\globalization-supported-in-dita-ot.html <SIZE> 3797 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\DITA-globalization-pdf.html <SIZE> 6115 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\troubleshooting-overview.html <SIZE> 5573 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\accessing-help-from-the-cl-tool.html <SIZE> 3272 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\determining-version-of-ditaot.html <SIZE> 2891 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\enabling-debug-mode.html <SIZE> 3946 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\increasing-the-jvm.html <SIZE> 4787 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\reference.html <SIZE> 3852 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\generate-copy-outer.html <SIZE> 5950 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\ant-parameters-other.html <SIZE> 5110 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\configuration.html <SIZE> 10113 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> DITA-OTProjectHome.html <SIZE> 5983 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\DITA-readme.html <SIZE> 5362 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\DITA-antuse.html <SIZE> 6624 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\DITA-ant.html <SIZE> 4930 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\DITA-javacmd.html <SIZE> 4551 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> admin\DITA-OTProjectManagement.html <SIZE> 4123 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> admin\DITA-OTProjectGoals.html <SIZE> 4342 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> admin\DevelopmentProcess.html <SIZE> 4021 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> admin\ProjectRoles.html <SIZE> 4030 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> admin\ReleaseLifeCycle.html <SIZE> 5635 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> admin\FixesAndFeatures.html <SIZE> 4999 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> admin\HowToParticipate.html <SIZE> 6710 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> admin\BugFixGuidelines-NoCLA.html <SIZE> 4209 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> admin\ContributionPolicy.html <SIZE> 10126 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> admin\ContributionForm.html <SIZE> 12626 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> articles\DITA-dWarticles.html <SIZE> 4409 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\changes\rel1.8.html <SIZE> 9665 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> specification\DITA1-2.html <SIZE> 8543 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\DITA-tested.html <SIZE> 5013 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\DITA-installation.html <SIZE> 4945 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\dita2word.html <SIZE> 3018 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\DITA-messages.html <SIZE> 114184 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\DITA-troubleshooting.html <SIZE> 5213 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Output File)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc\out <FILE> readme\DITA-log.html <SIZE> 3690 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Log)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> userguidexhm.log <SIZE> 64995 <DATE> 06-06-13 10:43:59
+OUTPUTFILE (Bom)
+ <URL>  <PATH> C:\Users\IBM_ADMIN\github\develop\src\main\docsrc <FILE> userguidexhm.bom <SIZE>  <DATE> 
+<<< END OF BOM FILE >>>
+========================================================================
