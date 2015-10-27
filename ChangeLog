@@ -1,5 +1,15 @@
 2015-10-27  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
+	* Makefile.am: Build and export locations from argument varaibles,
+	remove unwanted quotation marks.
+	* Makefile.in: Regenerated.
+	* configure: Likewise.
+	* configure.ac: Have separate names for arguments.
+	* llvm-assembler-manual/Makefile.in: Regenerated.
+	* llvm-user-manual/Makefile.in: Likewise.
+
+2015-10-27  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
 	* Makefile.am: Move definitions for DITA here.
 	* Makefile.in: Regenerated.
 	* aclocal.m4: Likewise.

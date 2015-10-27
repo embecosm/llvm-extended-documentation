@@ -218,18 +218,18 @@ BUGURL = @BUGURL@
 BUGURL_TEXI = @BUGURL_TEXI@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
-DITA18DIR = @DITA18DIR@
+DITA18DIR_ARG = @DITA18DIR_ARG@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
-FOPCONF = @FOPCONF@
+FOPCONF_ARG = @FOPCONF_ARG@
 GCC_VERSION_DATE = @GCC_VERSION_DATE@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
-JAVALIBDIR = @JAVALIBDIR@
+JAVALIBDIR_ARG = @JAVALIBDIR_ARG@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LLVM_VERSION = @LLVM_VERSION@
@@ -755,22 +755,22 @@ uninstall-am:
 
 
 # Set up Java and Ant
+@HAVE_JAVALIBDIR_TRUE@  JAVALIBDIR ::= $(JAVALIBDIR_ARG)
 @HAVE_JAVALIBDIR_FALSE@  JAVALIBDIR ::= /usr/share/java
 
-@HAVE_DITA18DIR_FALSE@  DITA18DIR ::= $(abs_top_srcdir)/DITA-OT1.8
+@HAVE_DITA18DIR_TRUE@  export DITA18DIR ::= $(DITA18DIR_ARG)
+@HAVE_DITA18DIR_FALSE@  export DITA18DIR ::= $(abs_top_srcdir)/DITA-OT1.8
 
-@HAVE_FOPCONF_FALSE@  FOPCONF ::= $(abs_top_srcdir)/local-fonts/fop.xconf
+@HAVE_FOPCONF_TRUE@  export FOPCONF ::= $(FOPCONF_ARG)
+@HAVE_FOPCONF_FALSE@  export FOPCONF ::= $(abs_top_srcdir)/local-fonts/fop.xconf
 
-export DITA18DIR
-export FOPCONF
-
-ANT_OPTS ::= "-Xmx512m $(ANT_OPTS)"
-ANT_OPTS ::= "$(ANT_OPTS) -Djava.awt.headless=true"
-ANT_OPTS ::= "$(ANT_OPTS) -Djavax.xml.transform.TransformerFactory=net.sf.saxon.TransformerFactoryImpl"
+ANT_OPTS ::= -Xmx512m $(ANT_OPTS)
+ANT_OPTS ::= $(ANT_OPTS) -Djava.awt.headless=true
+ANT_OPTS ::= $(ANT_OPTS) -Djavax.xml.transform.TransformerFactory=net.sf.saxon.TransformerFactoryImpl
 export ANT_OPTS
 
-export ANT_HOME ::= "($DITA18DIR)"/tools/ant
-export PATH ::= "($DITA18DIR)"/tools/ant/bin:"$(PATH)"
+export ANT_HOME ::= $(DITA18DIR)/tools/ant
+export ANT_BIN  ::= $(DITA18DIR)/tools/ant/bin
 
 new_classpath ::= "$(DITA18DIR)/lib/dost.jar"
 new_classpath ::= "$(DITA18DIR)/lib:$(new_classpath)"

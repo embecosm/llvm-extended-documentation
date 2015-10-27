@@ -594,9 +594,9 @@ BUGURL
 PKGVERSION
 LLVM_VERSION
 GCC_VERSION_DATE
-FOPCONF
-DITA18DIR
-JAVALIBDIR
+FOPCONF_ARG
+DITA18DIR_ARG
+JAVALIBDIR_ARG
 HAVE_CLASSPATH_FALSE
 HAVE_CLASSPATH_TRUE
 HAVE_FOPCONF_FALSE
@@ -2442,13 +2442,13 @@ fi
 
 # Check whether --with-javalibdir was given.
 if test "${with_javalibdir+set}" = set; then :
-  withval=$with_javalibdir; JAVALIBDIR=$withval
+  withval=$with_javalibdir; JAVALIBDIR_ARG=$withval
 else
-  JAVALIBDIR=""
+  JAVALIBDIR_ARG=""
 fi
 
 
- if test x$JAVALIBDIR != x; then
+ if test x$JAVALIBDIR_ARG != x; then
   HAVE_JAVALIBDIR_TRUE=
   HAVE_JAVALIBDIR_FALSE='#'
 else
@@ -2460,13 +2460,13 @@ fi
 
 # Check whether --with-ditadir was given.
 if test "${with_ditadir+set}" = set; then :
-  withval=$with_ditadir; DITA18DIR=$withval
+  withval=$with_ditadir; DITA18DIR_ARG=$withval
 else
-  DITA18DIR=""
+  DITA18DIR_ARG=""
 fi
 
 
- if test x$DITA18DIR != x; then
+ if test x$DITA18DIR_ARG != x; then
   HAVE_DITA18DIR_TRUE=
   HAVE_DITA18DIR_FALSE='#'
 else
@@ -2478,13 +2478,13 @@ fi
 
 # Check whether --with-fopconf was given.
 if test "${with_fopconf+set}" = set; then :
-  withval=$with_fopconf; FOPCONF=$withval
+  withval=$with_fopconf; FOPCONF_ARG=$withval
 else
-  FOPCONF=""
+  FOPCONF_ARG=""
 fi
 
 
- if test x$FOPCONF != x; then
+ if test x$FOPCONF_ARG != x; then
   HAVE_FOPCONF_TRUE=
   HAVE_FOPCONF_FALSE='#'
 else

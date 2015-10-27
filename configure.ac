@@ -26,32 +26,32 @@ AC_PREREQ(2.69)
 AC_ARG_WITH([javalibdir],
     AS_HELP_STRING([--with-javalibdir=dir],
 	           [absolute location of external Java libraries]),
-    [JAVALIBDIR=$withval],
-    [JAVALIBDIR=""])
+    [JAVALIBDIR_ARG=$withval],
+    [JAVALIBDIR_ARG=""])
 
-AM_CONDITIONAL([HAVE_JAVALIBDIR],[test x$JAVALIBDIR != x])
+AM_CONDITIONAL([HAVE_JAVALIBDIR],[test x$JAVALIBDIR_ARG != x])
 
 AC_ARG_WITH([ditadir],
     AS_HELP_STRING([--with-dita18dir=dir],
 	           [absolute location of DITA Open Toolkit version 1.8]),
-    [DITA18DIR=$withval],
-    [DITA18DIR=""])
+    [DITA18DIR_ARG=$withval],
+    [DITA18DIR_ARG=""])
 
-AM_CONDITIONAL([HAVE_DITA18DIR],[test x$DITA18DIR != x])
+AM_CONDITIONAL([HAVE_DITA18DIR],[test x$DITA18DIR_ARG != x])
 
 AC_ARG_WITH([fopconf],
     AS_HELP_STRING([--with-fopconf=dir],
 	           [absolute location of DITA Open Toolkit version 1.8]),
-    [FOPCONF=$withval],
-    [FOPCONF=""])
+    [FOPCONF_ARG=$withval],
+    [FOPCONF_ARG=""])
 
-AM_CONDITIONAL([HAVE_FOPCONF],[test x$FOPCONF != x])
+AM_CONDITIONAL([HAVE_FOPCONF],[test x$FOPCONF_ARG != x])
 
 AM_CONDITIONAL([HAVE_CLASSPATH],[test x$CLASSPATH != x])
 
-AC_SUBST(JAVALIBDIR)
-AC_SUBST(DITA18DIR)
-AC_SUBST(FOPCONF)
+AC_SUBST(JAVALIBDIR_ARG)
+AC_SUBST(DITA18DIR_ARG)
+AC_SUBST(FOPCONF_ARG)
 
 # Set some TexInfo variables.  We'll think about a better way to do this.
 GCC_VERSION_DATE="16 Mar 2015, commit ID 9dbe51a"

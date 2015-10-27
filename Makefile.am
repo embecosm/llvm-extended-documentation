@@ -15,28 +15,31 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = llvm-assembler-manual llvm-user-manual
 
 # Set up Java and Ant
-if !HAVE_JAVALIBDIR
+if HAVE_JAVALIBDIR
+  JAVALIBDIR ::= $(JAVALIBDIR_ARG)
+else
   JAVALIBDIR ::= /usr/share/java
 endif
 
-if !HAVE_DITA18DIR
-  DITA18DIR ::= $(abs_top_srcdir)/DITA-OT1.8
+if HAVE_DITA18DIR
+  export DITA18DIR ::= $(DITA18DIR_ARG)
+else
+  export DITA18DIR ::= $(abs_top_srcdir)/DITA-OT1.8
 endif
 
-if !HAVE_FOPCONF
-  FOPCONF ::= $(abs_top_srcdir)/local-fonts/fop.xconf
+if HAVE_FOPCONF
+  export FOPCONF ::= $(FOPCONF_ARG)
+else
+  export FOPCONF ::= $(abs_top_srcdir)/local-fonts/fop.xconf
 endif
 
-export DITA18DIR
-export FOPCONF
-
-ANT_OPTS ::= "-Xmx512m $(ANT_OPTS)"
-ANT_OPTS ::= "$(ANT_OPTS) -Djava.awt.headless=true"
-ANT_OPTS ::= "$(ANT_OPTS) -Djavax.xml.transform.TransformerFactory=net.sf.saxon.TransformerFactoryImpl"
+ANT_OPTS ::= -Xmx512m $(ANT_OPTS)
+ANT_OPTS ::= $(ANT_OPTS) -Djava.awt.headless=true
+ANT_OPTS ::= $(ANT_OPTS) -Djavax.xml.transform.TransformerFactory=net.sf.saxon.TransformerFactoryImpl
 export ANT_OPTS
 
-export ANT_HOME ::= "($DITA18DIR)"/tools/ant
-export PATH ::= "($DITA18DIR)"/tools/ant/bin:"$(PATH)"
+export ANT_HOME ::= $(DITA18DIR)/tools/ant
+export ANT_BIN  ::= $(DITA18DIR)/tools/ant/bin
 
 new_classpath ::= "$(DITA18DIR)/lib/dost.jar"
 new_classpath ::= "$(DITA18DIR)/lib:$(new_classpath)"
