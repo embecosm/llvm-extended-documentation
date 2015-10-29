@@ -23,7 +23,7 @@
   It is based on the example configuration file for FOP.  Only values which
   have changed are used here.
 
-  The original source of this file, with suffix .in, has a generic text string
+  The original source of this file, with suffix .in, has generic text strings
   for the directory locations, allowing file URLs to be replaced by absolute
   file names.
 
@@ -76,60 +76,60 @@
 
 	<!-- Arial -->
 
-	<font  metrics-url="HERE_DIR/arial.xml"
+	<font  metrics-url="BUILD_DIR/arial.xml"
 	       kerning="yes"
-	       embed-url="HERE_DIR/fonts/arial.ttf">
+	       embed-url="SRC_DIR/fonts/arial.ttf">
           <font-triplet name="Arial"
 			style="normal" weight="400"/>
         </font>
 
-	<font  metrics-url="HERE_DIR/arial-bold.xml"
+	<font  metrics-url="BUILD_DIR/arial-bold.xml"
 	       kerning="yes"
-	       embed-url="HERE_DIR/fonts/arialbd.ttf">
+	       embed-url="SRC_DIR/fonts/arialbd.ttf">
           <font-triplet name="Arial"
 			style="normal" weight="700"/>
         </font>
 
-	<font  metrics-url="HERE_DIR/arial-italic.xml"
+	<font  metrics-url="BUILD_DIR/arial-italic.xml"
 	       kerning="yes"
-	       embed-url="HERE_DIR/fonts/ariali.ttf">
+	       embed-url="SRC_DIR/fonts/ariali.ttf">
           <font-triplet name="Arial"
 			style="italic" weight="400"/>
         </font>
 
-	<font  metrics-url="HERE_DIR/arial-bold-italic.xml"
+	<font  metrics-url="BUILD_DIR/arial-bold-italic.xml"
 	       kerning="yes"
-	       embed-url="HERE_DIR/fonts/arialbi.ttf">
+	       embed-url="SRC_DIR/fonts/arialbi.ttf">
           <font-triplet name="Arial"
 			style="italic" weight="700"/>
         </font>
 
 	<!-- Courier -->
 
-	<font  metrics-url="HERE_DIR/courier.xml"
+	<font  metrics-url="BUILD_DIR/courier.xml"
 	       kerning="yes"
-	       embed-url="HERE_DIR/fonts/cour.ttf">
+	       embed-url="SRC_DIR/fonts/cour.ttf">
           <font-triplet name="Courier New"
 			style="normal" weight="400"/>
         </font>
 
-	<font  metrics-url="HERE_DIR/courier-bold.xml"
+	<font  metrics-url="BUILD_DIR/courier-bold.xml"
 	       kerning="yes"
-	       embed-url="HERE_DIR/fonts/courbd.ttf">
+	       embed-url="SRC_DIR/fonts/courbd.ttf">
           <font-triplet name="Courier New"
 			style="normal" weight="700"/>
         </font>
 
-	<font  metrics-url="HERE_DIR/courier-italic.xml"
+	<font  metrics-url="BUILD_DIR/courier-italic.xml"
 	       kerning="yes"
-	       embed-url="HERE_DIR/fonts/couri.ttf">
+	       embed-url="SRC_DIR/fonts/couri.ttf">
           <font-triplet name="Courier New"
 			style="italic" weight="400"/>
         </font>
 
-	<font  metrics-url="HERE_DIR/courier-bold-italic.xml"
+	<font  metrics-url="BUILD_DIR/courier-bold-italic.xml"
 	       kerning="yes"
-	       embed-url="HERE_DIR/fonts/courbi.ttf">
+	       embed-url="SRC_DIR/fonts/courbi.ttf">
           <font-triplet name="Courier New"
 			style="italic" weight="700"/>
         </font>

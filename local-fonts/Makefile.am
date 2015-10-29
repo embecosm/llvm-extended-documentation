@@ -14,7 +14,8 @@ all: fop.xconf arial.xml arial-bold.xml arial-italic.xml arial-bold-italic.xml \
 install:
 
 fop.xconf: fop.xconf.in
-	sed -e "s|HERE_DIR|$(abs_builddir)|g" < $< > $@
+	sed -e "s|SRC_DIR|$(abs_srcdir)|g" \
+	    -e "s|BUILD_DIR|$(abs_builddir)|g" < $< > $@
 
 arial.xml: fonts/arial.ttf
 	echo $$CLASSPATH
