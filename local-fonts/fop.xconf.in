@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. -->
+
+<!--
+
+  This is a FOP configuration file for LLVM documentation, suitable for use
+  with DITA and DocBook documentation.
+
+  It is based on the example configuration file for FOP.  Only values which
+  have changed are used here.
+
+  The original source of this file, with suffix .in, has a generic text string
+  for the directory locations, allowing file URLs to be replaced by absolute
+  file names.
+
+-->
+
+<!-- NOTE: This is the version of the configuration -->
+
+<fop version="1.0">
+
+  <!-- DITA 1.8 needs FO validation relaxed -->
+  <strict-validation>false</strict-validation>
+
+  <!-- Source resolution in dpi (dots/pixels per inch) for determining the
+       size of pixels in SVG and bitmap images. We use 90dpi, changed from the
+       default 72 -->
+  <source-resolution>90</source-resolution>
+
+  <!-- Target resolution in dpi (dots/pixels per inch) for specifying the
+       target resolution for generated bitmaps. We use 600dpi, changed from
+       the default 72 ** -->
+  <target-resolution>600</target-resolution>
+
+  <!-- Default page-height and page-width, in case value is specified as auto.
+       These are for A4. -->
+  <default-page-settings height="297mm" width="210mm"/>
+
+  <!-- Information for specific renderers, identified by mime tyep. -->
+
+  <renderers>
+    <renderer mime="application/pdf">
+      <filterList>
+        <!-- provides compression using zlib flate (default is on) -->
+        <value>flate</value>
+      </filterList>
+
+      <fonts>
+        <!-- embedded fonts -->
+
+        <!-- This information must exactly match the font specified in the fo
+             file. Otherwise it will use a default font.
+
+             If you do not want to embed the font in the pdf document then do
+             not include the "embed-url" attribute.  The font will be needed
+             where the document is viewed for it to be displayed properly.
+
+             possible styles: normal | italic | oblique | backslant
+             possible weights: normal | bold | 100 | 200 | 300 | 400
+                              | 500 | 600 | 700 | 800 | 900
+             (normal = 400, bold = 700) -->
+
+	<!-- Arial -->
+
+	<font  metrics-url="HERE_DIR/arial.xml"
+	       kerning="yes"
+	       embed-url="HERE_DIR/fonts/arial.ttf">
+          <font-triplet name="Arial"
+			style="normal" weight="400"/>
+        </font>
+
+	<font  metrics-url="HERE_DIR/arial-bold.xml"
+	       kerning="yes"
+	       embed-url="HERE_DIR/fonts/arialbd.ttf">
+          <font-triplet name="Arial"
+			style="normal" weight="700"/>
+        </font>
+
+	<font  metrics-url="HERE_DIR/arial-italic.xml"
+	       kerning="yes"
+	       embed-url="HERE_DIR/fonts/ariali.ttf">
+          <font-triplet name="Arial"
+			style="italic" weight="400"/>
+        </font>
+
+	<font  metrics-url="HERE_DIR/arial-bold-italic.xml"
+	       kerning="yes"
+	       embed-url="HERE_DIR/fonts/arialbi.ttf">
+          <font-triplet name="Arial"
+			style="italic" weight="700"/>
+        </font>
+
+	<!-- Courier -->
+
+	<font  metrics-url="HERE_DIR/courier.xml"
+	       kerning="yes"
+	       embed-url="HERE_DIR/fonts/cour.ttf">
+          <font-triplet name="Courier New"
+			style="normal" weight="400"/>
+        </font>
+
+	<font  metrics-url="HERE_DIR/courier-bold.xml"
+	       kerning="yes"
+	       embed-url="HERE_DIR/fonts/courbd.ttf">
+          <font-triplet name="Courier New"
+			style="normal" weight="700"/>
+        </font>
+
+	<font  metrics-url="HERE_DIR/courier-italic.xml"
+	       kerning="yes"
+	       embed-url="HERE_DIR/fonts/couri.ttf">
+          <font-triplet name="Courier New"
+			style="italic" weight="400"/>
+        </font>
+
+	<font  metrics-url="HERE_DIR/courier-bold-italic.xml"
+	       kerning="yes"
+	       embed-url="HERE_DIR/fonts/courbi.ttf">
+          <font-triplet name="Courier New"
+			style="italic" weight="700"/>
+        </font>
+
+      </fonts>
+    </renderer>
+  </renderers>
+</fop>

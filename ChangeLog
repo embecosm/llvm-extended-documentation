@@ -1,3 +1,18 @@
+2015-10-29  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* INSTALL: Regenerated.
+	* Makefile.am: Add local-fonts subdir
+	* Makefile.in: Regenerated
+	* configure: Likewise.
+	* configure.ac: Add makefile for local-fonts.
+	* install-sh: Regenerated.
+	* llvm-assembler-manual/llvm-assembler.info: Likewise.
+	* local-fonts/Makefile.am: Created.
+	* local-fonts/Makefile.in: Generated.
+	* local-fonts/README.txt: Created.
+	* local-fonts/fop.xconf.in: Created.
+	* missing: Regenerated.
+
 2015-10-27  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* Makefile.am: Build and export locations from argument varaibles,

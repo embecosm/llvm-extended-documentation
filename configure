@@ -2519,7 +2519,7 @@ BUGURL_TEXI="@uref{mailto:support@@embecosm.com,support@@embecosm.com}"
 
 
 # We want to create a Makefile
-ac_config_files="$ac_config_files Makefile llvm-assembler-manual/Makefile llvm-user-manual/Makefile"
+ac_config_files="$ac_config_files Makefile local-fonts/Makefile llvm-assembler-manual/Makefile llvm-user-manual/Makefile"
 
 
 # Put it all out.
@@ -3257,6 +3257,7 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+    "local-fonts/Makefile") CONFIG_FILES="$CONFIG_FILES local-fonts/Makefile" ;;
     "llvm-assembler-manual/Makefile") CONFIG_FILES="$CONFIG_FILES llvm-assembler-manual/Makefile" ;;
     "llvm-user-manual/Makefile") CONFIG_FILES="$CONFIG_FILES llvm-user-manual/Makefile" ;;
 

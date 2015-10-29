@@ -5267,8 +5267,8 @@ of the version of the manual for the LLVM Integrated Assembler is Jeremy
 Bennett (email address jeremy.bennett@embecosm.com
 (mailto:jeremy.bennett@embecosm.com)).
 
-10.1 Orginal GAS Acknowledgments
-================================
+10.1 Original GAS Acknowledgments
+=================================
 
 If you have contributed to GAS and your name isn't listed here, it is
 not meant as a slight.  We just don't know about it.  Send mail to the
@@ -7068,8 +7068,8 @@ Node: Reporting Bugs187163
 Node: Bug Criteria187973
 Node: Bug Reporting188865
 Node: Acknowledgments195613
-Ref: Acknowledgments-Footnote-1201679
-Node: GNU Free Documentation License201705
-Node: AS Index226866
+Ref: Acknowledgments-Footnote-1201681
+Node: GNU Free Documentation License201707
+Node: AS Index226868
 
 End Tag Table
