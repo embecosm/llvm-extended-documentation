@@ -1,3 +1,7 @@
+2015-11-23  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* texinfo/texinfo.tex: Created.
+
 2015-10-29  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* local-fonts/Makefile.am: Have separate source and build
