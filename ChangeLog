@@ -1,3 +1,9 @@
+2015-12-01  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* support-code/opt-check.sh: More options tested. Replace
+	run_dummy with run_neither to explicitly check that an option
+	fails on both compilers.
+
 2015-12-02  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* .gitignore: Add background, build and fonts directories.

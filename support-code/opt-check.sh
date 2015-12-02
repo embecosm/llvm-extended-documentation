@@ -38,9 +38,9 @@ tidyup () {
     rm -f dummy
     rm -f proto.dat time.dat
     rm -f dummy-deps dummy.gkd
-    rm -f *.o* *.bc *.gch *.d *.i
+    rm -f *.o* *.bc *.gch *.d *.i *.dwo
     rm -f dummy.bc dummy.c.* dummy.d dummy.g* dummy.i dummy.s dummy.su
-    rm -f *.so
+    rm -f *.a *.so
     rm -f ${tmpf}
 }
 
@@ -223,9 +223,47 @@ run_only_gcc () {
     fi
 }
 
-# Won't work with either compiler
+# Check explicitly works with neither LLVM nor GCC
 
-run_dummy () {
+run_neither () {
+    lcc_res="ok"
+    gcc_res="ok"
+
+    if ! ${LCC} $* > ${tmpf} 2>&1
+    then
+	lcc_res="fail";
+    elif grep -q "argument unused during compilation" ${tmpf}
+    then
+	lcc_res="fail";
+    elif grep -q "optimization flag .* is not supported" ${tmpf}
+    then
+	lcc_res="fail";
+    fi
+
+    if ! ${GCC} $* > /dev/null 2>&1
+    then
+	gcc_res="fail";
+    fi
+
+    if [ "ok" = ${lcc_res} ]
+    then
+	if  [ "ok" = ${gcc_res} ]
+	then
+	    logerr "  $*: LLVM & GCC OK"
+	else
+	    logerr "  $*: LLVM OK"
+	fi
+    elif  [ "ok" = ${gcc_res} ]
+    then
+	logerr "  $*: GCC OK"
+    else
+	logok
+    fi
+}
+
+# Do nothing
+
+run_neither () {
     continue
 }
 
@@ -455,16 +493,38 @@ run_both --help dummy.c
 run_both -lcode -L`pwd` dummy.c
 run_both -l code -L`pwd` dummy.c
 run_both -L`pwd` -lcode dummy.c
+run_both -nodefaultlibs -c dummy.c
+run_both -no-integrated-cpp dummy.c
+run_both -nostartfiles dummy.c
+run_both -nostdinc dummy.c
+run_both -nostdlib dummy.c
+run_both -O dummy.c
+run_both -O0 dummy.c
+run_both -O1 dummy.c
+run_both -O2 dummy.c
+run_both -O3 dummy.c
+run_both -Ofast dummy.c
+run_both -Os dummy.c
+run_both --param ssp-buffer-size=4 dummy.c
+run_both -pedantic dummy.c
+run_both -pedantic-errors dummy.c
+run_both -print-file-name=code -L`pwd` dummy.c
+run_both -print-multi-directory dummy.c
+run_both -print-multi-lib dummy.c
+run_both -print-prog-name=cpp dummy.c
+run_both -pthread dummy.c
+run_both -rdynamic dummy.c
 
 # Options for both compilers for some targets
 
-run_dummy -fpcc-struct-return dummy.c
-run_dummy -freg-struct-return dummy.c
+run_neither -fpcc-struct-return dummy.c
+run_neither -freg-struct-return dummy.c
 
 # Options for LLVM but not GCC
 
 echo
 logcon "Testing options for LLVM but not GCC..."
+run_llvm -Oz dummy.c
 
 # Options for GCC but not LLVM
 
@@ -828,42 +888,171 @@ run_gcc -gstabs+ dummy.c
 run_gcc -gtoggle dummy.c
 run_gcc -I- -I . dummy.c
 run_gcc -iplugindir=`pwd` -fplugin=myplugin.so dummy.c
+run_gcc -no-canonical-prefixes dummy.c
+run_gcc --no-sysroot-suffix dummy.c
+run_gcc -Og dummy.c
+run_gcc -p dummy.c
+run_gcc --param predictable-branch-outcome=8 dummy.c
+run_gcc --param max-crossjump-edges=6 dummy.c
+run_gcc --param min-crossjump-insns=6 dummy.c
+run_gcc --param max-grow-copy-bb-insns=10 dummy.c
+run_gcc --param max-goto-duplication-insns=10 dummy.c
+run_gcc --param max-delay-slot-insn-search=3 dummy.c
+run_gcc --param max-delay-slot-live-search=3 dummy.c
+run_gcc --param max-gcse-memory=100000 dummy.c
+run_gcc --param max-gcse-insertion-ratio=30 dummy.c
+run_gcc --param max-pending-list-length=100 dummy.c
+run_gcc --param max-modulo-backtrack-attempts=5 dummy.c
+run_gcc --param max-inline-insns-single=500 dummy.c
+run_gcc --param max-inline-insns-auto=50 dummy.c
+run_gcc --param inline-min-speedup=30 dummy.c
+run_gcc --param large-function-insns=3000 dummy.c
+run_gcc --param large-function-growth=90 dummy.c
+run_gcc --param large-unit-insns=15000 dummy.c
+run_gcc --param inline-unit-growth=30 dummy.c
+run_gcc --param ipcp-unit-growth=12 dummy.c
+run_gcc --param large-stack-frame=378 dummy.c
+run_gcc --param large-stack-frame-growth=90 dummy.c
+run_gcc --param max-inline-insns-recursive=400 dummy.c
+run_gcc --param max-inline-insns-recursive-auto=400 dummy.c
+run_gcc --param max-inline-recursive-depth=9 dummy.c
+run_gcc --param max-inline-recursive-depth-auto=13 dummy.c
+run_gcc --param min-inline-recursive-probability=9 dummy.c
+run_gcc --param early-inlining-insns=12 dummy.c
+run_gcc --param max-early-inliner-iterations=40 dummy.c
+run_gcc --param comdat-sharing-probability=20 dummy.c
+run_gcc --param profile-func-internal-id=1 dummy.c
+run_gcc --param min-vect-loop-bound=1 dummy.c
+run_gcc --param gcse-cost-distance-ratio=12 dummy.c
+run_gcc --param gcse-unrestricted-cost=4 dummy.c
+run_gcc --param max-hoist-depth=40 dummy.c
+run_gcc --param max-tail-merge-comparisons=10 dummy.c
+run_gcc --param max-tail-merge-iterations=3 dummy.c
+run_gcc --param max-unrolled-insns=500 dummy.c
+run_gcc --param max-average-unrolled-insns=400 dummy.c
+run_gcc --param max-unroll-times=10 dummy.c
+run_gcc --param max-peeled-insns=40 dummy.c
+run_gcc --param max-peel-times=40 dummy.c
+run_gcc --param max-peel-branches=20 dummy.c
+run_gcc --param max-completely-peeled-insns=30 dummy.c
+run_gcc --param max-completely-peel-times=30 dummy.c
+run_gcc --param max-completely-peel-loop-nest-depth=4 dummy.c
+run_gcc --param max-unswitch-insns=40 dummy.c
+run_gcc --param max-unswitch-level=5 dummy.c
+run_gcc --param lim-expensive=30 dummy.c
+run_gcc --param iv-consider-all-candidates-bound=10 dummy.c
+run_gcc --param iv-max-considered-uses=10 dummy.c
+run_gcc --param iv-always-prune-cand-set-bound=10 dummy.c
+run_gcc --param scev-max-expr-size=100 dummy.c
+run_gcc --param scev-max-expr-complexity=100 dummy.c
+run_gcc --param vect-max-version-for-alignment-checks=256 dummy.c
+run_gcc --param vect-max-version-for-alias-checks=128 dummy.c
+run_gcc --param vect-max-peeling-for-alignment=10 dummy.c
+run_gcc --param max-iterations-to-track=10 dummy.c
+run_gcc --param hot-bb-count-ws-permille=500 dummy.c
+run_gcc --param hot-bb-frequency-fraction=50 dummy.c
+run_gcc --param max-predicted-iterations=9 dummy.c
+run_gcc --param builtin-expect-probability=80 dummy.c
+run_gcc --param align-threshold=50 dummy.c
+run_gcc --param align-loop-iterations=20 dummy.c
+run_gcc --param tracer-dynamic-coverage=50 dummy.c
+run_gcc --param tracer-dynamic-coverage-feedback=80 dummy.c
+run_gcc --param tracer-max-code-growth=90 dummy.c
+run_gcc --param tracer-min-branch-ratio=10 dummy.c
+run_gcc --param max-cse-path-length=9 dummy.c
+run_gcc --param max-cse-insns=900 dummy.c
+run_gcc --param ggc-min-expand=25 dummy.c
+run_gcc --param ggc-min-heapsize=65536 dummy.c
+run_gcc --param max-reload-search-insns=90 dummy.c
+run_gcc --param max-cselib-memory-locations=450 dummy.c
+run_gcc --param max-sched-ready-insns=90 dummy.c
+run_gcc --param max-sched-region-blocks=9 dummy.c
+run_gcc --param max-pipeline-region-blocks=14 dummy.c
+run_gcc --param max-sched-region-insns=90 dummy.c
+run_gcc --param max-pipeline-region-insns=200 dummy.c
+run_gcc --param min-spec-prob=40 dummy.c
+run_gcc --param max-sched-extend-regions-iters=3 dummy.c
+run_gcc --param max-sched-insn-conflict-delay=4 dummy.c
+run_gcc --param sched-spec-prob-cutoff=50 dummy.c
+run_gcc --param sched-mem-true-dep-cost=2 dummy.c
+run_gcc --param selsched-max-lookahead=40 dummy.c
+run_gcc --param selsched-max-sched-times=3 dummy.c
+run_gcc --param sms-min-sc=3 dummy.c
+run_gcc --param max-last-value-rtl=9000 dummy.c
+run_gcc --param max-combine-insns=3 dummy.c
+run_gcc --param integer-share-limit=256 dummy.c
+run_gcc --param min-size-for-stack-sharing=64 dummy.c
+run_gcc --param max-jump-thread-duplication-stmts=10 dummy.c
+run_gcc --param max-fields-for-field-sensitive=150 dummy.c
+run_gcc --param prefetch-latency=3 dummy.c
+run_gcc --param simultaneous-prefetches=3 dummy.c
+run_gcc --param l1-cache-line-size=32 dummy.c
+run_gcc --param l1-cache-size=32 dummy.c
+run_gcc --param l2-cache-size=128 dummy.c
+run_gcc --param min-insn-to-prefetch-ratio=3 dummy.c
+run_gcc --param prefetch-min-insn-to-mem-ratio=3 dummy.c
+run_gcc --param use-canonical-types=0 dummy.c
+run_gcc --param switch-conversion-max-branch-ratio=2 dummy.c
+run_gcc --param max-partial-antic-length=100 dummy.c
+run_gcc --param sccvn-max-scc-size=9000 dummy.c
+run_gcc --param sccvn-max-alias-queries-per-access=900 dummy.c
+run_gcc --param ira-max-loops-num=90 dummy.c
+run_gcc --param ira-max-conflict-table-size=1500 dummy.c
+run_gcc --param ira-loop-reserved-regs=3 dummy.c
+run_gcc --param lra-inheritance-ebb-probability-cutoff=30 dummy.c
+run_gcc --param loop-invariant-max-bbs-in-loop=9000 dummy.c
+run_gcc --param loop-max-datarefs-for-datadeps=900 dummy.c
+run_gcc --param max-vartrack-size=100 dummy.c
+run_gcc --param max-vartrack-expr-depth=10 dummy.c
+run_gcc --param min-nondebug-insn-uid=100 dummy.c
+run_gcc --param ipa-sra-ptr-growth-factor=4 dummy.c
+run_gcc --param sra-max-scalarization-size-Ospeed=32 dummy.c
+run_gcc --param sra-max-scalarization-size-Osize=64 dummy.c
+run_gcc --param tm-max-aggregate-size=16 dummy.c
+run_gcc --param graphite-max-nb-scop-params=12 dummy.c
+run_gcc --param graphite-max-bbs-per-function=200 dummy.c
+run_gcc --param loop-block-tile-size=60 dummy.c
+run_gcc --param loop-unroll-jam-size=5 dummy.c
+run_gcc --param loop-unroll-jam-depth=3 dummy.c
+run_gcc --param ipa-cp-value-list-size=10 dummy.c
+run_gcc --param ipa-cp-eval-threshold=10 dummy.c
+run_gcc --param ipa-cp-recursion-penalty=10 dummy.c
+run_gcc --param ipa-cp-single-call-penalty=10 dummy.c
+run_gcc --param ipa-max-agg-items=10 dummy.c
+run_gcc --param ipa-cp-loop-hint-bonus=10 dummy.c
+run_gcc --param ipa-cp-array-index-hint-bonus=10 dummy.c
+run_gcc --param ipa-max-aa-steps=100 dummy.c
+run_gcc --param lto-partitions=64 dummy.c
+run_gcc --param cxx-max-namespaces-for-diagnostic-help=900 dummy.c
+run_gcc --param sink-frequency-threshold=80 dummy.c
+run_gcc --param max-stores-to-sink=3 dummy.c
+run_gcc --param allow-store-data-races=1 dummy.c
+run_gcc --param case-values-threshold=3 dummy.c
+run_gcc --param tree-reassoc-width=3 dummy.c
+run_gcc --param sched-pressure-algorithm=2 dummy.c
+run_gcc --param max-slsr-cand-scan=5 dummy.c
+run_gcc --param asan-globals=1 dummy.c
+run_gcc --param asan-stack=1 dummy.c
+run_gcc --param asan-instrument-reads=1 dummy.c
+run_gcc --param asan-instrument-writes=1 dummy.c
+run_gcc --param asan-memintrin=1 dummy.c
+run_gcc --param asan-use-after-return=1 dummy.c
+run_gcc --param asan-instrumentation-with-call-threshold=10 dummy.c
+run_gcc --param chkp-max-ctor-size=4000 dummy.c
+run_gcc --param max-fsm-thread-path-insns=150 dummy.c
+run_gcc --param max-fsm-thread-length=12 dummy.c
+run_gcc --param max-fsm-thread-paths=60 dummy.c
+run_gcc -pass-exit-codes dummy.c
+run_gcc -print-multiarch dummy.c
+run_gcc -print-multi-os-directory dummy.c
+run_gcc -print-sysroot dummy.c
+run_gcc -Q dummy.c
+run_gcc -remap dummy.c
 
 # Stop for now
 tidyup
 exit 0
 
-run_gcc -no-canonical-prefixes dummy.c
-run_gcc -nodefaultlibs dummy.c
-run_gcc -no-integrated-cpp dummy.c
-run_gcc -nostartfiles dummy.c
-run_gcc -nostdinc dummy.c
-run_gcc -nostdlib dummy.c
-run_gcc --no-sysroot-suffix dummy.c
-run_gcc -O dummy.c
-run_gcc -O0 dummy.c
-run_gcc -O1 dummy.c
-run_gcc -O2 dummy.c
-run_gcc -O3 dummy.c
-run_gcc -Ofast dummy.c
-run_gcc -Og dummy.c
-run_gcc -Os dummy.c
-run_gcc -p dummy.c
-run_gcc --param dummy.c
-run_gcc -pass-exit-codes dummy.c
-run_gcc -pedantic-errors dummy.c
-run_gcc -pie dummy.c
-run_gcc -print-file-name dummy.c
-run_gcc -print-multi-directory dummy.c
-run_gcc -print-multi-lib dummy.c
-run_gcc -print-multi-os-directory dummy.c
-run_gcc -print-objc-runtime-info dummy.c
-run_gcc -print-prog-name dummy.c
-run_gcc -print-sysroot dummy.c
-run_gcc -print-sysroot-headers-suffix dummy.c
-run_gcc -Q dummy.c
-run_gcc -rdynamic dummy.c
-run_gcc -remap dummy.c
 run_gcc -s dummy.c
 run_gcc -shared dummy.c
 run_gcc -shared-libgcc dummy.c
@@ -1014,55 +1203,66 @@ run_gcc -Wvolatile-register-var dummy.c
 run_gcc -Wwrite-strings
 
 # Options which are only for specific targets or systems
-run_dummy -F`pwd` dummy.c # Darwin
-run_dummy -fauto-profile dummy.c
-run_dummy -fcheck-pointer-bounds dummy.c
-run_dummy -fchkp-check-incomplete-type dummy.c
-run_dummy -fchkp-check-read dummy.c
-run_dummy -fchkp-check-write dummy.c
-run_dummy -fchkp-first-field-has-own-bounds dummy.c
-run_dummy -fchkp-instrument-calls dummy.c
-run_dummy -fchkp-instrument-marked-only dummy.c
-run_dummy -fchkp-narrow-bounds dummy.c
-run_dummy -fchkp-narrow-to-innermost-array dummy.c
-run_dummy -fchkp-optimize dummy.c
-run_dummy -fchkp-store-bounds dummy.c
-run_dummy -fchkp-treat-zero-dynamic-size-as-infinite dummy.c
-run_dummy -fchkp-use-fast-string-functions dummy.c
-run_dummy -fchkp-use-nochk-string-functions dummy.c
-run_dummy -fchkp-use-static-bounds dummy.c
-run_dummy -fchkp-use-static-const-bounds dummy.c
-run_dummy -fchkp-use-wrappers dummy.c
-run_dummy -ffix-and-continue dummy.c
-run_dummy -findirect-data dummy.c
-run_dummy -fno-keep-inline-dllexport dummy.c
-run_dummy -gcoff dummy.c
-run_dummy -gcoff0 dummy.c
-run_dummy -gcoff1 dummy.c
-run_dummy -gcoff2 dummy.c
-run_dummy -gcoff3 dummy.c
-run_dummy -gfull dummy.c # Darwin
-run_dummy -gused dummy.c # Darwin
-run_dummy -gvms dummy.c
-run_dummy -gvms0 dummy.c
-run_dummy -gvms1 dummy.c
-run_dummy -gvms2 dummy.c
-run_dummy -gvms3 dummy.c
-run_dummy -gxcoff dummy.c
-run_dummy -gxcoff0 dummy.c
-run_dummy -gxcoff1 dummy.c
-run_dummy -gxcoff2 dummy.c
-run_dummy -gxcoff3 dummy.c
-run_dummy -gxcoff+ dummy.c
-run_dummy -gz dummy.c
-run_dummy -gz=none dummy.c
-run_dummy -gz=zlib dummy.c
-run_dummy -gz=zlib-gnu dummy.c
-run_dummy -iframework`pwd` dummy.c # Darwin
-run_dummy -image_base dummy.c # Darwin
-run_dummy -init dummy.c # Darwin
-run_dummy -install_name dummy.c # Darwin
-run_dummy -keep_private_externs dummy.c # Darwin
+run_neither -F`pwd` dummy.c # Darwin
+run_neither -fauto-profile dummy.c
+run_neither -fcheck-pointer-bounds dummy.c
+run_neither -fchkp-check-incomplete-type dummy.c
+run_neither -fchkp-check-read dummy.c
+run_neither -fchkp-check-write dummy.c
+run_neither -fchkp-first-field-has-own-bounds dummy.c
+run_neither -fchkp-instrument-calls dummy.c
+run_neither -fchkp-instrument-marked-only dummy.c
+run_neither -fchkp-narrow-bounds dummy.c
+run_neither -fchkp-narrow-to-innermost-array dummy.c
+run_neither -fchkp-optimize dummy.c
+run_neither -fchkp-store-bounds dummy.c
+run_neither -fchkp-treat-zero-dynamic-size-as-infinite dummy.c
+run_neither -fchkp-use-fast-string-functions dummy.c
+run_neither -fchkp-use-nochk-string-functions dummy.c
+run_neither -fchkp-use-static-bounds dummy.c
+run_neither -fchkp-use-static-const-bounds dummy.c
+run_neither -fchkp-use-wrappers dummy.c
+run_neither -ffix-and-continue dummy.c
+run_neither -findirect-data dummy.c
+run_neither -fno-keep-inline-dllexport dummy.c
+run_neither -gcoff dummy.c
+run_neither -gcoff0 dummy.c
+run_neither -gcoff1 dummy.c
+run_neither -gcoff2 dummy.c
+run_neither -gcoff3 dummy.c
+run_neither -gfull dummy.c # Darwin
+run_neither -gused dummy.c # Darwin
+run_neither -gvms dummy.c
+run_neither -gvms0 dummy.c
+run_neither -gvms1 dummy.c
+run_neither -gvms2 dummy.c
+run_neither -gvms3 dummy.c
+run_neither -gxcoff dummy.c
+run_neither -gxcoff0 dummy.c
+run_neither -gxcoff1 dummy.c
+run_neither -gxcoff2 dummy.c
+run_neither -gxcoff3 dummy.c
+run_neither -gxcoff+ dummy.c
+run_neither -gz dummy.c
+run_neither -gz=none dummy.c
+run_neither -gz=zlib dummy.c
+run_neither -gz=zlib-gnu dummy.c
+run_neither -iframework`pwd` dummy.c # Darwin
+run_neither -image_base dummy.c # Darwin
+run_neither -init dummy.c # Darwin
+run_neither -install_name dummy.c # Darwin
+run_neither -keep_private_externs dummy.c # Darwin
+run_neither -no_dead_strip_inits_and_terms dummy.c # Darwin
+run_neither -noall_load dummy.c # Darwin
+run_neither -nofixprebinding dummy.c # Darwin
+run_neither -nomultidefs dummy.c # Darwin
+run_neither -noprefind dummy.c # Darwin
+run_neither -noseglinkedit dummy.c # Darwin
+run_neither -pagezero_size dummy.c # Darwin
+run_neither -print-sysroot-headers-suffix dummy.c
+run_neither -private_bundle dummy.c # Darwin
+run_neither -pthreads dummy.c
+run_neither -read_only_relocs dummy.c # Darwin
 
 # Options claimed by clang --help, but which in fact are not supported.
 run_gcc -time dummy.c
@@ -1137,101 +1337,114 @@ run_gcc -fdump-rtl-vregs dummy.c
 run_gcc -fdump-rtl-web dummy.c
 
 # Options for the future
-run_dummy -x cpp-output dummy-preproc.i
-run_dummy -x c++ dummy.c
-run_dummy -x c++-header dummy.c
-run_dummy -x c++-cpp-output dummy-preproc.i
-run_dummy -x ada dummy.c
-run_dummy -x f77 dummy.c
-run_dummy -x f77-cpp-input dummy.c
-run_dummy -x f95 dummy.c
-run_dummy -x f95-cpp-input dummy.c
-run_dummy -x go dummy.c
-run_dummy -x java dummy.c
+run_neither -x cpp-output dummy-preproc.i
+run_neither -x c++ dummy.c
+run_neither -x c++-header dummy.c
+run_neither -x c++-cpp-output dummy-preproc.i
+run_neither -x ada dummy.c
+run_neither -x f77 dummy.c
+run_neither -x f77-cpp-input dummy.c
+run_neither -x f95 dummy.c
+run_neither -x f95-cpp-input dummy.c
+run_neither -x go dummy.c
+run_neither -x java dummy.c
 
 # Options which are in the manual, but which appear not to work.
-run_dummy -fdump-tree-storeccp dummy.c
-run_dummy -femit-struct-debug-detailed dummy.c # Needs arg
-run_dummy -fsel-sched-dump-cfg dummy.c # In summary only
-run_dummy -fsel-sched-pipelining-verbose dummy.c # In summary only
-run_dummy -fsel-sched-verbose dummy.c # In summary only
-run_dummy -fshort-double dummy.c # ICE
-run_dummy -ftree-copyrename. dummy.c
-run_dummy -fwpa dummy.c # For LTO only, not documented.
-
+run_neither -fdump-tree-storeccp dummy.c
+run_neither -femit-struct-debug-detailed dummy.c # Needs arg
+run_neither -fsel-sched-dump-cfg dummy.c # In summary only
+run_neither -fsel-sched-pipelining-verbose dummy.c # In summary only
+run_neither -fsel-sched-verbose dummy.c # In summary only
+run_neither -fshort-double dummy.c # ICE
+run_neither -ftree-copyrename. dummy.c
+run_neither -fwpa dummy.c # For LTO only, not documented.
+run_neither --param tracer-min-branch-ratio-feedback=5 dummy.c
+run_neither --param reorder-blocks-duplicate=3 dummy.c
+run_neither --param reorder-blocks-duplicate-feedback=5 dummy.c
+run_neither --param sched-spec-state-edge-prob-cutoff=12 dummy.c
+run_neither --param selsched-max-insns-to-rename=3 dummy.c
+run_neither --param lto-minpartition=16 dummy.c
+run_neither --param parloops-chunk-size=1 dummy.c # In top-of-tree?
+run_neither --param parloops-schedule=static dummy.c # In top-of-tree?
+run_neither --param parloops-schedule=dynamic dummy.c # In top-of-tree?
+run_neither --param parloops-schedule=guided dummy.c # In top-of-tree?
+run_neither --param parloops-schedule=auto dummy.c # In top-of-tree?
+run_neither --param parloops-schedule=runtime dummy.c # In top-of-tree?
+run_neither --param max-ssa-name-query-depth=5 # In top-of-tree?
 
 # C++ specific
-run_dummy -fdeclone-ctor-dtor dummy.c
-run_dummy -fdeduce-init-list dummy.c
-run_dummy -fdevirtualize dummy.c
-run_dummy -fdevirtualize-at-ltrans dummy.c
-run_dummy -fdevirtualize-speculatively dummy.c
-run_dummy -fdump-class-hierarchy dummy.c
-run_dummy -fdump-class-hierarchy=address dummy.c
-run_dummy -fdump-class-hierarchy=asmname dummy.c
-run_dummy -fdump-class-hierarchy=slim dummy.c
-run_dummy -fdump-class-hierarchy=raw dummy.c
-run_dummy -fdump-class-hierarchy=details dummy.c
-run_dummy -fdump-class-hierarchy=stats dummy.c
-run_dummy -fdump-class-hierarchy=blocks dummy.c
-run_dummy -fdump-class-hierarchy=graph dummy.c
-run_dummy -fdump-class-hierarchy=vops dummy.c
-run_dummy -fdump-class-hierarchy=lineno dummy.c
-run_dummy -fdump-class-hierarchy=uid dummy.c
-run_dummy -fdump-class-hierarchy=verbose dummy.c
-run_dummy -fdump-class-hierarchy=eh dummy.c
-run_dummy -fdump-class-hierarchy=scev dummy.c
-run_dummy -fdump-class-hierarchy=optimized dummy.c
-run_dummy -fdump-class-hierarchy=missed dummy.c
-run_dummy -fdump-class-hierarchy=note dummy.c
-run_dummy -fdump-class-hierarchy=debug.dump dummy.c
-run_dummy -fdump-class-hierarchy=all dummy.c
-run_dummy -fdump-class-hierarchy=optall dummy.c
-run_dummy -fdump-translation-unit dummy.c
-run_dummy -fdump-translation-unit=all dummy.c
-run_dummy -femit-class-debug-always dummy.c
-run_dummy -fextern-tls-init dummy.c
-run_dummy -ffor-scope dummy.c
-run_dummy -ffriend-injection dummy.c
-run_dummy -fno-default-inline dummy.c
-run_dummy -fno-enforce-eh-specs dummy.c
-run_dummy -fno-ext-numeric-literals dummy.c
-run_dummy -fno-lifetime-dse dummy.c
-run_dummy -fno-rtti dummy.c
-run_dummy -fsized-deallocation dummy.c
-run_dummy -ftemplate-backtrace-limit=5 dummy.c
-run_dummy -ftemplate-depth=5 dummy.c
-run_dummy -fvtable-verify=preinit dummy.c
-run_dummy -fvtv-counts dummy.c
-run_dummy -fvtv-debug dummy.c
-run_dummy -imultilib custom dummy.c
+run_neither -fdeclone-ctor-dtor dummy.c
+run_neither -fdeduce-init-list dummy.c
+run_neither -fdevirtualize dummy.c
+run_neither -fdevirtualize-at-ltrans dummy.c
+run_neither -fdevirtualize-speculatively dummy.c
+run_neither -fdump-class-hierarchy dummy.c
+run_neither -fdump-class-hierarchy=address dummy.c
+run_neither -fdump-class-hierarchy=asmname dummy.c
+run_neither -fdump-class-hierarchy=slim dummy.c
+run_neither -fdump-class-hierarchy=raw dummy.c
+run_neither -fdump-class-hierarchy=details dummy.c
+run_neither -fdump-class-hierarchy=stats dummy.c
+run_neither -fdump-class-hierarchy=blocks dummy.c
+run_neither -fdump-class-hierarchy=graph dummy.c
+run_neither -fdump-class-hierarchy=vops dummy.c
+run_neither -fdump-class-hierarchy=lineno dummy.c
+run_neither -fdump-class-hierarchy=uid dummy.c
+run_neither -fdump-class-hierarchy=verbose dummy.c
+run_neither -fdump-class-hierarchy=eh dummy.c
+run_neither -fdump-class-hierarchy=scev dummy.c
+run_neither -fdump-class-hierarchy=optimized dummy.c
+run_neither -fdump-class-hierarchy=missed dummy.c
+run_neither -fdump-class-hierarchy=note dummy.c
+run_neither -fdump-class-hierarchy=debug.dump dummy.c
+run_neither -fdump-class-hierarchy=all dummy.c
+run_neither -fdump-class-hierarchy=optall dummy.c
+run_neither -fdump-translation-unit dummy.c
+run_neither -fdump-translation-unit=all dummy.c
+run_neither -femit-class-debug-always dummy.c
+run_neither -fextern-tls-init dummy.c
+run_neither -ffor-scope dummy.c
+run_neither -ffriend-injection dummy.c
+run_neither -fno-default-inline dummy.c
+run_neither -fno-enforce-eh-specs dummy.c
+run_neither -fno-ext-numeric-literals dummy.c
+run_neither -fno-lifetime-dse dummy.c
+run_neither -fno-rtti dummy.c
+run_neither -fsized-deallocation dummy.c
+run_neither -ftemplate-backtrace-limit=5 dummy.c
+run_neither -ftemplate-depth=5 dummy.c
+run_neither -fvtable-verify=preinit dummy.c
+run_neither -fvtv-counts dummy.c
+run_neither -fvtv-debug dummy.c
+run_neither -imultilib custom dummy.c
 
 # Objective C specific
-run_dummy -fconstant-string-class dummy.c
-run_dummy -fnext-runtime dummy.c
-run_dummy -fno-local-ivars dummy.c
-run_dummy -fno-nil-receivers dummy.c
-run_dummy -fobjc-abi-version dummy.c
-run_dummy -fobjc-call-cxx-cdtors dummy.c
-run_dummy -fobjc-direct-dispatch dummy.c
-run_dummy -fobjc-exceptions dummy.c
-run_dummy -fobjc-gc dummy.c
-run_dummy -fobjc-nilcheck dummy.c
-run_dummy -fobjc-std=objc1 dummy.c
-run_dummy -gen-decls dummy.c
-run_dummy -lobjc dummy.c
-run_dummy -x objective-c dummy.c
-run_dummy -x objective-c-header dummy.c
-run_dummy -x objective-c-cpp-output dummy-preproc.i
-run_dummy -x objective-c++ dummy.c
-run_dummy -x objective-c++-header dummy.c
-run_dummy -x objective-c++-cpp-output dummy-preproc.i
+run_neither -fconstant-string-class dummy.c
+run_neither -fnext-runtime dummy.c
+run_neither -fno-local-ivars dummy.c
+run_neither -fno-nil-receivers dummy.c
+run_neither -fobjc-abi-version dummy.c
+run_neither -fobjc-call-cxx-cdtors dummy.c
+run_neither -fobjc-direct-dispatch dummy.c
+run_neither -fobjc-exceptions dummy.c
+run_neither -fobjc-gc dummy.c
+run_neither -fobjc-nilcheck dummy.c
+run_neither -fobjc-std=objc1 dummy.c
+run_neither -gen-decls dummy.c
+run_neither -lobjc dummy.c
+run_neither -print-objc-runtime-info dummy.c
+run_neither -x objective-c dummy.c
+run_neither -x objective-c-header dummy.c
+run_neither -x objective-c-cpp-output dummy-preproc.i
+run_neither -x objective-c++ dummy.c
+run_neither -x objective-c++-header dummy.c
+run_neither -x objective-c++-cpp-output dummy-preproc.i
 
 # Ada specific
-run_dummy -fdump-ada-spec dummy.c
+run_neither -fdump-ada-spec dummy.c
 
 # Go specific
-run_dummy -fdump-go-spec dummy.c
+run_neither -fdump-go-spec dummy.c
 
 # Tidy up
 tidyup
