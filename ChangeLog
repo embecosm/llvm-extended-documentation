@@ -1,3 +1,7 @@
+2015-12-02  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* .gitignore: Add background, build and fonts directories.
+
 2015-12-01  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* support-code/libcode.c: Created.
