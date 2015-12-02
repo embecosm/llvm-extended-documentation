@@ -238,9 +238,6 @@ else
     exit 1
 fi
 
-tidyup
-exit
-
 rm -f ${logfile}
 touch ${logfile}
 
@@ -812,7 +809,12 @@ run_gcc -fwhole-program dummy.c
 run_gcc -fwide-exec-charset=UTF-8 dummy.c
 run_gcc -fworking-directory dummy.c
 run_gcc -fzero-link dummy.c
-exit
+
+# Stop for now
+tidyup
+exit 0
+
+
 run_gcc -gcoff dummy.c
 run_gcc -gdwarf dummy.c
 run_gcc -ggdb dummy.c

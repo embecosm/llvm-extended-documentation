@@ -1,5 +1,9 @@
 2015-12-01  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
+	* support-code/opt-check.sh: Tidy up where we do the exit.
+
+2015-12-01  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
 	* support-code/cc1: Created.
 	* support-code/dummy-asm.c: Created.
 	* support-code/dummy-asm.s: Deleted.
