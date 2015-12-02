@@ -257,6 +257,8 @@ ${GCC} -c stack-protect-assist.c -o stack-protect-assist-gcc.o \
 ${GCC} -fPIC -c myplugin.c
 ${GCC} -shared -o myplugin.so myplugin.o >> ${logfile} 2>&1
 ${GCC} -E dummy.c -o dummy-preproc.i
+${GCC} -c libcode.c
+ar rcs libcode.a libcode.o
 
 # Options for both compilers
 
@@ -357,8 +359,9 @@ run_both -Xlinker -M dummy.c
 run_both -Xpreprocessor -I. dummy.c
 run_both -z defs dummy.c
 
-# Options for both compilers not reported by llvm --help. I really don't b
-# elieve some of these actually do anything!
+# Options for both compilers not reported by llvm --help. I really don't
+# believe some of these actually do anything!
+
 run_both -ansi dummy.c
 run_both -C -E dummy.c
 run_both -DCARMICHAEL_PSEUDO_PRIME dummy.c
@@ -446,6 +449,12 @@ run_both -fvisibility=hidden dummy.c
 run_both -fvisibility=protected dummy.c
 run_both -fvisibility-inlines-hidden dummy.c
 run_both -fvisibility-ms-compat dummy.c
+run_both -grecord-gcc-switches dummy.c
+run_both -gsplit-dwarf dummy.c
+run_both --help dummy.c
+run_both -lcode -L`pwd` dummy.c
+run_both -l code -L`pwd` dummy.c
+run_both -L`pwd` -lcode dummy.c
 
 # Options for both compilers for some targets
 
@@ -809,36 +818,21 @@ run_gcc -fwhole-program dummy.c
 run_gcc -fwide-exec-charset=UTF-8 dummy.c
 run_gcc -fworking-directory dummy.c
 run_gcc -fzero-link dummy.c
-
-# Stop for now
-tidyup
-exit 0
-
-
-run_gcc -gcoff dummy.c
-run_gcc -gdwarf dummy.c
-run_gcc -ggdb dummy.c
-run_gcc -gno-record-gcc-switches dummy.c
-run_gcc -gno-strict-dwarf dummy.c
-run_gcc -grecord-gcc-switches dummy.c
+run_gcc -gpubnames dummy.c
 run_gcc -gstabs dummy.c
 run_gcc -gstabs0 dummy.c
 run_gcc -gstabs1 dummy.c
 run_gcc -gstabs2 dummy.c
 run_gcc -gstabs3 dummy.c
 run_gcc -gstabs+ dummy.c
-run_gcc -gstrict-dwarf dummy.c
 run_gcc -gtoggle dummy.c
-run_gcc -gvms dummy.c
-run_gcc -gxcoff dummy.c
-run_gcc -gxcoff+ dummy.c
-run_gcc -gz dummy.c
-run_gcc --help dummy.c
 run_gcc -I- -I . dummy.c
-run_gcc -imultilib dummy.c
-run_gcc -iplugindir dummy.c
-run_gcc -l dummy.c
-run_gcc -Le dummy.c
+run_gcc -iplugindir=`pwd` -fplugin=myplugin.so dummy.c
+
+# Stop for now
+tidyup
+exit 0
+
 run_gcc -no-canonical-prefixes dummy.c
 run_gcc -nodefaultlibs dummy.c
 run_gcc -no-integrated-cpp dummy.c
@@ -1020,6 +1014,7 @@ run_gcc -Wvolatile-register-var dummy.c
 run_gcc -Wwrite-strings
 
 # Options which are only for specific targets or systems
+run_dummy -F`pwd` dummy.c # Darwin
 run_dummy -fauto-profile dummy.c
 run_dummy -fcheck-pointer-bounds dummy.c
 run_dummy -fchkp-check-incomplete-type dummy.c
@@ -1041,6 +1036,33 @@ run_dummy -fchkp-use-wrappers dummy.c
 run_dummy -ffix-and-continue dummy.c
 run_dummy -findirect-data dummy.c
 run_dummy -fno-keep-inline-dllexport dummy.c
+run_dummy -gcoff dummy.c
+run_dummy -gcoff0 dummy.c
+run_dummy -gcoff1 dummy.c
+run_dummy -gcoff2 dummy.c
+run_dummy -gcoff3 dummy.c
+run_dummy -gfull dummy.c # Darwin
+run_dummy -gused dummy.c # Darwin
+run_dummy -gvms dummy.c
+run_dummy -gvms0 dummy.c
+run_dummy -gvms1 dummy.c
+run_dummy -gvms2 dummy.c
+run_dummy -gvms3 dummy.c
+run_dummy -gxcoff dummy.c
+run_dummy -gxcoff0 dummy.c
+run_dummy -gxcoff1 dummy.c
+run_dummy -gxcoff2 dummy.c
+run_dummy -gxcoff3 dummy.c
+run_dummy -gxcoff+ dummy.c
+run_dummy -gz dummy.c
+run_dummy -gz=none dummy.c
+run_dummy -gz=zlib dummy.c
+run_dummy -gz=zlib-gnu dummy.c
+run_dummy -iframework`pwd` dummy.c # Darwin
+run_dummy -image_base dummy.c # Darwin
+run_dummy -init dummy.c # Darwin
+run_dummy -install_name dummy.c # Darwin
+run_dummy -keep_private_externs dummy.c # Darwin
 
 # Options claimed by clang --help, but which in fact are not supported.
 run_gcc -time dummy.c
@@ -1119,12 +1141,6 @@ run_dummy -x cpp-output dummy-preproc.i
 run_dummy -x c++ dummy.c
 run_dummy -x c++-header dummy.c
 run_dummy -x c++-cpp-output dummy-preproc.i
-run_dummy -x objective-c dummy.c
-run_dummy -x objective-c-header dummy.c
-run_dummy -x objective-c-cpp-output dummy-preproc.i
-run_dummy -x objective-c++ dummy.c
-run_dummy -x objective-c++-header dummy.c
-run_dummy -x objective-c++-cpp-output dummy-preproc.i
 run_dummy -x ada dummy.c
 run_dummy -x f77 dummy.c
 run_dummy -x f77-cpp-input dummy.c
@@ -1188,6 +1204,7 @@ run_dummy -ftemplate-depth=5 dummy.c
 run_dummy -fvtable-verify=preinit dummy.c
 run_dummy -fvtv-counts dummy.c
 run_dummy -fvtv-debug dummy.c
+run_dummy -imultilib custom dummy.c
 
 # Objective C specific
 run_dummy -fconstant-string-class dummy.c
@@ -1201,6 +1218,14 @@ run_dummy -fobjc-exceptions dummy.c
 run_dummy -fobjc-gc dummy.c
 run_dummy -fobjc-nilcheck dummy.c
 run_dummy -fobjc-std=objc1 dummy.c
+run_dummy -gen-decls dummy.c
+run_dummy -lobjc dummy.c
+run_dummy -x objective-c dummy.c
+run_dummy -x objective-c-header dummy.c
+run_dummy -x objective-c-cpp-output dummy-preproc.i
+run_dummy -x objective-c++ dummy.c
+run_dummy -x objective-c++-header dummy.c
+run_dummy -x objective-c++-cpp-output dummy-preproc.i
 
 # Ada specific
 run_dummy -fdump-ada-spec dummy.c

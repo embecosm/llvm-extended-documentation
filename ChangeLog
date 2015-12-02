@@ -1,5 +1,10 @@
 2015-12-01  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
+	* support-code/libcode.c: Created.
+	* support-code/opt-check.sh: More options tested.
+
+2015-12-01  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
 	* support-code/opt-check.sh: Tidy up where we do the exit.
 
 2015-12-01  Jeremy Bennett  <jeremy.bennett@embecosm.com>
