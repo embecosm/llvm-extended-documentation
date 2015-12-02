@@ -1,3 +1,16 @@
+2015-12-01  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* support-code/cc1: Created.
+	* support-code/dummy-asm.c: Created.
+	* support-code/dummy-asm.s: Deleted.
+	* support-code/dummy-assert.c: Created.
+	* support-code/dummy-error.c: Created
+	* support-code/dummy-macro.c: Created
+	* support-code/dummy-preproc.i: Created.
+	* support-code/myplugin.c: Created.
+	* support-code/opt-check.sh: Add GCC only options up to the end of
+	-f<opt>.
+
 2015-11-24  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	A script and code to check which options really work on different

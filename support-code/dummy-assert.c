@@ -1,4 +1,4 @@
-/* Dummy assembler program for testing options
+/* Dummy program for testing command line assertions
 
    Copyright (C) 2015 Embecosm Limited
 
@@ -18,8 +18,19 @@
 
    You should have received a copy of the GNU General Public License along with
    this program.  If not, see <http://www.gnu.org/licenses/>.  */
-	.file	"dummy-asm.s"
-	.globl	val
-	.data
-val:
-	.long	42
+
+#if #myassert (myval)
+#include "dummy.h"
+#else
+#error
+#endif
+
+#define FORTY_TWO 42
+
+volatile int val = FORTY_TWO;
+
+int
+main ()
+{
+  return val;
+}
