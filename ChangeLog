@@ -1,3 +1,18 @@
+2015-11-24  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	A script and code to check which options really work on different
+	compilers.
+
+	* support-code/dummy-asm.S:
+	* support-code/dummy-asm.s:
+	* support-code/dummy-dollar.c (main):
+	* support-code/dummy-preproc.i:
+	* support-code/dummy.c:
+	* support-code/dummy.h:
+	* support-code/opt-check.sh:
+	* support-code/profile-assist.c:
+	* support-code/stack-protect-assist.c:
+
 2015-11-23  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* texinfo/texinfo.tex: Created.
