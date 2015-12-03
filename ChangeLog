@@ -1,5 +1,13 @@
 2015-12-01  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
+	* support-code/dummy.script: Created.
+	* support-code/dummy.specs: Created.
+	* support-code/opt-check.sh: All GCC C options now tested,
+	including all warnings from the GCC manual. More efficient by
+	running GCC and LLVM in parallel for each set of options.
+
+2015-12-01  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
 	* support-code/opt-check.sh: More options tested. Replace
 	run_dummy with run_neither to explicitly check that an option
 	fails on both compilers.
