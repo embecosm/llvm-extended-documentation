@@ -1,3 +1,8 @@
+2015-12-14  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* support-code/opt-check.sh: First set of LLVM specific tests. Work in
+	progress.
+
 2015-12-01  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* support-code/dummy.script: Created.

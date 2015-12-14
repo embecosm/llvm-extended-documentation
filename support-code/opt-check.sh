@@ -778,9 +778,99 @@ logcon "Testing options for LLVM but not GCC"
 run_llvm -Oz dummy.c
 run_llvm -gfull dummy.c
 run_llvm -gused dummy.c
+run_llvm --analyze dummy.c
+run_llvm -dependency-dot dummy.c
+run_llvm -dependency-file dummy.c
+run_llvm -emit-ast dummy.c
+run_llvm -faltivec dummy.c
+run_llvm -fapple-kext dummy.c
+run_llvm -fapple-pragma-pack dummy.c
+run_llvm -fapplication-extension dummy.c
+run_llvm -fblocks dummy.c
+run_llvm -fborland-extensions dummy.c
+run_llvm -fcolor-diagnostics dummy.c
+run_llvm -fcoverage-mapping dummy.c
+run_llvm -fcxx-exceptions dummy.c
+run_llvm -fdefault-addrspace dummy.c
+run_llvm -fdelayed-template-parsing dummy.c
+run_llvm -fdiagnostics-parseable-fixits dummy.c
+run_llvm -femit-all-decls dummy.c
+run_llvm -ffixed-r9 dummy.c
+run_llvm -fgnu-keywords dummy.c
+run_llvm -fintegrated-as dummy.c
+run_llvm -fmath-errno dummy.c
+run_llvm -fmax-type-align dummy.c
+run_llvm -fmodule-file dummy.c
+run_llvm -fmodule-map-file dummy.c
+run_llvm -fmodule-maps dummy.c
+run_llvm -fmodule-name dummy.c
+run_llvm -fmodules dummy.c
+run_llvm -fmodules-decluse dummy.c
+run_llvm -fmodules-ignore-macro dummy.c
+run_llvm -fmodules-prune-after dummy.c
+run_llvm -fmodules-prune-interval dummy.c
+run_llvm -fno-autolink dummy.c
+run_llvm -fno-diagnostics-fixit-info dummy.c
+run_llvm -fno-dollars-in-identifiers dummy.c
+run_llvm -fno-elide-type dummy.c
+run_llvm -fno-integrated-as dummy.c
+run_llvm -fno-math-builtin dummy.c
+run_llvm -fobjc-arc dummy.c
+run_llvm -fobjc-arc-exceptions dummy.c
+run_llvm -fobjc-exceptions dummy.c
+run_llvm -fobjc-runtime dummy.c
+run_llvm -fsized-deallocation dummy.c
+run_llvm -fstandalone-debug dummy.c
+run_llvm -ftrap-function dummy.c
+run_llvm -ftrigraphs dummy.c
+run_llvm -fuse-init-array dummy.c
+run_llvm -fveclib dummy.c
+run_llvm -fvectorize dummy.c
+run_llvm -help
 run_llvm -iframework`pwd` dummy.c
+run_llvm -index-header-map dummy.c
+run_llvm -ivfsoverlay dummy.c
+run_llvm -iwithsysroot dummy.c
+run_llvm -nobuiltininc
 run_llvm -pthreads dummy.c
+run_llvm -Qunused-arguments dummy.c
+run_llvm -relocatable-pch dummy.c
+run_llvm -Rpass-analysis dummy.c
+run_llvm -Rpass-missed dummy.c
+run_llvm -Rpass dummy.c
+run_llvm -R dummy.c
+run_llvm -target dummy.c
+run_llvm -time dummy.c
 run_llvm -Weverything dummy.c
+run_llvm -Xanalyzer dummy.c
+run_llvm -Xclang dummy.c
+
+# Options from llvm -help which appear not to work
+run_dummy -arcmt-migrate-emit-errors dummy.c
+
+# LLVM target specific options from -help
+run_dummy -mabicalls dummy.c
+run_dummy -mcrc dummy.c
+run_dummy -mfp32 dummy.c
+run_dummy -mfp64 dummy.c
+run_dummy --migrate dummy.c
+run_dummy -mllvm dummy.c
+run_dummy -mmsa dummy.c
+run_dummy -mms-bitfields dummy.c
+run_dummy -mno-abicalls dummy.c
+run_dummy -mnocrc dummy.c
+run_dummy -mno-implicit-float dummy.c
+run_dummy -mno-msa dummy.c
+run_dummy -mno-restrict-it dummy.c
+run_dummy -module-dependency-dir dummy.c
+run_dummy -mrelax-all dummy.c
+run_dummy -mrestrict-it dummy.c
+run_dummy -mrtd dummy.c
+run_dummy -msoft-float dummy.c
+run_dummy -mstack-alignment dummy.c
+run_dummy -mstackrealign dummy.c
+run_dummy -mthread-model dummy.c
+run_dummy -munaligned-access dummy.c
 
 # Options for GCC but not LLVM
 
