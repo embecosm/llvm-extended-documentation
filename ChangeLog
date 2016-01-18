@@ -1,3 +1,8 @@
+2016-01-18  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* support-code/opt-check.sh: Add verbose logs of GCC and LLVM, run
+	in own directories to avoid clashes, clean up test results.
+
 2015-12-14  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* support-code/opt-check.sh: First set of LLVM specific tests. Work in
