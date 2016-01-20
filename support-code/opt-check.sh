@@ -24,6 +24,9 @@
 
 #     ./opt-check.sh <logfile>
 
+# The ordering of tests in this file now follows the sequence in the GCC/LLVM
+# user guides, for ease of translating into documentation.
+
 LCC=clang
 GCC=gcc
 tmpfl=/tmp/opt-check-llvm-$$
@@ -32,6 +35,22 @@ tmpfg=/tmp/opt-check-gcc-$$
 ALLOPTS="address-asmname-slim-raw-details-stats-blocks-graph-vops-lineno-uid-verbose-eh-scev-optimized-missed-note"
 
 # Tidy up
+
+# For the record, these are the files that may appear in each directory:
+# - a.out
+# - dummy
+# - proto.dat time.dat
+# - dummy-deps dummy.gkd
+# - *.o* *.bc *.gch *.d *.i *.dwo
+# - dummy.bc dummy.c.* dummy.d dummy.g* dummy.i dummy.s dummy.su
+# - *.a *.so
+# - ${tmpfl} ${tmpfg}
+#
+# And the following from dumps
+# - address all asmname blocks debug.dump details dummy_c.ads eh graph
+# - lineno missed note optall optimized raw scev slim stats uid verbose
+# - vops
+
 tidyup () {
     echo
     logcon "Cleaning up..."
@@ -39,6 +58,7 @@ tidyup () {
 }
 
 # Write to the log and console
+
 logcon () {
     echo $* >> ${logfile} 2>&1
     echo $*
@@ -51,12 +71,14 @@ logit () {
 }
 
 # Log an error
+
 logerr () {
     echo $* >> ${logfile} 2>&1
     echo -n "!"
 }
 
 # Log success
+
 logok () {
     echo -n "."
 }
@@ -235,6 +257,7 @@ run_dummy () {
 }
 
 # Get the argument
+
 if [ $# = 1 ]
 then
     logfile=$1
@@ -252,7 +275,8 @@ then
     exit 1
 fi
 
-# For debugging
+# For debugging - fixed names
+
 gcclog=/tmp/gcclog.txt
 rm -f ${gcclog}
 touch ${gcclog}
@@ -261,14 +285,14 @@ llvmlog=/tmp/llvmlog.txt
 rm -f ${llvmlog}
 touch ${llvmlog}
 
-
 # Create and populate build compiler specific directories
 mkdir llvm
 mkdir gcc
 
 for d in llvm gcc
 do
-    cp dummy* libcode.c myplugin.c profile-assist.c stack-protect-assist.c ${d}
+    cp comms dummy* libcode.c myplugin.c profile-assist.c \
+       stack-protect-assist.c wrapper.sh ${d}
 done
 
 # Pre-compile support files
@@ -280,6 +304,7 @@ ${GCC} -c stack-protect-assist.c -o stack-protect-assist-gcc.o \
 ${GCC} -fPIC -c myplugin.c
 ${GCC} -shared -o myplugin.so myplugin.o >> ${logfile} 2>&1
 ${GCC} -E dummy.c -o dummy-preproc.i
+${GCC} -E dummy.cpp -o dummy-preproc.ii
 ${GCC} -c libcode.c
 ar rcs libcode.a libcode.o
 cd ..
@@ -292,40 +317,246 @@ ${LCC} -c stack-protect-assist.c -o stack-protect-assist-llvm.o \
 ${LCC} -fPIC -c myplugin.c
 ${LCC} -shared -o myplugin.so myplugin.o >> ${logfile} 2>&1
 ${LCC} -E dummy.c -o dummy-preproc.i
+${LCC} -E dummy.cpp -o dummy-preproc.ii
 ${LCC} -c libcode.c
 ar rcs libcode.a libcode.o
 cd ..
+
+
+#################################################################################
+#                                                                               #
+#			       Overall Options                                  #
+#                                                                               #
+#################################################################################
+
+logcon ""
+logcon "Overall options for both LLVM and GCC"
+
+run_both @comms
+run_both -### dummy.c
+run_both -c dummy.c
+run_both -E dummy.c
+run_only_gcc -fplugin=`pwd`/gcc/myplugin.so dummy.c
+run_only_llvm -fplugin=`pwd`/llvm/myplugin.so dummy.c
+run_both --help
+run_both -o dummy dummy.c
+run_both -pipe dummy.c
+run_both -S dummy.c
+run_both -v dummy.c
+run_both --version
+run_both -x assembler -c dummy-asm.S
+run_both -x assembler-with-cpp -c dummy-asm.S
+run_both -x c dummy.c
+run_both -x c-header dummy.c
+run_both -x cpp-output dummy-preproc.ii
+run_both -x c++ dummy.cpp
+run_both -x c++-header dummy.h
+run_both -x c++-cpp-output dummy-preproc.ii
+run_both -x none dummy.c
+logcon ""
+
+logcon "Overall options for LLVM but not GCC"
+
+logcon "Overall options for GCC but not LLVM"
+
+run_gcc -fdump-ada-spec dummy.c
+run_gcc -fdump-ada-spec-slim dummy.c
+run_gcc -fada-spec-parent=dummy -fdump-ada-spec-slim dummy.c
+run_gcc -fdump-go-spec=dummy.go dummy.c
+run_gcc -fno-canonical-system-headers dummy.c
+run_gcc -fplugin=`pwd`/gcc/myplugin.so \
+	-fplugin-arg-myplugin-mykey=myvalue dummy.c
+run_gcc --help=optimizers
+run_gcc --help=warnings
+run_gcc --help=target
+run_gcc --help=params
+run_gcc --help=c
+run_gcc --help=common
+run_gcc --help=common,undocumented
+run_gcc --help=common,joined
+run_gcc --help=common,separate
+run_gcc -pass-exit-codes dummy.c
+run_gcc -specs=dummy.specs dummy.c
+run_gcc --target-help
+run_gcc -wrapper `pwd`/gcc/wrapper.sh dummy.c
+logcon ""
+
+# Overall options for the future (done as dummy, since may work sometimes now)
+
+run_dummy -x ada dummy.adb
+run_dummy -x f77 dummy.F
+run_dummy -x f77-cpp-input dummy.f
+run_dummy -x f95 dummy.F95
+run_dummy -x f95-cpp-input dummy.f95
+run_dummy -x go dummy.go
+run_dummy -x java dummy.java
+run_dummy -x objective-c dummy.m
+run_dummy -x objective-c-header dummy.h
+run_dummy -x objective-c-cpp-output dummy-preproc.mi
+run_dummy -x objective-c++ dummy.mm
+run_dummy -x objective-c++-header dummy.h
+run_dummy -x objective-c++-cpp-output dummy-preproc.mii
+
+
+#################################################################################
+#                                                                               #
+#			      C Language Options                                #
+#                                                                               #
+#################################################################################
+
+logcon ""
+logcon "C language options for both LLVM and GCC"
+
+run_both -ansi dummy.c
+run_both -ffreestanding dummy.c
+run_both -fgnu89-inline dummy.c
+run_both -fhosted dummy.c
+run_both -flax-vector-conversions dummy.c
+run_both -fms-extensions dummy.c
+run_both -fno-asm dummy-asm.c
+run_both -fno-builtin dummy.c
+run_both -fno-builtin-alloca dummy.c
+run_both -fopenmp dummy.c
+run_both -fsigned-bitfields dummy.c
+run_both -fsigned-char dummy.c
+run_both -funsigned-bitfields dummy.c
+run_both -funsigned-char dummy.c
+run_both -std=c90 dummy.c
+run_both -std=c89 dummy.c
+run_both -std=iso9899:1990 dummy.c
+run_both -std=iso9899:199409 dummy.c
+run_both -std=c99 dummy.c
+run_both -std=c9x dummy.c
+run_both -std=iso9899:1999 dummy.c
+run_both -std=iso9899:199x dummy.c
+run_both -std=c11 dummy.c
+run_both -std=c1x dummy.c
+run_both -std=iso9899:2011 dummy.c
+run_both -std=gnu90 dummy.c
+run_both -std=gnu89 dummy.c
+run_both -std=gnu99 dummy.c
+run_both -std=gnu9x dummy.c
+run_both -std=gnu11 dummy.c
+run_both -std=gnu1x dummy.c
+run_both -traditional -E dummy.c
+run_both -trigraphs dummy.c
+run_both -Wabi dummy.c  # Also C++/ObjC/ObjC++
+logcon ""
+
+logcon "C language options for LLVM but not GCC"
+
+logcon "C language options for GCC but not LLVM"
+
+run_gcc -aux-info proto.dat dummy.c
+run_gcc -fallow-parameterless-variadic-functions dummy.c
+run_gcc -fcond-mismatch dummy.c
+run_gcc -fopenacc dummy.c
+run_gcc -fopenmp-simd dummy.c
+run_gcc -fplan9-extensions dummy.c
+run_gcc -fsso-struct=big-endian dummy.c
+run_gcc -traditional-cpp dummy.c
+run_gcc -Wabi=1 dummy.c  # Also C++/ObjC/ObjC++
+logcon ""
+
+# C language options that are documented, but not supported
+
+run_dummy -fallow-single-precision dummy.c  # Is this obsolete?
+
+
+#################################################################################
+#                                                                               #
+#			     C++ Language Options                               #
+#                                                                               #
+#################################################################################
+
+logcon ""
+logcon "C++ language options for both LLVM and GCC"
+
+run_both -fno-access-control dummy.cpp
+run_both -fcheck-new dummy.cpp
+run_both -fconstexpr-depth=1024 dummy.cpp
+run_both -ffor-scope dummy.cpp
+run_both -ffriend-injection dummy.cpp
+run_both -fms-extensions dummy.cpp # Also in C
+run_both -fno-elide-constructors dummy.cpp
+run_both -fno-gnu-keywords dummy.cpp
+run_both -fno-implicit-templates dummy.cpp
+run_both -fno-implement-inlines dummy.cpp
+run_both -fno-operator-names dummy.cpp
+run_both -fno-rtti dummy.cpp
+run_both -fno-threadsafe-statics dummy.cpp
+run_both -fpermissive dummy.cpp
+run_both -fsized-deallocation dummy.cpp
+run_both -ftemplate-backtrace-limit=5 dummy.cpp
+run_both -ftemplate-depth=5 dummy.cpp
+run_both -fuse-cxa-atexit dummy.cpp
+run_both -fvisibility-inlines-hidden dummy.cpp
+run_both -fvisibility-ms-compat dummy.cpp
+run_both -nostdinc++ dummy.cpp # Is this really preproc?
+run_both -Wconversion-null dummy.cpp # Also ObjC++
+run_both -Wctor-dtor-privacy dummy.cpp
+run_both -Wdelete-non-virtual-dtor dummy.cpp
+run_both -Weffc++ dummy.cpp
+run_both -Wnarrowing dummy.cpp
+run_both -Wnon-virtual-dtor dummy.cpp
+run_both -Wold-style-cast dummy.cpp
+run_both -Woverloaded-virtual dummy.cpp
+run_both -Wreorder dummy.cpp
+run_both -Wsign-promo dummy.cpp
+logcon ""
+
+logcon "C++ language options for LLVM but not GCC"
+
+logcon "C++ language options for GCC but not LLVM"
+
+run_gcc -fabi-version=2 dummy.cpp
+run_gcc -fno-enforce-eh-specs dummy.cpp
+run_gcc -fno-ext-numeric-literals dummy.cpp
+run_gcc -fno-for-scope dummy.cpp
+run_gcc -fno-implicit-inline-templates dummy.cpp
+run_gcc -fno-nonansi-builtins dummy.cpp
+run_gcc -fno-optional-diags dummy.cpp
+run_gcc -fno-pretty-templates dummy.c
+run_gcc -fno-weak dummy.cpp
+run_gcc -fnothrow-opt dummy.cpp
+run_gcc -frepo dummy.cpp
+run_gcc -Wabi-tag dummy.cpp # Also ObjC++
+run_gcc -Wliteral-suffix dummy.cpp
+run_gcc -Wmultiple-inheritance dummy.cpp
+run_gcc -Wnamespaces dummy.cpp
+run_gcc -Wno-non-template-friend dummy.c
+run_gcc -Wno-pmf-conversions dummy.c
+run_gcc -Wnoexcept dummy.cpp
+run_gcc -Wstrict-null-sentinel dummy.cpp
+run_gcc -Wtemplates dummy.cpp
+run_gcc -Wvirtual-inheritance dummy.cpp
+logcon ""
+
+
+#################################################################################
+#                                                                               #
+#		Objective-C and Objective-C++ Language Options                  #
+#                                                                               #
+#################################################################################
 
 # Options for both compilers
 
 logit ""
 logcon "Testing options for both LLVM and GCC"
 
-run_both -### dummy.c
-run_both -c dummy.c
 run_both -dD -E dummy.c
 run_both -dM -E dummy.c
-run_both -E dummy.c
 run_both -fdata-sections dummy.c
 run_both -fdebug-types-section dummy.c
 run_both -fdollars-in-identifiers dummy-dollar.c
 run_both -fexceptions dummy.c
 run_both -ffast-math dummy.c
-run_both -ffreestanding dummy.c
 run_both -ffunction-sections dummy.c
-run_both -fgnu89-inline dummy.c
 run_both -fgnu-runtime dummy.c
 run_both -finstrument-functions dummy.c profile-assist.c
-run_both -fms-extensions dummy.c
-run_both -fno-access-control dummy.c
-run_both -fno-builtin dummy.c
 run_both -fno-common dummy.c
-run_both -fno-elide-constructors dummy.c
-run_both -fno-operator-names dummy.c
-run_both -fno-rtti dummy.c
 run_both -fno-show-column dummy.c
 run_both -fno-signed-zeros dummy.c
-run_both -fno-threadsafe-statics dummy.c
 run_both -fobjc-gc dummy.c
 run_both -fshort-enums dummy.c
 run_both -fshort-wchar dummy.c
@@ -333,11 +564,8 @@ run_both -fstack-protector dummy.c
 run_only_llvm -fstack-protector-all dummy.c stack-protect-assist-llvm.o
 run_only_gcc -fstack-protector-all dummy.c stack-protect-assist-gcc.o
 run_both -fstack-protector-strong dummy.c
-run_both -fstrict-enums dummy.c
 run_both -ftrapv dummy.c
 run_both -funroll-loops dummy.c
-run_both -fvisibility-inlines-hidden dummy.c
-run_both -fvisibility-ms-compat dummy.c
 run_both -fwrapv dummy.c
 run_both -g dummy.c
 run_both -g0 dummy.c
@@ -373,25 +601,15 @@ run_both -MMD dummy.c
 run_both -M -MP dummy.c
 run_both -M -MQ dummy.o dummy.c
 run_both -M -MT dummy.o dummy.c
-run_both -nostdinc++ dummy.c
-run_both -o dummy dummy.c
 run_both -P dummy.c
 run_both -pg dummy.c
 run_both -pipe dummy.c
 run_both -print-libgcc-file-name dummy.c
 run_both -print-search-dirs dummy.c
-run_both -S dummy.c
 run_both -save-temps dummy.c
 run_both -save-temps=obj dummy.c
-run_both -trigraphs dummy.c
 run_both -undef dummy.c
-run_both -v dummy.c
 run_both -w dummy.c
-run_both -x c dummy.c
-run_both -x c-header dummy.c
-run_both -x assembler -c dummy-asm.S
-run_both -x assembler-with-cpp -c dummy-asm.S
-run_both -x none dummy.c
 run_both -Xassembler -compress-debug-sections dummy.c
 run_both -Xlinker -M dummy.c
 run_both -Xpreprocessor -I. dummy.c
@@ -400,7 +618,6 @@ run_both -z defs dummy.c
 # Options for both compilers not reported by llvm --help. I really don't
 # believe some of these actually do anything!
 
-run_both -ansi dummy.c
 run_both -C -E dummy.c
 run_both -DCARMICHAEL_PSEUDO_PRIME dummy.c
 run_both -DFIRST_CARMICHAEL_PSEUDO_PRIME=561 dummy.c
@@ -409,7 +626,6 @@ run_both -dumpversion dummy.c
 run_both -F`pwd` dummy.c
 run_both -fassociative-math dummy.c
 run_both -fasynchronous-unwind-tables dummy.c
-run_both -fconstexpr-depth=1024 dummy.c
 run_both -fdiagnostics-color dummy.c
 run_both -fdiagnostics-color=never dummy.c
 run_both -fdiagnostics-show-location=every-line dummy.c
@@ -420,38 +636,30 @@ run_both -fextended-identifiers dummy.c
 run_both -ffinite-math-only dummy.c
 run_both -ffp-contract=off dummy.c
 run_both -fgnu-keywords dummy.c
-run_both -fhosted dummy.c
 run_both -finput-charset=UTF-8 dummy.c
-run_both -flax-vector-conversions dummy.c
 run_both -fmath-errno dummy.c
 run_both -fmerge-all-constants dummy.c
 run_both -fmessage-length=40 dummy.c
-run_both -fno-asm dummy-asm.c
 run_both -fno-common dummy.c
 run_both -fno-debug-types-section dummy.c
 run_both -fno-diagnostics-show-option dummy.c
 run_both -fno-dollars-in-identifiers dummy.c
 run_both -fno-dwarf2-cfi-asm dummy.c
 run_both -fno-eliminate-unused-debug-types dummy.c
-run_both -fno-gnu-keywords dummy.c
 run_both -fno-ident dummy.c
 run_both -fno-implement-inlines dummy.c
-run_both -fno-implicit-templates dummy.c
 run_both -fno-inline dummy.c
 run_both -fno-math-errno dummy.c
 run_both -fnon-call-exceptions dummy.c
 run_both -fno-sanitize=all dummy.c
 run_both -fno-signed-zeros dummy.c
-run_both -fno-threadsafe-statics dummy.c
 run_both -fno-trapping-math dummy.c
 run_both -fno-zero-initialized-in-bss dummy.c
 run_both -fomit-frame-pointer dummy.c
-run_both -fopenmp dummy.c
 run_both -foptimize-sibling-calls dummy.c
 run_both -fpack-struct dummy.c
 run_both -fpack-struct=4 dummy.c
 run_both -fpch-preprocess dummy.c
-run_both -fpermissive dummy.c
 run_both -fpic dummy.c
 run_both -fPIC dummy.c
 run_both -fpie dummy.c
@@ -478,15 +686,12 @@ run_both -fsanitize=return dummy.c
 run_both -fsanitize=returns-nonnull-attribute dummy.c
 run_both -fsanitize=shift dummy.c
 run_both -fsanitize=signed-integer-overflow dummy.c
-run_gcc -fsanitize=thread -static-libtsan dummy.c
-run_llvm -fsanitize=thread dummy.c
+run_both -fsanitize=thread dummy.c
 run_both -fsanitize=undefined dummy.c
 run_both -fsanitize-undefined-trap-on-error dummy.c
 run_both -fsanitize=unreachable dummy.c
 run_both -fsanitize=vla-bound dummy.c
 run_both -fsanitize=vptr dummy.c
-run_both -fsigned-bitfields dummy.c
-run_both -fsigned-char dummy.c
 run_both -fsplit-stack dummy.c
 run_both -fstack-check dummy.c
 run_both -fstrict-aliasing dummy.c
@@ -501,20 +706,15 @@ run_both -ftree-slp-vectorize dummy.c
 run_both -ftree-vectorize dummy.c
 run_both -funit-at-a-time dummy.c
 run_both -funsafe-math-optimizations dummy.c
-run_both -funsigned-char dummy.c
 run_both -funwind-tables dummy.c
-run_both -fuse-cxa-atexit dummy.c
 run_both -fuse-ld=bfd dummy.c
 run_both -fuse-ld=gold dummy.c
 run_both -fverbose-asm dummy.c
 run_both -fvisibility=default dummy.c
 run_both -fvisibility=hidden dummy.c
 run_both -fvisibility=protected dummy.c
-run_both -fvisibility-inlines-hidden dummy.c
-run_both -fvisibility-ms-compat dummy.c
 run_both -grecord-gcc-switches dummy.c
 run_both -gsplit-dwarf dummy.c
-run_both --help dummy.c
 run_only_gcc  -lcode -L`pwd`/gcc dummy.c
 run_only_llvm -lcode -L`pwd`/llvm dummy.c
 run_only_gcc  -l code -L`pwd`/gcc dummy.c
@@ -545,32 +745,13 @@ run_both -s dummy.c
 run_both -shared -fpic dummy.c
 run_both -static dummy.c
 run_both -static-libgcc dummy.c
-run_both -std=c90 dummy.c
-run_both -std=c89 dummy.c
-run_both -std=iso9899:1990 dummy.c
-run_both -std=iso9899:199409 dummy.c
-run_both -std=c99 dummy.c
-run_both -std=c9x dummy.c
-run_both -std=iso9899:1999 dummy.c
-run_both -std=iso9899:199x dummy.c
-run_both -std=c11 dummy.c
-run_both -std=c1x dummy.c
-run_both -std=iso9899:2011 dummy.c
-run_both -std=gnu90 dummy.c
-run_both -std=gnu89 dummy.c
-run_both -std=gnu99 dummy.c
-run_both -std=gnu9x dummy.c
-run_both -std=gnu11 dummy.c
-run_both -std=gnu1x dummy.c
 run_both --sysroot=`pwd` -c dummy.c
 run_both -traditional -E dummy.c
 run_both -u var dummy.c
 run_both -U FORTY_TWO dummy.c
-run_both --version dummy.c
 run_both -Wa,-gdwarf-3 dummy.c
 run_both -Wl,-relax dummy.c
 run_both -Wp,-v dummy.c
-run_both -Wabi dummy.c
 run_both -Waddress dummy.c
 run_both -Waggregate-return dummy.c
 run_both -Wall dummy.c
@@ -586,18 +767,14 @@ run_both -Wcast-qual dummy.c
 run_both -Wchar-subscripts dummy.c
 run_both -Wcomment dummy.c
 run_both -Wcomments dummy.c
-run_both -Wconversion-null dummy.c
 run_both -Wconversion dummy.c
-run_both -Wctor-dtor-privacy dummy.c
 run_both -Wdate-time dummy.c
 run_both -Wdeclaration-after-statement dummy.c
 run_both -Wdelete-incomplete dummy.c
-run_both -Wdelete-non-virtual-dtor dummy.c
 run_both -Wdeprecated dummy.c
 run_both -Wdeprecated-declarations dummy.c
 run_both -Wdisabled-optimization dummy.c
 run_both -Wdiv-by-zero dummy.c
-run_both -Weffc++ dummy.c
 run_both -Wempty-body dummy.c
 run_both -Wendif-labels dummy.c
 run_both -Wenum-compare dummy.c
@@ -640,7 +817,6 @@ run_both -Wmissing-format-attribute dummy.c
 run_both -Wmissing-include-dirs dummy.c
 run_both -Wmissing-prototypes dummy.c
 run_both -Wmultichar dummy.c
-run_both -Wnarrowing dummy.c
 run_both -Wnested-externs dummy.c
 run_both -Wno-abi dummy.c
 run_both -Wno-address dummy.c
@@ -763,14 +939,11 @@ run_both -Wno-variadic-macros dummy.c
 run_both -Wno-vla dummy.c
 run_both -Wno-volatile-register-var dummy.c
 run_both -Wno-write-strings dummy.c
-run_both -Wnon-virtual-dtor dummy.c
 run_both -Wnonnull dummy.c
 run_both -Wodr dummy.c
-run_both -Wold-style-cast dummy.c
 run_both -Wold-style-definition dummy.c
 run_both -Woverflow dummy.c
 run_both -Woverlength-strings dummy.c
-run_both -Woverloaded-virtual dummy.c
 run_both -Wpacked dummy.c
 run_both -Wpadded dummy.c
 run_both -Wparentheses dummy.c
@@ -781,7 +954,6 @@ run_both -Wpointer-to-int-cast dummy.c
 run_both -Wpragmas dummy.c
 run_both -Wprotocol dummy.c
 run_both -Wredundant-decls dummy.c
-run_both -Wreorder dummy.c
 run_both -Wreturn-type dummy.c
 run_both -Wselector dummy.c
 run_both -Wsequence-point dummy.c
@@ -791,7 +963,6 @@ run_both -Wshift-count-negative dummy.c
 run_both -Wshift-count-overflow dummy.c
 run_both -Wsign-compare dummy.c
 run_both -Wsign-conversion dummy.c
-run_both -Wsign-promo dummy.c
 run_both -Wsizeof-array-argument dummy.c
 run_both -Wsizeof-pointer-memaccess dummy.c
 run_both -Wstack-protector dummy.c
@@ -910,7 +1081,6 @@ logcon ""
 logcon "Testing options for GCC but not LLVM"
 
 run_gcc -A myassert=myval dummy-assert.c
-run_gcc -aux-info proto.dat dummy.c
 run_gcc -B`pwd` -E dummy-error.c
 run_gcc -da dummy.c
 run_gcc -dA dummy.c
@@ -946,7 +1116,6 @@ run_gcc -fcombine-stack-adjustments dummy.c
 run_gcc -fcompare-debug dummy.c
 run_gcc -fcompare-debug-second dummy.c
 run_gcc -fcompare-elim dummy.c
-run_gcc -fcond-mismatch dummy.c
 run_gcc -fconserve-stack dummy.c
 run_gcc -fcprop-registers dummy.c
 run_gcc -fcrossjumping dummy.c
@@ -1137,7 +1306,6 @@ run_gcc -fno-branch-count-reg dummy.c
 run_gcc -fno-canonical-system-headers dummy.c
 run_gcc -fno-defer-pop dummy.c
 run_gcc -fno-diagnostics-show-caret dummy.c
-run_gcc -fno-for-scope dummy.c
 run_gcc -fno-function-cse dummy.c
 run_gcc -fno-gnu-unique dummy.c
 run_gcc -fno-guess-branch-probability dummy.c
@@ -1145,11 +1313,8 @@ run_gcc -fno-ira-share-save-slots dummy.c
 run_gcc -fno-ira-share-spill-slots dummy.c
 run_gcc -fno-jump-tables dummy.c
 run_gcc -fno-merge-debug-strings dummy.c
-run_gcc -fno-nonansi-builtins dummy.c
-run_gcc -fno-optional-diags dummy.c
 run_gcc -fno-peephole dummy.c
 run_gcc -fno-peephole2 dummy.c
-run_gcc -fno-pretty-templates dummy.c
 run_gcc -fno-sched-interblock dummy.c
 run_gcc -fno-sched-spec dummy.c
 run_gcc -fno-signed-bitfields dummy.c
@@ -1159,11 +1324,7 @@ run_gcc -fno-unsigned-bitfields dummy.c
 run_gcc -fno-use-cxa-get-exception-ptr dummy.c
 run_gcc -fno-var-tracking-assignments dummy.c
 run_gcc -fno-var-tracking-assignments-toggle dummy.c
-run_gcc -fno-weak dummy.c
 run_gcc -fno-working-directory dummy.c
-run_gcc -fnothrow-opt dummy.c
-run_gcc -fopenacc dummy.c
-run_gcc -fopenmp-simd dummy.c
 run_gcc -foptimize-strlen dummy.c
 run_gcc -fopt-info dummy.c
 run_gcc -fpartial-inlining dummy.c
@@ -1171,8 +1332,6 @@ run_gcc -fpcc-struct-return dummy.c
 run_gcc -fpch-deps dummy.c
 run_gcc -fpeel-loops dummy.c
 run_gcc -fplan9-extensions dummy.c
-run_gcc -fplugin=`pwd`/gcc/myplugin.so dummy.c
-run_gcc -fplugin=`pwd`/gcc/myplugin.so -fplugin-arg-myplugin-mykey=myvalue dummy.c
 run_gcc -fpost-ipa-mem-report dummy.c
 run_gcc -fpredictive-commoning dummy.c
 run_gcc -fprefetch-loop-arrays dummy.c
@@ -1466,7 +1625,6 @@ run_gcc -print-sysroot dummy.c
 run_gcc -Q dummy.c
 run_gcc -remap dummy.c
 run_gcc -shared-libgcc dummy.c
-run_gcc -specs=dummy.specs dummy.c
 run_gcc -static-libasan dummy.c
 run_gcc -static-liblsan dummy.c
 run_gcc -static-libmpx dummy.c
@@ -1480,7 +1638,6 @@ run_gcc -traditional-cpp dummy.c
 run_gcc -umbrella dummy.c
 run_gcc -undefined dummy.c
 run_gcc -unexported_symbols_list dummy.c
-run_gcc -Wabi-tag dummy.c
 run_gcc -Waggressive-loop-optimizations dummy.c
 run_gcc -Wassign-intercept dummy.c
 run_gcc -Wbool-compare dummy.c
@@ -1496,7 +1653,6 @@ run_gcc -Wformat-contains-nul dummy.c
 run_gcc -Wformat-signedness dummy.c
 run_gcc -Wfree-nonheap-object dummy.c
 run_gcc -Wjump-misses-init dummy.c
-run_gcc -Wliteral-suffix dummy.c
 run_gcc -Wlogical-op dummy.c
 run_gcc -Wmaybe-uninitialized dummy.c
 run_gcc -Wmemset-transposed-args dummy.c
@@ -1522,13 +1678,11 @@ run_gcc -Wno-maybe-uninitialized dummy.c
 run_gcc -Wno-memset-transposed-args dummy.c
 run_gcc -Wno-missing-parameter-type dummy.c
 run_gcc -Wno-noexcept dummy.c
-run_gcc -Wno-non-template-friend dummy.c
 run_gcc -Wno-normalized dummy.c
 run_gcc -Wno-old-style-declaration dummy.c
 run_gcc -Wno-override-init dummy.c
 run_gcc -Wno-packed-bitfield-compat dummy.c
 run_gcc -Wno-pedantic-ms-format dummy.c
-run_gcc -Wno-pmf-conversions dummy.c
 run_gcc -Wno-return-local-addr dummy.c
 run_gcc -Wno-sized-deallocation dummy.c
 run_gcc -Wno-strict-null-sentinel dummy.c
@@ -1549,7 +1703,6 @@ run_gcc -Wno-useless-cast dummy.c
 run_gcc -Wno-vector-operation-performance dummy.c
 run_gcc -Wno-virtual-move-assign dummy.c
 run_gcc -Wno-zero-as-null-pointer-constant dummy.c
-run_gcc -Wnoexcept dummy.c
 run_gcc -Wnon-template-friend dummy.c
 run_gcc -Wnormalized dummy.c
 run_gcc -Wnormalized=none dummy.c
@@ -1565,7 +1718,6 @@ run_gcc -Wreturn-local-addr dummy.c
 run_gcc -Wsized-deallocation dummy.c
 run_gcc -Wstack-usage=128 dummy.c
 run_gcc -Wstrict-aliasing=3 dummy.c
-run_gcc -Wstrict-null-sentinel dummy.c
 run_gcc -Wsuggest-attribute=const dummy.c
 run_gcc -Wsuggest-attribute=format dummy.c
 run_gcc -Wsuggest-attribute=noreturn dummy.c
@@ -1688,18 +1840,6 @@ run_neither -whyload dummy.c # Darwin
 run_neither -Wpedantic-ms-format dummy.c
 run_neither wrapper dummy.c # Darwin
 
-# Options for the future (done as dummy, since may work sometimes now)
-run_dummy -x cpp-output dummy-preproc.i
-run_dummy -x c++ dummy.c
-run_dummy -x c++-header dummy.c
-run_dummy -x c++-cpp-output dummy-preproc.i
-run_dummy -x ada dummy.c
-run_dummy -x f77 dummy.c
-run_dummy -x f77-cpp-input dummy.c
-run_dummy -x f95 dummy.c
-run_dummy -x f95-cpp-input dummy.c
-run_dummy -x go dummy.c
-run_dummy -x java dummy.c
 
 # Options which are in the manual, but which appear not to work.
 run_neither -fdump-rtl-bypass dummy.c
@@ -1739,8 +1879,6 @@ run_neither --param max-ssa-name-query-depth=5 # In top-of-tree?
 run_neither -version dummy.c
 
 # C++ specific. Done as dummy, since some may silently work with C
-run_dummy -fdeclone-ctor-dtor dummy.c
-run_dummy -fdeduce-init-list dummy.c
 run_dummy -fdevirtualize dummy.c
 run_dummy -fdevirtualize-at-ltrans dummy.c
 run_dummy -fdevirtualize-speculatively dummy.c
@@ -1767,18 +1905,9 @@ run_dummy -fdump-class-hierarchy=all dummy.c
 run_dummy -fdump-class-hierarchy=optall dummy.c
 run_dummy -fdump-translation-unit dummy.c
 run_dummy -fdump-translation-unit=all dummy.c
-run_dummy -femit-class-debug-always dummy.c
 run_dummy -fextern-tls-init dummy.c
-run_dummy -ffor-scope dummy.c
-run_dummy -ffriend-injection dummy.c
 run_dummy -fno-default-inline dummy.c
-run_dummy -fno-enforce-eh-specs dummy.c
-run_dummy -fno-ext-numeric-literals dummy.c
 run_dummy -fno-lifetime-dse dummy.c
-run_dummy -fno-rtti dummy.c
-run_dummy -fsized-deallocation dummy.c
-run_dummy -ftemplate-backtrace-limit=5 dummy.c
-run_dummy -ftemplate-depth=5 dummy.c
 run_dummy -fvtable-verify=preinit dummy.c
 run_dummy -fvtv-counts dummy.c
 run_dummy -fvtv-debug dummy.c

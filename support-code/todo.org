@@ -1,0 +1,8 @@
+* List of things to be done for GCC
+
+-fallow-single-precision appears in the summary for C options, but appears to
+ be obsolete.
+
+-traditional has to be used with -E
+
+Why language specific warnings in summary sections for the language?

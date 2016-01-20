@@ -1,3 +1,12 @@
+2016-01-20  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* support-code/comms: Created.
+	* support-code/dummy.cpp: Created.
+	* support-code/opt-check.sh: Partition out overall, C and C++
+	options as per GCC manual and review against GCC 6.0 and LLVM 3.9.
+	* support-code/todo.org: Created.
+	* support-code/wrapper.sh: Created.
+
 2016-01-18  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* support-code/opt-check.sh: Add verbose logs of GCC and LLVM, run
