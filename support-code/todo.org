@@ -6,3 +6,18 @@
 -traditional has to be used with -E
 
 Why language specific warnings in summary sections for the language?
+
+-pedantic not in summary
+
+-Wplacement-new is the default, so need -Wno-placement-new as entry
+
+GCC will silent accept any flag '-Wno...'
+
+The following warnings do not appear in the summary:
+-Wc++0x-compat
+-Wimport
+-Wmissing-noreturn
+-Wstrict-overflow=0
+-Wsynth
+-Wunreachable-code
+-Wunused-argument

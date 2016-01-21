@@ -1,3 +1,10 @@
+2016-01-21  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* support-code/dummy.m: Created.
+	* support-code/dummy.mm: Created.
+	* support-code/opt-check.sh: Added all warning options.
+	* support-code/todo.org: Updated with more GCC manual changes.
+
 2016-01-20  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* support-code/comms: Created.

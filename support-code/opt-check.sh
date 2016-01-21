@@ -305,6 +305,8 @@ ${GCC} -fPIC -c myplugin.c
 ${GCC} -shared -o myplugin.so myplugin.o >> ${logfile} 2>&1
 ${GCC} -E dummy.c -o dummy-preproc.i
 ${GCC} -E dummy.cpp -o dummy-preproc.ii
+${GCC} -E dummy.m -o dummy-preproc.mi
+${GCC} -E dummy.mm -o dummy-preproc.mii
 ${GCC} -c libcode.c
 ar rcs libcode.a libcode.o
 cd ..
@@ -318,6 +320,8 @@ ${LCC} -fPIC -c myplugin.c
 ${LCC} -shared -o myplugin.so myplugin.o >> ${logfile} 2>&1
 ${LCC} -E dummy.c -o dummy-preproc.i
 ${LCC} -E dummy.cpp -o dummy-preproc.ii
+${LCC} -E dummy.m -o dummy-preproc.mi
+${LCC} -E dummy.mm -o dummy-preproc.mii
 ${LCC} -c libcode.c
 ar rcs libcode.a libcode.o
 cd ..
@@ -353,6 +357,12 @@ run_both -x c++ dummy.cpp
 run_both -x c++-header dummy.h
 run_both -x c++-cpp-output dummy-preproc.ii
 run_both -x none dummy.c
+run_both -x objective-c dummy.m
+run_both -x objective-c-header dummy.h
+run_both -x objective-c-cpp-output dummy-preproc.mi
+run_both -x objective-c++ dummy.mm
+run_both -x objective-c++-header dummy.h
+run_both -x objective-c++-cpp-output dummy-preproc.mii
 logcon ""
 
 logcon "Overall options for LLVM but not GCC"
@@ -390,12 +400,6 @@ run_dummy -x f95 dummy.F95
 run_dummy -x f95-cpp-input dummy.f95
 run_dummy -x go dummy.go
 run_dummy -x java dummy.java
-run_dummy -x objective-c dummy.m
-run_dummy -x objective-c-header dummy.h
-run_dummy -x objective-c-cpp-output dummy-preproc.mi
-run_dummy -x objective-c++ dummy.mm
-run_dummy -x objective-c++-header dummy.h
-run_dummy -x objective-c++-cpp-output dummy-preproc.mii
 
 
 #################################################################################
@@ -493,6 +497,19 @@ run_both -fuse-cxa-atexit dummy.cpp
 run_both -fvisibility-inlines-hidden dummy.cpp
 run_both -fvisibility-ms-compat dummy.cpp
 run_both -nostdinc++ dummy.cpp # Is this really preproc?
+run_both -std=c++98 dummy.cpp
+run_both -std=c++03 dummy.cpp
+run_both -std=gnu++98 dummy.cpp
+run_both -std=c++11 dummy.cpp
+run_both -std=c++0x dummy.cpp
+run_both -std=gnu++11 dummy.cpp
+run_both -std=gnu++0x dummy.cpp
+run_both -std=c++14 dummy.cpp
+run_both -std=c++1y dummy.cpp
+run_both -std=gnu++14 dummy.cpp
+run_both -std=gnu++1y dummy.cpp
+run_both -std=c++1z dummy.cpp
+run_both -std=gnu++1z dummy.cpp
 run_both -Wconversion-null dummy.cpp # Also ObjC++
 run_both -Wctor-dtor-privacy dummy.cpp
 run_both -Wdelete-non-virtual-dtor dummy.cpp
@@ -520,6 +537,7 @@ run_gcc -fno-pretty-templates dummy.c
 run_gcc -fno-weak dummy.cpp
 run_gcc -fnothrow-opt dummy.cpp
 run_gcc -frepo dummy.cpp
+run_gcc -std=gnu++03 dummy.cpp
 run_gcc -Wabi-tag dummy.cpp # Also ObjC++
 run_gcc -Wliteral-suffix dummy.cpp
 run_gcc -Wmultiple-inheritance dummy.cpp
@@ -539,6 +557,838 @@ logcon ""
 #                                                                               #
 #################################################################################
 
+logcon ""
+logcon "ObjC and ObjC++ language options for both LLVM and GCC"
+
+run_both -fconstant-string-class=main -c dummy.m
+run_both -fgnu-runtime -c dummy.m
+run_both -fnext-runtime -c dummy.m
+run_both -fobjc-abi-version=1 -c dummy.m
+run_both -fobjc-call-cxx-cdtors -c dummy.m
+run_both -fobjc-exceptions -c dummy.m
+run_both -fobjc-gc -c dummy.m
+run_both -Wno-protocol -c dummy.m
+run_both -Wselector -c dummy.m
+run_both -Wstrict-selector-match -c dummy.m
+run_both -Wundeclared-selector -c dummy.m
+logcon ""
+
+logcon "ObjC and ObjC++ language options for LLVM but not GCC"
+run_llvm -fobjc-arc -fnext-runtime -c dummy.m
+run_llvm -fobjc-arc-exceptions -fobjc-arc -fnext-runtime -c dummy.m
+run_llvm -fobjc-runtime=macosx -c dummy.m
+run_llvm -fobjc-runtime=macosx-fragile -c dummy.m
+run_llvm -fobjc-runtime=ios -c dummy.m
+run_llvm -fobjc-runtime=gnustep -c dummy.m
+run_llvm -fobjc-runtime=gcc -c dummy.m
+logcon ""
+
+logcon "ObjC and ObjC++ language options for GCC but not LLVM"
+run_gcc -fivar-visibility=public -c dummy.m
+run_gcc -fivar-visibility=protected -c dummy.m
+run_gcc -fivar-visibility=private -c dummy.m
+run_gcc -fivar-visibility=package -c dummy.m
+run_gcc -fno-nil-receivers -c dummy.m
+run_gcc -fobjc-direct-dispatch -c dummy.m
+run_gcc -fobjc-nilcheck -c dummy.m
+run_gcc -fobjc-std=objc1 -c dummy.m
+run_gcc -fno-local-ivars -c dummy.m
+run_gcc -freplace-objc-classes -c dummy.m
+run_gcc -fzero-link -c dummy.m
+run_gcc -gen-decls -c dummy.m
+run_gcc -print-objc-runtime-info -c dummy.m
+run_gcc -Wassign-intercept -c dummy.m
+
+logcon ""
+
+#################################################################################
+#                                                                               #
+#		    Diagnostic Message Formatting Options                       #
+#                                                                               #
+#################################################################################
+
+logcon ""
+logcon "Diagnostic message formatting options for both LLVM and GCC"
+
+run_both -fdiagnostics-color dummy.c
+run_both -fdiagnostics-color=always dummy.c
+run_both -fdiagnostics-color=auto dummy.c
+run_both -fdiagnostics-color=never dummy.c
+run_both -fdiagnostics-show-location=every-line dummy.c
+run_both -fdiagnostics-show-location=once dummy.c
+run_both -fmessage-length=40 dummy.c
+run_both -fno-diagnostics-show-option dummy.c
+logcon ""
+
+logcon "Diagnostic message formatting options for LLVM but not GCC"
+
+run_llvm -fcolor-diagnostics dummy.c
+run_llvm -fdiagnostics-parseable-fixits dummy.c
+run_llvm -fno-diagnostics-fixit-info dummy.c
+logcon ""
+
+logcon "Diagnostic message formatting options for GCC but not LLVM"
+
+run_gcc -fno-diagnostics-show-caret dummy.c
+logcon ""
+
+
+#################################################################################
+#                                                                               #
+#			       Warning Options                                  #
+#                                                                               #
+#################################################################################
+
+logcon ""
+logcon "Warning options for both LLVM and GCC"
+
+# Generic control of warnings
+run_both -fsyntax-only dummy.c
+run_both -pedantic dummy.c
+run_both -pedantic-errors dummy.c
+run_both -w dummy.c
+run_both -Wall dummy.c
+run_both -Werror dummy.c
+run_both -Werror=abi dummy.c
+run_both -Wextra dummy.c
+run_both -Wno-error dummy.c
+run_both -Wno-error=abi dummy.c
+run_both -Wpedantic dummy.c
+# Specific warnings
+run_both -Waddress dummy.c
+run_both -Waggregate-return dummy.c
+run_both -Warray-bounds dummy.c
+run_both -Wattributes dummy.c
+run_both -Wbuiltin-macro-redefined dummy.c
+run_both -Wc++-compat dummy.c
+run_both -Wc++0x-compat dummy.cpp
+run_both -Wc++11-compat dummy.c
+run_both -Wc++14-compat dummy.c
+run_both -Wcast-align dummy.c
+run_both -Wcast-qual dummy.c
+run_both -Wchar-subscripts dummy.c
+run_both -Wcomment dummy.c
+run_both -Wcomments dummy.c
+run_both -Wconversion dummy.c
+run_both -Wdate-time dummy.c
+run_both -Wdelete-incomplete dummy.c
+run_both -Wdeprecated dummy.c
+run_both -Wdeprecated-declarations dummy.c
+run_both -Wdisabled-optimization dummy.c
+run_both -Wdiv-by-zero dummy.c
+run_both -Wdouble-promotion dummy.c
+run_both -Wempty-body dummy.c
+run_both -Wendif-labels dummy.c
+run_both -Wenum-compare dummy.c
+run_both -Wfatal-errors dummy.c
+run_both -Wfloat-conversion dummy.c
+run_both -Wfloat-equal dummy.c
+run_both -Wformat dummy.c
+run_both -Wformat=0 dummy.c
+run_both -Wformat=2 dummy.c
+run_both -Wformat-extra-args dummy.c
+run_both -Wformat-nonliteral dummy.c
+run_both -Wformat-security dummy.c
+run_both -Wformat-y2k dummy.c
+run_both -Wformat-zero-length dummy.c
+run_both -Wframe-larger-than=128 dummy.c
+run_both -Wignored-qualifiers dummy.c
+run_both -Wimplicit dummy.c
+run_both -Wimplicit-function-declaration dummy.c
+run_both -Wimplicit-int dummy.c
+run_both -Wimport -c dummy.m
+run_both -Wincompatible-pointer-types dummy.c
+run_both -Winherited-variadic-ctor dummy.c
+run_both -Winit-self dummy.c
+run_both -Winline dummy.c
+run_both -Wint-conversion dummy.c
+run_both -Wint-to-pointer-cast dummy.c
+run_both -Winvalid-offsetof dummy.c
+run_both -Winvalid-pch dummy.c
+run_both -Wlarger-than-10 dummy.c
+run_both -Wlarger-than=10 dummy.c
+run_both -Wlogical-not-parentheses dummy.c
+run_both -Wlong-long dummy.c
+run_both -Wmain dummy.c
+run_both -Wmissing-braces dummy.c
+run_both -Wmissing-field-initializers dummy.c
+run_both -Wmissing-format-attribute dummy.c
+run_both -Wmissing-include-dirs dummy.c
+run_both -Wmissing-noreturn dummy.c
+run_both -Wmultichar dummy.c
+# GCC will always accept negatives, so all we can check here is that LLVM
+# (which is pickier) accepts them. We separately test the positives of all
+# these.
+run_only_llvm -Wno-abi dummy.c
+run_only_llvm -Wno-address dummy.c
+run_only_llvm -Wno-aggregate-return dummy.c
+run_only_llvm -Wno-all dummy.c
+run_only_llvm -Wno-array-bounds dummy.c
+run_only_llvm -Wno-attributes dummy.c
+run_only_llvm -Wno-builtin-macro-redefined dummy.c
+run_only_llvm -Wno-cast-align dummy.c
+run_only_llvm -Wno-cast-qual dummy.c
+run_only_llvm -Wno-char-subscripts dummy.c
+run_only_llvm -Wno-comment dummy.c
+run_only_llvm -Wno-conversion dummy.c
+run_only_llvm -Wno-conversion-null dummy.c
+run_only_llvm -Wno-ctor-dtor-privacy dummy.c
+run_only_llvm -Wno-date-time dummy.c
+run_only_llvm -Wno-delete-incomplete dummy.c
+run_only_llvm -Wno-delete-non-virtual-dtor dummy.c
+run_only_llvm -Wno-deprecated dummy.c
+run_only_llvm -Wno-deprecated-declarations dummy.c
+run_only_llvm -Wno-disabled-optimization dummy.c
+run_only_llvm -Wno-div-by-zero dummy.c
+run_only_llvm -Wno-double-promotion dummy.c
+run_only_llvm -Wno-effc++ dummy.c
+run_only_llvm -Wno-empty-body dummy.c
+run_only_llvm -Wno-endif-labels dummy.c
+run_only_llvm -Wno-enum-compare dummy.c
+run_only_llvm -Wno-extra dummy.c
+run_only_llvm -Wno-fatal-errors dummy.c
+run_only_llvm -Wno-float-conversion dummy.c
+run_only_llvm -Wno-float-equal dummy.c
+run_only_llvm -Wno-format dummy.c
+run_only_llvm -Wno-format-extra-args dummy.c
+run_only_llvm -Wno-format-nonliteral dummy.c
+run_only_llvm -Wno-format-security dummy.c
+run_only_llvm -Wno-format-y2k dummy.c
+run_only_llvm -Wno-format-zero-length dummy.c
+run_only_llvm -Wno-ignored-qualifiers dummy.c
+run_only_llvm -Wno-implicit dummy.c
+run_only_llvm -Wno-implicit-function-declaration dummy.c
+run_only_llvm -Wno-implicit-int dummy.c
+run_only_llvm -Wno-incompatible-pointer-types dummy.c
+run_only_llvm -Wno-inherited-variadic-ctor dummy.c
+run_only_llvm -Wno-init-self dummy.c
+run_only_llvm -Wno-inline dummy.c
+run_only_llvm -Wno-int-conversion dummy.c
+run_only_llvm -Wno-int-to-pointer-cast dummy.c
+run_only_llvm -Wno-invalid-offsetof dummy.c
+run_only_llvm -Wno-invalid-pch dummy.c
+run_only_llvm -Wno-logical-not-parentheses dummy.c
+run_only_llvm -Wno-long-long dummy.c
+run_only_llvm -Wno-main dummy.c
+run_only_llvm -Wno-missing-braces dummy.c
+run_only_llvm -Wno-missing-field-initializers dummy.c
+run_only_llvm -Wno-missing-format-attribute dummy.c
+run_only_llvm -Wno-missing-include-dirs dummy.c
+run_only_llvm -Wno-multichar dummy.c
+run_only_llvm -Wno-narrowing dummy.c
+run_only_llvm -Wno-nonnull dummy.c
+run_only_llvm -Wno-non-virtual-dtor dummy.c
+run_only_llvm -Wno-odr dummy.c
+run_only_llvm -Wno-old-style-cast dummy.c
+run_only_llvm -Wno-overflow dummy.c
+run_only_llvm -Wno-overlength-strings dummy.c
+run_only_llvm -Wno-overloaded-virtual dummy.c
+run_only_llvm -Wno-packed dummy.c
+run_only_llvm -Wno-padded dummy.c
+run_only_llvm -Wno-parentheses dummy.c
+run_only_llvm -Wno-pointer-arith dummy.c
+run_only_llvm -Wno-pointer-to-int-cast dummy.c
+run_only_llvm -Wno-pragmas dummy.c
+run_only_llvm -Wno-redundant-decls dummy.c
+run_only_llvm -Wno-reorder dummy.c
+run_only_llvm -Wno-return-type dummy.c
+run_only_llvm -Wno-selector dummy.c
+run_only_llvm -Wno-sequence-point dummy.c
+run_only_llvm -Wno-shadow dummy.c
+run_only_llvm -Wno-shadow-ivar dummy.c
+run_only_llvm -Wno-shift-count-negative dummy.c
+run_only_llvm -Wno-shift-count-overflow dummy.c
+run_only_llvm -Wno-sign-compare dummy.c
+run_only_llvm -Wno-sign-conversion dummy.c
+run_only_llvm -Wno-sign-promo dummy.c
+run_only_llvm -Wno-sizeof-array-argument dummy.c
+run_only_llvm -Wno-sizeof-pointer-memaccess dummy.c
+run_only_llvm -Wno-stack-protector dummy.c
+run_only_llvm -Wno-strict-aliasing dummy.c
+run_only_llvm -Wno-strict-overflow dummy.c
+run_only_llvm -Wno-switch dummy.c
+run_only_llvm -Wno-switch-bool dummy.c
+run_only_llvm -Wno-switch-default dummy.c
+run_only_llvm -Wno-switch-enum dummy.c
+run_only_llvm -Wno-system-headers dummy.c
+run_only_llvm -Wno-trigraphs dummy.c
+run_only_llvm -Wno-type-limits dummy.c
+run_only_llvm -Wno-undeclared-selector dummy.c
+run_only_llvm -Wno-undef dummy.c
+run_only_llvm -Wno-uninitialized dummy.c
+run_only_llvm -Wno-unknown-pragmas dummy.c
+run_only_llvm -Wno-unused dummy.c
+run_only_llvm -Wno-unused-function dummy.c
+run_only_llvm -Wno-unused-label dummy.c
+run_only_llvm -Wno-unused-parameter dummy.c
+run_only_llvm -Wno-unused-result dummy.c
+run_only_llvm -Wno-unused-value dummy.c
+run_only_llvm -Wno-unused-variable dummy.c
+run_only_llvm -Wno-varargs dummy.c
+run_only_llvm -Wno-variadic-macros dummy.c
+run_only_llvm -Wno-vla dummy.c
+run_only_llvm -Wno-volatile-register-var dummy.c
+run_only_llvm -Wno-write-strings dummy.c
+# Back to positives
+run_both -Wnonnull dummy.c
+run_both -Wnull-dereference dummy.c
+run_both -Wodr dummy.c
+run_both -Woverflow dummy.c
+run_both -Woverlength-strings dummy.c
+run_both -Wpacked dummy.c
+run_both -Wpadded dummy.c
+run_both -Wparentheses dummy.c
+run_both -Wpointer-arith dummy.c
+run_both -Wpointer-to-int-cast dummy.c
+run_both -Wpragmas dummy.c
+run_both -Wprotocol dummy.c
+run_both -Wredundant-decls dummy.c
+run_both -Wreturn-type dummy.c
+run_both -Wsequence-point dummy.c
+run_both -Wshadow dummy.c
+run_both -Wshadow-ivar dummy.c
+run_both -Wshift-count-negative dummy.c
+run_both -Wshift-overflow dummy.c
+run_both -Wshift-negative-value dummy.c
+run_both -Wshift-count-overflow dummy.c
+run_both -Wsign-compare dummy.c
+run_both -Wsign-conversion dummy.c
+run_both -Wsizeof-array-argument dummy.c
+run_both -Wsizeof-pointer-memaccess dummy.c
+run_both -Wstack-protector dummy.c
+run_both -Wstrict-aliasing dummy.c
+run_both -Wstrict-aliasing=0 dummy.c
+run_both -Wstrict-aliasing=1 dummy.c
+run_both -Wstrict-aliasing=2 dummy.c
+run_both -Wstrict-overflow dummy.c
+run_both -Wstrict-overflow=0 dummy.c
+run_both -Wstrict-overflow=1 dummy.c
+run_both -Wstrict-overflow=2 dummy.c
+run_both -Wstrict-overflow=3 dummy.c
+run_both -Wstrict-overflow=4 dummy.c
+run_both -Wstrict-overflow=5 dummy.c
+run_both -Wswitch dummy.c
+run_both -Wswitch-bool dummy.c
+run_both -Wswitch-default dummy.c
+run_both -Wswitch-enum dummy.c
+run_both -Wsynth dummy.c
+run_both -Wsystem-headers dummy.c
+run_both -Wtautological-compare dummy.c
+run_both -Wtrigraphs dummy.c
+run_both -Wtype-limits dummy.c
+run_both -Wundef dummy.c
+run_both -Wuninitialized dummy.c
+run_both -Wunknown-pragmas dummy.c
+run_both -Wunreachable-code dummy.c
+run_both -Wunused dummy.c
+run_both -Wunused-argument dummy.c
+run_both -Wunused-const-variable dummy.cpp
+run_both -Wunused-function dummy.c
+run_both -Wunused-label dummy.c
+run_both -Wunused-local-typedefs dummy.c
+run_both -Wunused-macros dummy.c
+run_both -Wunused-parameter dummy.c
+run_both -Wunused-result dummy.c
+run_both -Wunused-value dummy.c
+run_both -Wunused-variable dummy.c
+run_both -Wvarargs dummy.c
+run_both -Wvariadic-macros dummy.c
+run_both -Wvla dummy.c
+run_both -Wvolatile-register-var dummy.c
+run_both -Wwrite-strings dummy.c
+logcon ""
+
+logcon "Warning options for LLVM but not GCC"
+
+# Generic control of warnings
+run_llvm -Weverything dummy.c
+# Specific warnings
+run_llvm -Wabstract-final-class dummy.cpp
+run_llvm -Wabstract-vbase-init dummy.cpp
+run_llvm -Waddress-of-array-temporary dummy.c
+run_llvm -Waddress-of-temporary dummy.c
+run_llvm -Wambiguous-macro dummy.c
+run_llvm -Wambiguous-member-template dummy.c
+run_llvm -Wanalyzer-incompatible-plugin dummy.c
+run_llvm -Wanonymous-pack-parens dummy.c
+run_llvm -Warc-bridge-casts-disallowed-in-nonarc -c dummy.m
+run_llvm -Warc -c dummy.m
+run_llvm -Warc-maybe-repeated-use-of-weak -c dummy.m
+run_llvm -Warc-non-pod-memaccess -c dummy.m
+run_llvm -Warc-performSelector-leaks -c dummy.m
+run_llvm -Warc-repeated-use-of-weak -c dummy.m
+run_llvm -Warc-retain-cycles -c dummy.m
+run_llvm -Warc-unsafe-retained-assign -c dummy.m
+run_llvm -Warray-bounds-pointer-arithmetic dummy.c
+run_llvm -Wasm dummy.c
+run_llvm -Wasm-operand-widths dummy.c
+run_llvm -Wassign-enum dummy.c
+run_llvm -Watomic-properties dummy.c
+run_llvm -Watomic-property-with-user-defined-accessor dummy.c
+run_llvm -Wauto-import dummy.c
+run_llvm -Wauto-var-id dummy.c
+run_llvm -Wavailability dummy.c
+run_llvm -Wbackslash-newline-escape dummy.c
+run_llvm -Wbad-array-new-length dummy.c
+run_llvm -Wbind-to-temporary-copy dummy.c
+run_llvm -Wbitfield-constant-conversion dummy.c
+run_llvm -Wbitwise-op-parentheses dummy.c
+run_llvm -Wbool-conversion dummy.c
+run_llvm -Wbool-conversions dummy.c
+run_llvm -Wbridge-cast dummy.c
+run_llvm -Wbuiltin-requires-header dummy.c
+run_llvm -Wc++0x-extensions dummy.cpp
+run_llvm -Wc++0x-narrowing dummy.cpp
+run_llvm -Wc++11-compat-pedantic dummy.cpp
+run_llvm -Wc++11-compat-reserved-user-defined-literal dummy.cpp
+run_llvm -Wc11-extensions dummy.c
+run_llvm -Wc++11-extensions dummy.cpp
+run_llvm -Wc++11-extra-semi dummy.cpp
+run_llvm -Wc++11-long-long dummy.cpp
+run_llvm -Wc++11-narrowing dummy.cpp
+run_llvm -Wc++1y-extensions dummy.cpp
+run_llvm -Wc++98-c++11-compat dummy.cpp
+run_llvm -Wc++98-c++11-compat-pedantic dummy.cpp
+run_llvm -Wc++98-compat-bind-to-temporary-copy dummy.cpp
+run_llvm -Wc++98-compat dummy.cpp
+run_llvm -Wc++98-compat-local-type-template-args dummy.cpp
+run_llvm -Wc++98-compat-pedantic dummy.cpp
+run_llvm -Wc++98-compat-unnamed-type-template-args dummy.cpp
+run_llvm -Wc99-compat dummy.c
+run_llvm -Wc99-extensions dummy.c
+run_llvm -Wcast-of-sel-type dummy.c
+run_llvm -WCFString-literal dummy.c
+run_llvm -Wchar-align dummy.c
+run_llvm -Wcompare-distinct-pointer-types dummy.c
+run_llvm -Wcomplex-component-init dummy.c
+run_llvm -Wconditional-type-mismatch dummy.c
+run_llvm -Wconditional-uninitialized dummy.c
+run_llvm -Wconfig-macros dummy.c
+run_llvm -Wconstant-conversion dummy.c
+run_llvm -Wconstant-logical-operand dummy.c
+run_llvm -Wconstexpr-not-const dummy.c
+run_llvm -Wconsumed dummy.c
+run_llvm -Wcovered-switch-default dummy.c
+run_llvm -Wcustom-atomic-properties dummy.c
+run_llvm -Wdangling-else dummy.c
+run_llvm -Wdangling-field dummy.c
+run_llvm -Wdangling-initializer-list dummy.c
+run_llvm -Wdelegating-ctor-cycles dummy.c
+run_llvm -Wdeprecated-increment-bool dummy.c
+run_llvm -Wdeprecated-implementations dummy.c
+run_llvm -Wdeprecated-objc-isa-usage -c dummy.m
+run_llvm -Wdeprecated-objc-pointer-introspection -c dummy.m
+run_llvm -Wdeprecated-objc-pointer-introspection-performSelector -c dummy.m
+run_llvm -Wdeprecated-register dummy.c
+run_llvm -Wdeprecated-writable-strings dummy.c
+run_llvm -Wdirect-ivar-access dummy.c
+run_llvm -Wdisabled-macro-expansion dummy.c
+run_llvm -Wdiscard-qual dummy.c
+run_llvm -Wdistributed-object-modifiers dummy.cpp
+run_llvm -Wdivision-by-zero dummy.c
+run_llvm -Wdocumentation-deprecated-sync dummy.c
+run_llvm -Wdocumentation dummy.c
+run_llvm -Wdocumentation-html dummy.c
+run_llvm -Wdocumentation-pedantic dummy.c
+run_llvm -Wdocumentation-unknown-command dummy.c
+run_llvm -Wdollar-in-identifier-extension dummy.c
+run_llvm -Wduplicate-decl-specifier dummy.c
+run_llvm -Wduplicate-enum dummy.c
+run_llvm -Wduplicate-method-arg dummy.c
+run_llvm -Wduplicate-method-match dummy.c
+run_llvm -Wdynamic-class-memaccess dummy.c
+run_llvm -Wembedded-directive dummy.c
+run_llvm -Wempty-translation-unit dummy.c
+run_llvm -Wenum-conversion dummy.c
+run_llvm -Wexit-time-destructors dummy.c
+run_llvm -Wexplicit-ownership-type dummy.c
+run_llvm -Wextended-offsetof dummy.c
+run_llvm -Wextern-c-compat dummy.c
+run_llvm -Wextern-initializer dummy.c
+run_llvm -Wextra-qualification dummy.c
+run_llvm -Wextra-semi dummy.c
+run_llvm -Wextra-tokens dummy.c
+run_llvm -Wflexible-array-extensions dummy.c
+run_llvm -Wformat-invalid-specifier dummy.c
+run_llvm -Wformat-non-iso dummy.c
+run_llvm -Wformat-pedantic dummy.c
+run_llvm -Wfour-char-constants dummy.c
+run_llvm -Wgcc-compat dummy.c
+run_llvm -Wglobal-constructors dummy.c
+run_llvm -Wgnu-array-member-paren-init dummy.c
+run_llvm -Wgnu-conditional-omitted-operand dummy.c
+run_llvm -Wgnu-designator dummy.c
+run_llvm -Wgnu dummy.c
+run_llvm -Wgnu-static-float-init dummy.c
+run_llvm -Wheader-guard dummy.c
+run_llvm -Wheader-hygiene dummy.c
+run_llvm -Widiomatic-parentheses dummy.c
+run_llvm -Wignored-attributes dummy.c
+run_llvm -Wimplicit-atomic-properties dummy.c
+run_llvm -Wimplicit-conversion-floating-point-to-bool dummy.c
+run_llvm -Wimplicit-exception-spec-mismatch dummy.c
+run_llvm -Wimplicit-fallthrough dummy.c
+run_llvm -Wimplicit-fallthrough-per-function dummy.c
+run_llvm -Wimplicit-retain-self dummy.c
+run_llvm -Wimport-preprocessor-directive-pedantic dummy.c
+run_llvm -Wincompatible-library-redeclaration dummy.c
+run_llvm -Wincompatible-pointer-types-discards-qualifiers dummy.c
+run_llvm -Wincomplete-implementation dummy.c
+run_llvm -Wincomplete-module dummy.c
+run_llvm -Wincomplete-umbrella dummy.c
+run_llvm -Winitializer-overrides dummy.c
+run_llvm -Wint-conversions dummy.c
+run_llvm -Winteger-overflow dummy.c
+run_llvm -Wint-to-void-pointer-cast dummy.c
+run_llvm -Winvalid-constexpr dummy.c
+run_llvm -Winvalid-iboutlet dummy.c
+run_llvm -Winvalid-noreturn dummy.c
+run_llvm -Winvalid-pp-token dummy.c
+run_llvm -Winvalid-source-encoding dummy.c
+run_llvm -Winvalid-token-paste dummy.c
+run_llvm -Wkeyword-compat dummy.c
+run_llvm -Wknr-promoted-parameter dummy.c
+run_llvm -Wlanguage-extension-token dummy.c
+run_llvm -Wlarge-by-value-copy dummy.c
+run_llvm -Wliblto dummy.c
+run_llvm -Wliteral-conversion dummy.c
+run_llvm -Wliteral-range dummy.c
+run_llvm -Wlocal-type-template-args dummy.c
+run_llvm -Wlogical-op-parentheses dummy.c
+run_llvm -Wloop-analysis dummy.c
+run_llvm -Wmain-return-type dummy.c
+run_llvm -Wmalformed-warning-check dummy.c
+run_llvm -Wmethod-signatures dummy.c
+run_llvm -Wmicrosoft dummy.c
+run_llvm -Wmicrosoft-exists dummy.c
+run_llvm -Wmismatched-parameter-types dummy.c
+run_llvm -Wmismatched-return-types dummy.c
+run_llvm -Wmismatched-tags dummy.c
+run_llvm -Wmissing-method-return-type dummy.c
+run_llvm -Wmissing-selector-name dummy.c
+run_llvm -Wmissing-sysroot dummy.c
+run_llvm -Wmissing-variable-declarations dummy.c
+run_llvm -Wmodule-conflict dummy.c
+run_llvm -Wmost dummy.c
+run_llvm -Wmultiple-move-vbase dummy.c
+run_llvm -Wnested-anon-types dummy.c
+run_llvm -Wnewline-eof dummy.c
+# GCC will always accept any option begining -Wno-
+run_only_llvm -Wno-abstract-final-class dummy.c
+run_only_llvm -Wno-assign-enum dummy.c
+run_only_llvm -Wno-auto-storage-class dummy.c
+run_only_llvm -Wno-c99-compat dummy.c
+run_only_llvm -Wno-consumed dummy.c
+run_only_llvm -Wno-extra-qualification dummy.c
+run_only_llvm -Wno-int-conversions dummy.c
+run_only_llvm -Wno-int-to-void-pointer-cast dummy.c
+run_only_llvm -Wno-keyword-compat dummy.c
+run_only_llvm -Wno-liblto dummy.c
+run_only_llvm -Wno-literal-conversion dummy.c
+run_only_llvm -Wno-literal-range dummy.c
+run_only_llvm -Wno-NSObject-attribute dummy.c
+run_only_llvm -Wno-out-of-line-declaration dummy.c
+run_only_llvm -Wno-override-module dummy.c
+run_only_llvm -Wno-pointer-type-mismatch dummy.c
+run_only_llvm -Wno-property-attribute-mismatch dummy.c
+run_only_llvm -Wno-return-stack-address dummy.c
+run_only_llvm -Wno-unavailable-declarations dummy.c
+run_only_llvm -Wno-unsupported-friend dummy.c
+# Back to positives
+run_llvm -Wnon-gcc dummy.c
+run_llvm -Wnon-literal-null-conversion dummy.c
+run_llvm -Wnon-pod-varargs dummy.c
+run_llvm -Wnonportable-cfstrings dummy.c
+run_llvm -WNSObject-attribute dummy.c
+run_llvm -Wnull-arithmetic dummy.c
+run_llvm -Wnull-character dummy.c
+run_llvm -Wnull-conversion dummy.c
+run_llvm -Wobjc-autosynthesis-property-ivar-name-match -c dummy.m
+run_llvm -Wobjc-cocoa-api -c dummy.m
+run_llvm -Wobjc-forward-class-redefinition -c dummy.m
+run_llvm -Wobjc-interface-ivars -c dummy.m
+run_llvm -Wobjc-literal-compare -c dummy.m
+run_llvm -Wobjc-method-access -c dummy.m
+run_llvm -Wobjc-missing-property-synthesis -c dummy.m
+run_llvm -Wobjc-missing-super-calls -c dummy.m
+run_llvm -Wobjc-noncopy-retain-block-property -c dummy.m
+run_llvm -Wobjc-nonunified-exceptions -c dummy.m
+run_llvm -Wobjc-property-implementation -c dummy.m
+run_llvm -Wobjc-property-implicit-mismatch -c dummy.m
+run_llvm -Wobjc-property-matches-cocoa-ownership-rule -c dummy.m
+run_llvm -Wobjc-property-no-attribute -c dummy.m
+run_llvm -Wobjc-string-concatenation -c dummy.m
+run_llvm -Wobjc-property-synthesis -c dummy.m
+run_llvm -Wobjc-protocol-method-implementation -c dummy.m
+run_llvm -Wobjc-protocol-property-synthesis -c dummy.m
+run_llvm -Wobjc-readonly-with-setter-property -c dummy.m
+run_llvm -Wobjc-redundant-api-use -c dummy.m
+run_llvm -Wobjc-redundant-literal-use -c dummy.m
+run_llvm -Wobjc-root-class -c dummy.m
+run_llvm -Wobjc-string-compare -c dummy.m
+run_llvm -Wopenmp-clauses -fopenmp dummy.c
+run_llvm -Wout-of-line-declaration dummy.c
+run_llvm -Wover-aligned dummy.c
+run_llvm -Woverloaded-shift-op-parentheses dummy.c
+run_llvm -Woverride-module dummy.c
+run_llvm -Woverriding-method-mismatch dummy.c
+run_llvm -Wparentheses-equality dummy.c
+run_llvm -Wpointer-type-mismatch dummy.c
+run_llvm -W\#pragma-messages dummy.c
+run_llvm -Wpredefined-identifier-outside-function dummy.c
+run_llvm -Wprivate-extern dummy.c
+run_llvm -Wproperty-attribute-mismatch dummy.c
+run_llvm -Wprotocol-property-synthesis-ambiguity dummy.c
+run_llvm -Wreadonly-iboutlet-property dummy.c
+run_llvm -Wreceiver-expr -c dummy.m
+run_llvm -Wreceiver-forward-class -c dummy.m
+run_llvm -Wreceiver-is-weak -c dummy.m
+run_llvm -Wreinterpret-base-class dummy.c
+run_llvm -Wrequires-super-attribute dummy.c
+run_llvm -Wreserved-user-defined-literal dummy.c
+run_llvm -Wreturn-stack-address dummy.c
+run_llvm -Wreturn-type-c-linkage dummy.c
+run_llvm -Wsection dummy.c
+run_llvm -Wselector-type-mismatch -c dummy.m
+run_llvm -Wself-assign dummy.c
+run_llvm -Wself-assign-field dummy.c
+run_llvm -Wsemicolon-before-method-body dummy.cpp
+run_llvm -Wsentinel dummy.c
+run_llvm -Wserialized-diagnostics dummy.c
+run_llvm -Wshift-op-parentheses dummy.c
+run_llvm -Wshift-sign-overflow dummy.c
+run_llvm -Wshorten-64-to-32 dummy.c
+run_llvm -Wsizeof-array-decay dummy.c
+run_llvm -Wsometimes-uninitialized dummy.c
+run_llvm -Wsource-uses-openmp dummy.c
+run_llvm -Wstatic-float-init dummy.c
+run_llvm -Wstatic-in-inline dummy.c
+run_llvm -Wstatic-inline-explicit-instantiation dummy.c
+run_llvm -Wstatic-local-in-inline dummy.c
+run_llvm -Wstatic-self-init dummy.c
+run_llvm -Wstring-compare dummy.c
+run_llvm -Wstring-conversion dummy.c
+run_llvm -Wstring-plus-char dummy.c
+run_llvm -Wstring-plus-int dummy.c
+run_llvm -Wstrlcpy-strlcat-size dummy.c
+run_llvm -Wstrncat-size dummy.c
+run_llvm -Wsuper-class-method-mismatch dummy.c
+run_llvm -Wtautological-constant-out-of-range-compare dummy.c
+run_llvm -Wtentative-definition-incomplete-type dummy.c
+run_llvm -Wthread-safety-analysis dummy.c
+run_llvm -Wthread-safety-attributes dummy.c
+run_llvm -Wthread-safety-beta dummy.c
+run_llvm -Wthread-safety dummy.c
+run_llvm -Wthread-safety-precise dummy.c
+run_llvm -Wtypedef-redefinition dummy.c
+run_llvm -Wtypename-missing dummy.c
+run_llvm -Wtype-safety dummy.c
+run_llvm -Wunavailable-declarations dummy.c
+run_llvm -Wundefined-inline dummy.c
+run_llvm -Wundefined-internal dummy.c
+run_llvm -Wundefined-reinterpret-cast dummy.c
+run_llvm -Wunicode dummy.c
+run_llvm -Wunicode-whitespace dummy.c
+run_llvm -Wunknown-warning-option dummy.c
+run_llvm -Wunnamed-type-template-args dummy.c
+run_llvm -Wunneeded-internal-declaration dummy.c
+run_llvm -Wunneeded-member-function dummy.c
+run_llvm -Wunsequenced dummy.c
+run_llvm -Wunsupported-friend dummy.cpp
+run_llvm -Wunsupported-visibility dummy.c
+run_llvm -Wunused-command-line-argument dummy.c
+run_llvm -Wunused-comparison dummy.c
+run_llvm -Wunused-exception-parameter dummy.c
+run_llvm -Wunused-member-function dummy.c
+run_llvm -Wunused-private-field dummy.c
+run_llvm -Wunused-property-ivar dummy.cpp
+run_llvm -Wunused-volatile-lvalue dummy.c
+run_llvm -Wused-but-marked-unused dummy.c
+run_llvm -Wuser-defined-literals dummy.c
+run_llvm -Wvector-conversion dummy.c
+run_llvm -Wvector-conversions dummy.c
+run_llvm -Wvexing-parse dummy.c
+run_llvm -Wvisibility dummy.cpp
+run_llvm -Wvla-extension dummy.c
+run_llvm -W\#warnings dummy.c
+run_llvm -Wweak-template-vtables dummy.cpp
+run_llvm -Wweak-vtables dummy.cpp
+run_llvm -Wzero-length-array dummy.c
+logcon ""
+
+logcon "Warning options for GCC but not LLVM"
+
+# Generic control of warnings
+run_gcc -fmax-errors=3 dummy.c
+# Specific warnings
+run_gcc -Waggressive-loop-optimizations dummy.c
+run_gcc -Warray-bounds=2 dummy.c
+run_gcc -Wbool-compare dummy.c
+run_gcc -Wc90-c99-compat dummy.c
+run_gcc -Wc99-c11-compat dummy.c
+run_gcc -Wclobbered dummy.c
+run_gcc -Wconditionally-supported dummy.c
+run_gcc -Wcoverage-mismatch dummy.c
+run_gcc -Wcpp dummy.c
+run_gcc -Wdesignated-init dummy.m
+run_gcc -Wdiscarded-array-qualifiers dummy.c
+run_gcc -Wdiscarded-qualifiers dummy.c
+run_gcc -Wduplicated-cond dummy.c
+run_gcc -Wformat=1 dummy.c
+run_gcc -Wformat-contains-nul dummy.c
+run_gcc -Wformat-signedness dummy.c
+run_gcc -Wframe-address dummy.c
+run_gcc -Wfree-nonheap-object dummy.c
+run_gcc -Whsa -fopenmp dummy.c
+run_gcc -Winvalid-memory-model dummy.c
+run_gcc -Wjump-misses-init dummy.c
+run_gcc -Wlogical-op dummy.c
+run_gcc -Wmaybe-uninitialized dummy.c
+run_gcc -Wmemset-transposed-args dummy.c
+run_gcc -Wmisleading-indentation dummy.c
+# GCC will always accept negatives, so these tests will always pass. We
+# separately test the positives of all these.
+run_gcc -Wno-aggressive-loop-optimizations dummy.c
+run_gcc -Wno-assign-intercept dummy.c
+run_gcc -Wno-bool-compare dummy.c
+run_gcc -Wno-c90-c99-compat dummy.c
+run_gcc -Wno-c99-c11-compat dummy.c
+run_gcc -Wno-clobbered dummy.c
+run_gcc -Wno-conditionally-supported dummy.c
+run_gcc -Wno-coverage-mismatch dummy.c
+run_gcc -Wno-cpp dummy.c
+run_gcc -Wno-designated-init dummy.m
+run_gcc -Wno-discarded-array-qualifiers dummy.c
+run_gcc -Wno-discarded-qualifiers dummy.c
+run_gcc -Wno-format-contains-nul dummy.c
+run_gcc -Wno-format-signedness dummy.c
+run_gcc -Wno-free-nonheap-object dummy.c
+run_gcc -Wno-jump-misses-init dummy.c
+run_gcc -Wno-literal-suffix dummy.c
+run_gcc -Wno-logical-op dummy.c
+run_gcc -Wno-maybe-uninitialized dummy.c
+run_gcc -Wno-memset-transposed-args dummy.c
+run_gcc -Wno-noexcept dummy.c
+run_gcc -Wno-normalized dummy.c
+run_gcc -Wno-override-init dummy.c
+run_gcc -Wno-packed-bitfield-compat dummy.c
+run_gcc -Wno-pedantic-ms-format dummy.c
+run_gcc -Wno-placement-new dummy.cpp
+run_gcc -Wno-return-local-addr dummy.c
+run_gcc -Wno-scalar-storage-order dummy.c
+run_gcc -Wno-sized-deallocation dummy.c
+run_gcc -Wno-strict-null-sentinel dummy.c
+run_gcc -Wno-suggest-attribute=const dummy.c
+run_gcc -Wno-suggest-attribute=format dummy.c
+run_gcc -Wno-suggest-attribute=noreturn dummy.c
+run_gcc -Wno-suggest-attribute=pure dummy.c
+run_gcc -Wno-suggest-final-methods dummy.c
+run_gcc -Wno-suggest-final-types dummy.c
+run_gcc -Wno-sync-nand dummy.c
+run_gcc -Wno-trampolines dummy.c
+run_gcc -Wno-unsafe-loop-optimizations dummy.c
+run_gcc -Wno-unused-but-set-parameter dummy.c
+run_gcc -Wno-unused-but-set-variable dummy.c
+run_gcc -Wno-useless-cast dummy.c
+run_gcc -Wno-vector-operation-performance dummy.c
+run_gcc -Wno-virtual-move-assign dummy.c
+run_gcc -Wno-zero-as-null-pointer-constant dummy.c
+# Back to positives
+run_gcc -Wnon-template-friend dummy.c
+run_gcc -Wnormalized dummy.c
+run_gcc -Wnormalized=none dummy.c
+run_gcc -Wnormalized=id dummy.c
+run_gcc -Wnormalized=nfc dummy.c
+run_gcc -Wnormalized=nfkc dummy.c
+run_gcc -Wopenmp-simd dummy.c
+run_gcc -Woverride-init dummy.c
+run_gcc -Wpacked-bitfield-compat dummy.c
+run_gcc -Wplacement-new dummy.cpp
+run_gcc -Wpmf-conversions dummy.c
+run_gcc -Wreturn-local-addr dummy.c
+run_gcc -Wscalar-storage-order dummy.c
+run_gcc -Wsized-deallocation dummy.c
+run_gcc -Wstack-usage=128 dummy.c
+run_gcc -Wstrict-aliasing=3 dummy.c
+run_gcc -Wsubobject-linkage dummy.cpp
+run_gcc -Wsuggest-attribute=const dummy.c
+run_gcc -Wsuggest-attribute=format dummy.c
+run_gcc -Wsuggest-attribute=noreturn dummy.c
+run_gcc -Wsuggest-attribute=pure dummy.c
+run_gcc -Wsuggest-final-methods dummy.c
+run_gcc -Wsuggest-final-types dummy.c
+run_gcc -Wsuggest-override dummy.cpp
+run_gcc -Wsync-nand dummy.c
+run_gcc -Wtrampolines dummy.c
+run_gcc -Wunsafe-loop-optimizations dummy.c
+run_gcc -Wunsuffixed-float-constants dummy.c
+run_gcc -Wunused-but-set-parameter dummy.c
+run_gcc -Wunused-but-set-variable dummy.c
+run_gcc -Wuseless-cast dummy.c
+run_gcc -Wvector-operation-performance dummy.c
+run_gcc -Wvirtual-move-assign dummy.c
+run_gcc -Wzero-as-null-pointer-constant dummy.c
+logcon ""
+
+# Options that are target specific and won't generally run here
+
+run_dummy -Waddr-space-convert dummy.c
+run_dummy -Wmismatched-method-attributes -c dummy.m # Darwin only?
+run_dummy -Wobjc-literal-missing-atsign -c dummy.m # Darwin only?
+run_dummy -Wpedantic-ms-format dummy.c
+run_dummy -Wreadonly-setter-attrs -c dummy.m # Darwin only?
+
+
+#################################################################################
+#                                                                               #
+#		      C and Objective C Warning Options                         #
+#                                                                               #
+#################################################################################
+
+logcon ""
+logcon "C and ObjC warning options for both LLVM and GCC"
+
+run_both -Wbad-function-cast dummy.c
+run_both -Wdeclaration-after-statement dummy.c
+run_both -Wmissing-declarations dummy.c
+run_both -Wmissing-prototypes dummy.c
+run_both -Wnested-externs dummy.c
+# GCC will always accept negatives, so all we can check here is that LLVM
+# (which is pickier) accepts them. We separately test the positives of all
+# these.
+run_only_llvm -Wno-bad-function-cast dummy.c
+run_only_llvm -Wno-declaration-after-statement dummy.c
+run_only_llvm -Wno-missing-declarations dummy.c
+run_only_llvm -Wno-missing-prototypes dummy.c
+run_only_llvm -Wno-nested-externs dummy.c
+run_only_llvm -Wno-old-style-definition dummy.c
+run_only_llvm -Wno-pointer-sign dummy.c
+run_only_llvm -Wno-strict-prototypes dummy.c
+# Back to positives
+run_both -Wold-style-definition dummy.c
+run_both -Wpointer-sign dummy.c
+run_both -Wstrict-prototypes dummy.c
+logcon ""
+
+logcon "C and ObjC warning options for LLVM but not GCC"
+
+logcon "C and ObjC warning options for GCC but not LLVM"
+run_gcc -Wmissing-parameter-type dummy.c
+# GCC will always accept negatives, so these tests will always pass. We
+# separately test the positives of all these.
+run_gcc -Wno-missing-parameter-type dummy.c
+run_gcc -Wno-old-style-declaration dummy.c
+run_gcc -Wno-traditional dummy.c
+run_gcc -Wno-traditional-conversion dummy.c
+# Back to positives
+run_gcc -Wold-style-declaration dummy.c
+run_gcc -Wtraditional dummy.c
+run_gcc -Wtraditional-conversion dummy.c
+
+logcon ""
+
+
+
 # Options for both compilers
 
 logit ""
@@ -552,7 +1402,6 @@ run_both -fdollars-in-identifiers dummy-dollar.c
 run_both -fexceptions dummy.c
 run_both -ffast-math dummy.c
 run_both -ffunction-sections dummy.c
-run_both -fgnu-runtime dummy.c
 run_both -finstrument-functions dummy.c profile-assist.c
 run_both -fno-common dummy.c
 run_both -fno-show-column dummy.c
@@ -609,7 +1458,6 @@ run_both -print-search-dirs dummy.c
 run_both -save-temps dummy.c
 run_both -save-temps=obj dummy.c
 run_both -undef dummy.c
-run_both -w dummy.c
 run_both -Xassembler -compress-debug-sections dummy.c
 run_both -Xlinker -M dummy.c
 run_both -Xpreprocessor -I. dummy.c
@@ -626,10 +1474,6 @@ run_both -dumpversion dummy.c
 run_both -F`pwd` dummy.c
 run_both -fassociative-math dummy.c
 run_both -fasynchronous-unwind-tables dummy.c
-run_both -fdiagnostics-color dummy.c
-run_both -fdiagnostics-color=never dummy.c
-run_both -fdiagnostics-show-location=every-line dummy.c
-run_both -fdiagnostics-show-location=once dummy.c
 run_both -feliminate-unused-debug-types dummy.c
 run_both -fexec-charset=UTF-8 dummy.c
 run_both -fextended-identifiers dummy.c
@@ -639,10 +1483,8 @@ run_both -fgnu-keywords dummy.c
 run_both -finput-charset=UTF-8 dummy.c
 run_both -fmath-errno dummy.c
 run_both -fmerge-all-constants dummy.c
-run_both -fmessage-length=40 dummy.c
 run_both -fno-common dummy.c
 run_both -fno-debug-types-section dummy.c
-run_both -fno-diagnostics-show-option dummy.c
 run_both -fno-dollars-in-identifiers dummy.c
 run_both -fno-dwarf2-cfi-asm dummy.c
 run_both -fno-eliminate-unused-debug-types dummy.c
@@ -696,7 +1538,6 @@ run_both -fsplit-stack dummy.c
 run_both -fstack-check dummy.c
 run_both -fstrict-aliasing dummy.c
 run_both -fstrict-overflow dummy.c
-run_both -fsyntax-only dummy.c
 run_both -ftabstop=2 dummy.c
 run_both -ftest-coverage dummy.c
 run_both -ftime-report dummy.c
@@ -733,8 +1574,6 @@ run_both -O3 dummy.c
 run_both -Ofast dummy.c
 run_both -Os dummy.c
 run_both --param ssp-buffer-size=4 dummy.c
-run_both -pedantic dummy.c
-run_both -pedantic-errors dummy.c
 run_both -print-file-name=code -L`pwd` dummy.c
 run_both -print-multi-directory dummy.c
 run_both -print-multi-lib dummy.c
@@ -752,252 +1591,6 @@ run_both -U FORTY_TWO dummy.c
 run_both -Wa,-gdwarf-3 dummy.c
 run_both -Wl,-relax dummy.c
 run_both -Wp,-v dummy.c
-run_both -Waddress dummy.c
-run_both -Waggregate-return dummy.c
-run_both -Wall dummy.c
-run_both -Warray-bounds dummy.c
-run_both -Wattributes dummy.c
-run_both -Wbad-function-cast dummy.c
-run_both -Wbuiltin-macro-redefined dummy.c
-run_both -Wc++-compat dummy.c
-run_both -Wc++11-compat dummy.c
-run_both -Wc++14-compat dummy.c
-run_both -Wcast-align dummy.c
-run_both -Wcast-qual dummy.c
-run_both -Wchar-subscripts dummy.c
-run_both -Wcomment dummy.c
-run_both -Wcomments dummy.c
-run_both -Wconversion dummy.c
-run_both -Wdate-time dummy.c
-run_both -Wdeclaration-after-statement dummy.c
-run_both -Wdelete-incomplete dummy.c
-run_both -Wdeprecated dummy.c
-run_both -Wdeprecated-declarations dummy.c
-run_both -Wdisabled-optimization dummy.c
-run_both -Wdiv-by-zero dummy.c
-run_both -Wempty-body dummy.c
-run_both -Wendif-labels dummy.c
-run_both -Wenum-compare dummy.c
-run_both -Werror dummy.c
-run_both -Werror=abi dummy.c
-run_both -Wextra dummy.c
-run_both -Wfatal-errors dummy.c
-run_both -Wfloat-conversion dummy.c
-run_both -Wfloat-equal dummy.c
-run_both -Wformat dummy.c
-run_both -Wformat=0 dummy.c
-run_both -Wformat=2 dummy.c
-run_both -Wformat-extra-args dummy.c
-run_both -Wformat-nonliteral dummy.c
-run_both -Wformat-security dummy.c
-run_both -Wformat-y2k dummy.c
-run_both -Wformat-zero-length dummy.c
-run_both -Wframe-larger-than=128 dummy.c
-run_both -Wignored-qualifiers dummy.c
-run_both -Wimplicit dummy.c
-run_both -Wimplicit-function-declaration dummy.c
-run_both -Wimplicit-int dummy.c
-run_both -Wincompatible-pointer-types dummy.c
-run_both -Winherited-variadic-ctor dummy.c
-run_both -Winit-self dummy.c
-run_both -Winline dummy.c
-run_both -Wint-conversion dummy.c
-run_both -Wint-to-pointer-cast dummy.c
-run_both -Winvalid-offsetof dummy.c
-run_both -Winvalid-pch dummy.c
-run_both -Wlarger-than-10 dummy.c
-run_both -Wlarger-than=10 dummy.c
-run_both -Wlogical-not-parentheses dummy.c
-run_both -Wlong-long dummy.c
-run_both -Wmain dummy.c
-run_both -Wmissing-braces dummy.c
-run_both -Wmissing-declarations dummy.c
-run_both -Wmissing-field-initializers dummy.c
-run_both -Wmissing-format-attribute dummy.c
-run_both -Wmissing-include-dirs dummy.c
-run_both -Wmissing-prototypes dummy.c
-run_both -Wmultichar dummy.c
-run_both -Wnested-externs dummy.c
-run_both -Wno-abi dummy.c
-run_both -Wno-address dummy.c
-run_both -Wno-aggregate-return dummy.c
-run_both -Wno-all dummy.c
-run_both -Wno-array-bounds dummy.c
-run_both -Wno-attributes dummy.c
-run_both -Wno-bad-function-cast dummy.c
-run_both -Wno-builtin-macro-redefined dummy.c
-run_both -Wno-cast-align dummy.c
-run_both -Wno-cast-qual dummy.c
-run_both -Wno-char-subscripts dummy.c
-run_both -Wno-comment dummy.c
-run_both -Wno-conversion dummy.c
-run_both -Wno-conversion-null dummy.c
-run_both -Wno-ctor-dtor-privacy dummy.c
-run_both -Wno-date-time dummy.c
-run_both -Wno-declaration-after-statement dummy.c
-run_both -Wno-delete-incomplete dummy.c
-run_both -Wno-delete-non-virtual-dtor dummy.c
-run_both -Wno-deprecated dummy.c
-run_both -Wno-deprecated-declarations dummy.c
-run_both -Wno-disabled-optimization dummy.c
-run_both -Wno-div-by-zero dummy.c
-run_both -Wno-effc++ dummy.c
-run_both -Wno-empty-body dummy.c
-run_both -Wno-endif-labels dummy.c
-run_both -Wno-enum-compare dummy.c
-run_both -Wno-error dummy.c
-run_both -Wno-error=abi dummy.c
-run_both -Wno-extra dummy.c
-run_both -Wno-fatal-errors dummy.c
-run_both -Wno-float-conversion dummy.c
-run_both -Wno-float-equal dummy.c
-run_both -Wno-format dummy.c
-run_both -Wno-format-extra-args dummy.c
-run_both -Wno-format-nonliteral dummy.c
-run_both -Wno-format-security dummy.c
-run_both -Wno-format-y2k dummy.c
-run_both -Wno-format-zero-length dummy.c
-run_both -Wno-ignored-qualifiers dummy.c
-run_both -Wno-implicit dummy.c
-run_both -Wno-implicit-function-declaration dummy.c
-run_both -Wno-implicit-int dummy.c
-run_both -Wno-incompatible-pointer-types dummy.c
-run_both -Wno-inherited-variadic-ctor dummy.c
-run_both -Wno-init-self dummy.c
-run_both -Wno-inline dummy.c
-run_both -Wno-int-conversion dummy.c
-run_both -Wno-int-to-pointer-cast dummy.c
-run_both -Wno-invalid-offsetof dummy.c
-run_both -Wno-invalid-pch dummy.c
-run_both -Wno-logical-not-parentheses dummy.c
-run_both -Wno-long-long dummy.c
-run_both -Wno-main dummy.c
-run_both -Wno-missing-braces dummy.c
-run_both -Wno-missing-declarations dummy.c
-run_both -Wno-missing-field-initializers dummy.c
-run_both -Wno-missing-format-attribute dummy.c
-run_both -Wno-missing-include-dirs dummy.c
-run_both -Wno-missing-prototypes dummy.c
-run_both -Wno-multichar dummy.c
-run_both -Wno-narrowing dummy.c
-run_both -Wno-nested-externs dummy.c
-run_both -Wno-nonnull dummy.c
-run_both -Wno-non-virtual-dtor dummy.c
-run_both -Wno-odr dummy.c
-run_both -Wno-old-style-cast dummy.c
-run_both -Wno-old-style-definition dummy.c
-run_both -Wno-overflow dummy.c
-run_both -Wno-overlength-strings dummy.c
-run_both -Wno-overloaded-virtual dummy.c
-run_both -Wno-packed dummy.c
-run_both -Wno-padded dummy.c
-run_both -Wno-parentheses dummy.c
-run_both -Wno-pointer-arith dummy.c
-run_both -Wno-pointer-sign dummy.c
-run_both -Wno-pointer-to-int-cast dummy.c
-run_both -Wno-pragmas dummy.c
-run_both -Wno-protocol dummy.c
-run_both -Wno-redundant-decls dummy.c
-run_both -Wno-reorder dummy.c
-run_both -Wno-return-type dummy.c
-run_both -Wno-selector dummy.c
-run_both -Wno-sequence-point dummy.c
-run_both -Wno-shadow dummy.c
-run_both -Wno-shadow-ivar dummy.c
-run_both -Wno-shift-count-negative dummy.c
-run_both -Wno-shift-count-overflow dummy.c
-run_both -Wno-sign-compare dummy.c
-run_both -Wno-sign-conversion dummy.c
-run_both -Wno-sign-promo dummy.c
-run_both -Wno-sizeof-array-argument dummy.c
-run_both -Wno-sizeof-pointer-memaccess dummy.c
-run_both -Wno-stack-protector dummy.c
-run_both -Wno-strict-aliasing dummy.c
-run_both -Wno-strict-overflow dummy.c
-run_both -Wno-strict-prototypes dummy.c
-run_both -Wno-strict-selector-match dummy.c
-run_both -Wno-switch dummy.c
-run_both -Wno-switch-bool dummy.c
-run_both -Wno-switch-default dummy.c
-run_both -Wno-switch-enum dummy.c
-run_both -Wno-system-headers dummy.c
-run_both -Wno-trigraphs dummy.c
-run_both -Wno-type-limits dummy.c
-run_both -Wno-undeclared-selector dummy.c
-run_both -Wno-undef dummy.c
-run_both -Wno-uninitialized dummy.c
-run_both -Wno-unknown-pragmas dummy.c
-run_both -Wno-unused dummy.c
-run_both -Wno-unused-function dummy.c
-run_both -Wno-unused-label dummy.c
-run_both -Wno-unused-parameter dummy.c
-run_both -Wno-unused-result dummy.c
-run_both -Wno-unused-value dummy.c
-run_both -Wno-unused-variable dummy.c
-run_both -Wno-varargs dummy.c
-run_both -Wno-variadic-macros dummy.c
-run_both -Wno-vla dummy.c
-run_both -Wno-volatile-register-var dummy.c
-run_both -Wno-write-strings dummy.c
-run_both -Wnonnull dummy.c
-run_both -Wodr dummy.c
-run_both -Wold-style-definition dummy.c
-run_both -Woverflow dummy.c
-run_both -Woverlength-strings dummy.c
-run_both -Wpacked dummy.c
-run_both -Wpadded dummy.c
-run_both -Wparentheses dummy.c
-run_both -Wpedantic dummy.c
-run_both -Wpointer-arith dummy.c
-run_both -Wpointer-sign dummy.c
-run_both -Wpointer-to-int-cast dummy.c
-run_both -Wpragmas dummy.c
-run_both -Wprotocol dummy.c
-run_both -Wredundant-decls dummy.c
-run_both -Wreturn-type dummy.c
-run_both -Wselector dummy.c
-run_both -Wsequence-point dummy.c
-run_both -Wshadow dummy.c
-run_both -Wshadow-ivar dummy.c
-run_both -Wshift-count-negative dummy.c
-run_both -Wshift-count-overflow dummy.c
-run_both -Wsign-compare dummy.c
-run_both -Wsign-conversion dummy.c
-run_both -Wsizeof-array-argument dummy.c
-run_both -Wsizeof-pointer-memaccess dummy.c
-run_both -Wstack-protector dummy.c
-run_both -Wstrict-aliasing dummy.c
-run_both -Wstrict-aliasing=0 dummy.c
-run_both -Wstrict-aliasing=1 dummy.c
-run_both -Wstrict-aliasing=2 dummy.c
-run_both -Wstrict-overflow dummy.c
-run_both -Wstrict-prototypes dummy.c
-run_both -Wstrict-selector-match dummy.c
-run_both -Wswitch dummy.c
-run_both -Wswitch-bool dummy.c
-run_both -Wswitch-default dummy.c
-run_both -Wswitch-enum dummy.c
-run_both -Wsystem-headers dummy.c
-run_both -Wtrigraphs dummy.c
-run_both -Wtype-limits dummy.c
-run_both -Wundeclared-selector dummy.c
-run_both -Wundef dummy.c
-run_both -Wuninitialized dummy.c
-run_both -Wunknown-pragmas dummy.c
-run_both -Wunused dummy.c
-run_both -Wunused-function dummy.c
-run_both -Wunused-label dummy.c
-run_both -Wunused-local-typedefs dummy.c
-run_both -Wunused-macros dummy.c
-run_both -Wunused-parameter dummy.c
-run_both -Wunused-result dummy.c
-run_both -Wunused-value dummy.c
-run_both -Wunused-variable dummy.c
-run_both -Wvarargs dummy.c
-run_both -Wvariadic-macros dummy.c
-run_both -Wvla dummy.c
-run_both -Wvolatile-register-var dummy.c
-run_both -Wwrite-strings dummy.c
 
 # Options for LLVM but not GCC
 
@@ -1013,14 +1606,11 @@ run_llvm -fapple-pragma-pack dummy.c
 run_llvm -fapplication-extension dummy.c
 run_llvm -fblocks dummy.c
 run_llvm -fborland-extensions dummy.c
-run_llvm -fcolor-diagnostics dummy.c
 run_llvm -fcoverage-mapping -fprofile-instr-generate dummy.c
 run_llvm -fdelayed-template-parsing dummy.c
-run_llvm -fdiagnostics-parseable-fixits dummy.c
 run_llvm -femit-all-decls dummy.c
 run_llvm -fintegrated-as dummy.c
 run_llvm -fno-autolink dummy.c
-run_llvm -fno-diagnostics-fixit-info dummy.c
 run_llvm -fno-elide-type dummy.c
 run_llvm -fno-integrated-as dummy.c
 run_llvm -fstandalone-debug dummy.c
@@ -1042,7 +1632,6 @@ run_llvm -Rpass-missed dummy.c
 run_llvm -Rpass dummy.c
 run_llvm -R dummy.c
 run_llvm -target i686-pc-linux-gnu -c dummy.c
-run_llvm -Weverything dummy.c
 run_llvm -Xclang -cc1 dummy.c
 
 # Options from llvm -help which appear not to work
@@ -1295,7 +1884,6 @@ run_gcc -flto-compression-level=5 dummy.c
 run_gcc -flto-partition=1to1 dummy.c
 run_gcc -flto-report dummy.c
 run_gcc -flto-report-wpa dummy.c
-run_gcc -fmax-errors=3 dummy.c
 run_gcc -fmem-report dummy.c
 run_gcc -fmem-report-wpa dummy.c
 run_gcc -fmerge-constants dummy.c
@@ -1305,7 +1893,6 @@ run_gcc -fmove-loop-invariants dummy.c
 run_gcc -fno-branch-count-reg dummy.c
 run_gcc -fno-canonical-system-headers dummy.c
 run_gcc -fno-defer-pop dummy.c
-run_gcc -fno-diagnostics-show-caret dummy.c
 run_gcc -fno-function-cse dummy.c
 run_gcc -fno-gnu-unique dummy.c
 run_gcc -fno-guess-branch-probability dummy.c
@@ -1449,7 +2036,6 @@ run_gcc -fweb dummy.c
 run_gcc -fwhole-program dummy.c
 run_gcc -fwide-exec-charset=UTF-8 dummy.c
 run_gcc -fworking-directory dummy.c
-run_gcc -fzero-link dummy.c
 run_gcc -gpubnames dummy.c
 run_gcc -gcoff0 dummy.c
 run_gcc -gstabs dummy.c
@@ -1638,104 +2224,6 @@ run_gcc -traditional-cpp dummy.c
 run_gcc -umbrella dummy.c
 run_gcc -undefined dummy.c
 run_gcc -unexported_symbols_list dummy.c
-run_gcc -Waggressive-loop-optimizations dummy.c
-run_gcc -Wassign-intercept dummy.c
-run_gcc -Wbool-compare dummy.c
-run_gcc -Wc90-c99-compat dummy.c
-run_gcc -Wc99-c11-compat dummy.c
-run_gcc -Wclobbered dummy.c
-run_gcc -Wconditionally-supported dummy.c
-run_gcc -Wdiscarded-array-qualifiers dummy.c
-run_gcc -Wdiscarded-qualifiers dummy.c
-run_gcc -Wdouble-promotion dummy.c
-run_gcc -Wformat=1 dummy.c
-run_gcc -Wformat-contains-nul dummy.c
-run_gcc -Wformat-signedness dummy.c
-run_gcc -Wfree-nonheap-object dummy.c
-run_gcc -Wjump-misses-init dummy.c
-run_gcc -Wlogical-op dummy.c
-run_gcc -Wmaybe-uninitialized dummy.c
-run_gcc -Wmemset-transposed-args dummy.c
-run_gcc -Wmissing-parameter-type dummy.c
-run_gcc -Wno-aggressive-loop-optimizations dummy.c
-run_gcc -Wno-assign-intercept dummy.c
-run_gcc -Wno-bool-compare dummy.c
-run_gcc -Wno-c90-c99-compat dummy.c
-run_gcc -Wno-c99-c11-compat dummy.c
-run_gcc -Wno-clobbered dummy.c
-run_gcc -Wno-conditionally-supported dummy.c
-run_gcc -Wno-coverage-mismatch dummy.c
-run_gcc -Wno-discarded-array-qualifiers dummy.c
-run_gcc -Wno-discarded-qualifiers dummy.c
-run_gcc -Wno-double-promotion dummy.c
-run_gcc -Wno-format-contains-nul dummy.c
-run_gcc -Wno-format-signedness dummy.c
-run_gcc -Wno-free-nonheap-object dummy.c
-run_gcc -Wno-jump-misses-init dummy.c
-run_gcc -Wno-literal-suffix dummy.c
-run_gcc -Wno-logical-op dummy.c
-run_gcc -Wno-maybe-uninitialized dummy.c
-run_gcc -Wno-memset-transposed-args dummy.c
-run_gcc -Wno-missing-parameter-type dummy.c
-run_gcc -Wno-noexcept dummy.c
-run_gcc -Wno-normalized dummy.c
-run_gcc -Wno-old-style-declaration dummy.c
-run_gcc -Wno-override-init dummy.c
-run_gcc -Wno-packed-bitfield-compat dummy.c
-run_gcc -Wno-pedantic-ms-format dummy.c
-run_gcc -Wno-return-local-addr dummy.c
-run_gcc -Wno-sized-deallocation dummy.c
-run_gcc -Wno-strict-null-sentinel dummy.c
-run_gcc -Wno-suggest-attribute=const dummy.c
-run_gcc -Wno-suggest-attribute=format dummy.c
-run_gcc -Wno-suggest-attribute=noreturn dummy.c
-run_gcc -Wno-suggest-attribute=pure dummy.c
-run_gcc -Wno-suggest-final-methods dummy.c
-run_gcc -Wno-suggest-final-types dummy.c
-run_gcc -Wno-sync-nand dummy.c
-run_gcc -Wno-traditional dummy.c
-run_gcc -Wno-traditional-conversion dummy.c
-run_gcc -Wno-trampolines dummy.c
-run_gcc -Wno-unsafe-loop-optimizations dummy.c
-run_gcc -Wno-unused-but-set-parameter dummy.c
-run_gcc -Wno-unused-but-set-variable dummy.c
-run_gcc -Wno-useless-cast dummy.c
-run_gcc -Wno-vector-operation-performance dummy.c
-run_gcc -Wno-virtual-move-assign dummy.c
-run_gcc -Wno-zero-as-null-pointer-constant dummy.c
-run_gcc -Wnon-template-friend dummy.c
-run_gcc -Wnormalized dummy.c
-run_gcc -Wnormalized=none dummy.c
-run_gcc -Wnormalized=id dummy.c
-run_gcc -Wnormalized=nfc dummy.c
-run_gcc -Wnormalized=nfkc dummy.c
-run_gcc -Wold-style-declaration dummy.c
-run_gcc -Wopenmp-simd dummy.c
-run_gcc -Woverride-init dummy.c
-run_gcc -Wpacked-bitfield-compat dummy.c
-run_gcc -Wpmf-conversions dummy.c
-run_gcc -Wreturn-local-addr dummy.c
-run_gcc -Wsized-deallocation dummy.c
-run_gcc -Wstack-usage=128 dummy.c
-run_gcc -Wstrict-aliasing=3 dummy.c
-run_gcc -Wsuggest-attribute=const dummy.c
-run_gcc -Wsuggest-attribute=format dummy.c
-run_gcc -Wsuggest-attribute=noreturn dummy.c
-run_gcc -Wsuggest-attribute=pure dummy.c
-run_gcc -Wsuggest-final-methods dummy.c
-run_gcc -Wsuggest-final-types dummy.c
-run_gcc -Wsync-nand dummy.c
-run_gcc -Wtraditional dummy.c
-run_gcc -Wtraditional-conversion dummy.c
-run_gcc -Wtrampolines dummy.c
-run_gcc -Wunsafe-loop-optimizations dummy.c
-run_gcc -Wunsuffixed-float-constants dummy.c
-run_gcc -Wunused-but-set-parameter dummy.c
-run_gcc -Wunused-but-set-variable dummy.c
-run_gcc -Wuseless-cast dummy.c
-run_gcc -Wvector-operation-performance dummy.c
-run_gcc -Wvirtual-move-assign dummy.c
-run_gcc -Wzero-as-null-pointer-constant dummy.c
 
 # Options claimed by clang --help, but which in fact are not supported.
 run_gcc -time dummy.c
@@ -1833,11 +2321,9 @@ run_neither -sub_library dummy.c # Darwin
 run_neither -sub_umbrella dummy.c # Darwin
 run_neither -symbolic dummy.c
 run_neither -twolevel_namespace dummy.c # Darwin
-run_neither -Waddr-space-convert dummy.c
 run_neither -weak_reference_mismatches dummy.c # Darwin
 run_neither -whatsloaded dummy.c # Darwin
 run_neither -whyload dummy.c # Darwin
-run_neither -Wpedantic-ms-format dummy.c
 run_neither wrapper dummy.c # Darwin
 
 
@@ -1878,85 +2364,40 @@ run_neither --param parloops-schedule=runtime dummy.c # In top-of-tree?
 run_neither --param max-ssa-name-query-depth=5 # In top-of-tree?
 run_neither -version dummy.c
 
-# C++ specific. Done as dummy, since some may silently work with C
-run_dummy -fdevirtualize dummy.c
-run_dummy -fdevirtualize-at-ltrans dummy.c
-run_dummy -fdevirtualize-speculatively dummy.c
-run_dummy -fdump-class-hierarchy dummy.c
-run_dummy -fdump-class-hierarchy=address dummy.c
-run_dummy -fdump-class-hierarchy=asmname dummy.c
-run_dummy -fdump-class-hierarchy=slim dummy.c
-run_dummy -fdump-class-hierarchy=raw dummy.c
-run_dummy -fdump-class-hierarchy=details dummy.c
-run_dummy -fdump-class-hierarchy=stats dummy.c
-run_dummy -fdump-class-hierarchy=blocks dummy.c
-run_dummy -fdump-class-hierarchy=graph dummy.c
-run_dummy -fdump-class-hierarchy=vops dummy.c
-run_dummy -fdump-class-hierarchy=lineno dummy.c
-run_dummy -fdump-class-hierarchy=uid dummy.c
-run_dummy -fdump-class-hierarchy=verbose dummy.c
-run_dummy -fdump-class-hierarchy=eh dummy.c
-run_dummy -fdump-class-hierarchy=scev dummy.c
-run_dummy -fdump-class-hierarchy=optimized dummy.c
-run_dummy -fdump-class-hierarchy=missed dummy.c
-run_dummy -fdump-class-hierarchy=note dummy.c
-run_dummy -fdump-class-hierarchy=debug.dump dummy.c
-run_dummy -fdump-class-hierarchy=all dummy.c
-run_dummy -fdump-class-hierarchy=optall dummy.c
-run_dummy -fdump-translation-unit dummy.c
-run_dummy -fdump-translation-unit=all dummy.c
-run_dummy -fextern-tls-init dummy.c
-run_dummy -fno-default-inline dummy.c
-run_dummy -fno-lifetime-dse dummy.c
-run_dummy -fvtable-verify=preinit dummy.c
-run_dummy -fvtv-counts dummy.c
-run_dummy -fvtv-debug dummy.c
-run_dummy -imultilib custom dummy.c
-run_dummy -std=c++98 dummy.c
-run_dummy -std=c++03 dummy.c
-run_dummy -std=gnu++98 dummy.c
-run_dummy -std=gnu++03 dummy.c
-run_dummy -std=c++11 dummy.c
-run_dummy -std=c++0x dummy.c
-run_dummy -std=gnu++11 dummy.c
-run_dummy -std=gnu++0x dummy.c
-run_dummy -std=c++14 dummy.c
-run_dummy -std=c++1y dummy.c
-run_dummy -std=gnu++14 dummy.c
-run_dummy -std=gnu++1y dummy.c
-run_dummy -std=c++1z dummy.c
-run_dummy -std=gnu++1z dummy.c
-
-# Objective C specific
-run_dummy -fconstant-string-class dummy.c
-run_dummy -fnext-runtime dummy.c
-run_dummy -fno-local-ivars dummy.c
-run_dummy -fno-nil-receivers dummy.c
-run_dummy -fobjc-abi-version dummy.c
-run_dummy -fobjc-arc dummy.c
-run_dummy -fobjc-arc-exceptions dummy.c
-run_dummy -fobjc-call-cxx-cdtors dummy.c
-run_dummy -fobjc-direct-dispatch dummy.c
-run_dummy -fobjc-exceptions dummy.c
-run_dummy -fobjc-gc dummy.c
-run_dummy -fobjc-nilcheck dummy.c
-run_dummy -fobjc-runtime dummy.c
-run_dummy -fobjc-std=objc1 dummy.c
-run_dummy -gen-decls dummy.c
-run_dummy -lobjc dummy.c
-run_dummy -print-objc-runtime-info dummy.c
-run_dummy -x objective-c dummy.c
-run_dummy -x objective-c-header dummy.c
-run_dummy -x objective-c-cpp-output dummy-preproc.i
-run_dummy -x objective-c++ dummy.c
-run_dummy -x objective-c++-header dummy.c
-run_dummy -x objective-c++-cpp-output dummy-preproc.i
-
-# Ada specific
-run_dummy -fdump-ada-spec dummy.c
-
-# Go specific
-run_dummy -fdump-go-spec dummy.c
+# C++ specific in various categories other than C++
+run_dummy -fdevirtualize dummy.cpp
+run_dummy -fdevirtualize-at-ltrans dummy.cpp
+run_dummy -fdevirtualize-speculatively dummy.cpp
+run_dummy -fdump-class-hierarchy dummy.cpp
+run_dummy -fdump-class-hierarchy=address dummy.cpp
+run_dummy -fdump-class-hierarchy=asmname dummy.cpp
+run_dummy -fdump-class-hierarchy=slim dummy.cpp
+run_dummy -fdump-class-hierarchy=raw dummy.cpp
+run_dummy -fdump-class-hierarchy=details dummy.cpp
+run_dummy -fdump-class-hierarchy=stats dummy.cpp
+run_dummy -fdump-class-hierarchy=blocks dummy.cpp
+run_dummy -fdump-class-hierarchy=graph dummy.cpp
+run_dummy -fdump-class-hierarchy=vops dummy.cpp
+run_dummy -fdump-class-hierarchy=lineno dummy.cpp
+run_dummy -fdump-class-hierarchy=uid dummy.cpp
+run_dummy -fdump-class-hierarchy=verbose dummy.cpp
+run_dummy -fdump-class-hierarchy=eh dummy.cpp
+run_dummy -fdump-class-hierarchy=scev dummy.cpp
+run_dummy -fdump-class-hierarchy=optimized dummy.cpp
+run_dummy -fdump-class-hierarchy=missed dummy.cpp
+run_dummy -fdump-class-hierarchy=note dummy.cpp
+run_dummy -fdump-class-hierarchy=debug.dump dummy.cpp
+run_dummy -fdump-class-hierarchy=all dummy.cpp
+run_dummy -fdump-class-hierarchy=optall dummy.cpp
+run_dummy -fdump-translation-unit dummy.cpp
+run_dummy -fdump-translation-unit=all dummy.cpp
+run_dummy -fextern-tls-init dummy.cpp
+run_dummy -fno-default-inline dummy.cpp
+run_dummy -fno-lifetime-dse dummy.cpp
+run_dummy -fvtable-verify=preinit dummy.cpp
+run_dummy -fvtv-counts dummy.cpp
+run_dummy -fvtv-debug dummy.cpp
+run_dummy -imultilib custom dummy.cpp
 
 # Tidy up
 tidyup
