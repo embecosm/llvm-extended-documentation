@@ -21,3 +21,16 @@ The following warnings do not appear in the summary:
 -Wsynth
 -Wunreachable-code
 -Wunused-argument
+
+-fvar-tracking-assignments-toggle is not in Debugging Options summary
+
+-ftree-coalesce-inlined-vars undocumented in GCC
+-ftree-copyrename undocumented
+
+-fwpa only in option summary, not documented.
+
+-nostdinc++ also appears in C++ standard options as well as preproc
+
+-trigraphs also appears in C standard options as well as preproc
+
+-iquote not in summary for preprocesso
