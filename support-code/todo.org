@@ -22,8 +22,6 @@ The following warnings do not appear in the summary:
 -Wunreachable-code
 -Wunused-argument
 
--fvar-tracking-assignments-toggle is not in Debugging Options summary
-
 -ftree-coalesce-inlined-vars undocumented in GCC
 -ftree-copyrename undocumented
 
@@ -41,18 +39,74 @@ The following warnings do not appear in the summary:
 
 -fsel-sched-pipelining-verbose in summary only
 
--MD and -MMD not mentioned in summary for pre-processor
+The following are not mentioned in the summary for the pre-processor:
+-fdirectives-only
+-fdollars-in-identifiers
+-fno-show-column
+-fexec-charset=
+-fextended-identifiers
+-finput-charset=
+-fpch-deps
+-fpch-preprocess
+-fpreprocessed
+-ftabstop=
+-fwide-exec-charset=UTF-8
+-MD
+-MMD
 
--fdollars-in-identifiers not mentioned in summary for preprocessor
--fno-show-column likewise
--fexec-charset= likewise
--fextended-identifiers likewise
--finput-charset= likewise
--fpch-preprocess likewise
--ftabstop= likewise
+Preprocessor option -version (with one hyphen appears not to work).
 
--ftree-slp-vectorize is not mentioned in optimization summary
--ftree-vectorize likewise
+The following are not mentioned in the summary for C++ language options:
+-fextern-tls-init
+-fno-lifetime-dse
+-fno-use-cxa-get-exception-ptr
 
--gsplit-dwarf is not mentioned in debugging summary
+The following is mentioned neither in the summary nor section on C++ language
+options, but does appear elsewhere:
+-fno-default-inline
+
+
+The following are not mentioned in the summary for optimization:
+-foptimize-strlen
+-ftree-slp-vectorize
+-ftree-vectorize
+
+The following optimization parameters are documented, but appear not to work.
+--param tracer-min-branch-ratio-feedback=
+--param reorder-blocks-duplicate=
+--param reorder-blocks-duplicate-feedback=
+--param sched-spec-state-edge-prob-cutoff=
+--param selsched-max-insns-to-rename=
+--param lto-minpartition=
+--param max-ssa-name-query-depth=
+
+The following are not mentioned in the summary for debugging:
+-fvar-tracking-assignments-toggle
+-ggnu-pubnames
+-gpubnames
+-gsplit-dwarf
+
+The following is not documented in the developer options
+-print-multiarch
+-freport-bug
+
+The following developer options are documented, but appear not to work.
+-fdump-rtl-bypass
+-fdump-rtl-dce
+-fdump-rtl-dce1
+-fdump-rtl-dce2
+-fdump-rtl-eh
+-fdump-rtl-gcse1
+-fdump-rtl-initvals
+-fdump-rtl-regclass
+-fdump-rtl-seqabstr
+-fdump-rtl-sibling
+-fdump-rtl-subregs_of_mode_finish
+-fdump-rtl-subregs_of_mode_init
+-fdump-rtl-unshare
+-fdump-tree-storeccp
+
+-fcheck-data-deps is not documented. From the patch documentation, this
+ compares the results of several data dependence analyzers, and probably
+ belongs in the instrumentation section.
 
