@@ -1,3 +1,9 @@
+2016-01-26  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* support-code/opt-check.sh: All GCC options (in manual summary)
+	covered and initial LLVM option allocation to groups.
+	* support-code/todo.org: Updated with more GCC manual changes.
+
 2016-01-22  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* support-code/dummy-noassert.c: Created.

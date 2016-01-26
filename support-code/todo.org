@@ -34,3 +34,25 @@ The following warnings do not appear in the summary:
 -trigraphs also appears in C standard options as well as preproc
 
 -iquote not in summary for preprocesso
+
+-fsel-sched-verbose in summary only
+
+-fsel-sched-dump-cfg in summary only
+
+-fsel-sched-pipelining-verbose in summary only
+
+-MD and -MMD not mentioned in summary for pre-processor
+
+-fdollars-in-identifiers not mentioned in summary for preprocessor
+-fno-show-column likewise
+-fexec-charset= likewise
+-fextended-identifiers likewise
+-finput-charset= likewise
+-fpch-preprocess likewise
+-ftabstop= likewise
+
+-ftree-slp-vectorize is not mentioned in optimization summary
+-ftree-vectorize likewise
+
+-gsplit-dwarf is not mentioned in debugging summary
+

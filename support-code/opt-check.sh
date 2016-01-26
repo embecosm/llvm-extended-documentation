@@ -364,6 +364,12 @@ logcon ""
 
 logcon "Overall options for LLVM but not GCC"
 
+run_llvm -emit-ast dummy.c
+run_llvm -emit-llvm dummy.c
+run_llvm -help
+run_llvm -Qunused-arguments dummy.c
+logcon ""
+
 logcon "Overall options for GCC but not LLVM"
 
 run_gcc -fdump-ada-spec dummy.c
@@ -446,6 +452,11 @@ logcon ""
 
 logcon "C language options for LLVM but not GCC"
 
+run_llvm -fblocks dummy.c
+run_llvm -fborland-extensions dummy.c
+run_llvm -femit-all-decls dummy.c
+logcon ""
+
 logcon "C language options for GCC but not LLVM"
 
 run_gcc -aux-info proto.dat dummy.c
@@ -478,6 +489,7 @@ run_both -fcheck-new dummy.cpp
 run_both -fconstexpr-depth=1024 dummy.cpp
 run_both -ffor-scope dummy.cpp
 run_both -ffriend-injection dummy.cpp
+run_both -fgnu-keywords dummy.c
 run_both -fms-extensions dummy.cpp # Also in C
 run_both -fno-elide-constructors dummy.cpp
 run_both -fno-gnu-keywords dummy.cpp
@@ -520,6 +532,9 @@ run_both -Wsign-promo dummy.cpp
 logcon ""
 
 logcon "C++ language options for LLVM but not GCC"
+
+run_llvm -fdelayed-template-parsing dummy.cpp
+logcon ""
 
 logcon "C++ language options for GCC but not LLVM"
 
@@ -622,6 +637,7 @@ logcon "Diagnostic message formatting options for LLVM but not GCC"
 run_llvm -fcolor-diagnostics dummy.c
 run_llvm -fdiagnostics-parseable-fixits dummy.c
 run_llvm -fno-diagnostics-fixit-info dummy.c
+run_llvm -fno-elide-type dummy.c
 logcon ""
 
 logcon "Diagnostic message formatting options for GCC but not LLVM"
@@ -1395,6 +1411,8 @@ logcon "Debugging options for both LLVM and GCC"
 
 run_both -fdebug-prefix-map=`pwd`=`pwd`/.. dummy.c
 run_both -fdebug-types-section dummy.c
+run_both -feliminate-unused-debug-types dummy.c # Undocumented
+run_both -fno-debug-types-section dummy.c
 run_both -fno-dwarf2-cfi-asm dummy.c
 run_both -fno-eliminate-unused-debug-types dummy.c
 run_both -g dummy.c
@@ -1413,11 +1431,13 @@ run_both -gdwarf-4 dummy.c
 run_both -gno-record-gcc-switches dummy.c
 run_both -gno-strict-dwarf dummy.c
 run_both -grecord-gcc-switches dummy.c
+run_both -gsplit-dwarf dummy.c
 run_both -gstrict-dwarf dummy.c
 logcon ""
 
 logcon "Debugging options for LLVM but not GCC"
 
+run_llvm -fstandalone-debug dummy.c
 run_llvm -gfull dummy.c
 run_llvm -gused dummy.c
 logcon ""
@@ -1433,7 +1453,6 @@ run_gcc -femit-struct-debug-reduced dummy.c
 run_gcc -fno-merge-debug-strings dummy.c
 run_gcc -fvar-tracking dummy.c
 run_gcc -fvar-tracking-assignments dummy.c
-run_gcc -fvar-tracking-assignments-toggle dummy.c
 run_gcc -gcoff0 dummy.c
 run_gcc -gstabs dummy.c
 run_gcc -gstabs0 dummy.c
@@ -1484,6 +1503,7 @@ run_both -ffp-contract=off dummy.c
 run_both -ffp-contract=fast dummy.c
 run_both -ffp-contract=on dummy.c
 run_both -ffunction-sections dummy.c
+run_both -fmath-errno dummy.c
 run_both -fmerge-all-constants dummy.c
 run_both -fno-inline dummy.c
 run_both -fno-math-errno dummy.c
@@ -1495,9 +1515,11 @@ run_both -foptimize-sibling-calls dummy.c
 run_both -freciprocal-math dummy.c
 run_both -fstrict-aliasing dummy.c
 run_both -fstrict-overflow dummy.c
+run_both -ftree-slp-vectorize dummy.c
 run_both -funit-at-a-time dummy.c
 run_both -funroll-loops dummy.c
 run_both -funsafe-math-optimizations dummy.c
+run_both -ftree-vectorize dummy.c
 run_both -O dummy.c
 run_both -O0 dummy.c
 run_both -O1 dummy.c
@@ -1510,6 +1532,7 @@ logcon ""
 
 logcon "Optimization options for LLVM but not GCC"
 
+run_llvm -fvectorize dummy.c
 run_llvm -Oz dummy.c
 logcon ""
 
@@ -1868,6 +1891,12 @@ run_gcc --param chkp-max-ctor-size=4000 dummy.c
 run_gcc --param max-fsm-thread-path-insns=150 dummy.c
 run_gcc --param max-fsm-thread-length=12 dummy.c
 run_gcc --param max-fsm-thread-paths=60 dummy.c
+run_gcc --param parloops-chunk-size=1 dummy.c
+run_gcc --param parloops-schedule=static dummy.c
+run_gcc --param parloops-schedule=dynamic dummy.c
+run_gcc --param parloops-schedule=guided dummy.c
+run_gcc --param parloops-schedule=auto dummy.c
+run_gcc --param parloops-schedule=runtime dummy.c
 logcon ""
 
 # These options don't work because the AutoFDO tool is broken for newer kernels.
@@ -1886,6 +1915,7 @@ logcon "Program instrumentation options for both LLVM and GCC"
 
 run_both --coverage dummy.c
 run_both -finstrument-functions dummy.c profile-assist.c
+run_both -fno-sanitize=all dummy.c
 run_both -fprofile-arcs dummy.c
 run_both -fprofile-generate dummy.c
 run_only_llvm -fprofile-generate=`pwd`/llvm dummy.c
@@ -1943,6 +1973,8 @@ logcon ""
 
 logcon "Program instrumentation options for LLVM but not GCC"
 
+run_llvm --analyze dummy.c
+run_llvm -fcoverage-mapping -fprofile-instr-generate dummy.c
 run_llvm -fsanitize-recover=leak dummy.c
 run_llvm -fsanitize-recover=thread dummy.c
 logcon ""
@@ -2007,6 +2039,14 @@ run_both -DFIRST_CARMICHAEL_PSEUDO_PRIME=561 dummy.c
 run_both -dD -E dummy.c
 run_both -dM -E dummy.c
 run_both -E dummy.c
+run_both -fdollars-in-identifiers dummy-dollar.c
+run_both -fexec-charset=UTF-8 dummy.c
+run_both -fextended-identifiers dummy.c
+run_both -finput-charset=UTF-8 dummy.c
+run_both -fno-dollars-in-identifiers dummy.c
+run_both -fno-show-column dummy.c
+run_both -fpch-preprocess dummy.c
+run_both -ftabstop=2 dummy.c
 run_both -H dummy.c
 run_both -idirafter . dummy.c
 run_both -imacros dummy.h dummy.c
@@ -2017,13 +2057,16 @@ run_both -isystem . dummy.c
 run_both -iwithprefix ./ dummy.c
 run_both -iwithprefixbefore ./ dummy.c
 run_both -M dummy.c
+run_both -MD dummy.c
 run_both -M -MF dummy-deps dummy.c
 run_both -MG -M dummy.c
 run_both -MM dummy.c
+run_both -MMD dummy.c
 run_both -M -MP dummy.c
 run_both -M -MQ dummy.o dummy.c
 run_both -M -MT dummy.o dummy.c
 run_both -no-integrated-cpp dummy.c
+run_both -nostdinc dummy.c
 run_both -nostdinc++ dummy.cpp # Also in C++
 run_both -P dummy.c
 run_both -trigraphs dummy.c # Also in C
@@ -2034,6 +2077,14 @@ run_both -Xpreprocessor -I. dummy.c
 logcon ""
 
 logcon "Preprocessor options for LLVM but not GCC"
+
+run_llvm -ftrigraphs dummy.c
+run_llvm -iframework`pwd`/llvm dummy.c
+run_llvm -index-header-map dummy.c
+run_llvm -iwithsysroot `pwd`/llvm dummy.c
+run_llvm -nobuiltininc dummy.c
+run_llvm -relocatable-pch dummy.c
+logcon ""
 
 logcon "Preprocessor options for GCC but not LLVM"
 
@@ -2063,6 +2114,10 @@ run_both -Xassembler -compress-debug-sections dummy.c
 logcon ""
 
 logcon "Assembler options for LLVM but not GCC"
+
+run_llvm -fintegrated-as dummy.c
+run_llvm -fno-integrated-as dummy.c
+logcon ""
 
 logcon "Assembler options for GCC but not LLVM"
 
@@ -2101,6 +2156,11 @@ run_both -z defs dummy.c
 logcon ""
 
 logcon "Linker options for LLVM but not GCC"
+
+run_llvm -fno-autolink dummy.c
+run_llvm -fuse-init-array dummy.c
+run_llvm -fveclib=Accelerate dummy.c
+logcon ""
 
 logcon "Linker options for GCC but not LLVM"
 
@@ -2151,172 +2211,143 @@ run_gcc --no-sysroot-suffix dummy.c
 logcon ""
 
 
+#################################################################################
+#                                                                               #
+#			   Code Generation Options                              #
+#                                                                               #
+#################################################################################
 
-# Options for both compilers
+logcon ""
+logcon "Code gen options for both LLVM and GCC"
 
-logit ""
-logcon "Testing options for both LLVM and GCC"
-
-run_both -fdollars-in-identifiers dummy-dollar.c
+run_both -fasynchronous-unwind-tables dummy.c
 run_both -fexceptions dummy.c
 run_both -fno-common dummy.c
-run_both -fno-show-column dummy.c
-run_both -fobjc-gc dummy.c
-run_both -fshort-enums dummy.c
-run_both -fshort-wchar dummy.c
-run_both -ftrapv dummy.c
-run_both -fwrapv dummy.c
-run_both -MD dummy.c
-run_both -MMD dummy.c
-run_both -pipe dummy.c
-run_both -print-libgcc-file-name dummy.c
-run_both -print-search-dirs dummy.c
-run_both -save-temps dummy.c
-run_both -save-temps=obj dummy.c
-
-# Options for both compilers not reported by llvm --help. I really don't
-# believe some of these actually do anything!
-
-run_both -dumpmachine dummy.c
-run_both -dumpversion dummy.c
-run_both -F`pwd` dummy.c
-run_both -fasynchronous-unwind-tables dummy.c
-run_both -feliminate-unused-debug-types dummy.c
-run_both -fexec-charset=UTF-8 dummy.c
-run_both -fextended-identifiers dummy.c
-run_both -fgnu-keywords dummy.c
-run_both -finput-charset=UTF-8 dummy.c
-run_both -fmath-errno dummy.c
-run_both -fno-common dummy.c
-run_both -fno-debug-types-section dummy.c
-run_both -fno-dollars-in-identifiers dummy.c
 run_both -fno-ident dummy.c
-run_both -fno-implement-inlines dummy.c
 run_both -fnon-call-exceptions dummy.c
-run_both -fno-sanitize=all dummy.c
-run_both -fno-signed-zeros dummy.c
 run_both -fpack-struct dummy.c
 run_both -fpack-struct=4 dummy.c
-run_both -fpch-preprocess dummy.c
-run_both -fpic dummy.c
 run_both -fPIC dummy.c
-run_both -fpie dummy.c
+run_both -fpic dummy.c
 run_both -fPIE dummy.c
-run_both -frandom-seed=561 dummy.c
-run_both -ftabstop=2 dummy.c
-run_both -ftime-report dummy.c
+run_both -fpie dummy.c
+run_both -fshort-enums dummy.c
+run_both -fshort-wchar dummy.c
+run_both -ftls-model=initial-exec dummy.c
+run_both -ftls-model=global-dynamic dummy.c
 run_both -ftls-model=local-dynamic dummy.c
+run_both -ftls-model=local-exec dummy.c
 run_both -ftrapv dummy.c
-run_both -ftree-slp-vectorize dummy.c
-run_both -ftree-vectorize dummy.c
 run_both -funwind-tables dummy.c
 run_both -fverbose-asm dummy.c
 run_both -fvisibility=default dummy.c
 run_both -fvisibility=hidden dummy.c
+run_both -fvisibility=internal dummy.c
 run_both -fvisibility=protected dummy.c
-run_both -gsplit-dwarf dummy.c
-run_both -nostdinc dummy.c
-run_both -print-file-name=code -L`pwd` dummy.c
-run_both -print-multi-directory dummy.c
-run_both -print-multi-lib dummy.c
-run_both -print-prog-name=cpp dummy.c
-run_both -pthread dummy.c
-run_both -traditional -E dummy.c
-
-# Options for LLVM but not GCC
-
+run_both -fwrapv dummy.c
 logcon ""
-logcon "Testing options for LLVM but not GCC"
-run_llvm --analyze dummy.c
-run_llvm -emit-ast dummy.c
+
+logcon "Code gen options for LLVM but not GCC"
+
 run_llvm -fapple-kext dummy.c
 run_llvm -fapple-pragma-pack dummy.c
 run_llvm -fapplication-extension dummy.c
-run_llvm -fblocks dummy.c
-run_llvm -fborland-extensions dummy.c
-run_llvm -fcoverage-mapping -fprofile-instr-generate dummy.c
-run_llvm -fdelayed-template-parsing dummy.c
-run_llvm -femit-all-decls dummy.c
-run_llvm -fintegrated-as dummy.c
-run_llvm -fno-autolink dummy.c
-run_llvm -fno-elide-type dummy.c
-run_llvm -fno-integrated-as dummy.c
-run_llvm -fstandalone-debug dummy.c
 run_llvm -ftrap-function=main dummy.c
-run_llvm -ftrigraphs dummy.c
-run_llvm -fuse-init-array dummy.c
-run_llvm -fveclib=Accelerate dummy.c
-run_llvm -fvectorize dummy.c
-run_llvm -help
-run_llvm -iframework`pwd` dummy.c
-run_llvm -index-header-map dummy.c
-run_llvm -iwithsysroot `pwd` dummy.c
-run_llvm -nobuiltininc dummy.c
-run_llvm -pthreads dummy.c
-run_llvm -Qunused-arguments dummy.c
-run_llvm -relocatable-pch dummy.c
-run_llvm -Rpass-analysis dummy.c
-run_llvm -Rpass-missed dummy.c
-run_llvm -Rpass dummy.c
-run_llvm -R dummy.c
-run_llvm -target i686-pc-linux-gnu -c dummy.c
-run_llvm -Xclang -cc1 dummy.c
+logcon ""
 
-# Options from llvm -help which appear not to work
-run_dummy -arcmt-migrate-emit-errors dummy.c
-run_dummy -fno-math-builtin dummy.c
-run_dummy -time dummy.c
-run_dummy -Xanalyzer dummy.c
+logcon "Code gen options for GCC but not LLVM"
 
-# LLVM target specific options from -help
-run_dummy -mabicalls dummy.c
-run_dummy -mcrc dummy.c
-run_dummy -mfp32 dummy.c
-run_dummy -mfp64 dummy.c
-run_dummy --migrate dummy.c
-run_dummy -mllvm dummy.c
-run_dummy -mmsa dummy.c
-run_dummy -mms-bitfields dummy.c
-run_dummy -mno-abicalls dummy.c
-run_dummy -mnocrc dummy.c
-run_dummy -mno-implicit-float dummy.c
-run_dummy -mno-msa dummy.c
-run_dummy -mno-restrict-it dummy.c
-run_dummy -module-dependency-dir dummy.c
-run_dummy -mrelax-all dummy.c
-run_dummy -mrestrict-it dummy.c
-run_dummy -mrtd dummy.c
-run_dummy -msoft-float dummy.c
-run_dummy -mstack-alignment dummy.c
-run_dummy -mstackrealign dummy.c
-run_dummy -mthread-model dummy.c
-run_dummy -munaligned-access dummy.c
+run_gcc -fcall-saved-rax dummy.c
+run_gcc -fcall-used-rax dummy.c
+run_gcc -fdelete-dead-exceptions dummy.c
+run_gcc -ffixed-rax dummy.c
+run_gcc -ffixed-r9 dummy.c # ARM specific, GCC silently ignores
+run_gcc -finhibit-size-directive dummy.c
+run_gcc -fleading-underscore -c dummy.c
+run_gcc -fno-gnu-unique dummy.c
+run_gcc -fno-jump-tables dummy.c
+run_gcc -fno-plt dummy.cpp
+run_gcc -fpcc-struct-return dummy.c
+run_gcc -frecord-gcc-switches dummy.c
+run_gcc -freg-struct-return dummy.c
+run_gcc -fshort-double -E dummy.c # GCC only, but causes ICE
+run_gcc -fstack-reuse=all dummy.c
+run_gcc -fstack-reuse=named_vars dummy.c
+run_gcc -fstack-reuse=none dummy.c
+run_gcc -fstrict-volatile-bitfields dummy.c
+run_gcc -fsync-libcalls dummy.c
+logcon ""
 
-# Options for GCC but not LLVM
+
+#################################################################################
+#                                                                               #
+#			      Developer Options                                 #
+#                                                                               #
+#################################################################################
 
 logcon ""
-logcon "Testing options for GCC but not LLVM"
+logcon "Developer options for both LLVM and GCC"
+
+run_both -dumpmachine dummy.c
+run_both -dumpversion dummy.c
+run_both -frandom-seed=561 dummy.c
+run_both -ftime-report dummy.c
+run_both -print-file-name=code -L`pwd` dummy.c
+run_both -print-libgcc-file-name dummy.c
+run_both -print-multi-directory dummy.c
+run_both -print-multi-lib dummy.c
+run_both -print-prog-name=cpp dummy.c
+run_both -print-search-dirs dummy.c
+run_both -save-temps dummy.c
+run_both -save-temps=cwd dummy.c
+run_both -save-temps=obj dummy.c
+logcon ""
+
+logcon "Developer options for LLVM but not GCC"
+
+logcon "Developer options for GCC but not LLVM"
 
 run_gcc -da dummy.c
 run_gcc -dA dummy.c
 run_gcc -dH dummy.c
 run_gcc -dp dummy.c
 run_gcc -dP dummy.c
-run_gcc -c -dx dummy.c
 run_gcc -dU dummy.c
+run_gcc -dx -c dummy.c
 run_gcc -dumpspecs dummy.c
-run_gcc -fcall-saved-rax dummy.c
-run_gcc -fcall-used-rax dummy.c
-run_gcc -fcheck-data-deps dummy.c
+run_gcc -fchecking dummy.c
 run_gcc -fcompare-debug dummy.c
+run_gcc -fcompare-debug= dummy.c
+run_gcc -fcompare-debug=-gtoggle dummy.c
 run_gcc -fcompare-debug-second dummy.c
 run_gcc -fdbg-cnt=dce:10,tail_call:0 dummy.c
-run_gcc -fdbg-cnt-list dummy.c
-run_gcc -fdelete-dead-exceptions dummy.c
-run_gcc -fdirectives-only dummy.c
+run_gcc -fdbg-cnt-list -c dummy.c
 run_gcc -fdisable-ipa-inline dummy.c
+run_gcc -fdisable-rtl-gcse2 dummy.c
 run_gcc -fdisable-rtl-gcse2=foo,foo2 dummy.c
+run_gcc -fdisable-tree-cunroll dummy.c
 run_gcc -fdisable-tree-cunroll=1 dummy.c
+run_gcc -fdump-class-hierarchy dummy.cpp
+run_gcc -fdump-class-hierarchy=address dummy.cpp
+run_gcc -fdump-class-hierarchy=asmname dummy.cpp
+run_gcc -fdump-class-hierarchy=slim dummy.cpp
+run_gcc -fdump-class-hierarchy=raw dummy.cpp
+run_gcc -fdump-class-hierarchy=details dummy.cpp
+run_gcc -fdump-class-hierarchy=stats dummy.cpp
+run_gcc -fdump-class-hierarchy=blocks dummy.cpp
+run_gcc -fdump-class-hierarchy=graph dummy.cpp
+run_gcc -fdump-class-hierarchy=vops dummy.cpp
+run_gcc -fdump-class-hierarchy=lineno dummy.cpp
+run_gcc -fdump-class-hierarchy=uid dummy.cpp
+run_gcc -fdump-class-hierarchy=verbose dummy.cpp
+run_gcc -fdump-class-hierarchy=eh dummy.cpp
+run_gcc -fdump-class-hierarchy=scev dummy.cpp
+run_gcc -fdump-class-hierarchy=optimized dummy.cpp
+run_gcc -fdump-class-hierarchy=missed dummy.cpp
+run_gcc -fdump-class-hierarchy=note dummy.cpp
+run_gcc -fdump-class-hierarchy=debug.dump dummy.cpp
+run_gcc -fdump-class-hierarchy=all dummy.cpp
+run_gcc -fdump-class-hierarchy=optall dummy.cpp
 run_gcc -fdump-final-insns=dummy.gkd dummy.c
 run_gcc -fdump-ipa-all dummy.c
 run_gcc -fdump-ipa-cgraph dummy.c
@@ -2324,6 +2355,7 @@ run_gcc -fdump-ipa-inline dummy.c
 run_gcc -fdump-noaddr dummy.c
 run_gcc -fdump-passes dummy.c
 run_gcc -fdump-rtl-alignments dummy.c
+run_gcc -fdump-rtl-alignments=dummy.out dummy.c
 run_gcc -fdump-rtl-all dummy.c
 run_gcc -fdump-rtl-asmcons dummy.c
 run_gcc -fdump-rtl-auto_inc_dec dummy.c
@@ -2385,10 +2417,11 @@ run_gcc -fdump-tree-alias-${ALLOPTS}=debug.dump dummy.c
 run_gcc -fdump-tree-alias-all dummy.c
 run_gcc -fdump-tree-alias-optall dummy.c
 run_gcc -fdump-tree-all dummy.c
-run_gcc -fdump-tree-ccp dummy.c
+run_gcc -fdump-tree-backprop dummy.c
+run_gcc -fdump-tree-ccp-all dummy.c
+run_gcc -fdump-tree-ccp-all=dummy.out dummy.c
 run_gcc -fdump-tree-cfg dummy.c
 run_gcc -fdump-tree-ch dummy.c
-run_gcc -fdump-tree-copyrename dummy.c
 run_gcc -fdump-tree-dce dummy.c
 run_gcc -fdump-tree-dom dummy.c
 run_gcc -fdump-tree-dse dummy.c
@@ -2402,6 +2435,7 @@ run_gcc -fdump-tree-phiopt dummy.c
 run_gcc -fdump-tree-phiprop dummy.c
 run_gcc -fdump-tree-pre dummy.c
 run_gcc -fdump-tree-sink dummy.c
+run_gcc -fdump-tree-split-paths dummy.c
 run_gcc -fdump-tree-sra dummy.c
 run_gcc -fdump-tree-ssa dummy.c
 run_gcc -fdump-tree-vect dummy.c
@@ -2409,23 +2443,221 @@ run_gcc -fdump-tree-vrp dummy.c
 run_gcc -fdump-tree-vtable-verify dummy.c
 run_gcc -fdump-unnumbered dummy.c
 run_gcc -fdump-unnumbered-links dummy.c
+run_gcc -fdump-translation-unit dummy.cpp
+run_gcc -fdump-translation-unit=all dummy.cpp
 run_gcc -fenable-ipa-inline dummy.c
 run_gcc -fenable-rtl-gcse2=foo,foo2 dummy.c
 run_gcc -fenable-tree-cunroll=1 dummy.c
-run_gcc -fexcess-precision=standard dummy.c
-run_gcc -ffixed-rax dummy.c
-run_gcc -ffixed-r9 dummy.c # ARM specific, GCC silently ignores
-run_gcc -fforward-propagate dummy.c
-run_gcc -finhibit-size-directive dummy.c
 run_gcc -fira-verbose=15 dummy.c
-run_gcc -fleading-underscore -c dummy.c
 run_gcc -flto-report dummy.c
 run_gcc -flto-report-wpa dummy.c
 run_gcc -fmem-report dummy.c
 run_gcc -fmem-report-wpa dummy.c
+run_gcc -fno-compare-debug dummy.cpp
+run_gcc -fopt-info dummy.c
+run_gcc -fopt-info-all dummy.c
+run_gcc -fopt-info-all=dummy.out dummy.c
+run_gcc -fpost-ipa-mem-report dummy.c
+run_gcc -fpre-ipa-mem-report dummy.c
+run_gcc -fprofile-report dummy.c
+run_gcc -fsched-verbose=4 dummy.c
+run_gcc -fstack-usage dummy.c
+run_gcc -fstats dummy.c
+run_gcc -fvar-tracking-assignments-toggle dummy.c
+run_gcc -gtoggle dummy.c # Also in Debugging Options
+run_gcc -print-multi-os-directory dummy.c
+run_gcc -print-sysroot dummy.c
+run_gcc -Q --help=target dummy.c
+run_gcc -time dummy.c # LLVM --help claims this works
+run_gcc -time=time.dat dummy.c
+logcon ""
+
+# Not supported at all for this architecture
+
+run_dummy -print-sysroot-headers-suffix dummy.c # Not configured for x86_64
+
+
+#################################################################################
+#                                                                               #
+#				Other Options                                   #
+#                                                                               #
+#################################################################################
+
+
+# Options for both compilers
+
+logit ""
+logcon "Testing options for both LLVM and GCC"
+
+# Options for both compilers not reported by llvm --help. I really don't
+# believe some of these actually do anything!
+
+run_dummy -F`pwd` dummy.c # Darwin only
+run_dummy -pthread dummy.c # Target specific for GCC and LLVM
+run_dummy -pthreads dummy.c # Target specific for LLVM
+
+
+
+# The rest of them
+
+# Options for LLVM but not GCC
+
+logcon ""
+logcon "Testing options for LLVM but not GCC"
+run_llvm -Rpass=aa-eval dummy.c # Analysis passes
+run_llvm -Rpass=basicaa dummy.c
+run_llvm -Rpass=basiccg dummy.c
+run_llvm -Rpass=count-aa dummy.c
+run_llvm -Rpass=da dummy.c
+run_llvm -Rpass=debug-aa dummy.c
+run_llvm -Rpass=domfrontier dummy.c
+run_llvm -Rpass=domtree dummy.c
+run_llvm -Rpass=dot-callgraph dummy.c
+run_llvm -Rpass=dot-cfg dummy.c
+run_llvm -Rpass=dot-cfg-only dummy.c
+run_llvm -Rpass=dot-dom dummy.c
+run_llvm -Rpass=dot-dom-only dummy.c
+run_llvm -Rpass=dot-postdom dummy.c
+run_llvm -Rpass=dot-postdom-only dummy.c
+run_llvm -Rpass=globalsmodref-aa dummy.c
+run_llvm -Rpass=instcount dummy.c
+run_llvm -Rpass=intervals dummy.c
+run_llvm -Rpass=iv-users dummy.c
+run_llvm -Rpass=lazy-value-info dummy.c
+run_llvm -Rpass=libcall-aa dummy.c
+run_llvm -Rpass=lint dummy.c
+run_llvm -Rpass=loops dummy.c
+run_llvm -Rpass=memdep dummy.c
+run_llvm -Rpass=module-debuginfo dummy.c
+run_llvm -Rpass=no-aa dummy.c
+run_llvm -Rpass=postdomfrontier dummy.c
+run_llvm -Rpass=postdomtree dummy.c
+run_llvm -Rpass=print-alias-sets dummy.c
+run_llvm -Rpass=print-callgraph dummy.c
+run_llvm -Rpass=print-callgraph-sccs dummy.c
+run_llvm -Rpass=print-cfg-sccs dummy.c
+run_llvm -Rpass=print-dom-info dummy.c
+run_llvm -Rpass=print-externalfnconstants dummy.c
+run_llvm -Rpass=print-function dummy.c
+run_llvm -Rpass=print-module dummy.c
+run_llvm -Rpass=print-used-types dummy.c
+run_llvm -Rpass=regions dummy.c
+run_llvm -Rpass=scalar-evolution dummy.c
+run_llvm -Rpass=scev-aa dummy.c
+run_llvm -Rpass=targetdata dummy.c
+run_llvm -Rpass=adce dummy.c # Transform Passes
+run_llvm -Rpass=always-inline dummy.c
+run_llvm -Rpass=argpromotion dummy.c
+run_llvm -Rpass=bb-vectorize dummy.c
+run_llvm -Rpass=block-placement dummy.c
+run_llvm -Rpass=break-crit-edges dummy.c
+run_llvm -Rpass=codegenprepare dummy.c
+run_llvm -Rpass=constmerge dummy.c
+run_llvm -Rpass=constprop dummy.c
+run_llvm -Rpass=dce dummy.c
+run_llvm -Rpass=deadargelim dummy.c
+run_llvm -Rpass=deadtypeelim dummy.c
+run_llvm -Rpass=die dummy.c
+run_llvm -Rpass=dse dummy.c
+run_llvm -Rpass=functionattrs dummy.c
+run_llvm -Rpass=globaldce dummy.c
+run_llvm -Rpass=globalopt dummy.c
+run_llvm -Rpass=gvn dummy.c
+run_llvm -Rpass=indvars dummy.c
+run_llvm -Rpass=inline dummy.c
+run_llvm -Rpass=instcombine dummy.c
+run_llvm -Rpass=internalize dummy.c
+run_llvm -Rpass=ipconstprop dummy.c
+run_llvm -Rpass=ipsccp dummy.c
+run_llvm -Rpass=jump-threading dummy.c
+run_llvm -Rpass=lcssa dummy.c
+run_llvm -Rpass=licm dummy.c
+run_llvm -Rpass=loop-deletion dummy.c
+run_llvm -Rpass=loop-extract dummy.c
+run_llvm -Rpass=loop-extract-single dummy.c
+run_llvm -Rpass=loop-reduce dummy.c
+run_llvm -Rpass=loop-rotate dummy.c
+run_llvm -Rpass=loop-simplify dummy.c
+run_llvm -Rpass=loop-unroll dummy.c
+run_llvm -Rpass=loop-unswitch dummy.c
+run_llvm -Rpass=loweratomic dummy.c
+run_llvm -Rpass=lowerinvoke dummy.c
+run_llvm -Rpass=lowerswitch dummy.c
+run_llvm -Rpass=mem2reg dummy.c
+run_llvm -Rpass=memcpyopt dummy.c
+run_llvm -Rpass=mergefunc dummy.c
+run_llvm -Rpass=mergereturn dummy.c
+run_llvm -Rpass=partial-inliner dummy.c
+run_llvm -Rpass=prune-eh dummy.c
+run_llvm -Rpass=reassociate dummy.c
+run_llvm -Rpass=reg2mem dummy.c
+run_llvm -Rpass=scalarrepl dummy.c
+run_llvm -Rpass=sccp dummy.c
+run_llvm -Rpass=simplifycfg dummy.c
+run_llvm -Rpass=sink dummy.c
+run_llvm -Rpass=strip dummy.c
+run_llvm -Rpass=strip-dead-debug-info dummy.c
+run_llvm -Rpass=strip-dead-prototypes dummy.c
+run_llvm -Rpass=strip-debug-declare dummy.c
+run_llvm -Rpass=strip-nondebug dummy.c
+run_llvm -Rpass=tailcallelim dummy.c
+run_llvm -Rpass=deadarghaX0r dummy.c # Utility Passes
+run_llvm -Rpass=extract-blocks dummy.c
+run_llvm -Rpass=instnamer dummy.c
+run_llvm -Rpass=verify dummy.c
+run_llvm -Rpass=view-cfg dummy.c
+run_llvm -Rpass=view-cfg-only dummy.c
+run_llvm -Rpass=view-dom dummy.c
+run_llvm -Rpass=view-dom-only dummy.c
+run_llvm -Rpass=view-postdom dummy.c
+run_llvm -Rpass=view-postdom-only dummy.c
+
+run_llvm -Rpass-analysis dummy.c
+run_llvm -Rpass-missed dummy.c
+run_llvm -Rpass dummy.c
+run_llvm -R dummy.c
+run_llvm -target i686-pc-linux-gnu -c dummy.c
+run_llvm -Xclang -cc1 dummy.c
+
+# Options from llvm -help which appear not to work
+run_dummy -arcmt-migrate-emit-errors dummy.c
+run_dummy -fno-math-builtin dummy.c
+run_dummy -Xanalyzer dummy.c
+
+# LLVM target specific options from -help
+run_dummy -mabicalls dummy.c
+run_dummy -mcrc dummy.c
+run_dummy -mfp32 dummy.c
+run_dummy -mfp64 dummy.c
+run_dummy --migrate dummy.c
+run_dummy -mllvm dummy.c
+run_dummy -mmsa dummy.c
+run_dummy -mms-bitfields dummy.c
+run_dummy -mno-abicalls dummy.c
+run_dummy -mnocrc dummy.c
+run_dummy -mno-implicit-float dummy.c
+run_dummy -mno-msa dummy.c
+run_dummy -mno-restrict-it dummy.c
+run_dummy -module-dependency-dir dummy.c
+run_dummy -mrelax-all dummy.c
+run_dummy -mrestrict-it dummy.c
+run_dummy -mrtd dummy.c
+run_dummy -msoft-float dummy.c
+run_dummy -mstack-alignment dummy.c
+run_dummy -mstackrealign dummy.c
+run_dummy -mthread-model dummy.c
+run_dummy -munaligned-access dummy.c
+
+# Options for GCC but not LLVM
+
+logcon ""
+logcon "Testing options for GCC but not LLVM"
+
+run_gcc -fcheck-data-deps dummy.c
+run_gcc -fdirectives-only dummy.c
+run_gcc -fexcess-precision=standard dummy.c
+run_gcc -fforward-propagate dummy.c
 run_gcc -fno-canonical-system-headers dummy.c
-run_gcc -fno-gnu-unique dummy.c
-run_gcc -fno-jump-tables dummy.c
 run_gcc -fno-record-gcc-switches dummy.c
 run_gcc -fno-signed-bitfields dummy.c
 run_gcc -fno-unsigned-bitfields dummy.c
@@ -2434,44 +2666,25 @@ run_gcc -fno-var-tracking-assignments dummy.c
 run_gcc -fno-var-tracking-assignments-toggle dummy.c
 run_gcc -fno-working-directory dummy.c
 run_gcc -foptimize-strlen dummy.c
-run_gcc -fopt-info dummy.c
-run_gcc -fpcc-struct-return dummy.c
 run_gcc -fpch-deps dummy.c
-run_gcc -fpost-ipa-mem-report dummy.c
-run_gcc -fpre-ipa-mem-report dummy.c
 run_gcc -fpredictive-commoning dummy.c
 run_gcc -fpreprocessed dummy-preproc.i
 run_gcc -fprofile-dir=`pwd`/gcc dummy.c
-run_gcc -fprofile-report dummy.c
-run_gcc -frecord-gcc-switches dummy.c
-run_gcc -freg-struct-return dummy.c
 run_gcc -frepo dummy.c
 run_gcc -freport-bug dummy.c
-run_gcc -fsched-verbose=4 dummy.c
 run_gcc -fstack-protector-explicit dummy.c
-run_gcc -fstack-reuse=all dummy.c
-run_gcc -fstack-reuse=named_vars dummy.c
-run_gcc -fstack-reuse=none dummy.c
-run_gcc -fstack-usage dummy.c
-run_gcc -fstats dummy.c
-run_gcc -fstrict-volatile-bitfields dummy.c
-run_gcc -fsync-libcalls dummy.c
-run_gcc -fvisibility=internal dummy.c
 run_gcc -fwide-exec-charset=UTF-8 dummy.c
 run_gcc -gpubnames dummy.c
 run_gcc -pass-exit-codes dummy.c
 run_gcc -print-multiarch dummy.c
 run_gcc -print-multi-os-directory dummy.c
-run_gcc -print-sysroot dummy.c
 run_gcc -Q dummy.c
-run_gcc -time=time.dat dummy.c
 run_gcc -traditional-cpp dummy.c
 run_gcc -umbrella dummy.c
 run_gcc -undefined dummy.c
 run_gcc -unexported_symbols_list dummy.c
 
 # Options claimed by clang --help, but which in fact are not supported.
-run_gcc -time dummy.c
 
 # Options which should not work on either compiler
 
@@ -2481,14 +2694,14 @@ logcon "Testing options for neither GCC nor LLVM"
 # Options for both compilers for some targets
 
 # Options which are only for specific targets or systems
-run_neither -faltivec dummy.c
-run_neither -dependency-dot dummy.dot dummy.c
-run_neither -dependency-file dummy.deps dummy.c
-run_neither -fcxx-exceptions dummy.c # C++ specific
-run_neither -fdefault-addrspace dummy.c # Target specific
-run_neither -ffix-and-continue dummy.c
-run_neither -findirect-data dummy.c
-run_neither -fmax-type-align dummy.c # Darwin
+run_dummy -faltivec dummy.c
+run_dummy -dependency-dot dummy.dot dummy.c
+run_dummy -dependency-file dummy.deps dummy.c
+run_dummy -fcxx-exceptions dummy.c # C++ specific
+run_dummy -fdefault-addrspace dummy.c # Target specific
+run_dummy -ffix-and-continue dummy.c
+run_dummy -findirect-data dummy.c
+run_dummy -fmax-type-align dummy.c # Darwin
 run_dummy -fmodule-file dummy.c # Module mechanism needs more work
 run_dummy -fmodule-map-file dummy.c # Module mechanism needs more work
 run_dummy -fmodule-maps dummy.c # Module mechanism needs more work
@@ -2498,104 +2711,70 @@ run_dummy -fmodules-decluse dummy.c # Module mechanism needs more work
 run_dummy -fmodules-ignore-macro dummy.c # Module mechanism needs more work
 run_dummy -fmodules-prune-after dummy.c # Module mechanism needs more work
 run_dummy -fmodules-prune-interval dummy.c # Module mechanism needs more work
-run_neither -fno-keep-inline-dllexport dummy.c
-run_neither -image_base dummy.c # Darwin
-run_neither -init dummy.c # Darwin
-run_neither -install_name dummy.c # Darwin
+run_dummy -fno-keep-inline-dllexport dummy.c
+run_dummy -image_base dummy.c # Darwin
+run_dummy -init dummy.c # Darwin
+run_dummy -install_name dummy.c # Darwin
 run_dummy -ivfsoverlay dummy.overlay dummy.c # Module mechanism needs more work
-run_neither -keep_private_externs dummy.c # Darwin
-run_neither -no_dead_strip_inits_and_terms dummy.c # Darwin
-run_neither -noall_load dummy.c # Darwin
-run_neither -nofixprebinding dummy.c # Darwin
-run_neither -nomultidefs dummy.c # Darwin
-run_neither -noprefind dummy.c # Darwin
-run_neither -noseglinkedit dummy.c # Darwin
-run_neither -pagezero_size dummy.c # Darwin
-run_neither -print-sysroot-headers-suffix dummy.c
-run_neither -private_bundle dummy.c # Darwin
-run_neither -read_only_relocs dummy.c # Darwin
-run_neither -sectalign dummy.c # Darwin
-run_neither -sectcreate dummy.c # Darwin
-run_neither -sectobjectsymbols dummy.c # Darwin
-run_neither -sectorder dummy.c # Darwin
-run_neither -seg_addr_table dummy.c # Darwin
-run_neither -seg_addr_table_filename dummy.c # Darwin
-run_neither -seg1addr dummy.c # Darwin
-run_neither -segaddr dummy.c # Darwin
-run_neither -seglinkedit dummy.c # Darwin
-run_neither -segprot dummy.c # Darwin
-run_neither -segs_read_only_addr dummy.c # Darwin
-run_neither -segs_read_write_addr dummy.c # Darwin
-run_neither -single_module dummy.c # Darwin
-run_neither -sub_library dummy.c # Darwin
-run_neither -sub_umbrella dummy.c # Darwin
-run_neither -twolevel_namespace dummy.c # Darwin
-run_neither -weak_reference_mismatches dummy.c # Darwin
-run_neither -whatsloaded dummy.c # Darwin
-run_neither -whyload dummy.c # Darwin
-run_neither wrapper dummy.c # Darwin
+run_dummy -keep_private_externs dummy.c # Darwin
+run_dummy -no_dead_strip_inits_and_terms dummy.c # Darwin
+run_dummy -noall_load dummy.c # Darwin
+run_dummy -nofixprebinding dummy.c # Darwin
+run_dummy -nomultidefs dummy.c # Darwin
+run_dummy -noprefind dummy.c # Darwin
+run_dummy -noseglinkedit dummy.c # Darwin
+run_dummy -pagezero_size dummy.c # Darwin
+run_dummy -private_bundle dummy.c # Darwin
+run_dummy -read_only_relocs dummy.c # Darwin
+run_dummy -sectalign dummy.c # Darwin
+run_dummy -sectcreate dummy.c # Darwin
+run_dummy -sectobjectsymbols dummy.c # Darwin
+run_dummy -sectorder dummy.c # Darwin
+run_dummy -seg_addr_table dummy.c # Darwin
+run_dummy -seg_addr_table_filename dummy.c # Darwin
+run_dummy -seg1addr dummy.c # Darwin
+run_dummy -segaddr dummy.c # Darwin
+run_dummy -seglinkedit dummy.c # Darwin
+run_dummy -segprot dummy.c # Darwin
+run_dummy -segs_read_only_addr dummy.c # Darwin
+run_dummy -segs_read_write_addr dummy.c # Darwin
+run_dummy -single_module dummy.c # Darwin
+run_dummy -sub_library dummy.c # Darwin
+run_dummy -sub_umbrella dummy.c # Darwin
+run_dummy -twolevel_namespace dummy.c # Darwin
+run_dummy -weak_reference_mismatches dummy.c # Darwin
+run_dummy -whatsloaded dummy.c # Darwin
+run_dummy -whyload dummy.c # Darwin
+run_dummy wrapper dummy.c # Darwin
 
 
 # Options which are in the manual, but which appear not to work.
-run_neither -fdump-rtl-bypass dummy.c
-run_neither -fdump-rtl-dce dummy.c
-run_neither -fdump-rtl-dce1 dummy.c
-run_neither -fdump-rtl-dce2 dummy.c
-run_neither -fdump-rtl-eh dummy.c
-run_neither -fdump-rtl-gcse1 dummy.c
-run_neither -fdump-rtl-initvals dummy.c
-run_neither -fdump-rtl-pass dummy.c
-run_neither -fdump-rtl-regclass dummy.c
-run_neither -fdump-rtl-seqabstr dummy.c
-run_neither -fdump-rtl-sibling dummy.c
-run_neither -fdump-rtl-subregs_of_mode_finish dummy.c
-run_neither -fdump-rtl-subregs_of_mode_init dummy.c
-run_neither -fdump-rtl-unshare dummy.c
-run_neither -fdump-tree-storeccp dummy.c
-run_neither -femit-struct-debug-detailed dummy.c # Needs arg
-run_neither -fsel-sched-dump-cfg dummy.c # In summary only
-run_neither -fsel-sched-pipelining-verbose dummy.c # In summary only
-run_neither -fsel-sched-verbose dummy.c # In summary only
-run_neither -fshort-double dummy.c # ICE
-run_neither --param tracer-min-branch-ratio-feedback=5 dummy.c
-run_neither --param reorder-blocks-duplicate=3 dummy.c
-run_neither --param reorder-blocks-duplicate-feedback=5 dummy.c
-run_neither --param sched-spec-state-edge-prob-cutoff=12 dummy.c
-run_neither --param selsched-max-insns-to-rename=3 dummy.c
-run_neither --param lto-minpartition=16 dummy.c
-run_neither --param parloops-chunk-size=1 dummy.c # In top-of-tree?
-run_neither --param parloops-schedule=static dummy.c # In top-of-tree?
-run_neither --param parloops-schedule=dynamic dummy.c # In top-of-tree?
-run_neither --param parloops-schedule=guided dummy.c # In top-of-tree?
-run_neither --param parloops-schedule=auto dummy.c # In top-of-tree?
-run_neither --param parloops-schedule=runtime dummy.c # In top-of-tree?
-run_neither --param max-ssa-name-query-depth=5 # In top-of-tree?
-run_neither -version dummy.c
+run_dummy -fdump-rtl-bypass dummy.c
+run_dummy -fdump-rtl-dce dummy.c
+run_dummy -fdump-rtl-dce1 dummy.c
+run_dummy -fdump-rtl-dce2 dummy.c
+run_dummy -fdump-rtl-eh dummy.c
+run_dummy -fdump-rtl-gcse1 dummy.c
+run_dummy -fdump-rtl-initvals dummy.c
+run_dummy -fdump-rtl-pass dummy.c
+run_dummy -fdump-rtl-regclass dummy.c
+run_dummy -fdump-rtl-seqabstr dummy.c
+run_dummy -fdump-rtl-sibling dummy.c
+run_dummy -fdump-rtl-subregs_of_mode_finish dummy.c
+run_dummy -fdump-rtl-subregs_of_mode_init dummy.c
+run_dummy -fdump-rtl-unshare dummy.c
+run_dummy -fdump-tree-storeccp dummy.c
+run_dummy -femit-struct-debug-detailed dummy.c # Needs arg
+run_gcc --param tracer-min-branch-ratio-feedback=5 dummy.c
+run_gcc --param reorder-blocks-duplicate=3 dummy.c
+run_gcc --param reorder-blocks-duplicate-feedback=5 dummy.c
+run_gcc --param sched-spec-state-edge-prob-cutoff=12 dummy.c
+run_gcc --param selsched-max-insns-to-rename=3 dummy.c
+run_gcc --param lto-minpartition=16 dummy.c
+run_gcc --param max-ssa-name-query-depth=5 # In top-of-tree?
+run_gcc -version dummy.c
 
 # C++ specific in various categories other than C++
-run_dummy -fdump-class-hierarchy dummy.cpp
-run_dummy -fdump-class-hierarchy=address dummy.cpp
-run_dummy -fdump-class-hierarchy=asmname dummy.cpp
-run_dummy -fdump-class-hierarchy=slim dummy.cpp
-run_dummy -fdump-class-hierarchy=raw dummy.cpp
-run_dummy -fdump-class-hierarchy=details dummy.cpp
-run_dummy -fdump-class-hierarchy=stats dummy.cpp
-run_dummy -fdump-class-hierarchy=blocks dummy.cpp
-run_dummy -fdump-class-hierarchy=graph dummy.cpp
-run_dummy -fdump-class-hierarchy=vops dummy.cpp
-run_dummy -fdump-class-hierarchy=lineno dummy.cpp
-run_dummy -fdump-class-hierarchy=uid dummy.cpp
-run_dummy -fdump-class-hierarchy=verbose dummy.cpp
-run_dummy -fdump-class-hierarchy=eh dummy.cpp
-run_dummy -fdump-class-hierarchy=scev dummy.cpp
-run_dummy -fdump-class-hierarchy=optimized dummy.cpp
-run_dummy -fdump-class-hierarchy=missed dummy.cpp
-run_dummy -fdump-class-hierarchy=note dummy.cpp
-run_dummy -fdump-class-hierarchy=debug.dump dummy.cpp
-run_dummy -fdump-class-hierarchy=all dummy.cpp
-run_dummy -fdump-class-hierarchy=optall dummy.cpp
-run_dummy -fdump-translation-unit dummy.cpp
-run_dummy -fdump-translation-unit=all dummy.cpp
 run_dummy -fextern-tls-init dummy.cpp
 run_dummy -fno-default-inline dummy.cpp
 run_dummy -fno-lifetime-dse dummy.cpp
