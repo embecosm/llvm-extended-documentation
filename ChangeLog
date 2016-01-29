@@ -1,3 +1,10 @@
+2016-01-29  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* support-code/dummy.deps: Created.
+	* support-code/opt-check.sh: Added more LLVM specific options.
+	* support-code/validate-opts.sh: Ensure space before option when
+	searching.
+
 2016-01-26  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* support-code/opt-check.sh: Sort out all remaining options.

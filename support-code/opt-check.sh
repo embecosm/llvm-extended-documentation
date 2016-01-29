@@ -29,6 +29,10 @@ LCC=clang
 GCC=gcc
 tmpfl=/tmp/opt-check-llvm-$$
 tmpfg=/tmp/opt-check-gcc-$$
+tmpf=/tmp/opt-check-file-$$
+tmpd=/tmp/opt-check-dir-$$
+rm -rf ${tmpd}
+mkdir -p ${tmpd}
 
 ALLOPTS="address-asmname-slim-raw-details-stats-blocks-graph-vops-lineno-uid-verbose-eh-scev-optimized-missed-note"
 
@@ -53,6 +57,7 @@ tidyup () {
     echo
     logcon "Cleaning up..."
     rm -rf llvm gcc
+    # rm -rf ${tmpf} ${tmpd}
 }
 
 # Write to the log and console
@@ -342,6 +347,8 @@ logcon ""
 
 logcon "Overall options for LLVM but not GCC"
 
+run_llvm -fbuild-session-file=${tmpf} dummy.c
+run_llvm -fbuild-session-timestamp=1000 dummy.c
 run_llvm -emit-ast dummy.c
 run_llvm -emit-llvm dummy.c
 run_llvm -help
@@ -402,6 +409,8 @@ run_both -fms-extensions dummy.c
 run_both -fno-asm dummy-asm.c
 run_both -fno-builtin dummy.c
 run_both -fno-builtin-alloca dummy.c
+run_both -fno-lax-vector-conversions dummy.c
+run_both -fno-signed-char dummy.c
 run_both -fopenmp dummy.c
 run_both -fsigned-bitfields dummy.c
 run_both -fsigned-char dummy.c
@@ -434,6 +443,14 @@ logcon "C language options for LLVM but not GCC"
 run_llvm -fblocks dummy.c
 run_llvm -fborland-extensions dummy.c
 run_llvm -femit-all-decls dummy.c
+run_llvm -fms-compatibility-version=0 dummy.c
+run_llvm -fms-compatibility dummy.c
+run_llvm -fmsc-version=0 dummy.c
+run_llvm -fno-gnu-inline-asm dummy.c
+run_llvm -fno-spell-checking dummy.c
+run_llvm -fpascal-strings dummy.c
+run_llvm -funique-section-names dummy.c
+run_llvm -fwritable-strings dummy.c
 logcon ""
 
 logcon "C language options for GCC but not LLVM"
@@ -479,6 +496,7 @@ run_both -fno-implement-inlines dummy.cpp
 run_both -fno-operator-names dummy.cpp
 run_both -fno-rtti dummy.cpp
 run_both -fno-threadsafe-statics dummy.cpp
+run_both -fno-use-cxa-atexit dummy.cpp
 run_both -fpermissive dummy.cpp
 run_both -fsized-deallocation dummy.cpp
 run_both -ftemplate-backtrace-limit=5 dummy.cpp
@@ -516,6 +534,12 @@ logcon "C++ language options for LLVM but not GCC"
 
 run_llvm -fcxx-exceptions dummy.cpp
 run_llvm -fdelayed-template-parsing dummy.cpp
+run_llvm -fms-compatibility-version=0 dummy.cpp # Also in C
+run_llvm -fms-compatibility dummy.cpp # Also in C
+run_llvm -fmsc-version=0 dummy.cpp # Also in C
+run_llvm -fno-assume-sane-operator-new dummy.cpp
+run_llvm -fshow-overloads=all dummy.cpp
+run_llvm -fshow-overloads=best dummy.cpp
 logcon ""
 
 logcon "C++ language options for GCC but not LLVM"
@@ -569,13 +593,17 @@ run_both -Wundeclared-selector -c dummy.m
 logcon ""
 
 logcon "ObjC and ObjC++ language options for LLVM but not GCC"
+run_llvm -fno-constant-cfstrings -c dummy.m
+run_llvm -fno-objc-infer-related-result-type -c dummy.m
 run_llvm -fobjc-arc -fnext-runtime -c dummy.m
 run_llvm -fobjc-arc-exceptions -fobjc-arc -fnext-runtime -c dummy.m
+run_llvm -fobjc-gc-only -c dummy.m
 run_llvm -fobjc-runtime=macosx -c dummy.m
 run_llvm -fobjc-runtime=macosx-fragile -c dummy.m
 run_llvm -fobjc-runtime=ios -c dummy.m
 run_llvm -fobjc-runtime=gnustep -c dummy.m
 run_llvm -fobjc-runtime=gcc -c dummy.m
+run_llvm -fobjc-weak dummy.m
 logcon ""
 
 logcon "ObjC and ObjC++ language options for GCC but not LLVM"
@@ -621,10 +649,16 @@ logcon ""
 
 logcon "Diagnostic message formatting options for LLVM but not GCC"
 
+run_llvm -fansi-escape-codes dummy.c
 run_llvm -fcolor-diagnostics dummy.c
 run_llvm -fdiagnostics-parseable-fixits dummy.c
+run_llvm -fdiagnostics-print-source-range-info dummy.c
+run_llvm -fdiagnostics-show-note-include-stack dummy.c
+run_llvm -fdiagnostics-show-option dummy.c
+run_llvm -fdiagnostics-show-template-tree dummy.c
 run_llvm -fno-diagnostics-fixit-info dummy.c
 run_llvm -fno-elide-type dummy.c
+run_llvm -fno-show-source-location dummy.c
 logcon ""
 
 logcon "Diagnostic message formatting options for GCC but not LLVM"
@@ -1425,6 +1459,7 @@ logcon ""
 
 logcon "Debugging options for LLVM but not GCC"
 
+run_llvm -fno-standalone-debug dummy.c
 run_llvm -fstandalone-debug dummy.c
 run_llvm -gfull dummy.c
 run_llvm -gused dummy.c
@@ -1493,12 +1528,18 @@ run_both -ffp-contract=off dummy.c
 run_both -ffp-contract=fast dummy.c
 run_both -ffp-contract=on dummy.c
 run_both -ffunction-sections dummy.c
+run_both -flto dummy.c
+run_both -flto=full dummy.c
+run_both -flto=thin dummy.c
 run_both -fmath-errno dummy.c
 run_both -fmerge-all-constants dummy.c
 run_both -fno-inline dummy.c
+run_both -fno-lto dummy.c
 run_both -fno-math-errno dummy.c
+run_both -fno-merge-all-constants dummy.c
 run_both -fno-signed-zeros dummy.c
 run_both -fno-trapping-math dummy.c
+run_both -fno-unroll-loops dummy.c
 run_both -fno-zero-initialized-in-bss dummy.c
 run_both -fomit-frame-pointer dummy.c
 run_both -foptimize-sibling-calls dummy.c
@@ -1522,6 +1563,13 @@ logcon ""
 
 logcon "Optimization options for LLVM but not GCC"
 
+run_llvm -fno-reroll-loops dummy.c
+run_llvm -freroll-loops dummy.c
+run_llvm -fslp-vectorize-aggressive dummy.c
+run_llvm -fslp-vectorize dummy.c
+run_llvm -fstrict-enums dummy.c
+run_llvm -fstrict-vtable-pointers dummy.cpp
+run_llvm -fthinlto-index=2 dummy.c
 run_llvm -fvectorize dummy.c
 run_llvm -mllvm -enable-andcmp-sinking dummy.c # One example from opt
 run_llvm -mrelax-all dummy.c # Assembler, not linker relaxation
@@ -1613,7 +1661,6 @@ run_gcc -floop-parallelize-all dummy.c
 run_gcc -floop-strip-mine dummy.c
 run_gcc -floop-unroll-and-jam dummy.c
 run_gcc -flra-remat dummy.c
-run_gcc -flto dummy.c
 run_gcc -flto-compression-level=5 dummy.c
 run_gcc -flto-partition=1to1 dummy.c
 run_gcc -flto-partition=balanced dummy.c
@@ -1918,6 +1965,26 @@ logcon "Program instrumentation options for both LLVM and GCC"
 run_both --coverage dummy.c
 run_both -finstrument-functions dummy.c profile-assist.c
 run_both -fno-sanitize=all dummy.c
+run_both -fno-sanitize-recover dummy.c
+run_both -fno-sanitize-recover=address dummy.c
+run_both -fno-sanitize-recover=alignment dummy.c
+run_both -fno-sanitize-recover=bool dummy.c
+run_both -fno-sanitize-recover=bounds dummy.c
+run_both -fno-sanitize-recover=enum dummy.c
+run_both -fno-sanitize-recover=float-cast-overflow dummy.c
+run_both -fno-sanitize-recover=float-divide-by-zero dummy.c
+run_both -fno-sanitize-recover=integer-divide-by-zero dummy.c
+run_both -fno-sanitize-recover=kernel-address dummy.c
+run_both -fno-sanitize-recover=nonnull-attribute dummy.c
+run_both -fno-sanitize-recover=null dummy.c
+run_both -fno-sanitize-recover=object-size dummy.c
+run_both -fno-sanitize-recover=returns-nonnull-attribute dummy.c
+run_both -fno-sanitize-recover=shift dummy.c
+run_both -fno-sanitize-recover=signed-integer-overflow dummy.c
+run_both -fno-sanitize-recover=undefined dummy.c
+run_both -fno-sanitize-recover=vla-bound dummy.c
+run_both -fno-sanitize-recover=vptr dummy.c
+run_both -fno-stack-protector dummy.c
 run_both -fprofile-arcs dummy.c
 run_both -fprofile-generate dummy.c
 run_only_llvm -fprofile-generate=`pwd`/llvm dummy.c
@@ -1977,8 +2044,81 @@ logcon "Program instrumentation options for LLVM but not GCC"
 
 run_llvm --analyze dummy.c
 run_llvm -fcoverage-mapping -fprofile-instr-generate dummy.c
+run_llvm -fno-coverage-mapping -fprofile-instr-generate dummy.c
+run_llvm -fno-profile-instr-generate dummy.c
+run_llvm -fno-profile-instr-use dummy.c
+run_llvm -fprofile-instr-generate dummy.c
+run_llvm -fprofile-instr-generate=${tmpf} dummy.c
+run_llvm -fprofile-instr-use dummy.c
+run_llvm -fprofile-instr-use=${tmpf} dummy.c
+run_llvm -fprofile-sample-use=${tmpf} dummy.c
+run_llvm -fno-sanitize-blacklist dummy.c
+run_llvm -fno-sanitize-cfi-cross-dso dummy.c
+run_llvm -fno-sanitize-coverage=bb dummy.c
+run_llvm -fno-sanitize-coverage=edge dummy.c
+run_llvm -fno-sanitize-coverage=func dummy.c
+run_llvm -fno-sanitize-coverage=indirect-calls dummy.c
+run_llvm -fno-sanitize-memory-track-origins dummy.c
+run_llvm -fno-sanitize-recover=leak dummy.c
+run_llvm -fno-sanitize-recover=thread dummy.c
+run_llvm -fno-sanitize-trap dummy.c
+run_llvm -fno-sanitize-trap=address dummy.c
+run_llvm -fno-sanitize-trap=alignment dummy.c
+run_llvm -fno-sanitize-trap=bool dummy.c
+run_llvm -fno-sanitize-trap=bounds dummy.c
+run_llvm -fno-sanitize-trap=enum dummy.c
+run_llvm -fno-sanitize-trap=float-cast-overflow dummy.c
+run_llvm -fno-sanitize-trap=float-divide-by-zero dummy.c
+run_llvm -fno-sanitize-trap=integer-divide-by-zero dummy.c
+run_llvm -fno-sanitize-trap=leak dummy.c
+run_llvm -fno-sanitize-trap=kernel-address dummy.c
+run_llvm -fno-sanitize-trap=nonnull-attribute dummy.c
+run_llvm -fno-sanitize-trap=null dummy.c
+run_llvm -fno-sanitize-trap=object-size dummy.c
+run_llvm -fno-sanitize-trap=returns-nonnull-attribute dummy.c
+run_llvm -fno-sanitize-trap=shift dummy.c
+run_llvm -fno-sanitize-trap=signed-integer-overflow dummy.c
+run_llvm -fno-sanitize-trap=thread dummy.c
+run_llvm -fno-sanitize-trap=undefined dummy.c
+run_llvm -fno-sanitize-trap=vla-bound dummy.c
+run_llvm -fno-sanitize-trap=vptr dummy.c
+run_llvm -fno-sanitize-stats dummy.c
+run_llvm -fsanitize-address-field-padding=2 dummy.c
+run_llvm -fsanitize-blacklist=${tmpf} dummy.c
+run_llvm -fsanitize-cfi-cross-dso dummy.c
+run_llvm -fsanitize-coverage=bb dummy.c
+run_llvm -fsanitize-coverage=edge dummy.c
+run_llvm -fsanitize-coverage=func dummy.c
+run_llvm -fsanitize-coverage=indirect-calls dummy.c
+run_llvm -fsanitize-memory-track-origins dummy.c
+run_llvm -fsanitize-memory-track-origins=1 dummy.c
+run_llvm -fsanitize-memory-track-origins=2 dummy.c
+run_llvm -fsanitize-memory-use-after-dtor dummy.c
 run_llvm -fsanitize-recover=leak dummy.c
 run_llvm -fsanitize-recover=thread dummy.c
+run_llvm -fsanitize-stats dummy.c
+run_llvm -fsanitize-trap dummy.c
+run_llvm -fsanitize-trap=address dummy.c
+run_llvm -fsanitize-trap=alignment dummy.c
+run_llvm -fsanitize-trap=bool dummy.c
+run_llvm -fsanitize-trap=bounds dummy.c
+run_llvm -fsanitize-trap=enum dummy.c
+run_llvm -fsanitize-trap=float-cast-overflow dummy.c
+run_llvm -fsanitize-trap=float-divide-by-zero dummy.c
+run_llvm -fsanitize-trap=integer-divide-by-zero dummy.c
+run_llvm -fsanitize-trap=leak dummy.c
+run_llvm -fsanitize-trap=kernel-address dummy.c
+run_llvm -fsanitize-trap=nonnull-attribute dummy.c
+run_llvm -fsanitize-trap=null dummy.c
+run_llvm -fsanitize-trap=object-size dummy.c
+run_llvm -fsanitize-trap=returns-nonnull-attribute dummy.c
+run_llvm -fsanitize-trap=shift dummy.c
+run_llvm -fsanitize-trap=signed-integer-overflow dummy.c
+run_llvm -fsanitize-trap=thread dummy.c
+run_llvm -fsanitize-trap=undefined dummy.c
+run_llvm -fsanitize-trap=vla-bound dummy.c
+run_llvm -fsanitize-trap=vptr dummy.c
+
 logcon ""
 
 logcon "Program instrumentation options for GCC but not LLVM"
@@ -2081,6 +2221,11 @@ logcon ""
 
 logcon "Preprocessor options for LLVM but not GCC"
 
+run_llvm -cxx-isystem `pwd`/llvm dummy.cpp
+run_llvm -fcomment-block-commands="@param x" dummy.cpp
+run_llvm -fdeclspec dummy.c
+run_llvm -fno-declspec dummy.c
+run_llvm -fno-trigraphs dummy.c
 run_llvm -ftrigraphs dummy.c
 run_llvm -iframework`pwd`/llvm dummy.c
 run_llvm -index-header-map dummy.c
@@ -2171,6 +2316,7 @@ logcon ""
 logcon "Linker options for LLVM but not GCC"
 
 run_llvm -fno-autolink dummy.c
+run_llvm -fno-use-init-array dummy.c
 run_llvm -fuse-init-array dummy.c
 run_llvm -fveclib=Accelerate dummy.c
 logcon ""
@@ -2237,6 +2383,7 @@ run_both -fasynchronous-unwind-tables dummy.c
 run_both -fexceptions dummy.c
 run_both -fno-common dummy.c
 run_both -fno-ident dummy.c
+run_both -fno-short-wchar dummy.c
 run_both -fnon-call-exceptions dummy.c
 run_both -fpack-struct dummy.c
 run_both -fpack-struct=4 dummy.c
@@ -2269,12 +2416,14 @@ logcon "Code gen options for LLVM but not GCC"
 run_llvm -fapple-kext dummy.c
 run_llvm -fapple-pragma-pack dummy.c
 run_llvm -fapplication-extension dummy.c
+run_llvm -fmax-type-align=2 dummy.c
 run_llvm -ftrap-function=main dummy.c
 run_llvm -mllvm -addr-sink-using-gep dummy.c # One example from cc1
 run_llvm -mno-implicit-float dummy.c
 run_llvm -mstack-alignment=2 dummy.c
 run_llvm -mthread-model posix dummy.c
 run_llvm -target i686-pc-linux-gnu -c dummy.c
+run_llvm -ftrapv-handler=main dummy.c
 logcon ""
 
 logcon "Code gen options for GCC but not LLVM"
@@ -2283,7 +2432,6 @@ run_gcc -fcall-saved-rax dummy.c
 run_gcc -fcall-used-rax dummy.c
 run_gcc -fdelete-dead-exceptions dummy.c
 run_gcc -ffixed-rax dummy.c
-run_gcc -ffixed-r9 dummy.c # ARM specific, GCC silently ignores
 run_gcc -finhibit-size-directive dummy.c
 run_gcc -fleading-underscore -c dummy.c
 run_gcc -fno-gnu-unique dummy.c
@@ -2333,6 +2481,20 @@ logcon ""
 
 logcon "Developer options for LLVM but not GCC"
 
+run_llvm -ccc-arcmt-check dummy.m
+run_llvm -ccc-arcmt-migrate /tmp dummy.m
+run_llvm -ccc-arcmt-modify dummy.m
+run_llvm -ccc-gcc-name `which gcc` dummy.c
+run_llvm -ccc-install-dir /tmp dummy.c
+run_llvm -ccc-objcmt-migrate /tmp dummy.m
+run_llvm -ccc-pch-is-pch dummy.c
+run_llvm -ccc-pch-is-pth dummy.c
+run_llvm -ccc-print-bindings dummy.c
+run_llvm -ccc-print-phases dummy.c
+run_llvm --driver-mode=cl dummy.c
+run_llvm --driver-mode=cpp dummy.c
+run_llvm --driver-mode=g++ dummy.c
+run_llvm --driver-mode=gcc dummy.c
 run_llvm -Reverything dummy.c
 run_llvm -Rpass=aa-eval dummy.c # Analysis passes
 run_llvm -Rpass=basicaa dummy.c
@@ -2656,6 +2818,7 @@ run_llvm -Rpass-missed=view-dom-only dummy.c
 run_llvm -Rpass-missed=view-postdom dummy.c
 run_llvm -Rpass-missed=view-postdom-only dummy.c
 run_llvm -Xanalyzer -v --analyze dummy.c
+run_llvm -via-file-asm dummy.c
 logcon ""
 
 logcon "Developer options for GCC but not LLVM"
@@ -2846,10 +3009,20 @@ run_dummy -print-sysroot-headers-suffix dummy.c # Not configured for x86_64
 # LLVM target specific options from -help
 
 run_dummy -arcmt-migrate-emit-errors -c dummy.m # Darwin only
+run_dummy -arcmt-migrate-report-output ${tmpf} -c dummy.m # Darwin only
+run_dummy --cuda-device-only dummy.c
+run_dummy --cuda-gpu-arch=hexagon dummy.c
+run_dummy --cuda-host-only dummy.c
+run_dummy --cuda-path=${tmpd} dummy.c
+
 run_dummy -F`pwd` dummy.c # Darwin only
 run_dummy -ffix-and-continue dummy.c # Darwin
+run_dummy -ffixed-r9 dummy.c # ARM specific
+run_dummy -ffixed-x18 dummy.c # AArch64 only
 run_dummy -findirect-data dummy.c # Darwin
+run_dummy -femulated-tls dummy.c # Target specific for LLVM
 run_dummy -fmax-type-align dummy.c # Darwin
+run_dummy -fzvector dummy.c # System/Z only
 run_dummy -mabicalls dummy.c # MIPS only
 run_dummy -mcrc dummy.c # ARM only
 run_dummy -mfp32 dummy.c # MIPS only
@@ -2908,16 +3081,23 @@ run_dummy -MT -dependency-file dummy.deps dummy.c
 
 # We need to understand the module mechanism before we can check the options.
 
-run_dummy -fmodule-file dummy.c # Module mechanism needs more work
-run_dummy -fmodule-map-file dummy.c # Module mechanism needs more work
-run_dummy -fmodule-maps dummy.c # Module mechanism needs more work
-run_dummy -fmodule-name dummy.c # Module mechanism needs more work
-run_dummy -fmodules dummy.c # Module mechanism needs more work
-run_dummy -fmodules-decluse dummy.c # Module mechanism needs more work
-run_dummy -fmodules-ignore-macro dummy.c # Module mechanism needs more work
-run_dummy -fmodules-prune-after dummy.c # Module mechanism needs more work
-run_dummy -fmodules-prune-interval dummy.c # Module mechanism needs more work
-run_dummy -ivfsoverlay dummy.overlay dummy.c # Module mechanism needs more work
+run_dummy -fimplicit-module-maps dummy.c
+run_dummy -fmodule-file=${tmpf} dummy.c
+run_dummy -fmodule-map-file=${tmpf} dummy.c
+run_dummy -fmodule-maps dummy.c
+run_dummy -fmodule-name=main dummy.c
+run_dummy -fmodules dummy.c
+run_dummy -fmodules-cache-path=${tmpd} dummy.c
+run_dummy -fmodules-decluse dummy.c
+run_dummy -fmodules-ignore-macro=FORTY_TWO dummy.c
+run_dummy -fmodules-prune-after=5 dummy.c
+run_dummy -fmodules-prune-interval=5 dummy.c
+run_dummy -fmodules-search-all dummy.c
+run_dummy -fmodules-strict-decluse dummy.c
+run_dummy -fmodules-user-build-path ${tmpd} dummy.c
+run_dummy -fmodules-validate-once-per-build-session dummy.c
+run_dummy -fmodules-validate-system-headers dummy.c
+run_dummy -ivfsoverlay dummy.overlay dummy.c
 
 # Tidy up
 tidyup
