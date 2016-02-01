@@ -1,0 +1,5 @@
+# Example blacklist file for testing
+# Turn off checks for the source file:
+src:dummy.c
+# Turn off checks for a particular functions (use mangled names):
+fun:main

@@ -1,3 +1,10 @@
+2016-02-01  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* support-code/dummy-blacklist.txt: Created.
+	* support-code/dummy-sample.prof: Created.
+	* support-code/opt-check.sh: Sorted out all remaining LLVM options.
+	* support-code/todo.org: Updated with LLVM errors.
+
 2016-01-29  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* support-code/dummy.deps: Created.

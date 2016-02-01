@@ -1,5 +1,7 @@
 * List of things to be done for GCC
 
+** Documentation bugs
+
 -fallow-single-precision appears in the summary for C options, but appears to
  be obsolete.
 
@@ -60,6 +62,7 @@ The following are not mentioned in the summary for C++ language options:
 -fextern-tls-init
 -fno-lifetime-dse
 -fno-use-cxa-get-exception-ptr
+-fstrict-enums
 
 The following is mentioned neither in the summary nor section on C++ language
 options, but does appear elsewhere:
@@ -109,4 +112,59 @@ The following developer options are documented, but appear not to work.
 -fcheck-data-deps is not documented. From the patch documentation, this
  compares the results of several data dependence analyzers, and probably
  belongs in the instrumentation section.
+
+The following Objective-C options are accepted, but not documented:
+-objcmt-atomic-property
+-objcmt-migrate-all
+-objcmt-migrate-annotation
+-objcmt-migrate-designated-init
+-objcmt-migrate-instancetype
+-objcmt-migrate-literals
+-objcmt-migrate-ns-macros
+-objcmt-migrate-property-dot-syntax
+-objcmt-migrate-property
+-objcmt-migrate-protocol-conformance
+-objcmt-migrate-readonly-property
+-objcmt-migrate-readwrite-property
+-objcmt-migrate-subscripting
+-objcmt-ns-nonatomic-iosonly
+-objcmt-returns-innerpointer-property
+
+GCC accepts the following negatives, but not the equivalent negatives.
+-fno-sanitize-recover=leak
+-fno-sanitize-recover=thread
+
+
+** Plain bugs
+
+--target-help barfs if gold is the linker.
+
+* List of things to be done for LLVM
+
+The following should be marked as MIPS only:
+- -mfpxx
+- -mno-odd-spreg/-modd-spreg
+
+The following should be marked as ARM only
+- -mglobal-merge/-mno-global-merge
+- -mlong-calls/-mno-long-calls
+
+Listed by --help-hidden but not used:
+- -fallow-single-precision dummy.c
+- -omptargets=i686-pc-linux-gnu dummy.c
+- -fno-objc-infer-related-result-type
+- --verify-debug-info
+
+-include expects a pre-compiled header file
+
+How to pass a C++ standard library to -stdlib=
+
+-fsanitize-trap=cfi-cast-strict is not recognized, although
+ -fno-sanitize=cfi-cast-strict is OK
+
+-fsanitize-trap=vptr/-fno-sanitize-trap=vptr are unrecognized, even though
+ vptr is one of the categories for the undefined sanitizer.
+
+    $ clang++ -fsanitize-trap=vptr -fsanitize=undefined dummy.cpp
+    clang-3.9: error: unsupported argument 'vptr' to option '-fsanitize-trap'
 
