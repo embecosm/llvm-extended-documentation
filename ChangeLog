@@ -1,3 +1,9 @@
+2016-02-02  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* support-code/opt-check.sh: Add more GCC options
+	* support-code/todo.org: Updated with LLVM errors.
+	* support-code/validate-opts.sh: check for 1 or 2 leading hyphens
+
 2016-02-01  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* support-code/dummy-blacklist.txt: Created.

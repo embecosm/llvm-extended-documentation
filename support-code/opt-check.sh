@@ -397,8 +397,7 @@ run_gcc -fdump-ada-spec-slim dummy.c
 run_gcc -fada-spec-parent=dummy -fdump-ada-spec-slim dummy.c
 run_gcc -fdump-go-spec=dummy.go dummy.c
 run_gcc -fno-canonical-system-headers dummy.c
-run_gcc -fplugin=`pwd`/gcc/myplugin.so \
-	-fplugin-arg-myplugin-mykey=myvalue dummy.c
+run_gcc -fplugin=`pwd`/gcc/myplugin.so -fplugin-arg-myplugin-mykey=myvalue dummy.c
 run_gcc --help=optimizers
 run_gcc --help=warnings
 run_gcc --help=target
@@ -491,6 +490,8 @@ logcon "C language options for GCC but not LLVM"
 
 run_gcc -aux-info proto.dat dummy.c
 run_gcc -fallow-parameterless-variadic-functions dummy.c
+run_gcc -fcilkplus dummy.c
+run_gcc -fgnu-tm dummy.c
 run_gcc -fcond-mismatch dummy.c
 run_gcc -fno-signed-bitfields dummy.c
 run_gcc -fno-unsigned-bitfields dummy.c
@@ -520,6 +521,7 @@ logcon "C++ language options for both LLVM and GCC"
 run_both -fno-access-control dummy.cpp
 run_both -fcheck-new dummy.cpp
 run_both -fconstexpr-depth=1024 dummy.cpp
+run_both -fdeduce-init-list dummy.cpp
 run_both -ffor-scope dummy.cpp
 run_both -ffriend-injection dummy.cpp
 run_both -fgnu-keywords dummy.c
@@ -580,6 +582,8 @@ logcon ""
 logcon "C++ language options for GCC but not LLVM"
 
 run_gcc -fabi-version=2 dummy.cpp
+run_gcc -fabi-compat-version=2 -fabi-version=2 dummy.cpp
+run_gcc -fext-numeric-literals dummy.cpp
 run_gcc -fno-enforce-eh-specs dummy.cpp
 run_gcc -fno-ext-numeric-literals dummy.cpp
 run_gcc -fno-for-scope dummy.cpp
@@ -663,6 +667,7 @@ run_gcc -fivar-visibility=public -c dummy.m
 run_gcc -fivar-visibility=protected -c dummy.m
 run_gcc -fivar-visibility=private -c dummy.m
 run_gcc -fivar-visibility=package -c dummy.m
+run_gcc -flocal-ivars -c dummy.m
 run_gcc -fno-default-inline dummy.cpp
 run_gcc -fno-extern-tls-init dummy.cpp
 run_gcc -fno-lifetime-dse dummy.cpp
@@ -1487,6 +1492,7 @@ logcon "Debugging options for both LLVM and GCC"
 
 run_both -fdebug-prefix-map=`pwd`=`pwd`/.. dummy.c
 run_both -fdebug-types-section dummy.c
+run_both -fdwarf2-cfi-asm dummy.c
 run_both -feliminate-unused-debug-types dummy.c # Undocumented
 run_both -fno-debug-types-section dummy.c
 run_both -fno-dwarf2-cfi-asm dummy.c
@@ -1532,6 +1538,7 @@ run_gcc -femit-class-debug-always dummy.cpp
 run_gcc -femit-struct-debug-baseonly dummy.c
 run_gcc -femit-struct-debug-detailed=dir:any dummy.c
 run_gcc -femit-struct-debug-reduced dummy.c
+run_gcc -fmerge-debug-strings dummy.c
 run_gcc -fno-merge-debug-strings dummy.c
 run_gcc -fno-var-tracking-assignments dummy.c
 run_gcc -fvar-tracking dummy.c
@@ -1666,6 +1673,7 @@ run_gcc -fcse-skip-blocks dummy.c
 run_gcc -fcx-fortran-rules dummy.c
 run_gcc -fcx-limited-range dummy.c
 run_gcc -fdce dummy.c
+run_gcc -fdeclone-ctor-dtor dummy.cpp
 run_gcc -fdelayed-branch dummy.c
 run_gcc -fdelete-null-pointer-checks dummy.c
 run_gcc -fdevirtualize dummy.cpp
@@ -1730,6 +1738,7 @@ run_gcc -flto-partition=balanced dummy.c
 run_gcc -flto-partition=max dummy.c
 run_gcc -flto-partition=none dummy.c
 run_gcc -flto-partition=one dummy.c
+run_gcc -flto-odr-type-merging -flto dummy.cpp
 run_gcc -fmerge-constants dummy.c
 run_gcc -fmodulo-sched dummy.c
 run_gcc -fmodulo-sched-allow-regmoves dummy.c
@@ -2002,6 +2011,11 @@ run_gcc --param parloops-schedule=auto dummy.c
 run_gcc --param parloops-schedule=runtime dummy.c
 logcon ""
 
+# These are only in the internals manual. For now we don't check them.
+run_dummy -fltrans -flto dummy.c
+run_dummy -fltrans-output-list=${tmpf} -flto dummy.c
+run_dummy -fresolution=${tmpf} -flto dummy.c
+
 # These options don't work because the AutoFDO tool is broken for newer kernels.
 run_dummy -fauto-profile -c dummy.c
 run_dummy -fauto-profile=`pwd`/fbdata.afdo -c dummy.c
@@ -2026,6 +2040,7 @@ logcon "Program instrumentation options for both LLVM and GCC"
 run_both --coverage dummy.c
 run_both -finstrument-functions dummy.c profile-assist.c
 run_both -fno-sanitize=all dummy.c
+run_both -fno-sanitize-coverage=trace-pc -fsanitize=address dummy.c
 run_both -fno-sanitize-recover dummy.c # Deprecated
 run_both -fno-sanitize-recover=address dummy.c
 run_both -fno-sanitize-recover=alignment dummy.c
@@ -2072,6 +2087,7 @@ run_both -fsanitize=undefined dummy.c
 run_both -fsanitize=unreachable dummy.c
 run_both -fsanitize=vla-bound dummy.c
 run_both -fsanitize=vptr dummy.c
+run_both -fsanitize-coverage=trace-pc -fsanitize=address dummy.c
 run_both -fsanitize-recover dummy.c
 run_both -fsanitize-recover=address dummy.c
 run_both -fsanitize-recover=alignment dummy.c
@@ -2236,6 +2252,23 @@ run_dummy -fchkp-use-nochk-string-functions dummy.c # x86 -mmpx
 run_dummy -fchkp-use-static-bounds dummy.c # x86 -mmpx
 run_dummy -fchkp-use-static-const-bounds dummy.c # x86 -mmpx
 run_dummy -fchkp-use-wrappers dummy.c # x86 -mmpx
+run_dummy -fno-check-pointer-bounds dummy.c # x86 -mmpx
+run_dummy -fno-chkp-check-incomplete-type dummy.c # x86 -mmpx
+run_dummy -fno-chkp-check-read dummy.c # x86 -mmpx
+run_dummy -fno-chkp-check-write dummy.c # x86 -mmpx
+run_dummy -fno-chkp-first-field-has-own-bounds dummy.c # x86 -mmpx
+run_dummy -fno-chkp-instrument-calls dummy.c # x86 -mmpx
+run_dummy -fno-chkp-instrument-marked-only dummy.c # x86 -mmpx
+run_dummy -fno-chkp-narrow-bounds dummy.c # x86 -mmpx
+run_dummy -fno-chkp-narrow-to-innermost-array dummy.c
+run_dummy -fno-chkp-optimize dummy.c # x86 -mmpx
+run_dummy -fno-chkp-store-bounds dummy.c # x86 -mmpx
+run_dummy -fno-chkp-treat-zero-dynamic-size-as-infinite dummy.c # x86 -mmpx
+run_dummy -fno-chkp-use-fast-string-functions dummy.c # x86 -mmpx
+run_dummy -fno-chkp-use-nochk-string-functions dummy.c # x86 -mmpx
+run_dummy -fno-chkp-use-static-bounds dummy.c # x86 -mmpx
+run_dummy -fno-chkp-use-static-const-bounds dummy.c # x86 -mmpx
+run_dummy -fno-chkp-use-wrappers dummy.c # x86 -mmpx
 
 run_dummy -fsanitize-trap=cast-strict dummy.c # LLVM bug
 
@@ -2461,6 +2494,7 @@ logcon ""
 logcon "Code gen options for both LLVM and GCC"
 
 run_both -fasynchronous-unwind-tables dummy.c
+run_both -fcommon dummy.c
 run_both -fexceptions dummy.c
 run_both -fno-common dummy.c
 run_both -fno-ident dummy.c
@@ -3025,6 +3059,7 @@ run_gcc -fdump-tree-ccp-all dummy.c
 run_gcc -fdump-tree-ccp-all=dummy.out dummy.c
 run_gcc -fdump-tree-cfg dummy.c
 run_gcc -fdump-tree-ch dummy.c
+run_gcc -fdump-tree-copyprop dummy.c
 run_gcc -fdump-tree-dce dummy.c
 run_gcc -fdump-tree-dom dummy.c
 run_gcc -fdump-tree-dse dummy.c
@@ -3032,15 +3067,18 @@ run_gcc -fdump-tree-forwprop dummy.c
 run_gcc -fdump-tree-fre dummy.c
 run_gcc -fdump-tree-gimple dummy.c
 run_gcc -fdump-tree-nrv dummy.c
+run_gcc -fdump-tree-oaccdevlow dummy.c
 run_gcc -fdump-tree-optimized dummy.c
 run_gcc -fdump-tree-original dummy.c
 run_gcc -fdump-tree-phiopt dummy.c
 run_gcc -fdump-tree-phiprop dummy.c
 run_gcc -fdump-tree-pre dummy.c
 run_gcc -fdump-tree-sink dummy.c
+run_gcc -fdump-tree-slp dummy.c
 run_gcc -fdump-tree-split-paths dummy.c
 run_gcc -fdump-tree-sra dummy.c
 run_gcc -fdump-tree-ssa dummy.c
+run_gcc -fdump-tree-store_copyprop dummy.c
 run_gcc -fdump-tree-vect dummy.c
 run_gcc -fdump-tree-vrp dummy.c
 run_gcc -fdump-tree-vtable-verify dummy.c
@@ -3056,6 +3094,7 @@ run_gcc -flto-report dummy.c
 run_gcc -flto-report-wpa dummy.c
 run_gcc -fmem-report dummy.c
 run_gcc -fmem-report-wpa dummy.c
+run_gcc -fno-checking dummy.c
 run_gcc -fno-compare-debug dummy.cpp
 run_gcc -fno-var-tracking-assignments-toggle dummy.c
 run_gcc -fopt-info dummy.c
@@ -3077,6 +3116,24 @@ run_gcc -Q --help=target dummy.c
 run_gcc -time dummy.c # LLVM --help claims this works
 run_gcc -time=time.dat dummy.c
 logcon ""
+
+# GCC documented but not actually implemented.
+
+run_dummy -fdump-rtl-bypass dummy.c
+run_dummy -fdump-rtl-dce dummy.c
+run_dummy -fdump-rtl-dce1 dummy.c
+run_dummy -fdump-rtl-dce2 dummy.c
+run_dummy -fdump-rtl-eh dummy.c
+run_dummy -fdump-rtl-gcse1 dummy.c
+run_dummy -fdump-rtl-initvals dummy.c
+run_dummy -fdump-rtl-regclass dummy.c
+run_dummy -fdump-rtl-seqabstr dummy.c
+run_dummy -fdump-rtl-sibling dummy.c
+run_dummy -fdump-rtl-subregs_of_mode_finish dummy.c
+run_dummy -fdump-rtl-subregs_of_mode_init dummy.c
+run_dummy -fdump-rtl-unshare dummy.c
+run_dummy -fdump-tree-storeccp dummy.c
+
 
 # Not supported at all for this architecture
 

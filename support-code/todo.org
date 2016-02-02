@@ -58,21 +58,40 @@ The following are not mentioned in the summary for the pre-processor:
 
 Preprocessor option -version (with one hyphen appears not to work).
 
+The following are not mentioned in the summary for C language options
+- -fcilkplus
+- -fgnu-tm
+
 The following are not mentioned in the summary for C++ language options:
--fextern-tls-init
--fno-lifetime-dse
--fno-use-cxa-get-exception-ptr
--fstrict-enums
+- -fabi-compat-version=
+- -fdeduce-init-list
+- -fextern-tls-init
+- -fno-lifetime-dse
+- -fno-use-cxa-get-exception-ptr
+- -fstrict-enums
+
+The following are mentioned in the index, but not explicitly in the C++
+section
+- -fno-ext-numeric-literals
+
+
+The following are mentioned in the index, but not explicitly in the diagnostic
+section:
+- -fdiagnostics-show-caret (negative is listed)
 
 The following is mentioned neither in the summary nor section on C++ language
 options, but does appear elsewhere:
--fno-default-inline
+- -fno-default-inline
 
+The following are not mentioned in the section for code generation
+- -fcommon (only -fno-common)
 
 The following are not mentioned in the summary for optimization:
--foptimize-strlen
--ftree-slp-vectorize
--ftree-vectorize
+- -fdeclone-ctor-dtor
+- -flto-odr-type-merging
+- -foptimize-strlen
+- -ftree-slp-vectorize
+- -ftree-vectorize
 
 The following optimization parameters are documented, but appear not to work.
 --param tracer-min-branch-ratio-feedback=
@@ -89,9 +108,18 @@ The following are not mentioned in the summary for debugging:
 -gpubnames
 -gsplit-dwarf
 
+The following is in the index, but not documented
+- -fdwarf2-cfi-asm (negative is documented).
+- -fmerge-debug-strings (negative is documented).
+
+
 The following is not documented in the developer options
 -print-multiarch
 -freport-bug
+
+The following developer options are in the index but not documented
+- -fno-checking (positive is documented).
+
 
 The following developer options are documented, but appear not to work.
 -fdump-rtl-bypass
@@ -130,10 +158,38 @@ The following Objective-C options are accepted, but not documented:
 -objcmt-ns-nonatomic-iosonly
 -objcmt-returns-innerpointer-property
 
+Teh following Objective-C options are in the index, but not documented:
+- -flocal-ivars
+
+
 GCC accepts the following negatives, but not the equivalent negatives.
 -fno-sanitize-recover=leak
 -fno-sanitize-recover=thread
 
+The following instrumentation option is not in the summary
+-fsanitize-coverage=trace-pc (negative is assumed to be there).
+
+
+The following instrumentation options appear in the index but are not
+documented.
+- -fno-check-pointer-bounds (positive is documented)
+- -fno-check-pointer-bounds (positive is documented)
+- -fno-chkp-check-incomplete-type (positive is documented)
+- -fno-chkp-check-read (positive is documented)
+- -fno-chkp-check-write (positive is documented)
+- -fno-chkp-first-field-has-own-bounds (positive is documented)
+- -fno-chkp-instrument-calls (positive is documented)
+- -fno-chkp-instrument-marked-only (positive is documented)
+- -fno-chkp-narrow-bounds (positive is documented)
+- -fno-chkp-narrow-to-innermost-array (positive is documented)
+- -fno-chkp-optimize (positive is documented)
+- -fno-chkp-store-bounds (positive is documented)
+- -fno-chkp-treat-zero-dynamic-size-as-infinite (positive is documented)
+- -fno-chkp-use-fast-string-functions (positive is documented)
+- -fno-chkp-use-nochk-string-functions (positive is documented)
+- -fno-chkp-use-static-bounds (positive is documented)
+- -fno-chkp-use-static-const-bounds (positive is documented)
+- -fno-chkp-use-wrappers (positive is documented)
 
 ** Plain bugs
 
