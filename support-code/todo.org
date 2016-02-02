@@ -1,226 +1,298 @@
 * List of things to be done for GCC
 
-** Documentation bugs
+** Bugs in documentation of options
 
--fallow-single-precision appears in the summary for C options, but appears to
- be obsolete.
+*** Overall options
 
--traditional has to be used with -E
+*** C language options
 
-Why language specific warnings in summary sections for the language?
+=-traditional= should document that it has to be used with =-E=
 
--pedantic not in summary
+The following appears in the summary for C options, but appears to be
+obsolete:
+- =-fallow-single-precision=
 
--Wplacement-new is the default, so need -Wno-placement-new as entry
+The following option is documented twice, the other being in the
+pre-processor.
+- =-trigraphs=
 
-GCC will silent accept any flag '-Wno...'
+The following options are documented, but not mentioned in the summary:
+- =-fcilkplus=
+- =-fgnu-tm=
 
-The following warnings do not appear in the summary:
--Wc++0x-compat
--Wimport
--Wmissing-noreturn
--Wstrict-overflow=0
--Wsynth
--Wunreachable-code
--Wunused-argument
+*** C++ language options
 
--ftree-coalesce-inlined-vars undocumented in GCC
--ftree-copyrename undocumented
+The following option is documented twice, the other being in the
+pre-processor.
+- =-nostdinc++=
 
--fwpa only in option summary, not documented.
+The following options are documented, but not mentioned in the summary:
+- =-fabi-compat-version==
+- =-fdeduce-init-list=
+- =-fextern-tls-init=
+- =-fno-lifetime-dse=
+- =-fno-use-cxa-get-exception-ptr=
+- =-fstrict-enums=
 
--nostdinc++ also appears in C++ standard options as well as preproc
+The following is mentioned in passing in the documentation, but is not
+otherwise documented:
+- =-fno-default-inline=
 
--trigraphs also appears in C standard options as well as preproc
+The following option only appears in the index.
+- =-fno-ext-numeric-literals= (positive is documented).
 
--iquote not in summary for preprocesso
+*** Objective-C and Objective-C++ options
 
--fsel-sched-verbose in summary only
+The following options are not documented:
+- =-objcmt-atomic-property=
+- =-objcmt-migrate-all=
+- =-objcmt-migrate-annotation=
+- =-objcmt-migrate-designated-init=
+- =-objcmt-migrate-instancetype=
+- =-objcmt-migrate-literals=
+- =-objcmt-migrate-ns-macros=
+- =-objcmt-migrate-property-dot-syntax=
+- =-objcmt-migrate-property=
+- =-objcmt-migrate-protocol-conformance=
+- =-objcmt-migrate-readonly-property=
+- =-objcmt-migrate-readwrite-property=
+- =-objcmt-migrate-subscripting=
+- =-objcmt-ns-nonatomic-iosonly=
+- =-objcmt-returns-innerpointer-property=
 
--fsel-sched-dump-cfg in summary only
+The following option only appears in the index.
+- =-flocal-ivars=
 
--fsel-sched-pipelining-verbose in summary only
+*** Diagnostic message formating options
 
-The following are not mentioned in the summary for the pre-processor:
--fdirectives-only
--fdollars-in-identifiers
--fno-show-column
--fexec-charset=
--fextended-identifiers
--finput-charset=
--fpch-deps
--fpch-preprocess
--fpreprocessed
--ftabstop=
--fwide-exec-charset=UTF-8
--MD
--MMD
+The following option only appears in the index.
+- =-fdiagnostics-show-caret (negative is listed)=
 
-Preprocessor option -version (with one hyphen appears not to work).
+*** Warning options
 
-The following are not mentioned in the summary for C language options
-- -fcilkplus
-- -fgnu-tm
+There are a handful of language specific warnings in summary sections for the
+language. They should be repatriated here.
 
-The following are not mentioned in the summary for C++ language options:
-- -fabi-compat-version=
-- -fdeduce-init-list
-- -fextern-tls-init
-- -fno-lifetime-dse
-- -fno-use-cxa-get-exception-ptr
-- -fstrict-enums
+GCC will silent accept any flag beginning =-Wno-=, even if the warning does
+not exist (unlike Clang/LLVM).
 
-The following are mentioned in the index, but not explicitly in the C++
-section
-- -fno-ext-numeric-literals
+The following option lists the default in the summary, rather than the option
+that changes the default:
+- =-Wplacement-new= is the default, so need =-Wno-placement-new= in summary.
 
+The following options are documented, but do not appear in the summary:
+- =-pedantic=
+- =-Wc++0x-compat=
+- =-Wimport=
+- =-Wlto-type-mismatch=
+- =-Wmissing-noreturn=
+- =-Wno-terminate=
+- =-Woverride-init-side-effects=
+- =-Wstrict-overflow==
+- =-Wsynth=
+- =-Wunreachable-code=
+- =-Wunused-argument=
 
-The following are mentioned in the index, but not explicitly in the diagnostic
-section:
-- -fdiagnostics-show-caret (negative is listed)
+The following options appear in the index, but not in the documentation
+- =-Wno-duplicated-cond= (positive is documented)
+- =-Wno-frame-address= (positive is documented)
+- =-Wno-invalid-memory-model= (positive is documented)
+- =-Wno-lto-type-mistmach= (misspelling of =-Wno-lto-type-mismatch=, positive
+  is documented)
+- =-Wno-misleading-indentation= (positive is documented)
+- =-Wno-null-dereference= (positive is documented)
+- =-Wno-override-init-side-effects= (positive is documented)
+- =-Wno-shift-negative-value= (positive is documented)
+- =-Wno-shift-overflow= (positive is documented)
+- =-Wno-strict-selector-match= (positive is documented)
+- =-Wno-subobject-linkage= (positive is documented)
+- =-Wno-tautological-compare= (positive is documented)
+- =-Wterminate= (negative is documented)
 
-The following is mentioned neither in the summary nor section on C++ language
-options, but does appear elsewhere:
-- -fno-default-inline
+The following is misprinted in the index
+- =-Wopenm-simd= (should be =-Wopenmp-simd=)
 
-The following are not mentioned in the section for code generation
-- -fcommon (only -fno-common)
+*** C and Objective-C only warnings
 
-The following are not mentioned in the summary for optimization:
-- -fdeclone-ctor-dtor
-- -flto-odr-type-merging
-- -foptimize-strlen
-- -ftree-slp-vectorize
-- -ftree-vectorize
+*** Debugging options
 
-The following optimization parameters are documented, but appear not to work.
---param tracer-min-branch-ratio-feedback=
---param reorder-blocks-duplicate=
---param reorder-blocks-duplicate-feedback=
---param sched-spec-state-edge-prob-cutoff=
---param selsched-max-insns-to-rename=
---param lto-minpartition=
---param max-ssa-name-query-depth=
+The following options are documented, but do not appear in the summary:
+- =-fvar-tracking-assignments-toggle=
+- =-ggnu-pubnames=
+- =-gpubnames=
+- =-gsplit-dwarf=
 
-The following are not mentioned in the summary for debugging:
--fvar-tracking-assignments-toggle
--ggnu-pubnames
--gpubnames
--gsplit-dwarf
+The following options appear in the index, but not in the documentation
+- =-fdwarf2-cfi-asm= (negative is documented).
+- =-fmerge-debug-strings= (negative is documented).
 
-The following is in the index, but not documented
-- -fdwarf2-cfi-asm (negative is documented).
-- -fmerge-debug-strings (negative is documented).
+*** Optimization options
 
+The following options are documented, but do not appear in summary:
+- =-fdeclone-ctor-dtor=
+- =-flto-odr-type-merging=
+- =-foptimize-strlen=
+- =-fsimd-cost-model==
+- =-ftree-slp-vectorize=
+- =-ftree-vectorize=
 
-The following is not documented in the developer options
--print-multiarch
--freport-bug
+The following parameters are documented, but do not appear to work:
+- =--param tracer-min-branch-ratio-feedback==
+- =--param reorder-blocks-duplicate==
+- =--param reorder-blocks-duplicate-feedback==
+- =--param sched-spec-state-edge-prob-cutoff==
+- =--param selsched-max-insns-to-rename==
+- =--param lto-minpartition==
+- =--param max-ssa-name-query-depth==
 
-The following developer options are in the index but not documented
-- -fno-checking (positive is documented).
+The following options appear to be supported, but are undocumented:
+- =-ftree-coalesce-inlined-vars=
+- =-ftree-copyrename=
 
+The following option is documented in the internals manual (so not an official
+option), but appears in the option summary.
+- =-fwpa=
 
-The following developer options are documented, but appear not to work.
--fdump-rtl-bypass
--fdump-rtl-dce
--fdump-rtl-dce1
--fdump-rtl-dce2
--fdump-rtl-eh
--fdump-rtl-gcse1
--fdump-rtl-initvals
--fdump-rtl-regclass
--fdump-rtl-seqabstr
--fdump-rtl-sibling
--fdump-rtl-subregs_of_mode_finish
--fdump-rtl-subregs_of_mode_init
--fdump-rtl-unshare
--fdump-tree-storeccp
+*** Program instrumentation options
 
--fcheck-data-deps is not documented. From the patch documentation, this
- compares the results of several data dependence analyzers, and probably
- belongs in the instrumentation section.
+The following option is not documented:
+- =-fcheck-data-deps=
 
-The following Objective-C options are accepted, but not documented:
--objcmt-atomic-property
--objcmt-migrate-all
--objcmt-migrate-annotation
--objcmt-migrate-designated-init
--objcmt-migrate-instancetype
--objcmt-migrate-literals
--objcmt-migrate-ns-macros
--objcmt-migrate-property-dot-syntax
--objcmt-migrate-property
--objcmt-migrate-protocol-conformance
--objcmt-migrate-readonly-property
--objcmt-migrate-readwrite-property
--objcmt-migrate-subscripting
--objcmt-ns-nonatomic-iosonly
--objcmt-returns-innerpointer-property
+(From the patch documentation, =-fcheck-data-deps= compares the results of
+several data dependence analyzers, and probably belongs in this section.)
 
-Teh following Objective-C options are in the index, but not documented:
-- -flocal-ivars
+The following negative options are accepted, but not the equivalent positives.
+- =-fno-sanitize-recover=leak=
+- =-fno-sanitize-recover=thread=
 
+The following option is documented, but does not appear in the summary:
+= =-fsanitize-coverage=trace-pc= (negative is assumed to also be implented).
 
-GCC accepts the following negatives, but not the equivalent negatives.
--fno-sanitize-recover=leak
--fno-sanitize-recover=thread
+The following options appear in the index but not in the documentation
+- =-fno-check-pointer-bounds= (positive is documented)
+- =-fno-check-pointer-bounds= (positive is documented)
+- =-fno-chkp-check-incomplete-type= (positive is documented)
+- =-fno-chkp-check-read= (positive is documented)
+- =-fno-chkp-check-write= (positive is documented)
+- =-fno-chkp-first-field-has-own-bounds= (positive is documented)
+- =-fno-chkp-instrument-calls= (positive is documented)
+- =-fno-chkp-instrument-marked-only= (positive is documented)
+- =-fno-chkp-narrow-bounds= (positive is documented)
+- =-fno-chkp-narrow-to-innermost-array= (positive is documented)
+- =-fno-chkp-optimize= (positive is documented)
+- =-fno-chkp-store-bounds= (positive is documented)
+- =-fno-chkp-treat-zero-dynamic-size-as-infinite= (positive is documented)
+- =-fno-chkp-use-fast-string-functions= (positive is documented)
+- =-fno-chkp-use-nochk-string-functions= (positive is documented)
+- =-fno-chkp-use-static-bounds= (positive is documented)
+- =-fno-chkp-use-static-const-bounds= (positive is documented)
+- =-fno-chkp-use-wrappers= (positive is documented)
 
-The following instrumentation option is not in the summary
--fsanitize-coverage=trace-pc (negative is assumed to be there).
+*** Preprocessor options
 
+The following options are documented, but do not appear in the summary:
+- =-iquote=
+- =-fdirectives-only=
+- =-fdollars-in-identifiers=
+- =-fno-show-column=
+- =-fexec-charset==
+- =-fextended-identifiers=
+- =-finput-charset==
+- =-fpch-deps=
+- =-fpch-preprocess=
+- =-fpreprocessed=
+- =-ftabstop==
+- =-fwide-exec-charset=UTF-8=
+- =-MD=
+- =-MMD=
 
-The following instrumentation options appear in the index but are not
-documented.
-- -fno-check-pointer-bounds (positive is documented)
-- -fno-check-pointer-bounds (positive is documented)
-- -fno-chkp-check-incomplete-type (positive is documented)
-- -fno-chkp-check-read (positive is documented)
-- -fno-chkp-check-write (positive is documented)
-- -fno-chkp-first-field-has-own-bounds (positive is documented)
-- -fno-chkp-instrument-calls (positive is documented)
-- -fno-chkp-instrument-marked-only (positive is documented)
-- -fno-chkp-narrow-bounds (positive is documented)
-- -fno-chkp-narrow-to-innermost-array (positive is documented)
-- -fno-chkp-optimize (positive is documented)
-- -fno-chkp-store-bounds (positive is documented)
-- -fno-chkp-treat-zero-dynamic-size-as-infinite (positive is documented)
-- -fno-chkp-use-fast-string-functions (positive is documented)
-- -fno-chkp-use-nochk-string-functions (positive is documented)
-- -fno-chkp-use-static-bounds (positive is documented)
-- -fno-chkp-use-static-const-bounds (positive is documented)
-- -fno-chkp-use-wrappers (positive is documented)
+The following option appaers not to work:
+- =-version= (i.e. with one hyphen)
+
+*** Assembler options
+
+It the summary, the title should be _Assembler Options_
+
+*** Linker options
+
+The following options are documented, but do not appear in the summary:
+- =-no-pie=
+- =-lobjc=
+
+*** Directory options
+
+*** Code Generation options
+
+The following is mentioned in passing in the documentation, but is not
+otherwise documented:
+- =-fcommon= (=-fno-common= is documented)
+
+The following is misprinted in the index
+- =-fstack_reuse= (should be =-fstack-reuse=)
+
+*** Developer options
+
+The following options appear in the summary only, but are otherwise
+undocumented:
+- =-fsel-sched-verbose=
+- =-fsel-sched-dump-cfg=
+- =-fsel-sched-pipelining-verbose=
+
+The following options are not documented:
+- =-print-multiarch=
+- =-freport-bug=
+
+The following options appear in the index, but not in the documentation
+- =-fno-checking= (positive is documented).
+
+The following options are documented, but appear not to work.
+- =-fdump-rtl-bypass=
+- =-fdump-rtl-dce=
+- =-fdump-rtl-dce1=
+- =-fdump-rtl-dce2=
+- =-fdump-rtl-eh=
+- =-fdump-rtl-gcse1=
+- =-fdump-rtl-initvals=
+- =-fdump-rtl-regclass=
+- =-fdump-rtl-seqabstr=
+- =-fdump-rtl-sibling=
+- =-fdump-rtl-subregs_of_mode_finish=
+- =-fdump-rtl-subregs_of_mode_init=
+- =-fdump-rtl-unshare=
+- =-fdump-tree-storeccp=
+- =-fdump-tree-store_copyprop=
 
 ** Plain bugs
 
---target-help barfs if gold is the linker.
+=--target-help= barfs if gold is the linker.
 
 * List of things to be done for LLVM
 
-The following should be marked as MIPS only:
-- -mfpxx
-- -mno-odd-spreg/-modd-spreg
+The following options should be marked as MIPS only:
+- =-mfpxx=
+- =-mno-odd-spreg= and =-modd-spreg=
 
-The following should be marked as ARM only
-- -mglobal-merge/-mno-global-merge
-- -mlong-calls/-mno-long-calls
+The following options should be marked as ARM only
+- =-mglobal-merge= and =-mno-global-merge=
+- =-mlong-calls= and =-mno-long-calls=
 
-Listed by --help-hidden but not used:
-- -fallow-single-precision dummy.c
-- -omptargets=i686-pc-linux-gnu dummy.c
-- -fno-objc-infer-related-result-type
-- --verify-debug-info
+The following options are listed by --help-hidden but not supported:
+- =-fallow-single-precision=
+- =-omptargets=i686-pc-linux-gnu=
+- =-fno-objc-infer-related-result-type=
+- =--verify-debug-info=
 
--include expects a pre-compiled header file
+The following option is documented online, but not supported+
+- =-fsanitize-trap=cfi-cast-strict= (-fno-sanitize=cfi-cast-strict is OK)
 
-How to pass a C++ standard library to -stdlib=
-
--fsanitize-trap=cfi-cast-strict is not recognized, although
- -fno-sanitize=cfi-cast-strict is OK
-
--fsanitize-trap=vptr/-fno-sanitize-trap=vptr are unrecognized, even though
- vptr is one of the categories for the undefined sanitizer.
+The following options are not supported, even though =vptr= is one of the
+categories for the undefined sanitizer.
+- =-fsanitize-trap=vptr= and =-fno-sanitize-trap=vptr=
 
     $ clang++ -fsanitize-trap=vptr -fsanitize=undefined dummy.cpp
     clang-3.9: error: unsupported argument 'vptr' to option '-fsanitize-trap'
 
+** Plain bugs
+
+=-include= expects a pre-compiled header file (i.e. identical behavior to
+=-include-pch=)

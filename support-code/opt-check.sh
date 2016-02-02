@@ -298,6 +298,16 @@ ${GCC} -shared -o myplugin.so myplugin.o >> ${logfile} 2>&1
 ${GCC} dummy.h -o dummy.pch
 ${GCC} -fprofile-generate dummy.c -o dummy # To generate profile files
 ./dummy
+# Sampling profile data is produced in advance, because it nees sudo, but in
+# case you need to reproduce it manually:
+#
+#   $ gcc dummy.c -o dummy
+#   $ sudo perf record -e cpu-cycles -b ./dummy
+#   $ create_gcov --gcov_version=1 --binary=./dummy --profile=perf.data \
+#                 --gcov=dummy.afdo
+#
+# Just make a copy to the default name
+cp dummy.afdo fbdata.afdo
 ${GCC} -E dummy.c -o dummy-preproc.i
 ${GCC} -E dummy.cpp -o dummy-preproc.ii
 ${GCC} -E dummy.m -o dummy-preproc.mi
@@ -521,7 +531,6 @@ logcon "C++ language options for both LLVM and GCC"
 run_both -fno-access-control dummy.cpp
 run_both -fcheck-new dummy.cpp
 run_both -fconstexpr-depth=1024 dummy.cpp
-run_both -fdeduce-init-list dummy.cpp
 run_both -ffor-scope dummy.cpp
 run_both -ffriend-injection dummy.cpp
 run_both -fgnu-keywords dummy.c
@@ -583,6 +592,7 @@ logcon "C++ language options for GCC but not LLVM"
 
 run_gcc -fabi-version=2 dummy.cpp
 run_gcc -fabi-compat-version=2 -fabi-version=2 dummy.cpp
+run_gcc -fdeduce-init-list dummy.cpp
 run_gcc -fext-numeric-literals dummy.cpp
 run_gcc -fno-enforce-eh-specs dummy.cpp
 run_gcc -fno-ext-numeric-literals dummy.cpp
@@ -602,10 +612,12 @@ run_gcc -Wmultiple-inheritance dummy.cpp
 run_gcc -Wnamespaces dummy.cpp
 run_gcc -Wno-non-template-friend dummy.c
 run_gcc -Wno-pmf-conversions dummy.c
+run_gcc -Wno-terminate dummy.cpp
 run_gcc -Wnoexcept dummy.cpp
 run_gcc -Wstrict-null-sentinel dummy.cpp
 run_gcc -Wtemplates dummy.cpp
 run_gcc -Wvirtual-inheritance dummy.cpp
+run_gcc -Wterminate dummy.cpp
 logcon ""
 
 
@@ -640,7 +652,8 @@ run_both -objcmt-migrate-readwrite-property -c dummy.m
 run_both -objcmt-migrate-subscripting -c dummy.m
 run_both -objcmt-ns-nonatomic-iosonly -c dummy.m
 run_both -objcmt-returns-innerpointer-property -c dummy.m
-run_both -Wno-protocol -c dummy.m
+run_only_llvm -Wno-protocol -c dummy.m
+run_only_llvm -Wno-strict-selector-match -c dummy.m
 run_both -Wselector -c dummy.m
 run_both -Wstrict-selector-match -c dummy.m
 run_both -Wundeclared-selector -c dummy.m
@@ -723,6 +736,7 @@ logcon ""
 
 logcon "Diagnostic message formatting options for GCC but not LLVM"
 
+run_gcc -fdiagnostics-show-caret dummy.c
 run_gcc -fno-diagnostics-show-caret dummy.c
 logcon ""
 
@@ -872,6 +886,7 @@ run_only_llvm -Wno-multichar dummy.c
 run_only_llvm -Wno-narrowing dummy.c
 run_only_llvm -Wno-nonnull dummy.c
 run_only_llvm -Wno-non-virtual-dtor dummy.c
+run_only_llvm -Wno-null-dereference dummy.c
 run_only_llvm -Wno-odr dummy.c
 run_only_llvm -Wno-old-style-cast dummy.c
 run_only_llvm -Wno-overflow dummy.c
@@ -897,6 +912,8 @@ run_only_llvm -Wno-sign-conversion dummy.c
 run_only_llvm -Wno-sign-promo dummy.c
 run_only_llvm -Wno-sizeof-array-argument dummy.c
 run_only_llvm -Wno-sizeof-pointer-memaccess dummy.c
+run_only_llvm -Wno-shift-negative-value dummy.c
+run_only_llvm -Wno-shift-overflow dummy.c
 run_only_llvm -Wno-stack-protector dummy.c
 run_only_llvm -Wno-strict-aliasing dummy.c
 run_only_llvm -Wno-strict-overflow dummy.c
@@ -905,6 +922,7 @@ run_only_llvm -Wno-switch-bool dummy.c
 run_only_llvm -Wno-switch-default dummy.c
 run_only_llvm -Wno-switch-enum dummy.c
 run_only_llvm -Wno-system-headers dummy.c
+run_only_llvm -Wno-tautological-compare dummy.c
 run_only_llvm -Wno-trigraphs dummy.c
 run_only_llvm -Wno-type-limits dummy.c
 run_only_llvm -Wno-undeclared-selector dummy.c
@@ -912,6 +930,7 @@ run_only_llvm -Wno-undef dummy.c
 run_only_llvm -Wno-uninitialized dummy.c
 run_only_llvm -Wno-unknown-pragmas dummy.c
 run_only_llvm -Wno-unused dummy.c
+run_only_llvm -Wno-unused-const-variable dummy.cpp
 run_only_llvm -Wno-unused-function dummy.c
 run_only_llvm -Wno-unused-label dummy.c
 run_only_llvm -Wno-unused-parameter dummy.c
@@ -1337,6 +1356,7 @@ run_gcc -Whsa -fopenmp dummy.c
 run_gcc -Winvalid-memory-model dummy.c
 run_gcc -Wjump-misses-init dummy.c
 run_gcc -Wlogical-op dummy.c
+run_gcc -Wlto-type-mismatch -flto dummy.c
 run_gcc -Wmaybe-uninitialized dummy.c
 run_gcc -Wmemset-transposed-args dummy.c
 run_gcc -Wmisleading-indentation dummy.c
@@ -1354,17 +1374,23 @@ run_gcc -Wno-cpp dummy.c
 run_gcc -Wno-designated-init dummy.m
 run_gcc -Wno-discarded-array-qualifiers dummy.c
 run_gcc -Wno-discarded-qualifiers dummy.c
+run_gcc -Wno-duplicated-cond dummy.c
 run_gcc -Wno-format-contains-nul dummy.c
 run_gcc -Wno-format-signedness dummy.c
+run_gcc -Wno-frame-address dummy.c
 run_gcc -Wno-free-nonheap-object dummy.c
+run_gcc -Wno-invalid-memory-model dummy.c
 run_gcc -Wno-jump-misses-init dummy.c
 run_gcc -Wno-literal-suffix dummy.c
 run_gcc -Wno-logical-op dummy.c
+run_gcc -Wno-lto-type-mismatch -flto dummy.c
 run_gcc -Wno-maybe-uninitialized dummy.c
 run_gcc -Wno-memset-transposed-args dummy.c
+run_gcc -Wno-misleading-indentation dummy.c
 run_gcc -Wno-noexcept dummy.c
 run_gcc -Wno-normalized dummy.c
 run_gcc -Wno-override-init dummy.c
+run_gcc -Wno-override-init-side-effects dummy.c
 run_gcc -Wno-packed-bitfield-compat dummy.c
 run_gcc -Wno-pedantic-ms-format dummy.c
 run_gcc -Wno-placement-new dummy.cpp
@@ -1372,6 +1398,7 @@ run_gcc -Wno-return-local-addr dummy.c
 run_gcc -Wno-scalar-storage-order dummy.c
 run_gcc -Wno-sized-deallocation dummy.c
 run_gcc -Wno-strict-null-sentinel dummy.c
+run_gcc -Wno-subobject-linkage dummy.cpp
 run_gcc -Wno-suggest-attribute=const dummy.c
 run_gcc -Wno-suggest-attribute=format dummy.c
 run_gcc -Wno-suggest-attribute=noreturn dummy.c
@@ -1396,6 +1423,7 @@ run_gcc -Wnormalized=nfc dummy.c
 run_gcc -Wnormalized=nfkc dummy.c
 run_gcc -Wopenmp-simd dummy.c
 run_gcc -Woverride-init dummy.c
+run_gcc -Woverride-init-side-effects dummy.c
 run_gcc -Wpacked-bitfield-compat dummy.c
 run_gcc -Wplacement-new dummy.cpp
 run_gcc -Wpmf-conversions dummy.c
@@ -1801,6 +1829,9 @@ run_gcc -fselective-scheduling2 dummy.c
 run_gcc -fsemantic-interposition dummy.c
 run_gcc -fshrink-wrap dummy.c
 run_gcc -fsignaling-nans dummy.c
+run_gcc -fsimd-cost-model=cheap dummy.c
+run_gcc -fsimd-cost-model=dynamic dummy.c
+run_gcc -fsimd-cost-model=unlimited dummy.c
 run_gcc -fsingle-precision-constant dummy.c
 run_gcc -fsplit-ivs-in-unroller dummy.c
 run_gcc -fsplit-paths dummy.c
@@ -2015,10 +2046,12 @@ logcon ""
 run_dummy -fltrans -flto dummy.c
 run_dummy -fltrans-output-list=${tmpf} -flto dummy.c
 run_dummy -fresolution=${tmpf} -flto dummy.c
+run_dummy -fwpa -flto dummy.c
 
 # These options don't work because the AutoFDO tool is broken for newer kernels.
-run_dummy -fauto-profile -c dummy.c
-run_dummy -fauto-profile=`pwd`/fbdata.afdo -c dummy.c
+run_gcc -fauto-profile -c dummy.c
+run_gcc -fauto-profile=`pwd`/gcc/fbdata.afdo -c dummy.c
+# Documented, but not implemented
 run_dummy --param tracer-min-branch-ratio-feedback=5 dummy.c
 run_dummy --param reorder-blocks-duplicate=3 dummy.c
 run_dummy --param reorder-blocks-duplicate-feedback=5 dummy.c
@@ -2040,7 +2073,6 @@ logcon "Program instrumentation options for both LLVM and GCC"
 run_both --coverage dummy.c
 run_both -finstrument-functions dummy.c profile-assist.c
 run_both -fno-sanitize=all dummy.c
-run_both -fno-sanitize-coverage=trace-pc -fsanitize=address dummy.c
 run_both -fno-sanitize-recover dummy.c # Deprecated
 run_both -fno-sanitize-recover=address dummy.c
 run_both -fno-sanitize-recover=alignment dummy.c
@@ -2087,7 +2119,6 @@ run_both -fsanitize=undefined dummy.c
 run_both -fsanitize=unreachable dummy.c
 run_both -fsanitize=vla-bound dummy.c
 run_both -fsanitize=vptr dummy.c
-run_both -fsanitize-coverage=trace-pc -fsanitize=address dummy.c
 run_both -fsanitize-recover dummy.c
 run_both -fsanitize-recover=address dummy.c
 run_both -fsanitize-recover=alignment dummy.c
@@ -2215,9 +2246,11 @@ run_gcc -fbounds-check dummy.c
 run_gcc -fcheck-data-deps dummy.c
 run_gcc -finstrument-functions-exclude-file-list=dummy.c dummy.c
 run_gcc -finstrument-functions-exclude-function-list=main dummy.c
+run_gcc -fno-sanitize-coverage=trace-pc -fsanitize=address -c dummy.c
 run_gcc -fno-stack-limit dummy.c
 run_gcc -fprofile-dir=`pwd`/gcc dummy.c
 run_gcc -fsanitize=bounds-strict dummy.c
+run_gcc -fsanitize-coverage=trace-pc -fsanitize=address -c dummy.c
 run_gcc -fsanitize-recover=bounds-strict dummy.c
 run_gcc -fsanitize-recover=return dummy.c
 run_gcc -fsanitize-recover=unreachable dummy.c
@@ -2408,6 +2441,7 @@ run_only_gcc  -l code -L`pwd`/gcc dummy.c
 run_only_llvm -l code -L`pwd`/llvm dummy.c
 run_only_gcc  -L`pwd`/gcc -lcode dummy.c
 run_only_llvm -L`pwd`/llvm -lcode dummy.c
+run_only_gcc -lobjc dummy.m  # LLVM bug - needs to be told where to look
 run_both -nodefaultlibs -c dummy.c
 run_both -nostartfiles dummy.c
 run_both -nostdlib dummy.c
@@ -2445,6 +2479,7 @@ run_gcc -static-libmpxwrappers dummy.c
 run_gcc -static-libstdc++ dummy.c
 run_gcc -static-libtsan dummy.c
 run_gcc -static-libubsan dummy.c
+run_gcc -no-pie dummy.c
 run_gcc -T dummy.script -c dummy.c
 logcon ""
 
@@ -3078,7 +3113,7 @@ run_gcc -fdump-tree-slp dummy.c
 run_gcc -fdump-tree-split-paths dummy.c
 run_gcc -fdump-tree-sra dummy.c
 run_gcc -fdump-tree-ssa dummy.c
-run_gcc -fdump-tree-store_copyprop dummy.c
+run_dummy -fdump-tree-store_copyprop dummy.c # Documented, but not implemeted
 run_gcc -fdump-tree-vect dummy.c
 run_gcc -fdump-tree-vrp dummy.c
 run_gcc -fdump-tree-vtable-verify dummy.c
@@ -3179,6 +3214,7 @@ run_dummy -mcrc dummy.c # ARM only
 run_dummy -mfix-cortex-a53-835769 # AArch64 only
 run_dummy -mfp32 dummy.c # MIPS only
 run_dummy -mfp64 dummy.c # MIPS only
+run_dummy -mfpmath dummy.c # x86 only
 run_dummy -mfpxx dummy.c # MIPS only
 run_dummy -mgeneral-regs-only dummy.c # AArch64 only
 run_dummy -mglobal-merge dummy.c # ARM only
