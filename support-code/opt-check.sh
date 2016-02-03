@@ -360,6 +360,7 @@ logcon "Overall options for both LLVM and GCC"
 run_both @comms
 run_both -### dummy.c
 run_both -c dummy.c
+run_both -E dummy.c
 run_only_gcc -fplugin=`pwd`/gcc/myplugin.so dummy.c
 run_only_llvm -fplugin=`pwd`/llvm/myplugin.so dummy.c
 run_both --help
@@ -477,8 +478,7 @@ run_both -std=gnu9x dummy.c
 run_both -std=gnu11 dummy.c
 run_both -std=gnu1x dummy.c
 run_both -traditional -E dummy.c
-run_both -trigraphs dummy.c # Also in preproc
-run_both -Wabi dummy.c  # Also C++/ObjC/ObjC++
+run_both -trigraphs dummy.c
 logcon ""
 
 logcon "C language options for LLVM but not GCC"
@@ -486,8 +486,8 @@ logcon "C language options for LLVM but not GCC"
 run_llvm -fblocks dummy.c
 run_llvm -fborland-extensions dummy.c
 run_llvm -femit-all-decls dummy.c
-run_llvm -fms-compatibility-version=0 dummy.c
 run_llvm -fms-compatibility dummy.c
+run_llvm -fms-compatibility-version=0 dummy.c
 run_llvm -fmsc-version=0 dummy.c
 run_llvm -fno-gnu-inline-asm dummy.c
 run_llvm -fno-spell-checking dummy.c
@@ -759,6 +759,7 @@ run_both -Wall dummy.c
 run_both -Werror dummy.c
 run_both -Werror=abi dummy.c
 run_both -Wextra dummy.c
+run_both -Wfatal-errors dummy.c
 run_both -Wno-error dummy.c
 run_both -Wno-error=abi dummy.c
 run_both -Wpedantic dummy.c
@@ -788,7 +789,6 @@ run_both -Wdouble-promotion dummy.c
 run_both -Wempty-body dummy.c
 run_both -Wendif-labels dummy.c
 run_both -Wenum-compare dummy.c
-run_both -Wfatal-errors dummy.c
 run_both -Wfloat-conversion dummy.c
 run_both -Wfloat-equal dummy.c
 run_both -Wformat dummy.c
@@ -2320,7 +2320,6 @@ run_both -DCARMICHAEL_PSEUDO_PRIME dummy.c
 run_both -DFIRST_CARMICHAEL_PSEUDO_PRIME=561 dummy.c
 run_both -dD -E dummy.c
 run_both -dM -E dummy.c
-run_both -E dummy.c
 run_both -fdollars-in-identifiers dummy-dollar.c
 run_both -fexec-charset=UTF-8 dummy.c
 run_both -fextended-identifiers dummy.c

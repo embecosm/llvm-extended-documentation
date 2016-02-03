@@ -191,7 +191,7 @@ in the following sections.  For convenience, options supported by LLVM
 and not by GCC and vice-versa are indicated in each section below.
 
 The following target architectures supported by GCC are not supported
-by LLVM: Adapteva Epiphany, ARC, AVR, Blackfin, C6X, CRIS, CR16, DEC
+by LLVM: Adapteva Epiphany, ARC, Blackfin, C6X, CRIS, CR16, DEC
 Alpha, FR30, FRV, H8/300, HPPA, IA-64, LM32, M32R/D, M32C, M680x0,
 MCore, MeP, MicroBlaze, MMIX, MN10300, Moxie, NDS32, Nios II, PDP-11,
 picoChip, RL78, RS/6000, RX, Score, SH, SPU, TILE-Gx,
@@ -203,85 +203,384 @@ GCC: Hexagon, XCore.
 @table @emph
 @item Overall Options
 @xref{Overall Options,,Options Controlling the Kind of Output}.
-@gccoptlist{-c  -S  -E  -o @var{file}  -no-canonical-prefixes  @gol
--pipe  -pass-exit-codes  @gol
--x @var{language}  -v  -###  --help --version}
+
+@emph{Options supported by both LLVM and GCC}
+@gccoptlist{@@@var{file}
+@    -###
+@    -c
+@    -E
+@    -fplugin=@var{file}
+@    --help
+@    -o @var{file}
+@    -pipe
+@gol -S
+@    -v
+@    --version
+@    -x @var{language}
+}
+
+@emph{Options only supported by LLVM}
+@gccoptlist{-fbuild-session-file=@var{file}
+@    -fbuild-session-timestamp=@var{secs}
+@gol -emit-ast
+@    -emit-llvm
+@    --gcc-toolchain=@var{dir}
+@    -help
+@    -ObjC
+@gol -ObjC++
+@    -Qunused-arguments
+@    -working-directory @var{dir}
+@    -Xclang
+}
+
+@emph{Options only supported by GCC}
+@gccoptlist{-fdump-ada-spec@r{[}-slim@r{]}
+@    -fada-spec-parent=@var{unit}
+@gol -fdump-go-spec=@var{file}
+@    -fno-canonical-system-headers
+@gol -fplugin-arg-@var{name}=@var{arg}
+@    --help=@var{class}@r{[},@dots{}@r{]}
+@gol -pass-exit-codes
+@    -specs=@var{file}
+@    --target-help
+@    -wrapper
+}
+
 
 @item C Language Options
 @xref{C Dialect Options,,Options Controlling C Dialect}.
-@gccoptlist{-ansi  -std=@var{standard}  -fgnu89-inline @gol
--aux-info @var{filename}  -fno-asm  -fno-builtin  @gol
--fno-builtin-@var{function}  -fhosted  -ffreestanding  -fopenmp @gol
--fms-extensions  -trigraphs  -fcond-mismatch  -funsigned-char @gol
--fsigned-char  -flax-vector-conversions  -fsigned-bitfields}
+
+@emph{Options supported by both LLVM and GCC}
+@gccoptlist{-ansi
+@    -ffreestanding
+@    -fgnu89-inline
+@    -fhosted
+@gol -flax-vector-conversions
+@    -fms-extensions
+@    -fno-asm
+@    -fno-builtin
+@gol -fno-builtin-@var{function}
+@    -fopenmp
+@    -fsigned-bitfields
+@    -fsigned-char
+@gol -funsigned-bitfields
+@    -funsigned-char
+@    -std=@var{standard}
+@    -traditional
+@gol -trigraphs
+}
+
+@emph{Options only supported by LLVM}
+@gccoptlist{-fblocks
+@    -fborland-extensions
+@    -femit-all-decls
+@gol -fms-compatibility
+@    -fms-compatibility-version=@var{num}
+@gol -fmsc-version=@var{num}
+@    -fno-gnu-inline-asm
+@    -fno-spell-checking
+@gol -fpascal-strings
+@    -funique-section-names
+@    -fwritable-strings
+}
+
+@emph{Options only supported by GCC}
+@gccoptlist{-aux-info @var{filename}
+@    -fallow-parameterless-variadic-functions
+@gol -fcilkplus
+@    -fgnu-tm
+@    -fcond-mismatch
+@    -fopenacc
+@gol -fopenmp-simd
+@    -fplan9-extensions
+@    -fsso-struct=@var{endianness}
+@gol -traditional-cpp
+}
 
 @item C++ Language Options
 @xref{C++ Dialect Options,,Options Controlling C++ Dialect}.
-@gccoptlist{-fno-access-control @gol
--fconstexpr-depth=@var{n} @gol
--fno-elide-constructors @gol
--ffor-scope  -fno-for-scope  -fno-gnu-keywords @gol
--fno-implicit-templates @gol
--fms-extensions @gol
--fno-operator-names @gol
--fpermissive @gol
--fno-rtti  -fstrict-enums@gol
--ftemplate-backtrace-limit=@var{n} @gol
--ftemplate-depth=@var{n} @gol
--fno-threadsafe-statics  -fuse-cxa-atexit @gol
--fvisibility-inlines-hidden @gol
--fvisibility-ms-compat @gol
--fext-numeric-literals @gol
--fno-weak  -nostdinc++ @gol
--Wctor-dtor-privacy @gol
--Wdelete-non-virtual-dtor -Wnarrowing @gol
--Wnoexcept -Wnon-virtual-dtor  -Wreorder @gol
--Weffc++  @gol
--Wold-style-cast @gol
--Woverloaded-virtual @gol
--Wsign-promo}
+
+@emph{Options supported by both LLVM and GCC}
+@gccoptlist{-fno-access-control
+@    -fcheck-new
+@    -fconstexpr-depth=@var{n}
+@gol -ffor-scope
+@    -ffriend-injection
+@    -fms-extensions
+@gol -fno-elide-constructors
+@    -fno-gnu-keywords
+@    -fno-implicit-templates
+@gol -fno-implement-inlines
+@    -fno-operator-names
+@    -fno-rtti
+@gol -fno-threadsafe-statics
+@    -fpermissive
+@    -fsized-deallocation
+@gol -ftemplate-backtrace-limit=@var{n}
+@    -ftemplate-depth=@var{n}
+@    -fuse-cxa-atexit
+@gol -fvisibility-inlines-hidden
+@    -fvisibility-ms-compat
+@    -nostdinc++
+@gol -Wconversion-null
+@    -Wctor-dtor-privacy
+@    -Wdelete-non-virtual-dtor
+@gol -Weffc++
+@    -Wnarrowing
+@    -Wnon-virtual-dtor
+@    -Wold-style-cast
+@gol -Woverloaded-virtual
+@    -Wreorder
+@    -Wsign-promo
+}
+
+@emph{Options only supported by LLVM}
+@gccoptlist{-fcxx-exceptions
+@    -fdelayed-template-parsing
+@gol -fno-assume-sane-operator-new
+@    -fshow-overloads=@var{opt}
+}
+
+@emph{Options only supported by GCC}
+@gccoptlist{-fabi-version=@var{n}
+@    -fabi-compat-version=@var{n}
+@    -fdeduce-init-list
+@gol -fext-numeric-literals
+@    -fno-enforce-eh-specs
+@    -fno-for-scope
+@gol -fno-implicit-inline-templates
+@    -fno-nonansi-builtins
+@gol -fno-optional-diags
+@    -fno-pretty-templates
+@    -fno-weak
+@gol -fnothrow-opt
+@    -frepo
+@    -Wabi-tag
+@    -Wliteral-suffix
+@gol -Wmultiple-inheritance
+@    -Wnamespaces
+@    -Wno-non-template-friend
+@gol -Wno-pmf-conversions
+@    -Wno-terminate
+@    -Wnoexcept
+@gol -Wstrict-null-sentinel
+@    -Wtemplates
+@    -Wvirtual-inheritance
+}
 
 @item Objective-C and Objective-C++ Language Options
 @xref{Objective-C and Objective-C++ Dialect Options,,Options Controlling
 Objective-C and Objective-C++ Dialects}.
-@gccoptlist{-fconstant-string-class=@var{class-name} @gol
--fgnu-runtime  -fnext-runtime  -fobjc-abi-version=@var{n} @gol
--fobjc-call-cxx-cdtors  -fobjc-exceptions  -fobjc-gc  -Wno-protocol @gol
--Wselector  -Wstrict-selector-match  -Wundeclared-selector @gol
--print-objc-runtime-info}
+
+@emph{Options supported by both LLVM and GCC}
+@gccoptlist{-fconstant-string-class=@var{class-name}
+@    -fgnu-runtime
+@gol -fnext-runtime
+@    -fobjc-abi-version=@var{n}
+@    -fobjc-call-cxx-cdtors
+@gol -fobjc-exceptions
+@    -fobjc-gc
+@    -objcmt-atomic-property
+@gol -objcmt-migrate-@var{category}
+@    -objcmt-ns-nonatomic-iosonly
+@gol -objcmt-returns-innerpointer-property
+@    -Wno-protocol
+@gol -Wselector
+@    -Wstrict-selector-match
+@    -Wundeclared-selector
+}
+
+@emph{Options only supported by LLVM}
+@gccoptlist{-fno-constant-cfstrings
+@    -fobjc-arc
+@    -fobjc-arc-exceptions
+@gol -fobjc-gc-only
+@    -fobjc-runtime=@var{runtime}
+@gol -objcmt-whitelist-dir-path=@var{dir}
+@    -rewrite-legacy-objc
+@    -rewrite-objc
+}
+
+@emph{Options only supported by GCC}
+@gccoptlist{-fextern-tls-init
+@    -fivar-visibility=@r{[}public@r{|}protected@r{|}private@r{|}package@r{]}
+@gol -fno-default-inline
+@    -fno-lifetime-dse
+@    -fno-local-ivars
+@gol -fno-nil-receivers
+@    -fobjc-direct-dispatch
+@    -fobjc-nilcheck
+@gol -fobjc-std=@var{std}
+@    -freplace-objc-classes
+@    -fzero-link
+@    -gen-decls
+@gol -print-objc-runtime-info
+@    -Wassign-intercept
+}
 
 @item Language Independent Options
 @xref{Language Independent Options,,Options to Control Diagnostic Messages Formatting}.
-@gccoptlist{-fmessage-length=@var{n}  @gol
--fdiagnostics-show-location=@r{[}once@r{|}every-line@r{]} @gol
--fdiagnostics-color=@r{[}auto@r{|}never@r{|}always@r{]}  @gol
--fno-diagnostics-show-option}
+
+@emph{Options supported by both LLVM and GCC}
+@gccoptlist{-fdiagnostics-color@r{[}=auto@r{|}never@r{|}always@r{]}
+@gol -fdiagnostics-show-location=@r{[}once@r{|}every-line@r{]}
+@gol -fmessage-length=@var{n}
+@    -fno-diagnostics-show-option
+}
+
+@emph{Options only supported by LLVM}
+@gccoptlist{-fansi-escape-codes
+@    -fcolor-diagnostics
+@gol -fdiagnostics-parseable-fixits
+@gol -fdiagnostics-print-source-range-info
+@gol -fdiagnostics-show-note-include-stack
+@gol -fdiagnostics-show-template-tree
+@gol -fno-diagnostics-fixit-info
+@    -fno-elide-type
+@gol -fno-show-source-location
+@    -serialize-diagnostics @var{file}
+}
+
+@emph{Options only supported by GCC}
+@gccoptlist{-fno-diagnostics-show-caret
+}
 
 @item Warning Options
 @xref{Warning Options,,Options to Request or Suppress Warnings}.
-@gccoptlist{-fsyntax-only  -fmax-errors=@var{n}  -w   -Werror  -Werror=@var{warning} @gol
--Wfatal-errors  -Wpedantic  -pedantic-errors -Wall  -W  -Wextra @gol
--Waddress  -Waggregate-return  -Warray-bounds  -Wno-attributes  @gol
--Wno-builtin-macro-redefined  -Wcast-align  -Wcast-qual  -Wchar-subscripts @gol
--Wclobbered  -Wcomment  -Wcomments  -Wconversion  -Wno-deprecated @gol
--Wno-deprecated-declarations  -Wdisabled-optimization  -Wno-div-by-zero @gol
--Wempty-body  -Wenum-compare  -Wfloat-equal  -Wformat @gol
--Wno-format-extra-args  -Wformat-nonliteral  -Wformat-security @gol
--Wformat-y2k  -Wno-format-zero-length  -Wframe-larger-than=@var{len}  -Winline @gol
--Wno-int-to-pointer-cast  -Winvalid-pch  -Wlarger-than=@var{len} @gol
--Wlogical-not-parentheses  -Wlong-long  -Wmain  -Wmissing-braces @gol
--Wmissing-field-initializers  -Wmissing-format-attribute  -Wno-multichar @gol
--Wnonnull  -Wodr  -Wno-overflow  -Woverlength-strings  -Wpacked  -Wpadded @gol
--Wparentheses  -Wpointer-arith  -Wredundant-decls  -Wreturn-type  @gol
--Wsequence-point  -Wshadow  -Wno-shadow-ivar  -Wshift-count-negative @gol
--Wshift-count-overflow  -Wsign-compare  -Wsign-conversion @gol
--Wsizeof-array-argument  -Wsizeof-pointer-memaccess  -Wstack-protector @gol
--Wstrict-aliasing  -Wstrict-aliasing=n  -Wstrict-overflow -Wstrict-overflow=@var{n} @gol
--Wswitch  -Wswitch-default  -Wswitch-enum  -Wsystem-headers  -Wtrigraphs @gol
--Wtype-limits  -Wuninitialized  -Wunknown-pragmas  -Wunused  @gol
--Wunused-function  -Wunused-label  -Wunused-parameter  -Wno-unused-result @gol
--Wunused-value  -Wunused-variable  -Wvarargs  -Wvariadic-macros  -Wvla @gol
--Wvolatile-register-var  -Wwrite-strings}
+
+@emph{Options supported by both LLVM and GCC}
+@gccoptlist{-fsyntax-only
+@    -pedantic
+@    -pedantic-errors
+@    -w
+@    -Wall
+@gol -Werror@r{[}=@var{warning}@r{]}
+@    -Wextra
+@    -Wfatal-errors
+@    -Wpedantic
+}
+
+@emph{Options only supported by LLVM}
+@gccoptlist{-Weverything
+}
+
+@emph{Options only supported by GCC}
+@gccoptlist{-fmax-errors=@var{n}
+}
+
+
+@item Language Independent Warning Options
+
+@emph{Options supported by both LLVM and GCC}
+@gccoptlist{-Waddress
+-Waggregate-return
+-Warray-bounds
+-Wno-attributes
+-Wno-builtin-macro-redefined
+-Wc++-compat
+-Wc++0x-compat
+-Wc++11-compat
+-Wc++14-compat
+-Wcast-align
+-Wcast-qual
+-Wchar-subscripts
+-Wcomment
+-Wcomments
+-Wconversion
+-Wdate-time
+-Wdelete-incomplete
+-Wno-deprecated
+-Wno-deprecated-declarations
+-Wdisabled-optimization
+-Wno-div-by-zero
+-Wdouble-promotion
+-Wempty-body
+-Wno-endif-labels
+-Wenum-compare
+-Wfloat-conversion
+-Wfloat-equal
+-Wformat@r{[}=@var{n}@r{]}
+-Wno-format-extra-args
+-Wformat-nonliteral
+-Wformat-security
+-Wformat-y2k
+-Wformat-zero-length
+-Wframe-larger-than=@var{len}
+-Wignored-qualifiers
+-Wimplicit
+-Wimplicit-function-declaration
+-Wimplicit-int
+-Wincompatible-pointer-types
+@c C++/ObjC++ only
+-Wno-inherited-variadic-ctor
+-Winit-self
+-Winline
+-Wno-int-conversion
+-Wno-int-to-pointer-cast
+
+*** Got to here ***
+
+}
+
+@emph{Options only supported by LLVM}
+@gccoptlist{
+}
+
+@emph{Options only supported by GCC}
+@gccoptlist{
+}
+
+@gccoptlist{  @gol
+-Wno-aggressive-loop-optimizations -Warray-bounds=@var{n} @gol
+-Wbool-compare  @gol
+-Wc90-c99-compat -Wc99-c11-compat @gol
+  -Wclobbered  -Wconditionally-supported  @gol
+ -Wcoverage-mismatch -Wno-cpp  -Wno-designated-init @gol
+ @gol
+-Wno-discarded-qualifiers -Wno-discarded-array-qualifiers @gol
+ -Wduplicated-cond @gol
+ @gol
+ @gol
+-Wno-format-contains-nul   -Wformat-signedness  -Wframe-address @gol
+ -Wno-free-nonheap-object -Wjump-misses-init @gol
+   @gol
+ @gol
+   -Winvalid-memory-model -Wno-invalid-offsetof @gol
+-Winvalid-pch -Wlarger-than=@var{len} @gol
+-Wlogical-op -Wlogical-not-parentheses -Wlong-long @gol
+-Wmain -Wmaybe-uninitialized -Wmemset-transposed-args @gol
+-Wmisleading-indentation -Wmissing-braces @gol
+-Wmissing-field-initializers -Wmissing-include-dirs @gol
+-Wno-multichar  -Wnonnull  -Wnormalized=@r{[}none@r{|}id@r{|}nfc@r{|}nfkc@r{]} @gol
+-Wnull-dereference -Wodr  -Wno-overflow  -Wopenmp-simd  @gol
+-Woverride-init-side-effects -Woverlength-strings @gol
+-Wpacked  -Wpacked-bitfield-compat  -Wpadded @gol
+-Wparentheses -Wno-pedantic-ms-format @gol
+-Wplacement-new -Wpointer-arith  -Wno-pointer-to-int-cast @gol
+-Wno-pragmas -Wredundant-decls  -Wno-return-local-addr @gol
+-Wreturn-type  -Wsequence-point  -Wshadow  -Wno-shadow-ivar @gol
+-Wshift-overflow -Wshift-overflow=@var{n} @gol
+-Wshift-count-negative -Wshift-count-overflow -Wshift-negative-value @gol
+-Wsign-compare  -Wsign-conversion  @gol
+-Wno-scalar-storage-order @gol
+-Wsizeof-pointer-memaccess  -Wsizeof-array-argument @gol
+-Wstack-protector -Wstack-usage=@var{len} -Wstrict-aliasing @gol
+-Wstrict-aliasing=n -Wstrict-overflow -Wstrict-overflow=@var{n} @gol
+-Wsuggest-attribute=@r{[}pure@r{|}const@r{|}noreturn@r{|}format@r{]} @gol
+-Wsuggest-final-types @gol -Wsuggest-final-methods -Wsuggest-override @gol
+-Wmissing-format-attribute -Wsubobject-linkage @gol
+-Wswitch  -Wswitch-default  -Wswitch-enum -Wswitch-bool -Wsync-nand @gol
+-Wsystem-headers  -Wtautological-compare  -Wtrampolines  -Wtrigraphs @gol
+-Wtype-limits  -Wundef @gol
+-Wuninitialized  -Wunknown-pragmas  -Wunsafe-loop-optimizations @gol
+-Wunsuffixed-float-constants  -Wunused  -Wunused-function @gol
+-Wunused-label  -Wunused-local-typedefs -Wunused-parameter @gol
+-Wno-unused-result -Wunused-value @gol -Wunused-variable @gol
+-Wunused-const-variable @gol
+-Wunused-but-set-parameter -Wunused-but-set-variable @gol
+-Wuseless-cast -Wvariadic-macros -Wvector-operation-performance @gol
+-Wvla -Wvolatile-register-var  -Wwrite-strings @gol
+-Wzero-as-null-pointer-constant -Whsa}
 
 @item Preprocessor-only Warning Options
 @gccoptlist{-Wno-endif-labels  -Wundef}
@@ -298,7 +597,7 @@ Objective-C and Objective-C++ Dialects}.
 
 @item C++ and Objective-C++-only Warning Options
 @gccoptlist{-Wc++11-compat  -Wno-conversion-null  -Wdelete-incomplete @gol
--Wno-inherited-variadic-ctor  -Wuseless-cast}
+-Wno-inherited-variadic-ctor  -Wimport  -Wuseless-cast}
 
 @item Debugging Options
 @xref{Debugging Options,,Options for Debugging Your Program or Clang/LLVM}.
@@ -2169,10 +2468,10 @@ option is known to the diagnostic machinery).  Specifying the
 
 @node Warning Options
 @section Options to Request or Suppress Warnings
-@cindex options to control warnings
-@cindex warning messages
-@cindex messages, warning
-@cindex suppressing warnings
+@cindex generic options to control warnings
+@cindex generic warning messages
+@cindex messages, generic warning
+@cindex suppressing generic warnings
 
 Warnings are diagnostic messages that report constructions that
 are not inherently erroneous but that are risky or suggest there

@@ -1,3 +1,11 @@
+2016-02-03  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* llvm-user-manual/invoke.texi: Updating summary of options in
+	line with opt-check.sh.
+	* support-code/opt-check.sh: Correct a few details for consistency
+	with latest GCC manual.
+	* support-code/todo.org: Updated with more details.
+
 2016-02-02  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	Testing code for documentation is now complete and tests all known
