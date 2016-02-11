@@ -1,3 +1,11 @@
+2016-02-11  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* llvm-user-manual/invoke.texi: Complete summary up to assembler
+	options.
+	* support-code/opt-check.sh: Correct some details.
+	* support-code/todo.org: Updated with more detail.
+	* support-code/validate-opts.sh: Modified to include leading hyphen.
+
 2016-02-03  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* llvm-user-manual/invoke.texi: Updating summary of options in

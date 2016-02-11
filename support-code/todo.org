@@ -1,69 +1,4 @@
-* Overview
-
-These are the issues found by checking all the generic options from GCC and
-LLVM.  The script =opt-check.sh= tests them all using native x86
-compilers. These must be built from top of tree with shared libraries and
-plugins enabled, and _gold_ as the default linker.
-
-** Statistics **
-
-Looking at the =opt-check.sh= script as of 2 February 2016, we observe:
-- 397 options for both LLVM and GCC
-- 433 options just for LLVM
-- 598 options just for GCC
-
-* List of things to be done for GCC
-
-** Bugs in documentation of options
-
-*** Overall options
-
-The following option appears in two summaries, the other being in the
-pre-processor, although it is only documented here.
--  =-E=
-
-*** C language options
-
-=-traditional= should document that it has to be used with =-E=
-
-The following appears in the summary for C options, but appears to be
-obsolete:
-- =-fallow-single-precision=
-
-The following option is documented twice, the other being in the
-pre-processor.
-- =-trigraphs=
-
-The following options are documented, but not mentioned in the summary:
-- =-fcilkplus=
-- =-fgnu-tm=
-
-*** C++ language options
-
-The following option is documented twice, the other being in the
-pre-processor.
-- =-nostdinc++=
-
-The following options are documented, but not mentioned in the summary:
-- =-fabi-compat-version==
-- =-fdeduce-init-list=
-- =-fextern-tls-init=
-- =-fno-lifetime-dse=
-- =-fno-use-cxa-get-exception-ptr=
-- =-print-objc-runtime-info=
-- =-fstrict-enums=
-
-The following is mentioned in passing in the documentation, but is not
-otherwise documented:
-- =-fno-default-inline=
-
-The following option only appears in the index.
-- =-fno-ext-numeric-literals= (positive is documented).
-
-The following option is not documented, but appears to work:
-- =-fgnu-keywords=
-
-*** Objective-C and Objective-C++ options
+- =-Wsized-deallocation=
 
 The following options are not documented:
 - =-objcmt-atomic-property=
@@ -109,13 +44,14 @@ The following options are documented, but do not appear in the summary:
 - =-Wc++0x-compat=
 - =-Wformat-zero-length=
 - =-Wlto-type-mismatch=
-- =-Wmissing-noreturn=
 - =-Wno-terminate=
-- =-Woverride-init-side-effects=
+- =-Wno-varargs=
+- =-Wno-virtual-move-assign=
+- =-Woverride-init=
+- =-Wprotocol=
 - =-Wstrict-overflow==
 - =-Wsynth=
 - =-Wunreachable-code=
-- =-Wunused-argument=
 
 The following options appear in the index, but not in the documentation
 - =-Wcomments= (synonym for =-Wcomment=)
@@ -136,6 +72,8 @@ The following options appear in the index, but not in the documentation
 
 The following options work, but are not documented:
 - =-Wimport=
+- =-Wmissing-noreturn= (deprecated, now an alias for =-Wsuggest-attribute=)
+- =-Wunused-argument=
 
 The following is misprinted in the index
 - =-Wopenm-simd= (should be =-Wopenmp-simd=)
@@ -146,6 +84,7 @@ The following is misprinted in the index
 
 The following options are documented, but do not appear in the summary:
 - =-fvar-tracking-assignments-toggle=
+- =-ggdb<n>= (plain =-gdb= does appear).
 - =-ggnu-pubnames=
 - =-gpubnames=
 - =-gsplit-dwarf=
@@ -154,13 +93,22 @@ The following options appear in the index, but not in the documentation
 - =-fdwarf2-cfi-asm= (negative is documented).
 - =-fmerge-debug-strings= (negative is documented).
 
+The following options appear in the summary, even though they are the default
+value of a toggle:
+- =-grecord-gcc-switches=
+- =-gno-strict-dwarf= (default on most targets)
+
 *** Optimization options
 
 The following options are documented, but do not appear in summary:
 - =-fdeclone-ctor-dtor=
+- =-flto== (Plain =-flto= is recorded)
 - =-flto-odr-type-merging=
 - =-foptimize-strlen=
 - =-fsimd-cost-model==
+- =-fstrict-enums=
+- =-ftree-coalesce-inlined-vars=
+- =-ftree-copyrename=
 - =-ftree-slp-vectorize=
 - =-ftree-vectorize=
 
@@ -171,7 +119,6 @@ The following parameters are documented, but do not appear to work:
 - =--param sched-spec-state-edge-prob-cutoff==
 - =--param selsched-max-insns-to-rename==
 - =--param lto-minpartition==
-- =--param max-ssa-name-query-depth==
 
 The following options appear to be supported, but are undocumented:
 - =-ftree-coalesce-inlined-vars=
@@ -236,6 +183,9 @@ The following options are documented, but do not appear in the summary:
 
 The following option appaers not to work:
 - =-version= (i.e. with one hyphen)
+
+The following options id documented twice, once in C, the other here.
+- =-trigraphs=
 
 *** Assembler options
 

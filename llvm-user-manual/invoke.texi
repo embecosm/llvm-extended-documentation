@@ -165,6 +165,7 @@ only one of these two forms, whichever one is not the default.
 * Warning Options::     How picky should the compiler be?
 * Debugging Options::   Symbol tables, measurements, and debugging dumps.
 * Optimize Options::    How much optimization?
+* Instrumentation Options:: Enabling profiling and extra run-time error checking.
 * Preprocessor Options:: Controlling header files and macro definitions.
                          Also, getting dependency information for Make.
 * Assembler Options::   Passing options to the assembler.
@@ -322,7 +323,8 @@ GCC: Hexagon, XCore.
 @gol -fvisibility-inlines-hidden
 @    -fvisibility-ms-compat
 @    -nostdinc++
-@gol -Wconversion-null
+@gol -Wabi
+@    -Wconversion-null
 @    -Wctor-dtor-privacy
 @    -Wdelete-non-virtual-dtor
 @gol -Weffc++
@@ -355,6 +357,7 @@ GCC: Hexagon, XCore.
 @    -fno-weak
 @gol -fnothrow-opt
 @    -frepo
+@    -Wabi=@var{n}
 @    -Wabi-tag
 @    -Wliteral-suffix
 @gol -Wmultiple-inheritance
@@ -473,53 +476,476 @@ Objective-C and Objective-C++ Dialects}.
 
 @emph{Options supported by both LLVM and GCC}
 @gccoptlist{-Waddress
--Waggregate-return
--Warray-bounds
--Wno-attributes
--Wno-builtin-macro-redefined
--Wc++-compat
--Wc++0x-compat
--Wc++11-compat
--Wc++14-compat
--Wcast-align
--Wcast-qual
--Wchar-subscripts
--Wcomment
--Wcomments
--Wconversion
--Wdate-time
--Wdelete-incomplete
--Wno-deprecated
--Wno-deprecated-declarations
--Wdisabled-optimization
--Wno-div-by-zero
--Wdouble-promotion
--Wempty-body
--Wno-endif-labels
--Wenum-compare
--Wfloat-conversion
--Wfloat-equal
--Wformat@r{[}=@var{n}@r{]}
--Wno-format-extra-args
--Wformat-nonliteral
--Wformat-security
--Wformat-y2k
--Wformat-zero-length
--Wframe-larger-than=@var{len}
--Wignored-qualifiers
--Wimplicit
--Wimplicit-function-declaration
--Wimplicit-int
--Wincompatible-pointer-types
-@c C++/ObjC++ only
--Wno-inherited-variadic-ctor
--Winit-self
--Winline
--Wno-int-conversion
--Wno-int-to-pointer-cast
+@    -Waggregate-return
+@    -Warray-bounds
+@    -Wno-attributes
+@gol -Wno-builtin-macro-redefined
+@    -Wc++-compat
+@    -Wc++0x-compat
+@gol -Wc++11-compat
+@    -Wc++14-compat
+@    -Wcast-align
+@    -Wcast-qual
+@gol -Wchar-subscripts
+@    -Wcomment
+@    -Wcomments
+@    -Wconversion
+@    -Wdate-time
+@gol -Wdelete-incomplete
+@    -Wno-deprecated
+@    -Wno-deprecated-declarations
+@gol -Wdisabled-optimization
+@    -Wno-div-by-zero
+@    -Wdouble-promotion
+@gol -Wempty-body
+@    -Wno-endif-labels
+@    -Wenum-compare
+@    -Wfloat-conversion
+@gol -Wfloat-equal
+@    -Wformat@r{[}=0@r{|}2@r{]}
+@    -Wno-format-extra-args
+@    -Wformat-nonliteral
+@gol -Wformat-security
+@    -Wformat-y2k
+@    -Wformat-zero-length
+@gol -Wframe-larger-than=@var{len}
+@    -Wignored-qualifiers
+@    -Wimplicit
+@gol -Wimplicit-function-declaration
+@    -Wimplicit-int
+@gol -Wincompatible-pointer-types
+@    -Wno-inherited-variadic-ctor
+@    -Winit-self
+@gol -Winline
+@    -Wno-int-conversion
+@    -Wno-int-to-pointer-cast
+@gol -Wno-invalid-offsetof
+@    -Winvalid-pch
+@    -Wlarger-than=@var{len}
+@gol -Wlarger-than-@var{len}
+@    -Wlogical-not-parentheses
+@    -Wlong-long
+@    -Wmain
+@gol -Wmissing-braces
+@    -Wmissing-field-initializers
+@gol -Wmissing-format-attribute
+@    -Wmissing-include-dirs
+@    -Wmissing-noreturn
+@gol -Wno-multichar
+@    -Wnonnull
+@    -Wnull-dereference
+@    -Wodr
+@    -Wno-overflow
+@gol -Woverlength-strings
+@    -Wpacked
+@    -Wpadded
+@    -Wparentheses
+@gol -Wpointer-arith
+@    -Wno-pointer-to-int-cast
+@    -Wno-pragmas
+@gol -Wredundant-decls
+@    -Wreturn-type
+@    -Wsequence-point
+@gol -Wshadow
+@    -Wno-shadow-ivar
+@    -Wshift-count-negative
+@gol -Wshift-count-overflow
+@    -Wshift-negative-value
+@    -Wshift-overflow
+@gol -Wsign-compare
+@    -Wsign-conversion
+@    -Wsizeof-array-argument
+@gol -Wsizeof-pointer-memaccess
+@    -Wstack-protector
+@    -Wstrict-aliasing@r{[}=1@r{|}2@r{]}
+@gol -Wstrict-overflow@r{[}=@var{n}@r{]}
+@    -Wswitch
+@    -Wswitch-bool
+@    -Wswitch-default
+@gol -Wswitch-enum
+@    -Wsystem-headers
+@    -Wtautological-compare
+@    -Wtrigraphs
+@gol -Wtype-limits
+@    -Wundef
+@    -Wuninitialized
+@    -Wunknown-pragmas
+@    -Wunused
+@gol -Wunused-const-variable
+@    -Wunused-function
+@    -Wunused-label
+@gol -Wunused-local-typedefs
+@    -Wunused-parameter
+@    -Wno-unused-result
+@gol -Wunused-value
+@    -Wunused-variable
+@    -Wno-varargs
+@    -Wvariadic-macros
+@gol -Wvla
+@    -Wvolatile-register-var
+@    -Wwrite-strings
+}
 
-*** Got to here ***
+@emph{Options only supported by LLVM}
+@gccoptlist{-Wno-abstract-final-class
+@    -Wabstract-vbase-init
+@gol -Waddress-of-array-temporary
+@    -Waddress-of-temporary
+@    -Wambiguous-macro
+@gol -Wambiguous-member-template
+@    -Wanalyzer-incompatible-plugin
+@gol -Wanonymous-pack-parens
+@    -Warc-bridge-casts-disallowed-in-nonarc
+@gol -Warc
+@    -Warc-maybe-repeated-use-of-weak
+@    -Warc-non-pod-memaccess
+@gol -Warc-performSelector-leaks
+@    -Warc-repeated-use-of-weak
+@gol -Warc-retain-cycles
+@    -Warc-unsafe-retained-assign
+@gol -Warray-bounds-pointer-arithmetic
+@    -Wasm
+@    -Wasm-operand-widths
+@gol -Wno-assign-enum
+@    -Watomic-properties
+@gol -Watomic-property-with-user-defined-accessor
+@    -Wno-auto-import
+@gol -Wno-auto-storage-class
+@    -Wauto-var-id
+@gol -Wavailability
+@    -Wbackslash-newline-escape
+@    -Wbad-array-new-length
+@gol -Wbind-to-temporary-copy
+@    -Wbitfield-constant-conversion
+@gol -Wbitwise-op-parentheses
+@    -Wbool-conversion
+@    -Wbool-conversions
+@gol -Wbridge-cast
+@    -Wbuiltin-requires-header
+@    -Wc++0x-extensions
+@gol -Wc++0x-narrowing
+@    -Wc++11-compat-pedantic
+@gol -Wc++11-compat-reserved-user-defined-literal
+@    -Wc11-extensions
+@gol -Wc++11-extensions
+@    -Wc++11-extra-semi
+@    -Wc++11-long-long
+@gol -Wc++11-narrowing
+@    -Wc++1y-extensions
+@    -Wc++98-c++11-compat
+@gol -Wc++98-c++11-compat-pedantic
+@    -Wc++98-compat-bind-to-temporary-copy
+@gol -Wc++98-compat
+@    -Wc++98-compat-local-type-template-args
+@gol -Wc++98-compat-pedantic
+@    -Wc++98-compat-unnamed-type-template-args
+@gol -Wc99-compat
+@    -Wno-c99-extensions
+@    -Wcast-of-sel-type
+@gol -WCFString-literal
+@    -Wchar-align
+@    -Wcompare-distinct-pointer-types
+@gol -Wcomplex-component-init
+@    -Wconditional-type-mismatch
+@gol -Wconditional-uninitialized
+@    -Wconfig-macros
+@    -Wconstant-conversion
+@gol -Wconstant-logical-operand
+@    -Wconstexpr-not-const
+@gol -Wconsumed
+@    -Wcovered-switch-default
+@    -Wcustom-atomic-properties
+@gol -Wdangling-else
+@    -Wdangling-field
+@    -Wdangling-initializer-list
+@gol -Wdelegating-ctor-cycles
+@    -Wdeprecated-increment-bool
+@gol -Wdeprecated-implementations
+@    -Wdeprecated-objc-isa-usage
+@gol -Wdeprecated-objc-pointer-introspection
+@gol -Wdeprecated-objc-pointer-introspection-performSelector
+@gol -Wdeprecated-register
+@    -Wdeprecated-writable-strings
+@gol -Wdirect-ivar-access
+@    -Wdisabled-macro-expansion
+@gol -Wdiscard-qual
+@    -Wdistributed-object-modifiers
+@    -Wdivision-by-zero
+@gol -Wdocumentation-deprecated-sync
+@    -Wdocumentation
+@    -Wdocumentation-html
+@gol -Wdocumentation-pedantic
+@    -Wdocumentation-unknown-command
+@gol -Wdollar-in-identifier-extension
+@    -Wduplicate-decl-specifier
+@gol -Wduplicate-enum
+@    -Wduplicate-method-arg
+@gol -Wduplicate-method-match
+@    -Wdynamic-class-memaccess
+@    -Wembedded-directive
+@gol -Wempty-translation-unit
+@    -Wenum-conversion
+@    -Wexit-time-destructors
+@gol -Wexplicit-ownership-type
+@    -Wextended-offsetof
+@    -Wextern-c-compat
+@gol -Wextern-initializer
+@    -Wno-extra-qualification
+@    -Wextra-semi
+@gol -Wextra-tokens
+@    -Wflexible-array-extensions
+@    -Wformat-invalid-specifier
+@gol -Wformat-non-iso
+@    -Wformat-pedantic
+@    -Wfour-char-constants
+@gol -Wgcc-compat
+@    -Wglobal-constructors
+@    -Wgnu-array-member-paren-init
+@gol -Wgnu-conditional-omitted-operand
+@    -Wgnu-designator
+@    -Wgnu
+@gol -Wgnu-static-float-init
+@    -Wheader-guard
+@    -Wheader-hygiene
+@gol -Widiomatic-parentheses
+@    -Wignored-attributes
+@gol -Wimplicit-atomic-properties
+@gol -Wimplicit-conversion-floating-point-to-bool
+@gol -Wimplicit-exception-spec-mismatch
+@    -Wimplicit-fallthrough
+@gol -Wimplicit-fallthrough-per-function
+@    -Wimplicit-retain-self
+@gol -Wimport-preprocessor-directive-pedantic
+@gol -Wincompatible-library-redeclaration
+@gol -Wincompatible-pointer-types-discards-qualifiers
+@gol -Wno-incomplete-module
+@    -Wincomplete-implementation
+@gol -Wincomplete-umbrella
+@    -Winitializer-overrides
+@gol -Wint-conversions
+@    -Wno-int-to-void-pointer-cast
+@gol -Winteger-overflow
+@    -Winvalid-constexpr
+@    -Winvalid-iboutlet
+@gol -Winvalid-noreturn
+@    -Winvalid-pp-token
+@    -Winvalid-source-encoding
+@gol -Winvalid-token-paste
+@    -Wno-keyword-compat
+@    -Wknr-promoted-parameter
+@gol -Wlanguage-extension-token
+@    -Wlarge-by-value-copy
+@    -Wno-liblto
+@gol -Wno-literal-conversion
+@    -Wno-literal-range
+@    -Wlocal-type-template-args
+@gol -Wlogical-op-parentheses
+@    -Wloop-analysis
+@    -Wmain-return-type
+@gol -Wmalformed-warning-check
+@    -Wmethod-signatures
+@gol -Wmicrosoft
+@    -Wmicrosoft-exists
+@gol -Wmismatched-parameter-types
+@    -Wmismatched-return-types
+@gol -Wmismatched-tags
+@    -Wmissing-method-return-type
+@gol -Wmissing-selector-name
+@    -Wmissing-sysroot
+@gol -Wmissing-variable-declarations
+@    -Wmodule-conflict
+@gol -Wmost
+@    -Wmultiple-move-vbase
+@    -Wnested-anon-types
+@gol -Wnewline-eof
+@    -Wnon-gcc
+@    -Wnon-literal-null-conversion
+@gol -Wnon-pod-varargs
+@    -Wnonportable-cfstrings
+@    -WNSObject-attribute
+@gol -Wnull-arithmetic
+@    -Wnull-character
+@gol -Wnull-conversion
+@    -Wobjc-autosynthesis-property-ivar-name-match
+@gol -Wobjc-cocoa-api
+@    -Wobjc-forward-class-redefinition
+@gol -Wobjc-interface-ivars
+@    -Wobjc-literal-compare
+@gol -Wobjc-method-access
+@    -Wobjc-missing-property-synthesis
+@gol -Wobjc-missing-super-calls
+@    -Wobjc-noncopy-retain-block-property
+@gol -Wobjc-nonunified-exceptions
+@    -Wobjc-property-implementation
+@gol -Wobjc-property-implicit-mismatch
+@gol -Wobjc-property-matches-cocoa-ownership-rule
+@gol -Wobjc-property-no-attribute
+@    -Wobjc-string-concatenation
+@gol -Wobjc-property-synthesis
+@    -Wobjc-protocol-method-implementation
+@gol -Wobjc-protocol-property-synthesis
+@    -Wobjc-readonly-with-setter-property
+@gol -Wobjc-redundant-api-use
+@    -Wobjc-redundant-literal-use
+@    -Wobjc-root-class
+@gol -Wobjc-string-compare
+@    -Wopenmp-clauses
+@    -Wno-out-of-line-declaration
+@gol -Wover-aligned
+@    -Wno-override-module
+@gol -Woverloaded-shift-op-parentheses
+@    -Woverriding-method-mismatch
+@gol -Wparentheses-equality
+@    -Wno-pointer-type-mismatch
+@gol -W#pragma-messages
+@    -Wpredefined-identifier-outside-function
+@gol -Wprivate-extern
+@    -Wproperty-attribute-mismatch
+@gol -Wprotocol-property-synthesis-ambiguity
+@gol -Wreadonly-iboutlet-property
+@    -Wreceiver-expr
+@    -Wreceiver-forward-class
+@gol -Wreceiver-is-weak
+@    -Wreinterpret-base-class
+@gol -Wrequires-super-attribute
+@    -Wreserved-user-defined-literal
+@gol -Wno-return-stack-address
+@    -Wreturn-type-c-linkage
+@    -Wsection
+@gol -Wselector-type-mismatch
+@    -Wself-assign
+@    -Wself-assign-field
+@gol -Wsemicolon-before-method-body
+@    -Wsentinel
+@    -Wserialized-diagnostics
+@gol -Wshift-op-parentheses
+@    -Wshift-sign-overflow
+@    -Wshorten-64-to-32
+@gol -Wsizeof-array-decay
+@    -Wsometimes-uninitialized
+@gol -Wsource-uses-openmp
+@    -Wstatic-float-init
+@    -Wstatic-in-inline
+@gol -Wstatic-inline-explicit-instantiation
+@    -Wstatic-local-in-inline
+@gol -Wstatic-self-init
+@    -Wstring-compare
+@    -Wstring-conversion
+@gol -Wstring-plus-char
+@    -Wstring-plus-int
+@    -Wstrlcpy-strlcat-size
+@gol -Wstrncat-size
+@    -Wsuper-class-method-mismatch
+@gol -Wtautological-constant-out-of-range-compare
+@gol -Wtentative-definition-incomplete-type
+@    -Wthread-safety-analysis
+@gol -Wthread-safety-attributes
+@    -Wthread-safety-beta
+@    -Wthread-safety
+@gol -Wthread-safety-precise
+@    -Wtypedef-redefinition
+@    -Wtypename-missing
+@gol -Wtype-safety
+@    -Wno-unavailable-declarations
+@gol -Wundefined-inline
+@    -Wundefined-internal
+@gol -Wundefined-reinterpret-cast
+@    -Wunicode
+@    -Wunicode-whitespace
+@gol -Wunknown-warning-option
+@    -Wunnamed-type-template-args
+@gol -Wunneeded-internal-declaration
+@    -Wunneeded-member-function
+@gol -Wunsequenced
+@    -Wno-unsupported-friend
+@gol -Wunsupported-visibility
+@    -Wunused-command-line-argument
+@gol -Wunused-comparison
+@    -Wunused-exception-parameter
+@gol -Wunused-member-function
+@    -Wunused-private-field
+@    -Wunused-property-ivar
+@gol -Wunused-volatile-lvalue
+@    -Wused-but-marked-unused
+@gol -Wuser-defined-literals
+@    -Wvector-conversion
+@    -Wvector-conversions
+@gol -Wvexing-parse
+@    -Wvisibility
+@    -Wvla-extension
+@    -W#warnings
+@gol -Wweak-template-vtables
+@    -Wweak-vtables
+@    -Wzero-length-array
+}
 
+@emph{Options only supported by GCC}
+@gccoptlist{-Wno-aggressive-loop-optimizations
+@    -Warray-bounds=@var{n}
+@gol -Wbool-compare
+@    -Wc90-c99-compat
+@    -Wc99-c11-compat
+@    -Wclobbered
+@gol -Wconditionally-supported
+@    -Wcoverage-mismatch
+@    -Wno-cpp
+@gol -Wno-designated-init
+@    -Wno-discarded-array-qualifiers
+@gol -Wno-discarded-qualifiers
+@    -Wduplicated-cond
+@    -Wformat=1
+@gol -Wno-format-contains-nul
+@    -Wformat-signedness
+@    -Wframe-address
+@gol -Wno-free-nonheap-object
+@    -Whsa
+@    -Winvalid-memory-model
+@gol -Wjump-misses-init
+@    -Wlogical-op
+@    -Wlto-type-mismatch
+@gol -Wmaybe-uninitialized
+@    -Wmemset-transposed-args
+@gol -Wmisleading-indentation
+@    -Wnormalized=@r{[}none@r{|}id@r{|}nfc@r{|}nfkc@r{]}
+@    -Wopenmp-simd
+@gol -Woverride-init
+@    -Woverride-init-side-effects
+@    -Wpacked-bitfield-compat
+@gol -Wno-pedantic-ms-format
+@    -Wplacement-new
+@    -Wno-return-local-addr
+@gol -Wno-scalar-storage-order
+@    -Wshift-overflow=@var{n}
+@    -Wstack-usage=@var{len}
+@gol -Wstrict-aliasing=3
+@    -Wsubobject-linkage
+@gol -Wsuggest-attribute=@r{[}pure@r{|}const@r{|}noreturn@r{|}format@r{]}
+@    -Wsuggest-final-methods
+@gol -Wsuggest-final-types
+@    -Wsuggest-override
+@    -Wsync-nand
+@gol -Wtrampolines
+@    -Wunsafe-loop-optimizations
+@gol -Wunsuffixed-float-constants
+@    -Wunused-but-set-parameter
+@gol -Wunused-but-set-variable
+@    -Wuseless-cast
+@    -Wvector-operation-performance
+@gol -Wno-virtual-move-assign
+@    -Wzero-as-null-pointer-constant
+}
+
+@item C and Objective-C-only Warning Options
+
+@emph{Options supported by both LLVM and GCC}
+@gccoptlist{-Wbad-function-cast
+@    -Wdeclaration-after-statement
+@gol -Wmissing-declarations
+@    -Wmissing-prototypes
+@    -Wnested-externs
+@gol -Wold-style-definition
+@    -Wpointer-sign
+@    -Wstrict-prototypes
 }
 
 @emph{Options only supported by LLVM}
@@ -527,262 +953,459 @@ Objective-C and Objective-C++ Dialects}.
 }
 
 @emph{Options only supported by GCC}
-@gccoptlist{
+@gccoptlist{-Wmissing-parameter-type
+@    -Wold-style-declaration
+@    -Wtraditional
+@gol -Wtraditional-conversion
 }
-
-@gccoptlist{  @gol
--Wno-aggressive-loop-optimizations -Warray-bounds=@var{n} @gol
--Wbool-compare  @gol
--Wc90-c99-compat -Wc99-c11-compat @gol
-  -Wclobbered  -Wconditionally-supported  @gol
- -Wcoverage-mismatch -Wno-cpp  -Wno-designated-init @gol
- @gol
--Wno-discarded-qualifiers -Wno-discarded-array-qualifiers @gol
- -Wduplicated-cond @gol
- @gol
- @gol
--Wno-format-contains-nul   -Wformat-signedness  -Wframe-address @gol
- -Wno-free-nonheap-object -Wjump-misses-init @gol
-   @gol
- @gol
-   -Winvalid-memory-model -Wno-invalid-offsetof @gol
--Winvalid-pch -Wlarger-than=@var{len} @gol
--Wlogical-op -Wlogical-not-parentheses -Wlong-long @gol
--Wmain -Wmaybe-uninitialized -Wmemset-transposed-args @gol
--Wmisleading-indentation -Wmissing-braces @gol
--Wmissing-field-initializers -Wmissing-include-dirs @gol
--Wno-multichar  -Wnonnull  -Wnormalized=@r{[}none@r{|}id@r{|}nfc@r{|}nfkc@r{]} @gol
--Wnull-dereference -Wodr  -Wno-overflow  -Wopenmp-simd  @gol
--Woverride-init-side-effects -Woverlength-strings @gol
--Wpacked  -Wpacked-bitfield-compat  -Wpadded @gol
--Wparentheses -Wno-pedantic-ms-format @gol
--Wplacement-new -Wpointer-arith  -Wno-pointer-to-int-cast @gol
--Wno-pragmas -Wredundant-decls  -Wno-return-local-addr @gol
--Wreturn-type  -Wsequence-point  -Wshadow  -Wno-shadow-ivar @gol
--Wshift-overflow -Wshift-overflow=@var{n} @gol
--Wshift-count-negative -Wshift-count-overflow -Wshift-negative-value @gol
--Wsign-compare  -Wsign-conversion  @gol
--Wno-scalar-storage-order @gol
--Wsizeof-pointer-memaccess  -Wsizeof-array-argument @gol
--Wstack-protector -Wstack-usage=@var{len} -Wstrict-aliasing @gol
--Wstrict-aliasing=n -Wstrict-overflow -Wstrict-overflow=@var{n} @gol
--Wsuggest-attribute=@r{[}pure@r{|}const@r{|}noreturn@r{|}format@r{]} @gol
--Wsuggest-final-types @gol -Wsuggest-final-methods -Wsuggest-override @gol
--Wmissing-format-attribute -Wsubobject-linkage @gol
--Wswitch  -Wswitch-default  -Wswitch-enum -Wswitch-bool -Wsync-nand @gol
--Wsystem-headers  -Wtautological-compare  -Wtrampolines  -Wtrigraphs @gol
--Wtype-limits  -Wundef @gol
--Wuninitialized  -Wunknown-pragmas  -Wunsafe-loop-optimizations @gol
--Wunsuffixed-float-constants  -Wunused  -Wunused-function @gol
--Wunused-label  -Wunused-local-typedefs -Wunused-parameter @gol
--Wno-unused-result -Wunused-value @gol -Wunused-variable @gol
--Wunused-const-variable @gol
--Wunused-but-set-parameter -Wunused-but-set-variable @gol
--Wuseless-cast -Wvariadic-macros -Wvector-operation-performance @gol
--Wvla -Wvolatile-register-var  -Wwrite-strings @gol
--Wzero-as-null-pointer-constant -Whsa}
-
-@item Preprocessor-only Warning Options
-@gccoptlist{-Wno-endif-labels  -Wundef}
-
-@item C, C++, Objective-C and Objective-C++-only Warning Options
-@gccoptlist{-Winit-self  -Wmissing-declarations  -Wmissing-include-dirs}
-
-@item C and Objective-C-only Warning Options
-@gccoptlist{-Wbad-function-cast  -Wc++-compat  -Wdeclaration-after-statement @gol
--Wignored-qualifiers  -Wimplicit  -Wimplicit-function-declaration @gol
--Wimplicit-int  -Wno-incompatible-pointer-types  -Wno-int-conversion @gol
--Wmissing-prototypes  -Wnested-externs  -Wpointer-sign @gol
--Wno-pointer-to-int-cast  -Wstrict-prototypes}
-
-@item C++ and Objective-C++-only Warning Options
-@gccoptlist{-Wc++11-compat  -Wno-conversion-null  -Wdelete-incomplete @gol
--Wno-inherited-variadic-ctor  -Wimport  -Wuseless-cast}
 
 @item Debugging Options
 @xref{Debugging Options,,Options for Debugging Your Program or Clang/LLVM}.
-@gccoptlist{-d@var{letters}  -dumpspecs  -dumpmachine  -dumpversion @gol
--fsanitize=@var{style} -fsanitize-recover -fsanitize-recover=@var{style} @gol
--fasan-shadow-offset=@var{number} -fsanitize-undefined-trap-on-error @gol
--fcheck-pointer-bounds -fchkp-check-incomplete-type @gol
--fchkp-first-field-has-own-bounds -fchkp-narrow-bounds @gol
--fchkp-narrow-to-innermost-array -fchkp-optimize @gol
--fchkp-use-fast-string-functions -fchkp-use-nochk-string-functions @gol
--fchkp-use-static-bounds -fchkp-use-static-const-bounds @gol
--fchkp-treat-zero-dynamic-size-as-infinite -fchkp-check-read @gol
--fchkp-check-read -fchkp-check-write -fchkp-store-bounds @gol
--fchkp-instrument-calls -fchkp-instrument-marked-only @gol
--fchkp-use-wrappers @gol
--fdbg-cnt-list -fdbg-cnt=@var{counter-value-list} @gol
--fdisable-ipa-@var{pass_name} @gol
--fdisable-rtl-@var{pass_name} @gol
--fdisable-rtl-@var{pass-name}=@var{range-list} @gol
--fdisable-tree-@var{pass_name} @gol
--fdisable-tree-@var{pass-name}=@var{range-list} @gol
--fdump-noaddr -fdump-unnumbered -fdump-unnumbered-links @gol
--fdump-translation-unit@r{[}-@var{n}@r{]} @gol
--fdump-class-hierarchy@r{[}-@var{n}@r{]} @gol
--fdump-ipa-all -fdump-ipa-cgraph -fdump-ipa-inline @gol
--fdump-passes @gol
--fdump-statistics @gol
--fdump-tree-all @gol
--fdump-tree-original@r{[}-@var{n}@r{]}  @gol
--fdump-tree-optimized@r{[}-@var{n}@r{]} @gol
--fdump-tree-cfg -fdump-tree-alias @gol
--fdump-tree-ch @gol
--fdump-tree-ssa@r{[}-@var{n}@r{]} -fdump-tree-pre@r{[}-@var{n}@r{]} @gol
--fdump-tree-ccp@r{[}-@var{n}@r{]} -fdump-tree-dce@r{[}-@var{n}@r{]} @gol
--fdump-tree-gimple@r{[}-raw@r{]} @gol
--fdump-tree-dom@r{[}-@var{n}@r{]} @gol
--fdump-tree-dse@r{[}-@var{n}@r{]} @gol
--fdump-tree-phiprop@r{[}-@var{n}@r{]} @gol
--fdump-tree-phiopt@r{[}-@var{n}@r{]} @gol
--fdump-tree-forwprop@r{[}-@var{n}@r{]} @gol
--fdump-tree-copyrename@r{[}-@var{n}@r{]} @gol
--fdump-tree-nrv -fdump-tree-vect @gol
--fdump-tree-sink @gol
--fdump-tree-sra@r{[}-@var{n}@r{]} @gol
--fdump-tree-forwprop@r{[}-@var{n}@r{]} @gol
--fdump-tree-fre@r{[}-@var{n}@r{]} @gol
--fdump-tree-vtable-verify @gol
--fdump-tree-vrp@r{[}-@var{n}@r{]} @gol
--fdump-tree-storeccp@r{[}-@var{n}@r{]} @gol
--fdump-final-insns=@var{file} @gol
--fcompare-debug@r{[}=@var{opts}@r{]}  -fcompare-debug-second @gol
--feliminate-dwarf2-dups -fno-eliminate-unused-debug-types @gol
--feliminate-unused-debug-symbols -femit-class-debug-always @gol
--fenable-@var{kind}-@var{pass} @gol
--fenable-@var{kind}-@var{pass}=@var{range-list} @gol
--fdebug-types-section -fmem-report-wpa @gol
--fmem-report -fpre-ipa-mem-report -fpost-ipa-mem-report -fprofile-arcs @gol
--fopt-info @gol
--fopt-info-@var{options}@r{[}=@var{file}@r{]} @gol
--frandom-seed=@var{number} -fsched-verbose=@var{n} @gol
--fsel-sched-verbose -fsel-sched-dump-cfg -fsel-sched-pipelining-verbose @gol
--fstack-usage  -ftest-coverage  -ftime-report -fvar-tracking @gol
--fvar-tracking-assignments  -fvar-tracking-assignments-toggle @gol
--g  -g@var{level}  -gtoggle  -gcoff  -gdwarf-@var{version} @gol
--ggdb  -grecord-gcc-switches  -gno-record-gcc-switches @gol
--gstabs  -gstabs+  -gstrict-dwarf  -gno-strict-dwarf @gol
--gvms  -gxcoff  -gxcoff+ -gz@r{[}=@var{type}@r{]} @gol
--fno-merge-debug-strings -fno-dwarf2-cfi-asm @gol
--fdebug-prefix-map=@var{old}=@var{new} @gol
--femit-struct-debug-baseonly -femit-struct-debug-reduced @gol
--femit-struct-debug-detailed@r{[}=@var{spec-list}@r{]} @gol
--p  -pg  -print-file-name=@var{library}  -print-libgcc-file-name @gol
--print-multi-directory  -print-multi-lib  -print-multi-os-directory @gol
--print-prog-name=@var{program}  -print-search-dirs  -Q @gol
--print-sysroot -print-sysroot-headers-suffix @gol
--save-temps -save-temps=cwd -save-temps=obj -time@r{[}=@var{file}@r{]}}
+
+@emph{Options supported by both LLVM and GCC}
+@gccoptlist{-fdebug-prefix-map=@var{old}=@var{new}
+@    -fdebug-types-section
+@gol -fno-dwarf2-cfi-asm
+@    -fno-eliminate-unused-debug-types
+@gol -g@r{[}@var{level}@r{]}
+@    -ggdb@r{[}@var{level}@r{]}
+@    -gdwarf@r{[}-@var{version}@r{]}
+@    -ggnu-pubnames
+@gol -gno-record-gcc-switches
+@    -gsplit-dwarf
+@    -gstrict-dwarf
+}
+
+@emph{Options only supported by LLVM}
+@gccoptlist{-fno-standalone-debug
+@    -fstandalone-debug
+@    -gcodeview
+@    -gfull
+@gol -gline-tables-only
+@    -gmodules
+@    -gused
+}
+
+@emph{Options only supported by GCC}
+@gccoptlist{-feliminate-dwarf2-dups
+@    -feliminate-unused-debug-symbols
+@gol -femit-class-debug-always
+@    -femit-struct-debug-baseonly
+@gol -femit-struct-debug-detailed@r{[}=@var{spec-list}@r{]}
+@    -femit-struct-debug-reduced
+@gol -fno-merge-debug-strings
+@    -fvar-tracking
+@    -fvar-tracking-assignments
+@gol -gcoff@r{[}@var{level}@r{]}
+@    -gpubnames
+@    -gstabs@r{[}@var{level}@r{]}
+@    -gstabs+
+@    -gtoggle
+@gol -gvms@r{[}@var{level}@r{]}
+@    -gxcoff@r{[}@var{level}@r{]}
+@    -gxcoff+
+@    -gz@r{[}=@var{type}@r{]}
+}
+
 
 @item Optimization Options
 @xref{Optimize Options,,Options that Control Optimization}.
-@gccoptlist{-faggressive-loop-optimizations -falign-functions[=@var{n}] @gol
--falign-jumps[=@var{n}] @gol
--falign-labels[=@var{n}] -falign-loops[=@var{n}] @gol
--fassociative-math -fauto-profile -fauto-profile[=@var{path}] @gol
--fauto-inc-dec -fbranch-probabilities @gol
--fbranch-target-load-optimize -fbranch-target-load-optimize2 @gol
--fbtr-bb-exclusive -fcaller-saves @gol
--fcheck-data-deps -fcombine-stack-adjustments -fconserve-stack @gol
--fcompare-elim -fcprop-registers -fcrossjumping @gol
--fcse-follow-jumps -fcse-skip-blocks -fcx-fortran-rules @gol
--fcx-limited-range @gol
--fdata-sections -fdce -fdelayed-branch @gol
--fdelete-null-pointer-checks -fdevirtualize -fdevirtualize-speculatively @gol
--fdevirtualize-at-ltrans -fdse @gol
--fearly-inlining -fipa-sra -fexpensive-optimizations -ffat-lto-objects @gol
--ffast-math -ffinite-math-only -ffloat-store -fexcess-precision=@var{style} @gol
--fforward-propagate -ffp-contract=@var{style} -ffunction-sections @gol
--fgcse -fgcse-after-reload -fgcse-las -fgcse-lm -fgraphite-identity @gol
--fgcse-sm -fhoist-adjacent-loads -fif-conversion @gol
--fif-conversion2 -findirect-inlining @gol
--finline-functions -finline-functions-called-once -finline-limit=@var{n} @gol
--finline-small-functions -fipa-cp -fipa-cp-clone -fipa-cp-alignment @gol
--fipa-pta -fipa-profile -fipa-pure-const -fipa-reference -fipa-icf @gol
--fira-algorithm=@var{algorithm} @gol
--fira-region=@var{region} -fira-hoist-pressure @gol
--fira-loop-pressure -fno-ira-share-save-slots @gol
--fno-ira-share-spill-slots -fira-verbose=@var{n} @gol
--fisolate-erroneous-paths-dereference -fisolate-erroneous-paths-attribute @gol
--fivopts -fkeep-inline-functions -fkeep-static-consts @gol
--flive-range-shrinkage @gol
--floop-block -floop-interchange -floop-strip-mine @gol
--floop-unroll-and-jam -floop-nest-optimize @gol
--floop-parallelize-all -flra-remat -flto -flto-compression-level @gol
--flto-partition=@var{alg} -flto-report -flto-report-wpa -fmerge-all-constants @gol
--fmerge-constants -fmodulo-sched -fmodulo-sched-allow-regmoves @gol
--fmove-loop-invariants -fno-branch-count-reg @gol
--fno-defer-pop -fno-function-cse -fno-guess-branch-probability @gol
--fno-inline -fno-math-errno -fno-peephole -fno-peephole2 @gol
--fno-sched-interblock -fno-sched-spec -fno-signed-zeros @gol
--fno-toplevel-reorder -fno-trapping-math -fno-zero-initialized-in-bss @gol
--fomit-frame-pointer -foptimize-sibling-calls @gol
--fpartial-inlining -fpeel-loops -fpredictive-commoning @gol
--fprefetch-loop-arrays -fprofile-report @gol
--fprofile-correction -fprofile-dir=@var{path} -fprofile-generate @gol
--fprofile-generate=@var{path} @gol
--fprofile-use -fprofile-use=@var{path} -fprofile-values @gol
--fprofile-reorder-functions @gol
--freciprocal-math -free -frename-registers -freorder-blocks @gol
--freorder-blocks-and-partition -freorder-functions @gol
--frerun-cse-after-loop -freschedule-modulo-scheduled-loops @gol
--frounding-math -fsched2-use-superblocks -fsched-pressure @gol
--fsched-spec-load -fsched-spec-load-dangerous @gol
--fsched-stalled-insns-dep[=@var{n}] -fsched-stalled-insns[=@var{n}] @gol
--fsched-group-heuristic -fsched-critical-path-heuristic @gol
--fsched-spec-insn-heuristic -fsched-rank-heuristic @gol
--fsched-last-insn-heuristic -fsched-dep-count-heuristic @gol
--fschedule-fusion @gol
--fschedule-insns -fschedule-insns2 -fsection-anchors @gol
--fselective-scheduling -fselective-scheduling2 @gol
--fsel-sched-pipelining -fsel-sched-pipelining-outer-loops @gol
--fsemantic-interposition @gol
--fshrink-wrap -fsignaling-nans -fsingle-precision-constant @gol
--fsplit-ivs-in-unroller -fsplit-wide-types -fssa-phiopt @gol
--fstack-protector -fstack-protector-all -fstack-protector-strong @gol
--fstack-protector-explicit -fstdarg-opt -fstrict-aliasing @gol
--fstrict-overflow -fthread-jumps -ftracer -ftree-bit-ccp @gol
--ftree-builtin-call-dce -ftree-ccp -ftree-ch @gol
--ftree-coalesce-inline-vars -ftree-coalesce-vars -ftree-copy-prop @gol
--ftree-copyrename -ftree-dce -ftree-dominator-opts -ftree-dse @gol
--ftree-forwprop -ftree-fre -ftree-loop-if-convert @gol
--ftree-loop-if-convert-stores -ftree-loop-im @gol
--ftree-phiprop -ftree-loop-distribution -ftree-loop-distribute-patterns @gol
--ftree-loop-ivcanon -ftree-loop-linear -ftree-loop-optimize @gol
--ftree-loop-vectorize @gol
--ftree-parallelize-loops=@var{n} -ftree-pre -ftree-partial-pre -ftree-pta @gol
--ftree-reassoc -ftree-sink -ftree-slsr -ftree-sra @gol
--ftree-switch-conversion -ftree-tail-merge -ftree-ter @gol
--ftree-vectorize -ftree-vrp @gol
--funit-at-a-time -funroll-all-loops -funroll-loops @gol
--funsafe-loop-optimizations -funsafe-math-optimizations -funswitch-loops @gol
--fipa-ra -fvariable-expansion-in-unroller -fvect-cost-model -fvpt @gol
--fweb -fwhole-program -fwpa -fuse-linker-plugin @gol
---param @var{name}=@var{value}
--O  -O0  -O1  -O2  -O3  -Os -Ofast -Og}
+
+@emph{Options supported by both LLVM and GCC}
+@gccoptlist{-fassociative-math
+@    -fdata-sections
+@    -ffast-math
+@gol -ffinite-math-only
+@    -ffp-contract=@var{style}
+@    -ffunction-sections
+@gol -flto@r{[}full@r{|}thin@r{]}
+@    -fno-math-errno
+@    -fmerge-all-constants
+@    -fno-inline
+@gol -fomit-frame-pointer
+@    -foptimize-sibling-calls
+@    -fprofile-use=@r{[}@var{path}@r{]}
+@gol -freciprocal-math
+@    -fno-signed-zeros
+@    -fstrict-aliasing
+@    -fstrict-enums
+@gol -fstrict-overflow
+@    -fno-trapping-math
+@    -ftree-slp-vectorize
+@gol -funit-at-a-time
+@    -funroll-loops
+@    -fno-zero-initialized-in-bss
+@gol -funsafe-math-optimizations
+@    -ftree-vectorize
+@    -O
+@    -O0
+@    -O1
+@    -O2
+@gol -O3
+@    -Ofast
+@    -Os
+@    --param ssp-buffer-size=@var{n}
+}
+
+@emph{Options only supported by LLVM}
+@gccoptlist{-fno-reroll-loops
+@    -freroll-loops
+@    -fslp-vectorize-aggressive
+@gol -fslp-vectorize
+@    -fstrict-vtable-pointers
+@    -fthinlto-index=@var{file}
+@gol -fvectorize
+@    -mllvm @var{option}
+@    -mrelax-all
+@    -O4
+@    -Oz
+}
+
+@emph{Options only supported by GCC}
+@gccoptlist{-faggressive-loop-optimizations
+@    -falign-functions[=@var{n}]
+@gol -falign-jumps[=@var{n}]
+@    -falign-labels[=@var{n}]
+@    -falign-loops[=@var{n}]
+@gol -fauto-inc-dec
+@    -fauto-profile[=@var{path}]
+@    -fno-branch-count-reg
+@gol -fbranch-probabilities
+@    -fbranch-target-load-optimize
+@gol -fbranch-target-load-optimize2
+@    -fbtr-bb-exclusive -fcaller-saves
+@gol -fcombine-stack-adjustments
+@    -fcompare-elim
+@    -fconserve-stack
+@gol -fcprop-registers
+@    -fcrossjumping
+@    -fcse-follow-jumps
+@    -fcse-skip-blocks
+@gol -fcx-fortran-rules
+@    -fcx-limited-range
+@    -fdce
+@    -fdeclone-ctor-dtor
+@gol -fno-defer-pop
+@    -fdelayed-branch
+@    -fdelete-null-pointer-checks
+@gol -fdevirtualize
+@    -fdevirtualize-at-ltrans
+@    -fdevirtualize-speculatively
+@gol -fdse
+@    -fearly-inlining
+@    -fexcess-precision=@var{style}
+@gol -fexpensive-optimizations
+@    -ffat-lto-objects
+@    -fipa-sra
+@    -ffloat-store
+@gol -fforward-propagate
+@    -fno-function-cse
+@    -fgcse
+@    -fgcse-after-reload
+@gol -fgcse-las
+@    -fgcse-lm
+@    -fgcse-sm
+@    -fgraphite-identity
+@gol -fno-guess-branch-probability
+@    -fhoist-adjacent-loads
+@    -fif-conversion
+@gol -fif-conversion2
+@    -findirect-inlining
+@    -finline-functions
+@gol -finline-functions-called-once
+@    -finline-limit=@var{n}
+@gol -finline-small-functions
+@    -fipa-cp
+@    -fipa-cp-alignment
+@    -fipa-cp-clone
+@gol -fipa-icf
+@    -fipa-profile
+@    -fipa-pta
+@    -fipa-pure-const
+@    -fipa-ra
+@gol -fipa-reference
+@    -fira-algorithm=@var{algorithm}
+@    -fira-hoist-pressure
+@gol -fira-loop-pressure
+@    -fira-region=@var{region}
+@    -fno-ira-share-save-slots
+@gol -fno-ira-share-spill-slots
+@    -fisolate-erroneous-paths-attribute
+@gol -fisolate-erroneous-paths-dereference
+@    -fivopts
+@    -fkeep-inline-functions
+@gol -fkeep-static-consts
+@    -fkeep-static-functions
+@    -flive-range-shrinkage
+@gol -floop-block
+@    -floop-interchange
+@    -floop-nest-optimize
+@gol -floop-parallelize-all
+@    -floop-strip-mine
+@    -floop-unroll-and-jam
+@gol -flra-remat
+@    -flto-compression-level
+@    -flto-partition=@var{alg}
+@gol -flto-odr-type-merging
+@    -fmerge-constants
+@    -fmodulo-sched
+@gol -fmodulo-sched-allow-regmoves
+@    -fmove-loop-invariants
+@    -foptimize-strlen
+@gol -fpartial-inlining
+@    -fpeel-loops
+@    -fno-peephole
+@    -fno-peephole2
+@gol -fpredictive-commoning
+@    -fprefetch-loop-arrays
+@    -fprofile-correction
+@gol -fprofile-values
+@    -fprofile-reorder-functions
+@    -free
+@gol -frename-registers
+@    -freorder-blocks
+@gol -freorder-blocks-algorithm=@var{algorithm}
+@    -freorder-blocks-and-partition
+@gol -freorder-functions
+@    -frerun-cse-after-loop
+@gol -freschedule-modulo-scheduled-loops
+@    -frounding-math
+@gol -fsched-critical-path-heuristic
+@    -fsched-dep-count-heuristic
+@gol -fsched-group-heuristic
+@    -fno-sched-interblock
+@gol -fsched-last-insn-heuristic
+@    -fsched-pressure
+@    -fsched-rank-heuristic
+@gol -fno-sched-spec
+@    -fsched-spec-insn-heuristic
+@    -fsched-spec-load
+@gol -fsched-spec-load-dangerous
+@    -fsched-stalled-insns[=@var{n}]
+@gol -fsched-stalled-insns-dep[=@var{n}]
+@    -fsched2-use-superblocks
+@gol -fschedule-fusion
+@    -fschedule-insns
+@    -fschedule-insns2
+@gol -fsection-anchors
+@    -fsel-sched-pipelining
+@gol -fsel-sched-pipelining-outer-loops
+@    -fselective-scheduling
+@gol -fselective-scheduling2
+@    -fsemantic-interposition
+@    -fshrink-wrap
+@gol -fsignaling-nans
+@    -fsimd-cost-model=@var{model}
+@    -fsingle-precision-constant
+@gol -fsplit-ivs-in-unroller
+@    -fsplit-paths
+@    -fsplit-wide-types
+@gol -fssa-backprop
+@    -fssa-phiopt
+@    -fstdarg-opt
+@    -fthread-jumps
+@gol -fno-toplevel-reorder
+@    -ftracer
+@    -ftree-bit-ccp
+@gol -ftree-builtin-call-dce
+@    -ftree-ccp
+@    -ftree-ch
+@gol -ftree-coalesce-inlined-vars
+@    -ftree-coalesce-vars
+@gol -ftree-copy-prop
+@    -ftree-copyrename
+@    -ftree-dce
+@gol -ftree-dominator-opts
+@    -ftree-dse
+@    -ftree-forwprop
+@gol -ftree-fre
+@    -ftree-loop-distribute-patterns
+@gol -ftree-loop-distribution
+@    -ftree-loop-if-convert
+@gol -ftree-loop-if-convert-stores
+@    -ftree-loop-im
+@gol -ftree-loop-ivcanon -ftree-loop-linear
+@    -ftree-loop-optimize
+@gol -ftree-loop-vectorize
+@    -ftree-parallelize-loops=@var{n}
+@    -ftree-partial-pre
+@gol -ftree-phiprop
+@    -ftree-pre
+@    -ftree-pta
+@gol -ftree-reassoc
+@    -ftree-sink
+@    -ftree-slsr
+@    -ftree-sra
+@gol -ftree-switch-conversion
+@    -ftree-tail-merge
+@    -ftree-ter
+@gol -ftree-vrp
+@    -funroll-all-loops
+@    -funsafe-loop-optimizations
+@gol -funswitch-loops
+@    -fuse-linker-plugin
+@gol -fvariable-expansion-in-unroller
+@    -fvect-cost-model
+@    -fvpt
+@    -fweb
+@gol -fwhole-program
+@    -Og
+@    --param @var{name}=@var{value}
+}
+
+@item Program Instrumentation Options
+@xref{Instrumentation Options,,Program Instrumentation Options}.
+
+@emph{Options supported by both LLVM and GCC}
+@gccoptlist{--coverage
+@    -finstrument-functions
+@    -fprofile-arcs
+@gol -fprofile-generate@r{[}=@var{path}@r{]}
+@    -fsanitize=@var{style}
+@gol -fsanitize-recover@r{[}=@var{style}@r{]}
+@    -fsanitize-undefined-trap-on-error
+@gol -fsplit-stack
+@    -fstack-check
+@    -fstack-protector
+@gol -fstack-protector-all
+@    -fstack-protector-strong
+@gol -ftest-coverage
+@    -pg
+}
+
+@emph{Options only supported by LLVM}
+@gccoptlist{--analyze
+@    -fcoverage-mapping
+@    -fprofile-instr-generate@r{[}=@var{file}@r{]}
+@gol -fprofile-instr-use@r{[}=@var{file}@r{]}
+@    -fprofile-sample-use=@var{file}
+@gol -fsanitize-address-field-padding=@var{n}
+@    -fsanitize-blacklist=@var{file}
+@gol -fsanitize=@var{style}
+@    -fsanitize-cfi-cross-dso
+@gol -fsanitize-coverage=@var{style}
+@    -fsanitize-memory-track-origins@r{[}@var{n}@r{]}
+@gol -fsanitize-memory-use-after-dtor
+@    -fsanitize-recover=@var{style}
+@gol -fsanitize-stats
+@    -fsanitize-trap=@var{style}
+}
+
+@emph{Options only supported by GCC}
+@gccoptlist{-fasan-shadow-offset=@var{number}
+@    -fbounds-check
+@    -fcheck-data-deps
+@gol -fcheck-pointer-bounds
+@    -fchkp-check-incomplete-type
+@gol -fchkp-first-field-has-own-bounds
+@    -fchkp-narrow-bounds
+@gol -fchkp-narrow-to-innermost-array
+@    -fchkp-optimize
+@gol -fchkp-use-fast-string-functions
+@    -fchkp-use-nochk-string-functions
+@gol -fchkp-use-static-bounds
+@    -fchkp-use-static-const-bounds
+@gol -fchkp-treat-zero-dynamic-size-as-infinite
+@    -fchkp-check-read
+@gol -fchkp-check-read
+@    -fchkp-check-write
+@gol -fchkp-store-bounds
+@    -fchkp-instrument-calls
+@gol -fchkp-instrument-marked-only
+@    -fchkp-use-wrappers
+@gol -finstrument-functions-exclude-function-list=@var{sym},@var{sym},@dots{}
+@gol -finstrument-functions-exclude-file-list=@var{file},@var{file},@dots{}
+@gol -fprofile-dir=@var{path}
+@    -fsanitize-coverage=trace-pc
+@gol -fsanitize-recover=@var{style}
+@    -fsanitize-sections=@var{s1},@var{s2},...
+@gol -fno-stack-limit
+@    -fstack-limit-register=@var{reg}
+@gol -fstack-limit-symbol=@var{sym}
+@    -fstack-protector-explicit
+@gol -fvtable-verify=@r{[}std@r{|}preinit@r{|}none@r{]}
+@    -fvtv-counts
+@gol -fvtv-debug
+@    -p
+}
 
 @item Preprocessor Options
 @xref{Preprocessor Options,,Options Controlling the Preprocessor}.
-@gccoptlist{-A@var{question}=@var{answer} @gol
--A-@var{question}@r{[}=@var{answer}@r{]} @gol
--C  -dD  -dI  -dM  -dN -dU @gol
--D@var{macro}@r{[}=@var{defn}@r{]}  -E  -H @gol
--idirafter @var{dir} @gol
--include @var{file}  -imacros @var{file} @gol
--iprefix @var{file}  -iwithprefix @var{dir} @gol
--iwithprefixbefore @var{dir}  -isystem @var{dir} @gol
--imultilib @var{dir} -isysroot @var{dir} @gol
--M  -MM  -MF  -MG  -MP  -MQ  -MT  -MD  -MMD  -nostdinc -nostdinc++ @gol
--P  -fdebug-cpp -ftrack-macro-expansion@r{[}=@var{level}@r{]} @gol
--fworking-directory -fpch-deps -fpch-preprocess -fdirectives-only @gol
--fdollars-in-identifiers -fextended-identifiers @gol
--fno-canonical-system-headers -fpreprocessed -ftabstop=@var{width} @gol
--fexec-charset=@var{charset} -fwide-exec-charset=@var{charset} @gol
--finput-charset=@var{charset} -fno-show-column @gol
--remap  -undef  -U@var{macro}  @gol
--Wp,@var{option} -Wunused-macros -Wno-endif-labels -Wundef @gol
--Xpreprocessor @var{option} -no-integrated-cpp}
+
+@emph{Options supported by both LLVM and GCC}
+@gccoptlist{-C
+@    -D@var{macro}@r{[}=@var{defn}@r{]}
+@    -dD
+@    -dM
+@    -E
+@    -fdollars-in-identifiers
+@gol -fexec-charset=@var{charset}
+@    -fextended-identifiers
+@    -finput-charset=@var{charset}
+@gol -fpch-preprocess
+@    -fno-show-column
+@    -ftabstop=@var{width}
+@    -H
+@gol -idirafter @var{dir}
+@    -imacros @var{file}
+@    -include @var{file}
+@    -iprefix @var{file}
+@gol -isysroot @var{dir}
+@    -isystem @var{dir}
+@    -iwithprefix @var{dir}
+@    -iwithprefixbefore @var{dir}
+@gol -M
+@    -MD
+@    -MF
+@    -MG
+@    -MM
+@    -MMD
+@    -MP
+@    -MQ
+@    -MT
+@    -no-integrated-cpp
+@gol -nostdinc
+@    -P
+@    -trigraphs
+@    -U@var{macro}
+@    -undef
+@    -Wp,@var{option}
+@gol -Xpreprocessor
+}
+
+@emph{Options only supported by LLVM}
+@gccoptlist{-cxx-isystem=@var{file}
+@    -fcomment-block-commands=@var{cmd}
+@    -fdeclspec
+@gol -ftrigraphs
+@    -iframework@var{dir}
+@    -include-pch @var{file}
+@gol -index-header-map
+@    -iwithsysroot @var{dir}
+@    --migrate
+@gol -MV
+@    --no-system-header-prefix=@var{prefix}
+@    -nobuiltininc
+@gol -relocatable-pch
+@    --system-header-prefix=@var{prefix}
+@    -verify-pch
+}
+
+@emph{Options only supported by GCC}
+@gccoptlist{-A@var{question}=@var{answer}
+@    -A-@var{question}@r{[}=@var{answer}@r{]}
+@    -dI
+@    -dN
+@    -fdebug-cpp
+@gol -fdirectives-only
+@    -fpch-deps
+@    -fpreprocessed
+@gol -ftrack-macro-expansion
+@    -fwide-exec-charset=@var{charset}
+@    -fworking-directory
+@gol -imultilib @var{dir}
+@    -remap
+}
 
 @item Assembler Option
 @xref{Assembler Options,,Passing Options to the Assembler}.
@@ -8111,6 +8734,786 @@ automaton.  The default is 50.
 
 @end table
 @end table
+
+@node Instrumentation Options
+@section Program Instrumentation Options
+@cindex instrumentation options
+@cindex program instrumentation options
+@cindex run-time error checking options
+@cindex profiling options
+@cindex options, program instrumentation
+@cindex options, run-time error checking
+@cindex options, profiling
+
+GCC supports a number of command-line options that control adding
+run-time instrumentation to the code it normally generates.  
+For example, one purpose of instrumentation is collect profiling
+statistics for use in finding program hot spots, code coverage
+analysis, or profile-guided optimizations.
+Another class of program instrumentation is adding run-time checking 
+to detect programming errors like invalid pointer
+dereferences or out-of-bounds array accesses, as well as deliberately
+hostile attacks such as stack smashing or C++ vtable hijacking.
+There is also a general hook which can be used to implement other
+forms of tracing or function-level instrumentation for debug or
+program analysis purposes.
+
+@table @gcctabopt
+@cindex @command{prof}
+@item -p
+@opindex p
+Generate extra code to write profile information suitable for the
+analysis program @command{prof}.  You must use this option when compiling
+the source files you want data about, and you must also use it when
+linking.
+
+@cindex @command{gprof}
+@item -pg
+@opindex pg
+Generate extra code to write profile information suitable for the
+analysis program @command{gprof}.  You must use this option when compiling
+the source files you want data about, and you must also use it when
+linking.
+
+@item -fprofile-arcs
+@opindex fprofile-arcs
+Add code so that program flow @dfn{arcs} are instrumented.  During
+execution the program records how many times each branch and call is
+executed and how many times it is taken or returns.  When the compiled
+program exits it saves this data to a file called
+@file{@var{auxname}.gcda} for each source file.  The data may be used for
+profile-directed optimizations (@option{-fbranch-probabilities}), or for
+test coverage analysis (@option{-ftest-coverage}).  Each object file's
+@var{auxname} is generated from the name of the output file, if
+explicitly specified and it is not the final executable, otherwise it is
+the basename of the source file.  In both cases any suffix is removed
+(e.g.@: @file{foo.gcda} for input file @file{dir/foo.c}, or
+@file{dir/foo.gcda} for output file specified as @option{-o dir/foo.o}).
+@xref{Cross-profiling}.
+
+@cindex @command{gcov}
+@item --coverage
+@opindex coverage
+
+This option is used to compile and link code instrumented for coverage
+analysis.  The option is a synonym for @option{-fprofile-arcs}
+@option{-ftest-coverage} (when compiling) and @option{-lgcov} (when
+linking).  See the documentation for those options for more details.
+
+@itemize
+
+@item
+Compile the source files with @option{-fprofile-arcs} plus optimization
+and code generation options.  For test coverage analysis, use the
+additional @option{-ftest-coverage} option.  You do not need to profile
+every source file in a program.
+
+@item
+Link your object files with @option{-lgcov} or @option{-fprofile-arcs}
+(the latter implies the former).
+
+@item
+Run the program on a representative workload to generate the arc profile
+information.  This may be repeated any number of times.  You can run
+concurrent instances of your program, and provided that the file system
+supports locking, the data files will be correctly updated.  Also
+@code{fork} calls are detected and correctly handled (double counting
+will not happen).
+
+@item
+For profile-directed optimizations, compile the source files again with
+the same optimization and code generation options plus
+@option{-fbranch-probabilities} (@pxref{Optimize Options,,Options that
+Control Optimization}).
+
+@item
+For test coverage analysis, use @command{gcov} to produce human readable
+information from the @file{.gcno} and @file{.gcda} files.  Refer to the
+@command{gcov} documentation for further information.
+
+@end itemize
+
+With @option{-fprofile-arcs}, for each function of your program GCC
+creates a program flow graph, then finds a spanning tree for the graph.
+Only arcs that are not on the spanning tree have to be instrumented: the
+compiler adds code to count the number of times that these arcs are
+executed.  When an arc is the only exit or only entrance to a block, the
+instrumentation code can be added to the block; otherwise, a new basic
+block must be created to hold the instrumentation code.
+
+@need 2000
+@item -ftest-coverage
+@opindex ftest-coverage
+Produce a notes file that the @command{gcov} code-coverage utility
+(@pxref{Gcov,, @command{gcov}---a Test Coverage Program}) can use to
+show program coverage.  Each source file's note file is called
+@file{@var{auxname}.gcno}.  Refer to the @option{-fprofile-arcs} option
+above for a description of @var{auxname} and instructions on how to
+generate test coverage data.  Coverage data matches the source files
+more closely if you do not optimize.
+
+@item -fprofile-dir=@var{path}
+@opindex fprofile-dir
+
+Set the directory to search for the profile data files in to @var{path}.
+This option affects only the profile data generated by
+@option{-fprofile-generate}, @option{-ftest-coverage}, @option{-fprofile-arcs}
+and used by @option{-fprofile-use} and @option{-fbranch-probabilities}
+and its related options.  Both absolute and relative paths can be used.
+By default, GCC uses the current directory as @var{path}, thus the
+profile data file appears in the same directory as the object file.
+
+@item -fprofile-generate
+@itemx -fprofile-generate=@var{path}
+@opindex fprofile-generate
+
+Enable options usually used for instrumenting application to produce
+profile useful for later recompilation with profile feedback based
+optimization.  You must use @option{-fprofile-generate} both when
+compiling and when linking your program.
+
+The following options are enabled: @option{-fprofile-arcs}, @option{-fprofile-values}, @option{-fvpt}.
+
+If @var{path} is specified, GCC looks at the @var{path} to find
+the profile feedback data files. See @option{-fprofile-dir}.
+
+To optimize the program based on the collected profile information, use
+@option{-fprofile-use}.  @xref{Optimize Options}, for more information.
+
+@item -fsanitize=address
+@opindex fsanitize=address
+Enable AddressSanitizer, a fast memory error detector.
+Memory access instructions are instrumented to detect
+out-of-bounds and use-after-free bugs.
+See @uref{https://github.com/google/sanitizers/wiki/AddressSanitizer} for
+more details.  The run-time behavior can be influenced using the
+@env{ASAN_OPTIONS} environment variable.  When set to @code{help=1},
+the available options are shown at startup of the instrumented program.  See
+@url{https://github.com/google/sanitizers/wiki/AddressSanitizerFlags#run-time-flags}
+for a list of supported options.
+
+@item -fsanitize=kernel-address
+@opindex fsanitize=kernel-address
+Enable AddressSanitizer for Linux kernel.
+See @uref{https://github.com/google/kasan/wiki} for more details.
+
+@item -fsanitize=thread
+@opindex fsanitize=thread
+Enable ThreadSanitizer, a fast data race detector.
+Memory access instructions are instrumented to detect
+data race bugs.  See @uref{https://github.com/google/sanitizers/wiki#threadsanitizer} for more
+details. The run-time behavior can be influenced using the @env{TSAN_OPTIONS}
+environment variable; see
+@url{https://github.com/google/sanitizers/wiki/ThreadSanitizerFlags} for a list of
+supported options.
+
+@item -fsanitize=leak
+@opindex fsanitize=leak
+Enable LeakSanitizer, a memory leak detector.
+This option only matters for linking of executables and if neither
+@option{-fsanitize=address} nor @option{-fsanitize=thread} is used.  In that
+case the executable is linked against a library that overrides @code{malloc}
+and other allocator functions.  See
+@uref{https://github.com/google/sanitizers/wiki/AddressSanitizerLeakSanitizer} for more
+details.  The run-time behavior can be influenced using the
+@env{LSAN_OPTIONS} environment variable.
+
+@item -fsanitize=undefined
+@opindex fsanitize=undefined
+Enable UndefinedBehaviorSanitizer, a fast undefined behavior detector.
+Various computations are instrumented to detect undefined behavior
+at runtime.  Current suboptions are:
+
+@table @gcctabopt
+
+@item -fsanitize=shift
+@opindex fsanitize=shift
+This option enables checking that the result of a shift operation is
+not undefined.  Note that what exactly is considered undefined differs
+slightly between C and C++, as well as between ISO C90 and C99, etc.
+
+@item -fsanitize=integer-divide-by-zero
+@opindex fsanitize=integer-divide-by-zero
+Detect integer division by zero as well as @code{INT_MIN / -1} division.
+
+@item -fsanitize=unreachable
+@opindex fsanitize=unreachable
+With this option, the compiler turns the @code{__builtin_unreachable}
+call into a diagnostics message call instead.  When reaching the
+@code{__builtin_unreachable} call, the behavior is undefined.
+
+@item -fsanitize=vla-bound
+@opindex fsanitize=vla-bound
+This option instructs the compiler to check that the size of a variable
+length array is positive.
+
+@item -fsanitize=null
+@opindex fsanitize=null
+This option enables pointer checking.  Particularly, the application
+built with this option turned on will issue an error message when it
+tries to dereference a NULL pointer, or if a reference (possibly an
+rvalue reference) is bound to a NULL pointer, or if a method is invoked
+on an object pointed by a NULL pointer.
+
+@item -fsanitize=return
+@opindex fsanitize=return
+This option enables return statement checking.  Programs
+built with this option turned on will issue an error message
+when the end of a non-void function is reached without actually
+returning a value.  This option works in C++ only.
+
+@item -fsanitize=signed-integer-overflow
+@opindex fsanitize=signed-integer-overflow
+This option enables signed integer overflow checking.  We check that
+the result of @code{+}, @code{*}, and both unary and binary @code{-}
+does not overflow in the signed arithmetics.  Note, integer promotion
+rules must be taken into account.  That is, the following is not an
+overflow:
+@smallexample
+signed char a = SCHAR_MAX;
+a++;
+@end smallexample
+
+@item -fsanitize=bounds
+@opindex fsanitize=bounds
+This option enables instrumentation of array bounds.  Various out of bounds
+accesses are detected.  Flexible array members, flexible array member-like
+arrays, and initializers of variables with static storage are not instrumented.
+
+@item -fsanitize=bounds-strict
+@opindex fsanitize=bounds-strict
+This option enables strict instrumentation of array bounds.  Most out of bounds
+accesses are detected, including flexible array members and flexible array
+member-like arrays.  Initializers of variables with static storage are not
+instrumented.
+
+@item -fsanitize=alignment
+@opindex fsanitize=alignment
+
+This option enables checking of alignment of pointers when they are
+dereferenced, or when a reference is bound to insufficiently aligned target,
+or when a method or constructor is invoked on insufficiently aligned object.
+
+@item -fsanitize=object-size
+@opindex fsanitize=object-size
+This option enables instrumentation of memory references using the
+@code{__builtin_object_size} function.  Various out of bounds pointer
+accesses are detected.
+
+@item -fsanitize=float-divide-by-zero
+@opindex fsanitize=float-divide-by-zero
+Detect floating-point division by zero.  Unlike other similar options,
+@option{-fsanitize=float-divide-by-zero} is not enabled by
+@option{-fsanitize=undefined}, since floating-point division by zero can
+be a legitimate way of obtaining infinities and NaNs.
+
+@item -fsanitize=float-cast-overflow
+@opindex fsanitize=float-cast-overflow
+This option enables floating-point type to integer conversion checking.
+We check that the result of the conversion does not overflow.
+Unlike other similar options, @option{-fsanitize=float-cast-overflow} is
+not enabled by @option{-fsanitize=undefined}.
+This option does not work well with @code{FE_INVALID} exceptions enabled.
+
+@item -fsanitize=nonnull-attribute
+@opindex fsanitize=nonnull-attribute
+
+This option enables instrumentation of calls, checking whether null values
+are not passed to arguments marked as requiring a non-null value by the
+@code{nonnull} function attribute.
+
+@item -fsanitize=returns-nonnull-attribute
+@opindex fsanitize=returns-nonnull-attribute
+
+This option enables instrumentation of return statements in functions
+marked with @code{returns_nonnull} function attribute, to detect returning
+of null values from such functions.
+
+@item -fsanitize=bool
+@opindex fsanitize=bool
+
+This option enables instrumentation of loads from bool.  If a value other
+than 0/1 is loaded, a run-time error is issued.
+
+@item -fsanitize=enum
+@opindex fsanitize=enum
+
+This option enables instrumentation of loads from an enum type.  If
+a value outside the range of values for the enum type is loaded,
+a run-time error is issued.
+
+@item -fsanitize=vptr
+@opindex fsanitize=vptr
+
+This option enables instrumentation of C++ member function calls, member
+accesses and some conversions between pointers to base and derived classes,
+to verify the referenced object has the correct dynamic type.
+
+@end table
+
+While @option{-ftrapv} causes traps for signed overflows to be emitted,
+@option{-fsanitize=undefined} gives a diagnostic message.
+This currently works only for the C family of languages.
+
+@item -fno-sanitize=all
+@opindex fno-sanitize=all
+
+This option disables all previously enabled sanitizers.
+@option{-fsanitize=all} is not allowed, as some sanitizers cannot be used
+together.
+
+@item -fasan-shadow-offset=@var{number}
+@opindex fasan-shadow-offset
+This option forces GCC to use custom shadow offset in AddressSanitizer checks.
+It is useful for experimenting with different shadow memory layouts in
+Kernel AddressSanitizer.
+
+@item -fsanitize-sections=@var{s1},@var{s2},...
+@opindex fsanitize-sections
+Sanitize global variables in selected user-defined sections.  @var{si} may
+contain wildcards.
+
+@item -fsanitize-recover@r{[}=@var{opts}@r{]}
+@opindex fsanitize-recover
+@opindex fno-sanitize-recover
+@option{-fsanitize-recover=} controls error recovery mode for sanitizers
+mentioned in comma-separated list of @var{opts}.  Enabling this option
+for a sanitizer component causes it to attempt to continue
+running the program as if no error happened.  This means multiple
+runtime errors can be reported in a single program run, and the exit
+code of the program may indicate success even when errors
+have been reported.  The @option{-fno-sanitize-recover=} option
+can be used to alter
+this behavior: only the first detected error is reported
+and program then exits with a non-zero exit code.
+
+Currently this feature only works for @option{-fsanitize=undefined} (and its suboptions
+except for @option{-fsanitize=unreachable} and @option{-fsanitize=return}),
+@option{-fsanitize=float-cast-overflow}, @option{-fsanitize=float-divide-by-zero},
+@option{-fsanitize=kernel-address} and @option{-fsanitize=address}.
+For these sanitizers error recovery is turned on by default, except @option{-fsanitize=address},
+for which this feature is experimental.
+@option{-fsanitize-recover=all} and @option{-fno-sanitize-recover=all} is also
+accepted, the former enables recovery for all sanitizers that support it,
+the latter disables recovery for all sanitizers that support it.
+
+Syntax without explicit @var{opts} parameter is deprecated.  It is equivalent to
+@smallexample
+-fsanitize-recover=undefined,float-cast-overflow,float-divide-by-zero
+@end smallexample
+@noindent
+Similarly @option{-fno-sanitize-recover} is equivalent to
+@smallexample
+-fno-sanitize-recover=undefined,float-cast-overflow,float-divide-by-zero
+@end smallexample
+
+@item -fsanitize-undefined-trap-on-error
+@opindex fsanitize-undefined-trap-on-error
+The @option{-fsanitize-undefined-trap-on-error} option instructs the compiler to
+report undefined behavior using @code{__builtin_trap} rather than
+a @code{libubsan} library routine.  The advantage of this is that the
+@code{libubsan} library is not needed and is not linked in, so this
+is usable even in freestanding environments.
+
+@item -fsanitize-coverage=trace-pc
+@opindex fsanitize-coverage=trace-pc
+Enable coverage-guided fuzzing code instrumentation.
+Inserts a call to @code{__sanitizer_cov_trace_pc} into every basic block.
+
+@item -fbounds-check
+@opindex fbounds-check
+For front ends that support it, generate additional code to check that
+indices used to access arrays are within the declared range.  This is
+currently only supported by the Java and Fortran front ends, where
+this option defaults to true and false respectively.
+
+@item -fcheck-pointer-bounds
+@opindex fcheck-pointer-bounds
+@opindex fno-check-pointer-bounds
+@cindex Pointer Bounds Checker options
+Enable Pointer Bounds Checker instrumentation.  Each memory reference
+is instrumented with checks of the pointer used for memory access against
+bounds associated with that pointer.  
+
+Currently there
+is only an implementation for Intel MPX available, thus x86 GNU/Linux target
+and @option{-mmpx} are required to enable this feature.  
+MPX-based instrumentation requires
+a runtime library to enable MPX in hardware and handle bounds
+violation signals.  By default when @option{-fcheck-pointer-bounds}
+and @option{-mmpx} options are used to link a program, the GCC driver
+links against the @file{libmpx} and @file{libmpxwrappers} libraries.
+Bounds checking on calls to dynamic libraries requires a linker
+with @option{-z bndplt} support; if GCC was configured with a linker
+without support for this option (including the Gold linker and older
+versions of ld), a warning is given if you link with @option{-mmpx}
+without also specifying @option{-static}, since the overall effectiveness
+of the bounds checking protection is reduced.
+See also @option{-static-libmpxwrappers}.
+
+MPX-based instrumentation
+may be used for debugging and also may be included in production code
+to increase program security.  Depending on usage, you may
+have different requirements for the runtime library.  The current version
+of the MPX runtime library is more oriented for use as a debugging
+tool.  MPX runtime library usage implies @option{-lpthread}.  See
+also @option{-static-libmpx}.  The runtime library  behavior can be
+influenced using various @env{CHKP_RT_*} environment variables.  See
+@uref{https://gcc.gnu.org/wiki/Intel%20MPX%20support%20in%20the%20GCC%20compiler}
+for more details.
+
+Generated instrumentation may be controlled by various
+@option{-fchkp-*} options and by the @code{bnd_variable_size}
+structure field attribute (@pxref{Type Attributes}) and
+@code{bnd_legacy}, and @code{bnd_instrument} function attributes
+(@pxref{Function Attributes}).  GCC also provides a number of built-in
+functions for controlling the Pointer Bounds Checker.  @xref{Pointer
+Bounds Checker builtins}, for more information.
+
+@item -fchkp-check-incomplete-type
+@opindex fchkp-check-incomplete-type
+@opindex fno-chkp-check-incomplete-type
+Generate pointer bounds checks for variables with incomplete type.
+Enabled by default.
+
+@item -fchkp-narrow-bounds
+@opindex fchkp-narrow-bounds
+@opindex fno-chkp-narrow-bounds
+Controls bounds used by Pointer Bounds Checker for pointers to object
+fields.  If narrowing is enabled then field bounds are used.  Otherwise
+object bounds are used.  See also @option{-fchkp-narrow-to-innermost-array}
+and @option{-fchkp-first-field-has-own-bounds}.  Enabled by default.
+
+@item -fchkp-first-field-has-own-bounds
+@opindex fchkp-first-field-has-own-bounds
+@opindex fno-chkp-first-field-has-own-bounds
+Forces Pointer Bounds Checker to use narrowed bounds for the address of the
+first field in the structure.  By default a pointer to the first field has
+the same bounds as a pointer to the whole structure.
+
+@item -fchkp-narrow-to-innermost-array
+@opindex fchkp-narrow-to-innermost-array
+@opindex fno-chkp-narrow-to-innermost-array
+Forces Pointer Bounds Checker to use bounds of the innermost arrays in
+case of nested static array access.  By default this option is disabled and
+bounds of the outermost array are used.
+
+@item -fchkp-optimize
+@opindex fchkp-optimize
+@opindex fno-chkp-optimize
+Enables Pointer Bounds Checker optimizations.  Enabled by default at
+optimization levels @option{-O}, @option{-O2}, @option{-O3}.
+
+@item -fchkp-use-fast-string-functions
+@opindex fchkp-use-fast-string-functions
+@opindex fno-chkp-use-fast-string-functions
+Enables use of @code{*_nobnd} versions of string functions (not copying bounds)
+by Pointer Bounds Checker.  Disabled by default.
+
+@item -fchkp-use-nochk-string-functions
+@opindex fchkp-use-nochk-string-functions
+@opindex fno-chkp-use-nochk-string-functions
+Enables use of @code{*_nochk} versions of string functions (not checking bounds)
+by Pointer Bounds Checker.  Disabled by default.
+
+@item -fchkp-use-static-bounds
+@opindex fchkp-use-static-bounds
+@opindex fno-chkp-use-static-bounds
+Allow Pointer Bounds Checker to generate static bounds holding
+bounds of static variables.  Enabled by default.
+
+@item -fchkp-use-static-const-bounds
+@opindex fchkp-use-static-const-bounds
+@opindex fno-chkp-use-static-const-bounds
+Use statically-initialized bounds for constant bounds instead of
+generating them each time they are required.  By default enabled when
+@option{-fchkp-use-static-bounds} is enabled.
+
+@item -fchkp-treat-zero-dynamic-size-as-infinite
+@opindex fchkp-treat-zero-dynamic-size-as-infinite
+@opindex fno-chkp-treat-zero-dynamic-size-as-infinite
+With this option, objects with incomplete type whose
+dynamically-obtained size is zero are treated as having infinite size
+instead by Pointer Bounds
+Checker.  This option may be helpful if a program is linked with a library
+missing size information for some symbols.  Disabled by default.
+
+@item -fchkp-check-read
+@opindex fchkp-check-read
+@opindex fno-chkp-check-read
+Instructs Pointer Bounds Checker to generate checks for all read
+accesses to memory.  Enabled by default.
+
+@item -fchkp-check-write
+@opindex fchkp-check-write
+@opindex fno-chkp-check-write
+Instructs Pointer Bounds Checker to generate checks for all write
+accesses to memory.  Enabled by default.
+
+@item -fchkp-store-bounds
+@opindex fchkp-store-bounds
+@opindex fno-chkp-store-bounds
+Instructs Pointer Bounds Checker to generate bounds stores for
+pointer writes.  Enabled by default.
+
+@item -fchkp-instrument-calls
+@opindex fchkp-instrument-calls
+@opindex fno-chkp-instrument-calls
+Instructs Pointer Bounds Checker to pass pointer bounds to calls.
+Enabled by default.
+
+@item -fchkp-instrument-marked-only
+@opindex fchkp-instrument-marked-only
+@opindex fno-chkp-instrument-marked-only
+Instructs Pointer Bounds Checker to instrument only functions
+marked with the @code{bnd_instrument} attribute
+(@pxref{Function Attributes}).  Disabled by default.
+
+@item -fchkp-use-wrappers
+@opindex fchkp-use-wrappers
+@opindex fno-chkp-use-wrappers
+Allows Pointer Bounds Checker to replace calls to built-in functions
+with calls to wrapper functions.  When @option{-fchkp-use-wrappers}
+is used to link a program, the GCC driver automatically links
+against @file{libmpxwrappers}.  See also @option{-static-libmpxwrappers}.
+Enabled by default.
+
+@item -fstack-protector
+@opindex fstack-protector
+Emit extra code to check for buffer overflows, such as stack smashing
+attacks.  This is done by adding a guard variable to functions with
+vulnerable objects.  This includes functions that call @code{alloca}, and
+functions with buffers larger than 8 bytes.  The guards are initialized
+when a function is entered and then checked when the function exits.
+If a guard check fails, an error message is printed and the program exits.
+
+@item -fstack-protector-all
+@opindex fstack-protector-all
+Like @option{-fstack-protector} except that all functions are protected.
+
+@item -fstack-protector-strong
+@opindex fstack-protector-strong
+Like @option{-fstack-protector} but includes additional functions to
+be protected --- those that have local array definitions, or have
+references to local frame addresses.
+
+@item -fstack-protector-explicit
+@opindex fstack-protector-explicit
+Like @option{-fstack-protector} but only protects those functions which
+have the @code{stack_protect} attribute.
+
+@item -fstack-check
+@opindex fstack-check
+Generate code to verify that you do not go beyond the boundary of the
+stack.  You should specify this flag if you are running in an
+environment with multiple threads, but you only rarely need to specify it in
+a single-threaded environment since stack overflow is automatically
+detected on nearly all systems if there is only one stack.
+
+Note that this switch does not actually cause checking to be done; the
+operating system or the language runtime must do that.  The switch causes
+generation of code to ensure that they see the stack being extended.
+
+You can additionally specify a string parameter: @samp{no} means no
+checking, @samp{generic} means force the use of old-style checking,
+@samp{specific} means use the best checking method and is equivalent
+to bare @option{-fstack-check}.
+
+Old-style checking is a generic mechanism that requires no specific
+target support in the compiler but comes with the following drawbacks:
+
+@enumerate
+@item
+Modified allocation strategy for large objects: they are always
+allocated dynamically if their size exceeds a fixed threshold.
+
+@item
+Fixed limit on the size of the static frame of functions: when it is
+topped by a particular function, stack checking is not reliable and
+a warning is issued by the compiler.
+
+@item
+Inefficiency: because of both the modified allocation strategy and the
+generic implementation, code performance is hampered.
+@end enumerate
+
+Note that old-style stack checking is also the fallback method for
+@samp{specific} if no target support has been added in the compiler.
+
+@item -fstack-limit-register=@var{reg}
+@itemx -fstack-limit-symbol=@var{sym}
+@itemx -fno-stack-limit
+@opindex fstack-limit-register
+@opindex fstack-limit-symbol
+@opindex fno-stack-limit
+Generate code to ensure that the stack does not grow beyond a certain value,
+either the value of a register or the address of a symbol.  If a larger
+stack is required, a signal is raised at run time.  For most targets,
+the signal is raised before the stack overruns the boundary, so
+it is possible to catch the signal without taking special precautions.
+
+For instance, if the stack starts at absolute address @samp{0x80000000}
+and grows downwards, you can use the flags
+@option{-fstack-limit-symbol=__stack_limit} and
+@option{-Wl,--defsym,__stack_limit=0x7ffe0000} to enforce a stack limit
+of 128KB@.  Note that this may only work with the GNU linker.
+
+You can locally override stack limit checking by using the
+@code{no_stack_limit} function attribute (@pxref{Function Attributes}).
+
+@item -fsplit-stack
+@opindex fsplit-stack
+Generate code to automatically split the stack before it overflows.
+The resulting program has a discontiguous stack which can only
+overflow if the program is unable to allocate any more memory.  This
+is most useful when running threaded programs, as it is no longer
+necessary to calculate a good stack size to use for each thread.  This
+is currently only implemented for the x86 targets running
+GNU/Linux.
+
+When code compiled with @option{-fsplit-stack} calls code compiled
+without @option{-fsplit-stack}, there may not be much stack space
+available for the latter code to run.  If compiling all code,
+including library code, with @option{-fsplit-stack} is not an option,
+then the linker can fix up these calls so that the code compiled
+without @option{-fsplit-stack} always has a large stack.  Support for
+this is implemented in the gold linker in GNU binutils release 2.21
+and later.
+
+@item -fvtable-verify=@r{[}std@r{|}preinit@r{|}none@r{]}
+@opindex fvtable-verify
+This option is only available when compiling C++ code.
+It turns on (or off, if using @option{-fvtable-verify=none}) the security
+feature that verifies at run time, for every virtual call, that
+the vtable pointer through which the call is made is valid for the type of
+the object, and has not been corrupted or overwritten.  If an invalid vtable
+pointer is detected at run time, an error is reported and execution of the
+program is immediately halted.
+
+This option causes run-time data structures to be built at program startup,
+which are used for verifying the vtable pointers.  
+The options @samp{std} and @samp{preinit}
+control the timing of when these data structures are built.  In both cases the
+data structures are built before execution reaches @code{main}.  Using
+@option{-fvtable-verify=std} causes the data structures to be built after
+shared libraries have been loaded and initialized.
+@option{-fvtable-verify=preinit} causes them to be built before shared
+libraries have been loaded and initialized.
+
+If this option appears multiple times in the command line with different
+values specified, @samp{none} takes highest priority over both @samp{std} and
+@samp{preinit}; @samp{preinit} takes priority over @samp{std}.
+
+@item -fvtv-debug
+@opindex fvtv-debug
+When used in conjunction with @option{-fvtable-verify=std} or 
+@option{-fvtable-verify=preinit}, causes debug versions of the 
+runtime functions for the vtable verification feature to be called.  
+This flag also causes the compiler to log information about which 
+vtable pointers it finds for each class.
+This information is written to a file named @file{vtv_set_ptr_data.log} 
+in the directory named by the environment variable @env{VTV_LOGS_DIR} 
+if that is defined or the current working directory otherwise.
+
+Note:  This feature @emph{appends} data to the log file. If you want a fresh log
+file, be sure to delete any existing one.
+
+@item -fvtv-counts
+@opindex fvtv-counts
+This is a debugging flag.  When used in conjunction with
+@option{-fvtable-verify=std} or @option{-fvtable-verify=preinit}, this
+causes the compiler to keep track of the total number of virtual calls
+it encounters and the number of verifications it inserts.  It also
+counts the number of calls to certain run-time library functions
+that it inserts and logs this information for each compilation unit.
+The compiler writes this information to a file named
+@file{vtv_count_data.log} in the directory named by the environment
+variable @env{VTV_LOGS_DIR} if that is defined or the current working
+directory otherwise.  It also counts the size of the vtable pointer sets
+for each class, and writes this information to @file{vtv_class_set_sizes.log}
+in the same directory.
+
+Note:  This feature @emph{appends} data to the log files.  To get fresh log
+files, be sure to delete any existing ones.
+
+@item -finstrument-functions
+@opindex finstrument-functions
+Generate instrumentation calls for entry and exit to functions.  Just
+after function entry and just before function exit, the following
+profiling functions are called with the address of the current
+function and its call site.  (On some platforms,
+@code{__builtin_return_address} does not work beyond the current
+function, so the call site information may not be available to the
+profiling functions otherwise.)
+
+@smallexample
+void __cyg_profile_func_enter (void *this_fn,
+                               void *call_site);
+void __cyg_profile_func_exit  (void *this_fn,
+                               void *call_site);
+@end smallexample
+
+The first argument is the address of the start of the current function,
+which may be looked up exactly in the symbol table.
+
+This instrumentation is also done for functions expanded inline in other
+functions.  The profiling calls indicate where, conceptually, the
+inline function is entered and exited.  This means that addressable
+versions of such functions must be available.  If all your uses of a
+function are expanded inline, this may mean an additional expansion of
+code size.  If you use @code{extern inline} in your C code, an
+addressable version of such functions must be provided.  (This is
+normally the case anyway, but if you get lucky and the optimizer always
+expands the functions inline, you might have gotten away without
+providing static copies.)
+
+A function may be given the attribute @code{no_instrument_function}, in
+which case this instrumentation is not done.  This can be used, for
+example, for the profiling functions listed above, high-priority
+interrupt routines, and any functions from which the profiling functions
+cannot safely be called (perhaps signal handlers, if the profiling
+routines generate output or allocate memory).
+
+@item -finstrument-functions-exclude-file-list=@var{file},@var{file},@dots{}
+@opindex finstrument-functions-exclude-file-list
+
+Set the list of functions that are excluded from instrumentation (see
+the description of @option{-finstrument-functions}).  If the file that
+contains a function definition matches with one of @var{file}, then
+that function is not instrumented.  The match is done on substrings:
+if the @var{file} parameter is a substring of the file name, it is
+considered to be a match.
+
+For example:
+
+@smallexample
+-finstrument-functions-exclude-file-list=/bits/stl,include/sys
+@end smallexample
+
+@noindent
+excludes any inline function defined in files whose pathnames
+contain @file{/bits/stl} or @file{include/sys}.
+
+If, for some reason, you want to include letter @samp{,} in one of
+@var{sym}, write @samp{\,}. For example,
+@option{-finstrument-functions-exclude-file-list='\,\,tmp'}
+(note the single quote surrounding the option).
+
+@item -finstrument-functions-exclude-function-list=@var{sym},@var{sym},@dots{}
+@opindex finstrument-functions-exclude-function-list
+
+This is similar to @option{-finstrument-functions-exclude-file-list},
+but this option sets the list of function names to be excluded from
+instrumentation.  The function name to be matched is its user-visible
+name, such as @code{vector<int> blah(const vector<int> &)}, not the
+internal mangled name (e.g., @code{_Z4blahRSt6vectorIiSaIiEE}).  The
+match is done on substrings: if the @var{sym} parameter is a substring
+of the function name, it is considered to be a match.  For C99 and C++
+extended identifiers, the function name must be given in UTF-8, not
+using universal character names.
+
+@end table
+
 
 @node Preprocessor Options
 @section Options Controlling the Preprocessor

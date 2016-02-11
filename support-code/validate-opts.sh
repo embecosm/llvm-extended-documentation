@@ -32,8 +32,8 @@ for rawopt in $list
 do
     # Turn leading '-' into a char range to avoid confusing grep that it is an
     # option.
-    opt=`echo ${rawopt} | sed -e 's/^-*//'`
-    if ! grep -q " [-]-*${opt}" opt-check.sh
+    opt=`echo ${rawopt} | sed -e 's/^-/[-]/'`
+    if ! grep -q " ${opt}" opt-check.sh
     then
 	echo "${rawopt}"
     fi

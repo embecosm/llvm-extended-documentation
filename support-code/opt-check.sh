@@ -550,7 +550,7 @@ run_both -ftemplate-depth=5 dummy.cpp
 run_both -fuse-cxa-atexit dummy.cpp
 run_both -fvisibility-inlines-hidden dummy.cpp
 run_both -fvisibility-ms-compat dummy.cpp
-run_both -nostdinc++ dummy.cpp # Also in preproc
+run_both -nostdinc++ dummy.cpp
 run_both -std=c++98 dummy.cpp
 run_both -std=c++03 dummy.cpp
 run_both -std=gnu++98 dummy.cpp
@@ -564,11 +564,22 @@ run_both -std=gnu++14 dummy.cpp
 run_both -std=gnu++1y dummy.cpp
 run_both -std=c++1z dummy.cpp
 run_both -std=gnu++1z dummy.cpp
+run_both -Wabi dummy.cpp
 run_both -Wconversion-null dummy.cpp # Also ObjC++
 run_both -Wctor-dtor-privacy dummy.cpp
 run_both -Wdelete-non-virtual-dtor dummy.cpp
 run_both -Weffc++ dummy.cpp
 run_both -Wnarrowing dummy.cpp
+run_only_llvm -Wno-conversion-null dummy.c
+run_only_llvm -Wno-ctor-dtor-privacy dummy.c
+run_only_llvm -Wno-delete-non-virtual-dtor dummy.c
+run_only_llvm -Wno-effc++ dummy.c
+run_only_llvm -Wno-narrowing dummy.c
+run_only_llvm -Wno-non-virtual-dtor dummy.c
+run_only_llvm -Wno-old-style-cast dummy.c
+run_only_llvm -Wno-overloaded-virtual dummy.c
+run_only_llvm -Wno-reorder dummy.c
+run_only_llvm -Wno-sign-promo dummy.c
 run_both -Wnon-virtual-dtor dummy.cpp
 run_both -Wold-style-cast dummy.cpp
 run_both -Woverloaded-virtual dummy.cpp
@@ -606,14 +617,19 @@ run_gcc -fno-weak dummy.cpp
 run_gcc -fnothrow-opt dummy.cpp
 run_gcc -frepo dummy.cpp
 run_gcc -std=gnu++03 dummy.cpp
+run_gcc -Wabi=2 dummy.cpp
 run_gcc -Wabi-tag dummy.cpp # Also ObjC++
 run_gcc -Wliteral-suffix dummy.cpp
 run_gcc -Wmultiple-inheritance dummy.cpp
 run_gcc -Wnamespaces dummy.cpp
+run_gcc -Wno-literal-suffix dummy.c
+run_gcc -Wno-noexcept dummy.c
 run_gcc -Wno-non-template-friend dummy.c
 run_gcc -Wno-pmf-conversions dummy.c
 run_gcc -Wno-terminate dummy.cpp
 run_gcc -Wnoexcept dummy.cpp
+run_gcc -Wnon-template-friend dummy.c
+run_gcc -Wpmf-conversions dummy.c
 run_gcc -Wstrict-null-sentinel dummy.cpp
 run_gcc -Wtemplates dummy.cpp
 run_gcc -Wvirtual-inheritance dummy.cpp
@@ -654,6 +670,9 @@ run_both -objcmt-ns-nonatomic-iosonly -c dummy.m
 run_both -objcmt-returns-innerpointer-property -c dummy.m
 run_only_llvm -Wno-protocol -c dummy.m
 run_only_llvm -Wno-strict-selector-match -c dummy.m
+run_only_llvm -Wno-selector -c dummy.m
+run_only_llvm -Wno-undeclared-selector dummy.c
+run_both -Wprotocol dummy.m
 run_both -Wselector -c dummy.m
 run_both -Wstrict-selector-match -c dummy.m
 run_both -Wundeclared-selector -c dummy.m
@@ -694,6 +713,8 @@ run_gcc -fzero-link -c dummy.m
 run_gcc -gen-decls -c dummy.m
 run_gcc -print-objc-runtime-info -c dummy.m
 run_gcc -Wassign-intercept -c dummy.m
+run_gcc -Wno-sized-deallocation dummy.cpp C++/OjbC++ only
+run_gcc -Wsized-deallocation dummy.cpp C++/OjbC++ only
 logcon ""
 
 # Don't work here
@@ -760,8 +781,11 @@ run_both -Werror dummy.c
 run_both -Werror=abi dummy.c
 run_both -Wextra dummy.c
 run_both -Wfatal-errors dummy.c
-run_both -Wno-error dummy.c
-run_both -Wno-error=abi dummy.c
+run_only_llvm -Wno-all dummy.c
+run_only_llvm -Wno-error dummy.c
+run_only_llvm -Wno-error=abi dummy.c
+run_only_llvm -Wno-extra dummy.c
+run_only_llvm -Wno-fatal-errors dummy.c
 run_both -Wpedantic dummy.c
 # Specific warnings
 run_both -Waddress dummy.c
@@ -827,10 +851,8 @@ run_both -Wmultichar dummy.c
 # GCC will always accept negatives, so all we can check here is that LLVM
 # (which is pickier) accepts them. We separately test the positives of all
 # these.
-run_only_llvm -Wno-abi dummy.c
 run_only_llvm -Wno-address dummy.c
 run_only_llvm -Wno-aggregate-return dummy.c
-run_only_llvm -Wno-all dummy.c
 run_only_llvm -Wno-array-bounds dummy.c
 run_only_llvm -Wno-attributes dummy.c
 run_only_llvm -Wno-builtin-macro-redefined dummy.c
@@ -839,22 +861,16 @@ run_only_llvm -Wno-cast-qual dummy.c
 run_only_llvm -Wno-char-subscripts dummy.c
 run_only_llvm -Wno-comment dummy.c
 run_only_llvm -Wno-conversion dummy.c
-run_only_llvm -Wno-conversion-null dummy.c
-run_only_llvm -Wno-ctor-dtor-privacy dummy.c
 run_only_llvm -Wno-date-time dummy.c
 run_only_llvm -Wno-delete-incomplete dummy.c
-run_only_llvm -Wno-delete-non-virtual-dtor dummy.c
 run_only_llvm -Wno-deprecated dummy.c
 run_only_llvm -Wno-deprecated-declarations dummy.c
 run_only_llvm -Wno-disabled-optimization dummy.c
 run_only_llvm -Wno-div-by-zero dummy.c
 run_only_llvm -Wno-double-promotion dummy.c
-run_only_llvm -Wno-effc++ dummy.c
 run_only_llvm -Wno-empty-body dummy.c
 run_only_llvm -Wno-endif-labels dummy.c
 run_only_llvm -Wno-enum-compare dummy.c
-run_only_llvm -Wno-extra dummy.c
-run_only_llvm -Wno-fatal-errors dummy.c
 run_only_llvm -Wno-float-conversion dummy.c
 run_only_llvm -Wno-float-equal dummy.c
 run_only_llvm -Wno-format dummy.c
@@ -868,7 +884,7 @@ run_only_llvm -Wno-implicit dummy.c
 run_only_llvm -Wno-implicit-function-declaration dummy.c
 run_only_llvm -Wno-implicit-int dummy.c
 run_only_llvm -Wno-incompatible-pointer-types dummy.c
-run_only_llvm -Wno-inherited-variadic-ctor dummy.c
+run_only_llvm -Wno-inherited-variadic-ctor dummy.c # C++/ObjC++ only
 run_only_llvm -Wno-init-self dummy.c
 run_only_llvm -Wno-inline dummy.c
 run_only_llvm -Wno-int-conversion dummy.c
@@ -883,15 +899,11 @@ run_only_llvm -Wno-missing-field-initializers dummy.c
 run_only_llvm -Wno-missing-format-attribute dummy.c
 run_only_llvm -Wno-missing-include-dirs dummy.c
 run_only_llvm -Wno-multichar dummy.c
-run_only_llvm -Wno-narrowing dummy.c
 run_only_llvm -Wno-nonnull dummy.c
-run_only_llvm -Wno-non-virtual-dtor dummy.c
 run_only_llvm -Wno-null-dereference dummy.c
 run_only_llvm -Wno-odr dummy.c
-run_only_llvm -Wno-old-style-cast dummy.c
 run_only_llvm -Wno-overflow dummy.c
 run_only_llvm -Wno-overlength-strings dummy.c
-run_only_llvm -Wno-overloaded-virtual dummy.c
 run_only_llvm -Wno-packed dummy.c
 run_only_llvm -Wno-padded dummy.c
 run_only_llvm -Wno-parentheses dummy.c
@@ -899,9 +911,7 @@ run_only_llvm -Wno-pointer-arith dummy.c
 run_only_llvm -Wno-pointer-to-int-cast dummy.c
 run_only_llvm -Wno-pragmas dummy.c
 run_only_llvm -Wno-redundant-decls dummy.c
-run_only_llvm -Wno-reorder dummy.c
 run_only_llvm -Wno-return-type dummy.c
-run_only_llvm -Wno-selector dummy.c
 run_only_llvm -Wno-sequence-point dummy.c
 run_only_llvm -Wno-shadow dummy.c
 run_only_llvm -Wno-shadow-ivar dummy.c
@@ -909,7 +919,6 @@ run_only_llvm -Wno-shift-count-negative dummy.c
 run_only_llvm -Wno-shift-count-overflow dummy.c
 run_only_llvm -Wno-sign-compare dummy.c
 run_only_llvm -Wno-sign-conversion dummy.c
-run_only_llvm -Wno-sign-promo dummy.c
 run_only_llvm -Wno-sizeof-array-argument dummy.c
 run_only_llvm -Wno-sizeof-pointer-memaccess dummy.c
 run_only_llvm -Wno-shift-negative-value dummy.c
@@ -925,7 +934,6 @@ run_only_llvm -Wno-system-headers dummy.c
 run_only_llvm -Wno-tautological-compare dummy.c
 run_only_llvm -Wno-trigraphs dummy.c
 run_only_llvm -Wno-type-limits dummy.c
-run_only_llvm -Wno-undeclared-selector dummy.c
 run_only_llvm -Wno-undef dummy.c
 run_only_llvm -Wno-uninitialized dummy.c
 run_only_llvm -Wno-unknown-pragmas dummy.c
@@ -954,7 +962,6 @@ run_both -Wparentheses dummy.c
 run_both -Wpointer-arith dummy.c
 run_both -Wpointer-to-int-cast dummy.c
 run_both -Wpragmas dummy.c
-run_both -Wprotocol dummy.c
 run_both -Wredundant-decls dummy.c
 run_both -Wreturn-type dummy.c
 run_both -Wsequence-point dummy.c
@@ -999,7 +1006,7 @@ run_both -Wunused-const-variable dummy.cpp
 run_both -Wunused-function dummy.c
 run_both -Wunused-label dummy.c
 run_both -Wunused-local-typedefs dummy.c
-run_both -Wunused-macros dummy.c
+run_both -Wunused-macros dummy.c # Pre-processor only
 run_both -Wunused-parameter dummy.c
 run_both -Wunused-result dummy.c
 run_both -Wunused-value dummy.c
@@ -1016,7 +1023,7 @@ logcon "Warning options for LLVM but not GCC"
 # Generic control of warnings
 run_llvm -Weverything dummy.c
 # Specific warnings
-run_llvm -Wabstract-final-class dummy.cpp
+run_llvm -Wabstract-final-class dummy.cpp # Default.
 run_llvm -Wabstract-vbase-init dummy.cpp
 run_llvm -Waddress-of-array-temporary dummy.c
 run_llvm -Waddress-of-temporary dummy.c
@@ -1035,10 +1042,11 @@ run_llvm -Warc-unsafe-retained-assign -c dummy.m
 run_llvm -Warray-bounds-pointer-arithmetic dummy.c
 run_llvm -Wasm dummy.c
 run_llvm -Wasm-operand-widths dummy.c
-run_llvm -Wassign-enum dummy.c
+run_llvm -Wassign-enum dummy.c # Default
 run_llvm -Watomic-properties dummy.c
 run_llvm -Watomic-property-with-user-defined-accessor dummy.c
-run_llvm -Wauto-import dummy.c
+run_llvm -Wauto-import dummy.c # The default
+run_llvm -Wauto-storage-class dummy.c # Default
 run_llvm -Wauto-var-id dummy.c
 run_llvm -Wavailability dummy.c
 run_llvm -Wbackslash-newline-escape dummy.c
@@ -1068,7 +1076,7 @@ run_llvm -Wc++98-compat-local-type-template-args dummy.cpp
 run_llvm -Wc++98-compat-pedantic dummy.cpp
 run_llvm -Wc++98-compat-unnamed-type-template-args dummy.cpp
 run_llvm -Wc99-compat dummy.c
-run_llvm -Wc99-extensions dummy.c
+run_llvm -Wc99-extensions dummy.c # Default
 run_llvm -Wcast-of-sel-type dummy.c
 run_llvm -WCFString-literal dummy.c
 run_llvm -Wchar-align dummy.c
@@ -1118,7 +1126,7 @@ run_llvm -Wexplicit-ownership-type dummy.c
 run_llvm -Wextended-offsetof dummy.c
 run_llvm -Wextern-c-compat dummy.c
 run_llvm -Wextern-initializer dummy.c
-run_llvm -Wextra-qualification dummy.c
+run_llvm -Wextra-qualification dummy.c # Default
 run_llvm -Wextra-semi dummy.c
 run_llvm -Wextra-tokens dummy.c
 run_llvm -Wflexible-array-extensions dummy.c
@@ -1147,25 +1155,25 @@ run_llvm -Wimport-preprocessor-directive-pedantic dummy.c
 run_llvm -Wincompatible-library-redeclaration dummy.c
 run_llvm -Wincompatible-pointer-types-discards-qualifiers dummy.c
 run_llvm -Wincomplete-implementation dummy.c
-run_llvm -Wincomplete-module dummy.c
+run_llvm -Wincomplete-module dummy.c # Default
 run_llvm -Wincomplete-umbrella dummy.c
 run_llvm -Winitializer-overrides dummy.c
 run_llvm -Wint-conversions dummy.c
 run_llvm -Winteger-overflow dummy.c
-run_llvm -Wint-to-void-pointer-cast dummy.c
+run_llvm -Wint-to-void-pointer-cast dummy.c # Default
 run_llvm -Winvalid-constexpr dummy.c
 run_llvm -Winvalid-iboutlet dummy.c
 run_llvm -Winvalid-noreturn dummy.c
 run_llvm -Winvalid-pp-token dummy.c
 run_llvm -Winvalid-source-encoding dummy.c
 run_llvm -Winvalid-token-paste dummy.c
-run_llvm -Wkeyword-compat dummy.c
+run_llvm -Wkeyword-compat dummy.c # Default
 run_llvm -Wknr-promoted-parameter dummy.c
 run_llvm -Wlanguage-extension-token dummy.c
 run_llvm -Wlarge-by-value-copy dummy.c
-run_llvm -Wliblto dummy.c
-run_llvm -Wliteral-conversion dummy.c
-run_llvm -Wliteral-range dummy.c
+run_llvm -Wliblto dummy.c # Default
+run_llvm -Wliteral-conversion dummy.c # Default
+run_llvm -Wliteral-range dummy.c # Default
 run_llvm -Wlocal-type-template-args dummy.c
 run_llvm -Wlogical-op-parentheses dummy.c
 run_llvm -Wloop-analysis dummy.c
@@ -1188,22 +1196,25 @@ run_llvm -Wnested-anon-types dummy.c
 run_llvm -Wnewline-eof dummy.c
 # GCC will always accept any option begining -Wno-
 run_only_llvm -Wno-abstract-final-class dummy.c
+run_only_llvm -Wno-auto-import dummy.c
 run_only_llvm -Wno-assign-enum dummy.c
 run_only_llvm -Wno-auto-storage-class dummy.c
-run_only_llvm -Wno-c99-compat dummy.c
-run_only_llvm -Wno-consumed dummy.c
+run_only_llvm -Wno-c99-compat dummy.c # Default
+run_only_llvm -Wno-c99-extensions dummy.c
+run_only_llvm -Wno-consumed dummy.c # Default
 run_only_llvm -Wno-extra-qualification dummy.c
-run_only_llvm -Wno-int-conversions dummy.c
+run_only_llvm -Wno-incomplete-module dummy.c
+run_only_llvm -Wno-int-conversions dummy.c # Default
 run_only_llvm -Wno-int-to-void-pointer-cast dummy.c
 run_only_llvm -Wno-keyword-compat dummy.c
 run_only_llvm -Wno-liblto dummy.c
 run_only_llvm -Wno-literal-conversion dummy.c
 run_only_llvm -Wno-literal-range dummy.c
-run_only_llvm -Wno-NSObject-attribute dummy.c
+run_only_llvm -Wno-NSObject-attribute dummy.c # Default
 run_only_llvm -Wno-out-of-line-declaration dummy.c
 run_only_llvm -Wno-override-module dummy.c
 run_only_llvm -Wno-pointer-type-mismatch dummy.c
-run_only_llvm -Wno-property-attribute-mismatch dummy.c
+run_only_llvm -Wno-property-attribute-mismatch dummy.c # Default
 run_only_llvm -Wno-return-stack-address dummy.c
 run_only_llvm -Wno-unavailable-declarations dummy.c
 run_only_llvm -Wno-unsupported-friend dummy.c
@@ -1240,13 +1251,13 @@ run_llvm -Wobjc-redundant-literal-use -c dummy.m
 run_llvm -Wobjc-root-class -c dummy.m
 run_llvm -Wobjc-string-compare -c dummy.m
 run_llvm -Wopenmp-clauses -fopenmp dummy.c
-run_llvm -Wout-of-line-declaration dummy.c
+run_llvm -Wout-of-line-declaration dummy.c # Default
 run_llvm -Wover-aligned dummy.c
 run_llvm -Woverloaded-shift-op-parentheses dummy.c
-run_llvm -Woverride-module dummy.c
+run_llvm -Woverride-module dummy.c # Default
 run_llvm -Woverriding-method-mismatch dummy.c
 run_llvm -Wparentheses-equality dummy.c
-run_llvm -Wpointer-type-mismatch dummy.c
+run_llvm -Wpointer-type-mismatch dummy.c # Default
 run_llvm -W\#pragma-messages dummy.c
 run_llvm -Wpredefined-identifier-outside-function dummy.c
 run_llvm -Wprivate-extern dummy.c
@@ -1259,7 +1270,7 @@ run_llvm -Wreceiver-is-weak -c dummy.m
 run_llvm -Wreinterpret-base-class dummy.c
 run_llvm -Wrequires-super-attribute dummy.c
 run_llvm -Wreserved-user-defined-literal dummy.c
-run_llvm -Wreturn-stack-address dummy.c
+run_llvm -Wreturn-stack-address dummy.c # Default
 run_llvm -Wreturn-type-c-linkage dummy.c
 run_llvm -Wsection dummy.c
 run_llvm -Wselector-type-mismatch -c dummy.m
@@ -1296,7 +1307,7 @@ run_llvm -Wthread-safety-precise dummy.c
 run_llvm -Wtypedef-redefinition dummy.c
 run_llvm -Wtypename-missing dummy.c
 run_llvm -Wtype-safety dummy.c
-run_llvm -Wunavailable-declarations dummy.c
+run_llvm -Wunavailable-declarations dummy.c # Default
 run_llvm -Wundefined-inline dummy.c
 run_llvm -Wundefined-internal dummy.c
 run_llvm -Wundefined-reinterpret-cast dummy.c
@@ -1307,7 +1318,7 @@ run_llvm -Wunnamed-type-template-args dummy.c
 run_llvm -Wunneeded-internal-declaration dummy.c
 run_llvm -Wunneeded-member-function dummy.c
 run_llvm -Wunsequenced dummy.c
-run_llvm -Wunsupported-friend dummy.cpp
+run_llvm -Wunsupported-friend dummy.cpp # Default
 run_llvm -Wunsupported-visibility dummy.c
 run_llvm -Wunused-command-line-argument dummy.c
 run_llvm -Wunused-comparison dummy.c
@@ -1381,13 +1392,11 @@ run_gcc -Wno-frame-address dummy.c
 run_gcc -Wno-free-nonheap-object dummy.c
 run_gcc -Wno-invalid-memory-model dummy.c
 run_gcc -Wno-jump-misses-init dummy.c
-run_gcc -Wno-literal-suffix dummy.c
 run_gcc -Wno-logical-op dummy.c
 run_gcc -Wno-lto-type-mismatch -flto dummy.c
 run_gcc -Wno-maybe-uninitialized dummy.c
 run_gcc -Wno-memset-transposed-args dummy.c
 run_gcc -Wno-misleading-indentation dummy.c
-run_gcc -Wno-noexcept dummy.c
 run_gcc -Wno-normalized dummy.c
 run_gcc -Wno-override-init dummy.c
 run_gcc -Wno-override-init-side-effects dummy.c
@@ -1396,7 +1405,6 @@ run_gcc -Wno-pedantic-ms-format dummy.c
 run_gcc -Wno-placement-new dummy.cpp
 run_gcc -Wno-return-local-addr dummy.c
 run_gcc -Wno-scalar-storage-order dummy.c
-run_gcc -Wno-sized-deallocation dummy.c
 run_gcc -Wno-strict-null-sentinel dummy.c
 run_gcc -Wno-subobject-linkage dummy.cpp
 run_gcc -Wno-suggest-attribute=const dummy.c
@@ -1415,7 +1423,6 @@ run_gcc -Wno-vector-operation-performance dummy.c
 run_gcc -Wno-virtual-move-assign dummy.c
 run_gcc -Wno-zero-as-null-pointer-constant dummy.c
 # Back to positives
-run_gcc -Wnon-template-friend dummy.c
 run_gcc -Wnormalized dummy.c
 run_gcc -Wnormalized=none dummy.c
 run_gcc -Wnormalized=id dummy.c
@@ -1426,10 +1433,10 @@ run_gcc -Woverride-init dummy.c
 run_gcc -Woverride-init-side-effects dummy.c
 run_gcc -Wpacked-bitfield-compat dummy.c
 run_gcc -Wplacement-new dummy.cpp
-run_gcc -Wpmf-conversions dummy.c
 run_gcc -Wreturn-local-addr dummy.c
 run_gcc -Wscalar-storage-order dummy.c
-run_gcc -Wsized-deallocation dummy.c
+run_gcc -Wshift-overflow=1 dummy.c
+run_gcc -Wshift-overflow=2 dummy.c
 run_gcc -Wstack-usage=128 dummy.c
 run_gcc -Wstrict-aliasing=3 dummy.c
 run_gcc -Wsubobject-linkage dummy.cpp
@@ -1521,10 +1528,10 @@ logcon "Debugging options for both LLVM and GCC"
 run_both -fdebug-prefix-map=`pwd`=`pwd`/.. dummy.c
 run_both -fdebug-types-section dummy.c
 run_both -fdwarf2-cfi-asm dummy.c
-run_both -feliminate-unused-debug-types dummy.c # Undocumented
-run_both -fno-debug-types-section dummy.c
-run_both -fno-dwarf2-cfi-asm dummy.c
-run_both -fno-eliminate-unused-debug-types dummy.c
+run_both -feliminate-unused-debug-types dummy.c
+run_only_llvm -fno-debug-types-section dummy.c
+run_only_llvm -fno-dwarf2-cfi-asm dummy.c
+run_only_llvm -fno-eliminate-unused-debug-types dummy.c
 run_both -g dummy.c
 run_both -g0 dummy.c
 run_both -g1 dummy.c
@@ -1535,6 +1542,7 @@ run_both -ggdb0 dummy.c
 run_both -ggdb1 dummy.c
 run_both -ggdb2 dummy.c
 run_both -ggdb3 dummy.c
+run_both -gdwarf dummy.c
 run_both -gdwarf-2 dummy.c
 run_both -gdwarf-3 dummy.c
 run_both -gdwarf-4 dummy.c
@@ -1582,6 +1590,7 @@ run_gcc -gstabs+ dummy.c
 run_gcc -gtoggle dummy.c
 run_gcc -gvms0 dummy.c
 run_gcc -gxcoff0 dummy.c
+run_gcc -gz dummy.c
 logcon ""
 
 # Not supported at all for this architecture
@@ -1599,11 +1608,9 @@ run_dummy -gxcoff1 dummy.c
 run_dummy -gxcoff2 dummy.c
 run_dummy -gxcoff3 dummy.c
 run_dummy -gxcoff+ dummy.c
-run_dummy -gz dummy.c
 run_dummy -gz=none dummy.c
 run_dummy -gz=zlib dummy.c
 run_dummy -gz=zlib-gnu dummy.c
-run_dummy --verify-debug-info dummy.c # In clang --help-hidden
 
 
 #################################################################################
@@ -1626,7 +1633,7 @@ run_both -ffunction-sections dummy.c
 run_both -flto dummy.c
 run_both -flto=full dummy.c
 run_both -flto=thin dummy.c
-run_both -fmath-errno dummy.c
+run_both -fmath-errno dummy.c # Default
 run_both -fmerge-all-constants dummy.c
 run_both -fno-inline dummy.c
 run_both -fno-lto dummy.c
@@ -1671,6 +1678,7 @@ run_llvm -c -fthinlto-index=dummy-lto.o dummy.ll
 run_llvm -fvectorize dummy.c
 run_llvm -mllvm -enable-andcmp-sinking dummy.c # One example from opt
 run_llvm -mrelax-all dummy.c # Assembler, not linker relaxation
+run_llvm -O4 dummy.c
 run_llvm -Oz dummy.c
 logcon ""
 
@@ -1686,6 +1694,8 @@ run_gcc -falign-labels=32 dummy.c
 run_gcc -falign-loops dummy.c
 run_gcc -falign-loops=32 dummy.c
 run_gcc -fauto-inc-dec dummy.c
+run_gcc -fauto-profile -c dummy.c
+run_gcc -fauto-profile=`pwd`/gcc/fbdata.afdo -c dummy.c
 run_gcc -fbranch-probabilities dummy.c
 run_gcc -fbranch-target-load-optimize dummy.c
 run_gcc -fbranch-target-load-optimize2 dummy.c
@@ -1790,8 +1800,8 @@ run_gcc -fpeel-loops dummy.c
 run_gcc -fpredictive-commoning dummy.c
 run_gcc -fprefetch-loop-arrays dummy.c
 run_gcc -fprofile-correction dummy.c
-run_gcc -fprofile-values dummy.c
 run_gcc -fprofile-reorder-functions dummy.c
+run_gcc -fprofile-values dummy.c
 run_gcc -free dummy.c
 run_gcc -frename-registers dummy.c
 run_gcc -freorder-blocks dummy.c
@@ -1886,160 +1896,166 @@ run_gcc -fvpt dummy.c
 run_gcc -fweb dummy.c
 run_gcc -fwhole-program dummy.c
 run_gcc -Og dummy.c
-run_gcc --param predictable-branch-outcome=8 dummy.c
-run_gcc --param max-crossjump-edges=6 dummy.c
-run_gcc --param min-crossjump-insns=6 dummy.c
-run_gcc --param max-grow-copy-bb-insns=10 dummy.c
-run_gcc --param max-goto-duplication-insns=10 dummy.c
-run_gcc --param max-delay-slot-insn-search=3 dummy.c
-run_gcc --param max-delay-slot-live-search=3 dummy.c
-run_gcc --param max-gcse-memory=100000 dummy.c
-run_gcc --param max-gcse-insertion-ratio=30 dummy.c
-run_gcc --param max-pending-list-length=100 dummy.c
-run_gcc --param max-modulo-backtrack-attempts=5 dummy.c
-run_gcc --param max-inline-insns-single=500 dummy.c
-run_gcc --param max-inline-insns-auto=50 dummy.c
-run_gcc --param inline-min-speedup=30 dummy.c
-run_gcc --param large-function-insns=3000 dummy.c
-run_gcc --param large-function-growth=90 dummy.c
-run_gcc --param large-unit-insns=15000 dummy.c
-run_gcc --param inline-unit-growth=30 dummy.c
-run_gcc --param ipcp-unit-growth=12 dummy.c
-run_gcc --param large-stack-frame=378 dummy.c
-run_gcc --param large-stack-frame-growth=90 dummy.c
-run_gcc --param max-inline-insns-recursive=400 dummy.c
-run_gcc --param max-inline-insns-recursive-auto=400 dummy.c
-run_gcc --param max-inline-recursive-depth=9 dummy.c
-run_gcc --param max-inline-recursive-depth-auto=13 dummy.c
-run_gcc --param min-inline-recursive-probability=9 dummy.c
-run_gcc --param early-inlining-insns=12 dummy.c
-run_gcc --param max-early-inliner-iterations=40 dummy.c
+run_gcc --param align-loop-iterations=20 dummy.c
+run_gcc --param align-threshold=50 dummy.c
+run_gcc --param allow-store-data-races=1 dummy.c
+run_gcc --param asan-globals=1 dummy.c
+run_gcc --param asan-instrument-reads=1 dummy.c
+run_gcc --param asan-instrument-writes=1 dummy.c
+run_gcc --param asan-instrumentation-with-call-threshold=10 dummy.c
+run_gcc --param asan-memintrin=1 dummy.c
+run_gcc --param asan-stack=1 dummy.c
+run_gcc --param asan-use-after-return=1 dummy.c
+run_gcc --param builtin-expect-probability=80 dummy.c
+run_gcc --param case-values-threshold=3 dummy.c
+run_gcc --param chkp-max-ctor-size=4000 dummy.c
 run_gcc --param comdat-sharing-probability=20 dummy.c
-run_gcc --param profile-func-internal-id=1 dummy.c
-run_gcc --param min-vect-loop-bound=1 dummy.c
+run_gcc --param cxx-max-namespaces-for-diagnostic-help=900 dummy.c
+run_gcc --param early-inlining-insns=12 dummy.c
 run_gcc --param gcse-cost-distance-ratio=12 dummy.c
 run_gcc --param gcse-unrestricted-cost=4 dummy.c
-run_gcc --param max-hoist-depth=40 dummy.c
-run_gcc --param max-tail-merge-comparisons=10 dummy.c
-run_gcc --param max-tail-merge-iterations=3 dummy.c
-run_gcc --param max-unrolled-insns=500 dummy.c
-run_gcc --param max-average-unrolled-insns=400 dummy.c
-run_gcc --param max-unroll-times=10 dummy.c
-run_gcc --param max-peeled-insns=40 dummy.c
-run_gcc --param max-peel-times=40 dummy.c
-run_gcc --param max-peel-branches=20 dummy.c
-run_gcc --param max-completely-peeled-insns=30 dummy.c
-run_gcc --param max-completely-peel-times=30 dummy.c
-run_gcc --param max-completely-peel-loop-nest-depth=4 dummy.c
-run_gcc --param max-unswitch-insns=40 dummy.c
-run_gcc --param max-unswitch-level=5 dummy.c
-run_gcc --param lim-expensive=30 dummy.c
-run_gcc --param iv-consider-all-candidates-bound=10 dummy.c
-run_gcc --param iv-max-considered-uses=10 dummy.c
-run_gcc --param iv-always-prune-cand-set-bound=10 dummy.c
-run_gcc --param scev-max-expr-size=100 dummy.c
-run_gcc --param scev-max-expr-complexity=100 dummy.c
-run_gcc --param vect-max-version-for-alignment-checks=256 dummy.c
-run_gcc --param vect-max-version-for-alias-checks=128 dummy.c
-run_gcc --param vect-max-peeling-for-alignment=10 dummy.c
-run_gcc --param max-iterations-to-track=10 dummy.c
-run_gcc --param hot-bb-count-ws-permille=500 dummy.c
-run_gcc --param hot-bb-frequency-fraction=50 dummy.c
-run_gcc --param max-predicted-iterations=9 dummy.c
-run_gcc --param builtin-expect-probability=80 dummy.c
-run_gcc --param align-threshold=50 dummy.c
-run_gcc --param align-loop-iterations=20 dummy.c
-run_gcc --param tracer-dynamic-coverage=50 dummy.c
-run_gcc --param tracer-dynamic-coverage-feedback=80 dummy.c
-run_gcc --param tracer-max-code-growth=90 dummy.c
-run_gcc --param tracer-min-branch-ratio=10 dummy.c
-run_gcc --param max-cse-path-length=9 dummy.c
-run_gcc --param max-cse-insns=900 dummy.c
 run_gcc --param ggc-min-expand=25 dummy.c
 run_gcc --param ggc-min-heapsize=65536 dummy.c
-run_gcc --param max-reload-search-insns=90 dummy.c
-run_gcc --param max-cselib-memory-locations=450 dummy.c
-run_gcc --param max-sched-ready-insns=90 dummy.c
-run_gcc --param max-sched-region-blocks=9 dummy.c
-run_gcc --param max-pipeline-region-blocks=14 dummy.c
-run_gcc --param max-sched-region-insns=90 dummy.c
-run_gcc --param max-pipeline-region-insns=200 dummy.c
-run_gcc --param min-spec-prob=40 dummy.c
-run_gcc --param max-sched-extend-regions-iters=3 dummy.c
-run_gcc --param max-sched-insn-conflict-delay=4 dummy.c
-run_gcc --param sched-spec-prob-cutoff=50 dummy.c
-run_gcc --param sched-mem-true-dep-cost=2 dummy.c
-run_gcc --param selsched-max-lookahead=40 dummy.c
-run_gcc --param selsched-max-sched-times=3 dummy.c
-run_gcc --param sms-min-sc=3 dummy.c
-run_gcc --param max-last-value-rtl=9000 dummy.c
-run_gcc --param max-combine-insns=3 dummy.c
+run_gcc --param graphite-max-bbs-per-function=200 dummy.c
+run_gcc --param graphite-max-nb-scop-params=12 dummy.c
+run_gcc --param hot-bb-count-ws-permille=500 dummy.c
+run_gcc --param hot-bb-frequency-fraction=50 dummy.c
+run_gcc --param inline-min-speedup=30 dummy.c
+run_gcc --param inline-unit-growth=30 dummy.c
 run_gcc --param integer-share-limit=256 dummy.c
-run_gcc --param min-size-for-stack-sharing=64 dummy.c
-run_gcc --param max-jump-thread-duplication-stmts=10 dummy.c
-run_gcc --param max-fields-for-field-sensitive=150 dummy.c
-run_gcc --param prefetch-latency=3 dummy.c
-run_gcc --param simultaneous-prefetches=3 dummy.c
+run_gcc --param ipa-cp-array-index-hint-bonus=10 dummy.c
+run_gcc --param ipa-cp-eval-threshold=10 dummy.c
+run_gcc --param ipa-cp-loop-hint-bonus=10 dummy.c
+run_gcc --param ipa-cp-recursion-penalty=10 dummy.c
+run_gcc --param ipa-cp-single-call-penalty=10 dummy.c
+run_gcc --param ipa-cp-value-list-size=10 dummy.c
+run_gcc --param ipa-max-aa-steps=100 dummy.c
+run_gcc --param ipa-max-agg-items=10 dummy.c
+run_gcc --param ipa-sra-ptr-growth-factor=4 dummy.c
+run_gcc --param ipcp-unit-growth=12 dummy.c
+run_gcc --param ira-loop-reserved-regs=3 dummy.c
+run_gcc --param ira-max-conflict-table-size=1500 dummy.c
+run_gcc --param ira-max-loops-num=90 dummy.c
+run_gcc --param iv-always-prune-cand-set-bound=10 dummy.c
+run_gcc --param iv-consider-all-candidates-bound=10 dummy.c
+run_gcc --param iv-max-considered-uses=10 dummy.c
 run_gcc --param l1-cache-line-size=32 dummy.c
 run_gcc --param l1-cache-size=32 dummy.c
 run_gcc --param l2-cache-size=128 dummy.c
-run_gcc --param min-insn-to-prefetch-ratio=3 dummy.c
-run_gcc --param prefetch-min-insn-to-mem-ratio=3 dummy.c
-run_gcc --param use-canonical-types=0 dummy.c
-run_gcc --param switch-conversion-max-branch-ratio=2 dummy.c
-run_gcc --param max-partial-antic-length=100 dummy.c
-run_gcc --param sccvn-max-scc-size=9000 dummy.c
-run_gcc --param sccvn-max-alias-queries-per-access=900 dummy.c
-run_gcc --param ira-max-loops-num=90 dummy.c
-run_gcc --param ira-max-conflict-table-size=1500 dummy.c
-run_gcc --param ira-loop-reserved-regs=3 dummy.c
-run_gcc --param lra-inheritance-ebb-probability-cutoff=30 dummy.c
+run_gcc --param large-function-growth=90 dummy.c
+run_gcc --param large-function-insns=3000 dummy.c
+run_gcc --param large-stack-frame-growth=90 dummy.c
+run_gcc --param large-stack-frame=378 dummy.c
+run_gcc --param large-unit-insns=15000 dummy.c
+run_gcc --param lim-expensive=30 dummy.c
+run_gcc --param loop-block-tile-size=60 dummy.c
 run_gcc --param loop-invariant-max-bbs-in-loop=9000 dummy.c
 run_gcc --param loop-max-datarefs-for-datadeps=900 dummy.c
-run_gcc --param max-vartrack-size=100 dummy.c
-run_gcc --param max-vartrack-expr-depth=10 dummy.c
-run_gcc --param min-nondebug-insn-uid=100 dummy.c
-run_gcc --param ipa-sra-ptr-growth-factor=4 dummy.c
-run_gcc --param sra-max-scalarization-size-Ospeed=32 dummy.c
-run_gcc --param sra-max-scalarization-size-Osize=64 dummy.c
-run_gcc --param tm-max-aggregate-size=16 dummy.c
-run_gcc --param graphite-max-nb-scop-params=12 dummy.c
-run_gcc --param graphite-max-bbs-per-function=200 dummy.c
-run_gcc --param loop-block-tile-size=60 dummy.c
-run_gcc --param ipa-cp-value-list-size=10 dummy.c
-run_gcc --param ipa-cp-eval-threshold=10 dummy.c
-run_gcc --param ipa-cp-recursion-penalty=10 dummy.c
-run_gcc --param ipa-cp-single-call-penalty=10 dummy.c
-run_gcc --param ipa-max-agg-items=10 dummy.c
-run_gcc --param ipa-cp-loop-hint-bonus=10 dummy.c
-run_gcc --param ipa-cp-array-index-hint-bonus=10 dummy.c
-run_gcc --param ipa-max-aa-steps=100 dummy.c
-run_gcc --param lto-partitions=64 dummy.c
-run_gcc --param cxx-max-namespaces-for-diagnostic-help=900 dummy.c
-run_gcc --param sink-frequency-threshold=80 dummy.c
-run_gcc --param max-stores-to-sink=3 dummy.c
-run_gcc --param allow-store-data-races=1 dummy.c
-run_gcc --param case-values-threshold=3 dummy.c
-run_gcc --param tree-reassoc-width=3 dummy.c
-run_gcc --param sched-pressure-algorithm=2 dummy.c
-run_gcc --param max-slsr-cand-scan=5 dummy.c
-run_gcc --param asan-globals=1 dummy.c
-run_gcc --param asan-stack=1 dummy.c
-run_gcc --param asan-instrument-reads=1 dummy.c
-run_gcc --param asan-instrument-writes=1 dummy.c
-run_gcc --param asan-memintrin=1 dummy.c
-run_gcc --param asan-use-after-return=1 dummy.c
-run_gcc --param asan-instrumentation-with-call-threshold=10 dummy.c
-run_gcc --param chkp-max-ctor-size=4000 dummy.c
-run_gcc --param max-fsm-thread-path-insns=150 dummy.c
+run_gcc --param lra-inheritance-ebb-probability-cutoff=30 dummy.c
+run_gcc --param lto-min-partition=16 -flto dummy.c
+run_gcc --param lto-partitions=64 -flto dummy.c
+run_gcc --param max-average-unrolled-insns=400 dummy.c
+run_gcc --param max-combine-insns=3 dummy.c
+run_gcc --param max-completely-peel-loop-nest-depth=4 dummy.c
+run_gcc --param max-completely-peel-times=30 dummy.c
+run_gcc --param max-completely-peeled-insns=30 dummy.c
+run_gcc --param max-crossjump-edges=6 dummy.c
+run_gcc --param max-cse-insns=900 dummy.c
+run_gcc --param max-cse-path-length=9 dummy.c
+run_gcc --param max-cselib-memory-locations=450 dummy.c
+run_gcc --param max-delay-slot-insn-search=3 dummy.c
+run_gcc --param max-delay-slot-live-search=3 dummy.c
+run_gcc --param max-early-inliner-iterations=40 dummy.c
+run_gcc --param max-fields-for-field-sensitive=150 dummy.c
 run_gcc --param max-fsm-thread-length=12 dummy.c
+run_gcc --param max-fsm-thread-path-insns=150 dummy.c
 run_gcc --param max-fsm-thread-paths=60 dummy.c
+run_gcc --param max-gcse-insertion-ratio=30 dummy.c
+run_gcc --param max-gcse-memory=100000 dummy.c
+run_gcc --param max-goto-duplication-insns=10 dummy.c
+run_gcc --param max-grow-copy-bb-insns=10 dummy.c
+run_gcc --param max-hoist-depth=40 dummy.c
+run_gcc --param max-inline-insns-auto=50 dummy.c
+run_gcc --param max-inline-insns-recursive-auto=400 dummy.c
+run_gcc --param max-inline-insns-recursive=400 dummy.c
+run_gcc --param max-inline-insns-single=500 dummy.c
+run_gcc --param max-inline-recursive-depth-auto=13 dummy.c
+run_gcc --param max-inline-recursive-depth=9 dummy.c
+run_gcc --param max-iterations-to-track=10 dummy.c
+run_gcc --param max-jump-thread-duplication-stmts=10 dummy.c
+run_gcc --param max-last-value-rtl=9000 dummy.c
+run_gcc --param max-modulo-backtrack-attempts=5 dummy.c
+run_gcc --param max-partial-antic-length=100 dummy.c
+run_gcc --param max-peel-branches=20 dummy.c
+run_gcc --param max-peel-times=40 dummy.c
+run_gcc --param max-peeled-insns=40 dummy.c
+run_gcc --param max-pending-list-length=100 dummy.c
+run_gcc --param max-pipeline-region-blocks=14 dummy.c
+run_gcc --param max-pipeline-region-insns=200 dummy.c
+run_gcc --param max-predicted-iterations=9 dummy.c
+run_gcc --param max-reload-search-insns=90 dummy.c
+run_gcc --param max-sched-extend-regions-iters=3 dummy.c
+run_gcc --param max-sched-insn-conflict-delay=4 dummy.c
+run_gcc --param max-sched-ready-insns=90 dummy.c
+run_gcc --param max-sched-region-blocks=9 dummy.c
+run_gcc --param max-sched-region-insns=90 dummy.c
+run_gcc --param max-slsr-cand-scan=5 dummy.c
+run_gcc --param max-ssa-name-query-depth=5 dummy.c
+run_gcc --param max-stores-to-sink=3 dummy.c
+run_gcc --param max-tail-merge-comparisons=10 dummy.c
+run_gcc --param max-tail-merge-iterations=3 dummy.c
+run_gcc --param max-unroll-times=10 dummy.c
+run_gcc --param max-unrolled-insns=500 dummy.c
+run_gcc --param max-unswitch-insns=40 dummy.c
+run_gcc --param max-unswitch-level=5 dummy.c
+run_gcc --param max-vartrack-expr-depth=10 dummy.c
+run_gcc --param max-vartrack-size=100 dummy.c
+run_gcc --param min-crossjump-insns=6 dummy.c
+run_gcc --param min-inline-recursive-probability=9 dummy.c
+run_gcc --param min-insn-to-prefetch-ratio=3 dummy.c
+run_gcc --param min-nondebug-insn-uid=100 dummy.c
+run_gcc --param min-size-for-stack-sharing=64 dummy.c
+run_gcc --param min-spec-prob=40 dummy.c
+run_gcc --param min-vect-loop-bound=1 dummy.c
 run_gcc --param parloops-chunk-size=1 dummy.c
-run_gcc --param parloops-schedule=static dummy.c
+run_gcc --param parloops-schedule=auto dummy.c
 run_gcc --param parloops-schedule=dynamic dummy.c
 run_gcc --param parloops-schedule=guided dummy.c
-run_gcc --param parloops-schedule=auto dummy.c
 run_gcc --param parloops-schedule=runtime dummy.c
+run_gcc --param parloops-schedule=static dummy.c
+run_gcc --param predictable-branch-outcome=8 dummy.c
+run_gcc --param prefetch-latency=3 dummy.c
+run_gcc --param prefetch-min-insn-to-mem-ratio=3 dummy.c
+run_gcc --param profile-func-internal-id=1 dummy.c
+run_gcc --param sccvn-max-alias-queries-per-access=900 dummy.c
+run_gcc --param sccvn-max-scc-size=9000 dummy.c
+run_gcc --param scev-max-expr-complexity=100 dummy.c
+run_gcc --param scev-max-expr-size=100 dummy.c
+run_gcc --param sched-mem-true-dep-cost=2 dummy.c
+run_gcc --param sched-pressure-algorithm=2 dummy.c
+run_gcc --param sched-spec-prob-cutoff=50 dummy.c
+run_gcc --param sched-state-edge-prob-cutoff=12 dummy.c
+run_gcc --param selsched-max-lookahead=40 dummy.c
+run_gcc --param selsched-max-sched-times=3 dummy.c
+run_gcc --param selsched-insns-to-rename=3 dummy.c
+run_gcc --param simultaneous-prefetches=3 dummy.c
+run_gcc --param sink-frequency-threshold=80 dummy.c
+run_gcc --param sms-min-sc=3 dummy.c
+run_gcc --param sra-max-scalarization-size-Osize=64 dummy.c
+run_gcc --param sra-max-scalarization-size-Ospeed=32 dummy.c
+run_gcc --param switch-conversion-max-branch-ratio=2 dummy.c
+run_gcc --param tm-max-aggregate-size=16 dummy.c
+run_gcc --param tracer-dynamic-coverage-feedback=80 dummy.c
+run_gcc --param tracer-dynamic-coverage=50 dummy.c
+run_gcc --param tracer-max-code-growth=90 dummy.c
+run_gcc --param tracer-min-branch-probability-feedback=10 dummy.c # Typo in manual
+run_gcc --param tracer-min-branch-probability=5 dummy.c # Typo in manual
+run_gcc --param tracer-min-branch-ratio=10 dummy.c
+run_gcc --param tree-reassoc-width=3 dummy.c
+run_gcc --param use-canonical-types=0 dummy.c
+run_gcc --param vect-max-peeling-for-alignment=10 dummy.c
+run_gcc --param vect-max-version-for-alias-checks=128 dummy.c
+run_gcc --param vect-max-version-for-alignment-checks=256 dummy.c
 logcon ""
 
 # These are only in the internals manual. For now we don't check them.
@@ -2049,16 +2065,7 @@ run_dummy -fresolution=${tmpf} -flto dummy.c
 run_dummy -fwpa -flto dummy.c
 
 # These options don't work because the AutoFDO tool is broken for newer kernels.
-run_gcc -fauto-profile -c dummy.c
-run_gcc -fauto-profile=`pwd`/gcc/fbdata.afdo -c dummy.c
 # Documented, but not implemented
-run_dummy --param tracer-min-branch-ratio-feedback=5 dummy.c
-run_dummy --param reorder-blocks-duplicate=3 dummy.c
-run_dummy --param reorder-blocks-duplicate-feedback=5 dummy.c
-run_dummy --param sched-spec-state-edge-prob-cutoff=12 dummy.c
-run_dummy --param selsched-max-insns-to-rename=3 dummy.c
-run_dummy --param lto-minpartition=16 dummy.c
-run_dummy --param max-ssa-name-query-depth=5 # In top-of-tree?
 
 
 #################################################################################
@@ -2348,7 +2355,6 @@ run_both -M -MQ dummy.o dummy.c
 run_both -M -MT dummy.o dummy.c
 run_both -no-integrated-cpp dummy.c
 run_both -nostdinc dummy.c
-run_both -nostdinc++ dummy.cpp # Also in C++
 run_both -P dummy.c
 run_both -trigraphs dummy.c # Also in C
 run_both -U FORTY_TWO dummy.c
@@ -3193,7 +3199,6 @@ run_dummy --cuda-device-only dummy.c
 run_dummy --cuda-gpu-arch=hexagon dummy.c
 run_dummy --cuda-host-only dummy.c
 run_dummy --cuda-path=${tmpd} dummy.c
-
 run_dummy -F`pwd` dummy.c # Darwin only
 run_dummy -femulated-tls dummy.c # Target specific for LLVM
 run_dummy -ffix-and-continue dummy.c # Darwin
@@ -3285,6 +3290,7 @@ run_dummy -twolevel_namespace dummy.c # Darwin
 run_dummy -umbrella dummy.c # Darwin
 run_dummy -undefined dummy.c # Darwin
 run_dummy -unexported_symbols_list dummy.c # Darwin
+run_dummy --verify-debug-info dummy.c # In clang --help-hidden Darwin?
 run_dummy -weak_reference_mismatches dummy.c # Darwin
 run_dummy -whatsloaded dummy.c # Darwin
 run_dummy -whyload dummy.c # Darwin
