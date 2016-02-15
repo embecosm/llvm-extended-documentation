@@ -1,3 +1,23 @@
+2016-02-15  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	Summary of all LLVM and GCC options is now complete. It can be
+	used to identify which of the rest of the documentation is complete.
+
+	* configure: Regenerated.
+	* configure.ac: Update GCC and LLVM release versions
+	* llvm-assembler-manual/llvm-assembler.info: Regenerated.
+	* llvm-user-manual/invoke.texi: Option summary complete.
+	* llvm-user-manual/llvm.info: Regenerated.
+	* llvm-user-manual/llvm.info-1: Likewise.
+	* llvm-user-manual/llvm.info-2: Likewise.
+	* llvm-user-manual/llvm.info-3: Likewise.
+	* llvm-user-manual/llvm.info-4: Likewise.
+	* llvm-user-manual/llvm.info-5: Likewise.
+	* llvm-user-manual/llvm.info-6: Likewise.
+	* support-code/opt-check.sh: Tidy up location of some tests and
+	mark default options.
+	* support-code/todo.org: Tidy up some changes needed.
+
 2016-02-11  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* llvm-user-manual/invoke.texi: Complete summary up to assembler

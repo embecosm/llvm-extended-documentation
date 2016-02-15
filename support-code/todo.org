@@ -208,6 +208,9 @@ otherwise documented:
 The following is misprinted in the index
 - =-fstack_reuse= (should be =-fstack-reuse=)
 
+The following option is undocumented
+- =--target=
+
 *** Developer options
 
 The following options appear in the summary only, but are otherwise
@@ -216,9 +219,9 @@ undocumented:
 - =-fsel-sched-dump-cfg=
 - =-fsel-sched-pipelining-verbose=
 
-The following options are not documented:
-- =-print-multiarch=
+The following options are documented, but do not appear in the summary.
 - =-freport-bug=
+- =-print-multiarch=
 
 The following options appear in the index, but not in the documentation
 - =-fno-checking= (positive is documented).

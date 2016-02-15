@@ -1,4 +1,4 @@
-This is llvm.info, produced by makeinfo version 5.2 from llvm.texi.
+This is llvm.info, produced by makeinfo version 6.0 from llvm.texi.
 
 Copyright (C) 2015 Embecosm Limited
 Copyright (C) 1988-2015 Free Software Foundation, Inc.
@@ -4123,4 +4123,2987 @@ of '+initialize'.
 * Menu:
 
 * What you can and what you cannot do in +load::
+
+
+File: llvm.info,  Node: What you can and what you cannot do in +load,  Up: Executing code before main
+
+8.2.1 What You Can and Cannot Do in '+load'
+-------------------------------------------
+
+'+load' is to be used only as a last resort.  Because it is executed
+very early, most of the Objective-C runtime machinery will not be ready
+when '+load' is executed; hence '+load' works best for executing C code
+that is independent on the Objective-C runtime.
+
+ The '+load' implementation in the GNU runtime guarantees you the
+following things:
+
+   * you can write whatever C code you like;
+
+   * you can allocate and send messages to objects whose class is
+     implemented in the same file;
+
+   * the '+load' implementation of all super classes of a class are
+     executed before the '+load' of that class is executed;
+
+   * the '+load' implementation of a class is executed before the
+     '+load' implementation of any category.
+
+ In particular, the following things, even if they can work in a
+particular case, are not guaranteed:
+
+   * allocation of or sending messages to arbitrary objects;
+
+   * allocation of or sending messages to objects whose classes have a
+     category implemented in the same file;
+
+   * sending messages to Objective-C constant strings ('@"this is a
+     constant string"');
+
+ You should make no assumptions about receiving '+load' in sibling
+classes when you write '+load' of a class.  The order in which sibling
+classes receive '+load' is not guaranteed.
+
+ The order in which '+load' and '+initialize' are called could be
+problematic if this matters.  If you don't allocate objects inside
+'+load', it is guaranteed that '+load' is called before '+initialize'.
+If you create an object inside '+load' the '+initialize' method of
+object's class is invoked even if '+load' was not invoked.  Note if you
+explicitly call '+load' on a class, '+initialize' will be called first.
+To avoid possible problems try to implement only one of these methods.
+
+ The '+load' method is also invoked when a bundle is dynamically loaded
+into your running program.  This happens automatically without any
+intervening operation from you.  When you write bundles and you need to
+write '+load' you can safely create and send messages to objects whose
+classes already exist in the running program.  The same restrictions as
+above apply to classes defined in bundle.
+
+
+File: llvm.info,  Node: Type encoding,  Next: Garbage Collection,  Prev: Executing code before main,  Up: Objective-C
+
+8.3 Type Encoding
+=================
+
+This is an advanced section.  Type encodings are used extensively by the
+compiler and by the runtime, but you generally do not need to know about
+them to use Objective-C.
+
+ The Objective-C compiler generates type encodings for all the types.
+These type encodings are used at runtime to find out information about
+selectors and methods and about objects and classes.
+
+ The types are encoded in the following way:
+
+'_Bool'            'B'
+'char'             'c'
+'unsigned char'    'C'
+'short'            's'
+'unsigned short'   'S'
+'int'              'i'
+'unsigned int'     'I'
+'long'             'l'
+'unsigned long'    'L'
+'long long'        'q'
+'unsigned long     'Q'
+long'
+'float'            'f'
+'double'           'd'
+'long double'      'D'
+'void'             'v'
+'id'               '@'
+'Class'            '#'
+'SEL'              ':'
+'char*'            '*'
+'enum'             an 'enum' is encoded exactly as the integer type
+                   that the compiler uses for it, which depends on the
+                   enumeration values.  Often the compiler users
+                   'unsigned int', which is then encoded as 'I'.
+unknown type       '?'
+Complex types      'j' followed by the inner type.  For example
+                   '_Complex double' is encoded as "jd".
+bit-fields         'b' followed by the starting position of the
+                   bit-field, the type of the bit-field and the size of
+                   the bit-field (the bit-fields encoding was changed
+                   from the NeXT's compiler encoding, see below)
+
+ The encoding of bit-fields has changed to allow bit-fields to be
+properly handled by the runtime functions that compute sizes and
+alignments of types that contain bit-fields.  The previous encoding
+contained only the size of the bit-field.  Using only this information
+it is not possible to reliably compute the size occupied by the
+bit-field.  This is very important in the presence of the Boehm's
+garbage collector because the objects are allocated using the typed
+memory facility available in this collector.  The typed memory
+allocation requires information about where the pointers are located
+inside the object.
+
+ The position in the bit-field is the position, counting in bits, of the
+bit closest to the beginning of the structure.
+
+ The non-atomic types are encoded as follows:
+
+pointers       '^' followed by the pointed type.
+arrays         '[' followed by the number of elements in the array
+               followed by the type of the elements followed by ']'
+structures     '{' followed by the name of the structure (or '?' if the
+               structure is unnamed), the '=' sign, the type of the
+               members and by '}'
+unions         '(' followed by the name of the structure (or '?' if the
+               union is unnamed), the '=' sign, the type of the members
+               followed by ')'
+vectors        '![' followed by the vector_size (the number of bytes
+               composing the vector) followed by a comma, followed by
+               the alignment (in bytes) of the vector, followed by the
+               type of the elements followed by ']'
+
+ Here are some types and their encodings, as they are generated by the
+compiler on an i386 machine:
+
+
+Objective-C type   Compiler encoding
+     int a[10];    '[10i]'
+     struct {      '{?=i[3f]b128i3b131i2c}'
+       int i;
+       float f[3];
+       int a:3;
+       int b:2;
+       char c;
+     }
+     int a __attribute__ ((vector_size (16)));'![16,16i]' (alignment would depend on the machine)
+
+
+ In addition to the types the compiler also encodes the type specifiers.
+The table below describes the encoding of the current Objective-C type
+specifiers:
+
+
+Specifier          Encoding
+'const'            'r'
+'in'               'n'
+'inout'            'N'
+'out'              'o'
+'bycopy'           'O'
+'byref'            'R'
+'oneway'           'V'
+
+
+ The type specifiers are encoded just before the type.  Unlike types
+however, the type specifiers are only encoded when they appear in method
+argument types.
+
+ Note how 'const' interacts with pointers:
+
+
+Objective-C type   Compiler encoding
+     const int     'ri'
+     const int*    '^ri'
+     int *const    'r^i'
+
+
+ 'const int*' is a pointer to a 'const int', and so is encoded as '^ri'.
+'int* const', instead, is a 'const' pointer to an 'int', and so is
+encoded as 'r^i'.
+
+ Finally, there is a complication when encoding 'const char *' versus
+'char * const'.  Because 'char *' is encoded as '*' and not as '^c',
+there is no way to express the fact that 'r' applies to the pointer or
+to the pointee.
+
+ Hence, it is assumed as a convention that 'r*' means 'const char *'
+(since it is what is most often meant), and there is no way to encode
+'char *const'.  'char *const' would simply be encoded as '*', and the
+'const' is lost.
+
+* Menu:
+
+* Legacy type encoding::
+* @encode::
+* Method signatures::
+
+
+File: llvm.info,  Node: Legacy type encoding,  Next: @encode,  Up: Type encoding
+
+8.3.1 Legacy Type Encoding
+--------------------------
+
+Unfortunately, historically GCC used to have a number of bugs in its
+encoding code.  The NeXT runtime expects GCC to emit type encodings in
+this historical format (compatible with GCC-3.3), so when using the NeXT
+runtime, GCC will introduce on purpose a number of incorrect encodings:
+
+   * the read-only qualifier of the pointee gets emitted before the '^'.
+     The read-only qualifier of the pointer itself gets ignored, unless
+     it is a typedef.  Also, the 'r' is only emitted for the outermost
+     type.
+
+   * 32-bit longs are encoded as 'l' or 'L', but not always.  For
+     typedefs, the compiler uses 'i' or 'I' instead if encoding a struct
+     field or a pointer.
+
+   * 'enum's are always encoded as 'i' (int) even if they are actually
+     unsigned or long.
+
+ In addition to that, the NeXT runtime uses a different encoding for
+bitfields.  It encodes them as 'b' followed by the size, without a bit
+offset or the underlying field type.
+
+
+File: llvm.info,  Node: @encode,  Next: Method signatures,  Prev: Legacy type encoding,  Up: Type encoding
+
+8.3.2 '@encode'
+---------------
+
+GNU Objective-C supports the '@encode' syntax that allows you to create
+a type encoding from a C/Objective-C type.  For example, '@encode(int)'
+is compiled by the compiler into '"i"'.
+
+ '@encode' does not support type qualifiers other than 'const'.  For
+example, '@encode(const char*)' is valid and is compiled into '"r*"',
+while '@encode(bycopy char *)' is invalid and will cause a compilation
+error.
+
+
+File: llvm.info,  Node: Method signatures,  Prev: @encode,  Up: Type encoding
+
+8.3.3 Method Signatures
+-----------------------
+
+This section documents the encoding of method types, which is rarely
+needed to use Objective-C. You should skip it at a first reading; the
+runtime provides functions that will work on methods and can walk
+through the list of parameters and interpret them for you.  These
+functions are part of the public "API" and are the preferred way to
+interact with method signatures from user code.
+
+ But if you need to debug a problem with method signatures and need to
+know how they are implemented (i.e., the "ABI"), read on.
+
+ Methods have their "signature" encoded and made available to the
+runtime.  The "signature" encodes all the information required to
+dynamically build invocations of the method at runtime: return type and
+arguments.
+
+ The "signature" is a null-terminated string, composed of the following:
+
+   * The return type, including type qualifiers.  For example, a method
+     returning 'int' would have 'i' here.
+
+   * The total size (in bytes) required to pass all the parameters.
+     This includes the two hidden parameters (the object 'self' and the
+     method selector '_cmd').
+
+   * Each argument, with the type encoding, followed by the offset (in
+     bytes) of the argument in the list of parameters.
+
+ For example, a method with no arguments and returning 'int' would have
+the signature 'i8@0:4' if the size of a pointer is 4.  The signature is
+interpreted as follows: the 'i' is the return type (an 'int'), the '8'
+is the total size of the parameters in bytes (two pointers each of size
+4), the '@0' is the first parameter (an object at byte offset '0') and
+':4' is the second parameter (a 'SEL' at byte offset '4').
+
+ You can easily find more examples by running the "strings" program on
+an Objective-C object file compiled by GCC. You'll see a lot of strings
+that look very much like 'i8@0:4'.  They are signatures of Objective-C
+methods.
+
+
+File: llvm.info,  Node: Garbage Collection,  Next: Constant string objects,  Prev: Type encoding,  Up: Objective-C
+
+8.4 Garbage Collection
+======================
+
+This section is specific for the GNU Objective-C runtime.  If you are
+using a different runtime, you can skip it.
+
+ Support for garbage collection with the GNU runtime has been added by
+using a powerful conservative garbage collector, known as the
+Boehm-Demers-Weiser conservative garbage collector.
+
+ To enable the support for it you have to configure the compiler using
+an additional argument, '--enable-objc-gc'.  This will build the
+boehm-gc library, and build an additional runtime library which has
+several enhancements to support the garbage collector.  The new library
+has a new name, 'libobjc_gc.a' to not conflict with the
+non-garbage-collected library.
+
+ When the garbage collector is used, the objects are allocated using the
+so-called typed memory allocation mechanism available in the
+Boehm-Demers-Weiser collector.  This mode requires precise information
+on where pointers are located inside objects.  This information is
+computed once per class, immediately after the class has been
+initialized.
+
+ There is a new runtime function 'class_ivar_set_gcinvisible()' which
+can be used to declare a so-called "weak pointer" reference.  Such a
+pointer is basically hidden for the garbage collector; this can be
+useful in certain situations, especially when you want to keep track of
+the allocated objects, yet allow them to be collected.  This kind of
+pointers can only be members of objects, you cannot declare a global
+pointer as a weak reference.  Every type which is a pointer type can be
+declared a weak pointer, including 'id', 'Class' and 'SEL'.
+
+ Here is an example of how to use this feature.  Suppose you want to
+implement a class whose instances hold a weak pointer reference; the
+following class does this:
+
+
+     @interface WeakPointer : Object
+     {
+         const void* weakPointer;
+     }
+
+     - initWithPointer:(const void*)p;
+     - (const void*)weakPointer;
+     @end
+
+
+     @implementation WeakPointer
+
+     + (void)initialize
+     {
+       if (self == objc_lookUpClass ("WeakPointer"))
+         class_ivar_set_gcinvisible (self, "weakPointer", YES);
+     }
+
+     - initWithPointer:(const void*)p
+     {
+       weakPointer = p;
+       return self;
+     }
+
+     - (const void*)weakPointer
+     {
+       return weakPointer;
+     }
+
+     @end
+
+
+ Weak pointers are supported through a new type character specifier
+represented by the '!' character.  The 'class_ivar_set_gcinvisible()'
+function adds or removes this specifier to the string type description
+of the instance variable named as argument.
+
+
+File: llvm.info,  Node: Constant string objects,  Next: compatibility_alias,  Prev: Garbage Collection,  Up: Objective-C
+
+8.5 Constant String Objects
+===========================
+
+GNU Objective-C provides constant string objects that are generated
+directly by the compiler.  You declare a constant string object by
+prefixing a C constant string with the character '@':
+
+       id myString = @"this is a constant string object";
+
+ The constant string objects are by default instances of the
+'NXConstantString' class which is provided by the GNU Objective-C
+runtime.  To get the definition of this class you must include the
+'objc/NXConstStr.h' header file.
+
+ User defined libraries may want to implement their own constant string
+class.  To be able to support them, the GNU Objective-C compiler
+provides a new command line options
+'-fconstant-string-class=CLASS-NAME'.  The provided class should adhere
+to a strict structure, the same as 'NXConstantString''s structure:
+
+
+     @interface MyConstantStringClass
+     {
+       Class isa;
+       char *c_string;
+       unsigned int len;
+     }
+     @end
+
+
+ 'NXConstantString' inherits from 'Object'; user class libraries may
+choose to inherit the customized constant string class from a different
+class than 'Object'.  There is no requirement in the methods the
+constant string class has to implement, but the final ivar layout of the
+class must be the compatible with the given structure.
+
+ When the compiler creates the statically allocated constant string
+object, the 'c_string' field will be filled by the compiler with the
+string; the 'length' field will be filled by the compiler with the
+string length; the 'isa' pointer will be filled with 'NULL' by the
+compiler, and it will later be fixed up automatically at runtime by the
+GNU Objective-C runtime library to point to the class which was set by
+the '-fconstant-string-class' option when the object file is loaded (if
+you wonder how it works behind the scenes, the name of the class to use,
+and the list of static objects to fixup, are stored by the compiler in
+the object file in a place where the GNU runtime library will find them
+at runtime).
+
+ As a result, when a file is compiled with the '-fconstant-string-class'
+option, all the constant string objects will be instances of the class
+specified as argument to this option.  It is possible to have multiple
+compilation units referring to different constant string classes,
+neither the compiler nor the linker impose any restrictions in doing
+this.
+
+
+File: llvm.info,  Node: compatibility_alias,  Next: Exceptions,  Prev: Constant string objects,  Up: Objective-C
+
+8.6 'compatibility_alias'
+=========================
+
+The keyword '@compatibility_alias' allows you to define a class name as
+equivalent to another class name.  For example:
+
+     @compatibility_alias WOApplication GSWApplication;
+
+ tells the compiler that each time it encounters 'WOApplication' as a
+class name, it should replace it with 'GSWApplication' (that is,
+'WOApplication' is just an alias for 'GSWApplication').
+
+ There are some constraints on how this can be used--
+
+   * 'WOApplication' (the alias) must not be an existing class;
+
+   * 'GSWApplication' (the real class) must be an existing class.
+
+
+File: llvm.info,  Node: Exceptions,  Next: Synchronization,  Prev: compatibility_alias,  Up: Objective-C
+
+8.7 Exceptions
+==============
+
+GNU Objective-C provides exception support built into the language, as
+in the following example:
+
+       @try {
+         ...
+            @throw expr;
+         ...
+       }
+       @catch (AnObjCClass *exc) {
+         ...
+           @throw expr;
+         ...
+           @throw;
+         ...
+       }
+       @catch (AnotherClass *exc) {
+         ...
+       }
+       @catch (id allOthers) {
+         ...
+       }
+       @finally {
+         ...
+           @throw expr;
+         ...
+       }
+
+ The '@throw' statement may appear anywhere in an Objective-C or
+Objective-C++ program; when used inside of a '@catch' block, the
+'@throw' may appear without an argument (as shown above), in which case
+the object caught by the '@catch' will be rethrown.
+
+ Note that only (pointers to) Objective-C objects may be thrown and
+caught using this scheme.  When an object is thrown, it will be caught
+by the nearest '@catch' clause capable of handling objects of that type,
+analogously to how 'catch' blocks work in C++ and Java.  A '@catch(id
+...)' clause (as shown above) may also be provided to catch any and all
+Objective-C exceptions not caught by previous '@catch' clauses (if any).
+
+ The '@finally' clause, if present, will be executed upon exit from the
+immediately preceding '@try ... @catch' section.  This will happen
+regardless of whether any exceptions are thrown, caught or rethrown
+inside the '@try ... @catch' section, analogously to the behavior of the
+'finally' clause in Java.
+
+ There are several caveats to using the new exception mechanism:
+
+   * The '-fobjc-exceptions' command line option must be used when
+     compiling Objective-C files that use exceptions.
+
+   * With the GNU runtime, exceptions are always implemented as "native"
+     exceptions and it is recommended that the '-fexceptions' and
+     '-shared-libgcc' options are used when linking.
+
+   * With the NeXT runtime, although currently designed to be binary
+     compatible with 'NS_HANDLER'-style idioms provided by the
+     'NSException' class, the new exceptions can only be used on Mac OS
+     X 10.3 (Panther) and later systems, due to additional functionality
+     needed in the NeXT Objective-C runtime.
+
+   * As mentioned above, the new exceptions do not support handling
+     types other than Objective-C objects.  Furthermore, when used from
+     Objective-C++, the Objective-C exception model does not
+     interoperate with C++ exceptions at this time.  This means you
+     cannot '@throw' an exception from Objective-C and 'catch' it in
+     C++, or vice versa (i.e., 'throw ... @catch').
+
+
+File: llvm.info,  Node: Synchronization,  Next: Fast enumeration,  Prev: Exceptions,  Up: Objective-C
+
+8.8 Synchronization
+===================
+
+GNU Objective-C provides support for synchronized blocks:
+
+       @synchronized (ObjCClass *guard) {
+         ...
+       }
+
+ Upon entering the '@synchronized' block, a thread of execution shall
+first check whether a lock has been placed on the corresponding 'guard'
+object by another thread.  If it has, the current thread shall wait
+until the other thread relinquishes its lock.  Once 'guard' becomes
+available, the current thread will place its own lock on it, execute the
+code contained in the '@synchronized' block, and finally relinquish the
+lock (thereby making 'guard' available to other threads).
+
+ Unlike Java, Objective-C does not allow for entire methods to be marked
+'@synchronized'.  Note that throwing exceptions out of '@synchronized'
+blocks is allowed, and will cause the guarding object to be unlocked
+properly.
+
+ Because of the interactions between synchronization and exception
+handling, you can only use '@synchronized' when compiling with
+exceptions enabled, that is with the command line option
+'-fobjc-exceptions'.
+
+
+File: llvm.info,  Node: Fast enumeration,  Next: Messaging with the GNU Objective-C runtime,  Prev: Synchronization,  Up: Objective-C
+
+8.9 Fast Enumeration
+====================
+
+* Menu:
+
+* Using fast enumeration::
+* c99-like fast enumeration syntax::
+* Fast enumeration details::
+* Fast enumeration protocol::
+
+
+File: llvm.info,  Node: Using fast enumeration,  Next: c99-like fast enumeration syntax,  Up: Fast enumeration
+
+8.9.1 Using Fast Enumeration
+----------------------------
+
+GNU Objective-C provides support for the fast enumeration syntax:
+
+       id array = ...;
+       id object;
+
+       for (object in array)
+       {
+         /* Do something with 'object' */
+       }
+
+ 'array' needs to be an Objective-C object (usually a collection object,
+for example an array, a dictionary or a set) which implements the "Fast
+Enumeration Protocol" (see below).  If you are using a Foundation
+library such as GNUstep Base or Apple Cocoa Foundation, all collection
+objects in the library implement this protocol and can be used in this
+way.
+
+ The code above would iterate over all objects in 'array'.  For each of
+them, it assigns it to 'object', then executes the 'Do something with
+'object'' statements.
+
+ Here is a fully worked-out example using a Foundation library (which
+provides the implementation of 'NSArray', 'NSString' and 'NSLog'):
+
+       NSArray *array = [NSArray arrayWithObjects: @"1", @"2", @"3", nil];
+       NSString *object;
+
+       for (object in array)
+         NSLog (@"Iterating over %@", object);
+
+
+File: llvm.info,  Node: c99-like fast enumeration syntax,  Next: Fast enumeration details,  Prev: Using fast enumeration,  Up: Fast enumeration
+
+8.9.2 C99-Like Fast Enumeration Syntax
+--------------------------------------
+
+A c99-like declaration syntax is also allowed:
+
+       id array = ...;
+
+       for (id object in array)
+       {
+         /* Do something with 'object'  */
+       }
+
+ this is completely equivalent to:
+
+       id array = ...;
+
+       {
+         id object;
+         for (object in array)
+         {
+           /* Do something with 'object'  */
+         }
+       }
+
+ but can save some typing.
+
+ Note that the option '-std=c99' is not required to allow this syntax in
+Objective-C.
+
+
+File: llvm.info,  Node: Fast enumeration details,  Next: Fast enumeration protocol,  Prev: c99-like fast enumeration syntax,  Up: Fast enumeration
+
+8.9.3 Fast Enumeration Details
+------------------------------
+
+Here is a more technical description with the gory details.  Consider
+the code
+
+       for (OBJECT EXPRESSION in COLLECTION EXPRESSION)
+       {
+         STATEMENTS
+       }
+
+ here is what happens when you run it:
+
+   * 'COLLECTION EXPRESSION' is evaluated exactly once and the result is
+     used as the collection object to iterate over.  This means it is
+     safe to write code such as 'for (object in [NSDictionary
+     keyEnumerator]) ...'.
+
+   * the iteration is implemented by the compiler by repeatedly getting
+     batches of objects from the collection object using the fast
+     enumeration protocol (see below), then iterating over all objects
+     in the batch.  This is faster than a normal enumeration where
+     objects are retrieved one by one (hence the name "fast
+     enumeration").
+
+   * if there are no objects in the collection, then 'OBJECT EXPRESSION'
+     is set to 'nil' and the loop immediately terminates.
+
+   * if there are objects in the collection, then for each object in the
+     collection (in the order they are returned) 'OBJECT EXPRESSION' is
+     set to the object, then 'STATEMENTS' are executed.
+
+   * 'STATEMENTS' can contain 'break' and 'continue' commands, which
+     will abort the iteration or skip to the next loop iteration as
+     expected.
+
+   * when the iteration ends because there are no more objects to
+     iterate over, 'OBJECT EXPRESSION' is set to 'nil'.  This allows you
+     to determine whether the iteration finished because a 'break'
+     command was used (in which case 'OBJECT EXPRESSION' will remain set
+     to the last object that was iterated over) or because it iterated
+     over all the objects (in which case 'OBJECT EXPRESSION' will be set
+     to 'nil').
+
+   * 'STATEMENTS' must not make any changes to the collection object; if
+     they do, it is a hard error and the fast enumeration terminates by
+     invoking 'objc_enumerationMutation', a runtime function that
+     normally aborts the program but which can be customized by
+     Foundation libraries via 'objc_set_mutation_handler' to do
+     something different, such as raising an exception.
+
+
+File: llvm.info,  Node: Fast enumeration protocol,  Prev: Fast enumeration details,  Up: Fast enumeration
+
+8.9.4 Fast Enumeration Protocol
+-------------------------------
+
+If you want your own collection object to be usable with fast
+enumeration, you need to have it implement the method
+
+     - (unsigned long) countByEnumeratingWithState: (NSFastEnumerationState *)state
+                                           objects: (id *)objects
+                                             count: (unsigned long)len;
+
+ where 'NSFastEnumerationState' must be defined in your code as follows:
+
+     typedef struct
+     {
+       unsigned long state;
+       id            *itemsPtr;
+       unsigned long *mutationsPtr;
+       unsigned long extra[5];
+     } NSFastEnumerationState;
+
+ If no 'NSFastEnumerationState' is defined in your code, the compiler
+will automatically replace 'NSFastEnumerationState *' with 'struct
+__objcFastEnumerationState *', where that type is silently defined by
+the compiler in an identical way.  This can be confusing and we
+recommend that you define 'NSFastEnumerationState' (as shown above)
+instead.
+
+ The method is called repeatedly during a fast enumeration to retrieve
+batches of objects.  Each invocation of the method should retrieve the
+next batch of objects.
+
+ The return value of the method is the number of objects in the current
+batch; this should not exceed 'len', which is the maximum size of a
+batch as requested by the caller.  The batch itself is returned in the
+'itemsPtr' field of the 'NSFastEnumerationState' struct.
+
+ To help with returning the objects, the 'objects' array is a C array
+preallocated by the caller (on the stack) of size 'len'.  In many cases
+you can put the objects you want to return in that 'objects' array, then
+do 'itemsPtr = objects'.  But you don't have to; if your collection
+already has the objects to return in some form of C array, it could
+return them from there instead.
+
+ The 'state' and 'extra' fields of the 'NSFastEnumerationState'
+structure allows your collection object to keep track of the state of
+the enumeration.  In a simple array implementation, 'state' may keep
+track of the index of the last object that was returned, and 'extra' may
+be unused.
+
+ The 'mutationsPtr' field of the 'NSFastEnumerationState' is used to
+keep track of mutations.  It should point to a number; before working on
+each object, the fast enumeration loop will check that this number has
+not changed.  If it has, a mutation has happened and the fast
+enumeration will abort.  So, 'mutationsPtr' could be set to point to
+some sort of version number of your collection, which is increased by
+one every time there is a change (for example when an object is added or
+removed).  Or, if you are content with less strict mutation checks, it
+could point to the number of objects in your collection or some other
+value that can be checked to perform an approximate check that the
+collection has not been mutated.
+
+ Finally, note how we declared the 'len' argument and the return value
+to be of type 'unsigned long'.  They could also be declared to be of
+type 'unsigned int' and everything would still work.
+
+
+File: llvm.info,  Node: Messaging with the GNU Objective-C runtime,  Prev: Fast enumeration,  Up: Objective-C
+
+8.10 Messaging with the GNU Objective-C Runtime
+===============================================
+
+This section is specific for the GNU Objective-C runtime.  If you are
+using a different runtime, you can skip it.
+
+ The implementation of messaging in the GNU Objective-C runtime is
+designed to be portable, and so is based on standard C.
+
+ Sending a message in the GNU Objective-C runtime is composed of two
+separate steps.  First, there is a call to the lookup function,
+'objc_msg_lookup ()' (or, in the case of messages to super,
+'objc_msg_lookup_super ()').  This runtime function takes as argument
+the receiver and the selector of the method to be called; it returns the
+'IMP', that is a pointer to the function implementing the method.  The
+second step of method invocation consists of casting this pointer
+function to the appropriate function pointer type, and calling the
+function pointed to it with the right arguments.
+
+ For example, when the compiler encounters a method invocation such as
+'[object init]', it compiles it into a call to 'objc_msg_lookup (object,
+@selector(init))' followed by a cast of the returned value to the
+appropriate function pointer type, and then it calls it.
+
+* Menu:
+
+* Dynamically registering methods::
+* Forwarding hook::
+
+
+File: llvm.info,  Node: Dynamically registering methods,  Next: Forwarding hook,  Up: Messaging with the GNU Objective-C runtime
+
+8.10.1 Dynamically Registering Methods
+--------------------------------------
+
+If 'objc_msg_lookup()' does not find a suitable method implementation,
+because the receiver does not implement the required method, it tries to
+see if the class can dynamically register the method.
+
+ To do so, the runtime checks if the class of the receiver implements
+the method
+
+     + (BOOL) resolveInstanceMethod: (SEL)selector;
+
+ in the case of an instance method, or
+
+     + (BOOL) resolveClassMethod: (SEL)selector;
+
+ in the case of a class method.  If the class implements it, the runtime
+invokes it, passing as argument the selector of the original method, and
+if it returns 'YES', the runtime tries the lookup again, which could now
+succeed if a matching method was added dynamically by
+'+resolveInstanceMethod:' or '+resolveClassMethod:'.
+
+ This allows classes to dynamically register methods (by adding them to
+the class using 'class_addMethod') when they are first called.  To do
+so, a class should implement '+resolveInstanceMethod:' (or, depending on
+the case, '+resolveClassMethod:') and have it recognize the selectors of
+methods that can be registered dynamically at runtime, register them,
+and return 'YES'.  It should return 'NO' for methods that it does not
+dynamically registered at runtime.
+
+ If '+resolveInstanceMethod:' (or '+resolveClassMethod:') is not
+implemented or returns 'NO', the runtime then tries the forwarding hook.
+
+ Support for '+resolveInstanceMethod:' and 'resolveClassMethod:' was
+added to the GNU Objective-C runtime in GCC version 4.6.
+
+
+File: llvm.info,  Node: Forwarding hook,  Prev: Dynamically registering methods,  Up: Messaging with the GNU Objective-C runtime
+
+8.10.2 Forwarding Hook
+----------------------
+
+The GNU Objective-C runtime provides a hook, called
+'__objc_msg_forward2', which is called by 'objc_msg_lookup()' when it
+can't find a method implementation in the runtime tables and after
+calling '+resolveInstanceMethod:' and '+resolveClassMethod:' has been
+attempted and did not succeed in dynamically registering the method.
+
+ To configure the hook, you set the global variable
+'__objc_msg_forward2' to a function with the same argument and return
+types of 'objc_msg_lookup()'.  When 'objc_msg_lookup()' can not find a
+method implementation, it invokes the hook function you provided to get
+a method implementation to return.  So, in practice
+'__objc_msg_forward2' allows you to extend 'objc_msg_lookup()' by adding
+some custom code that is called to do a further lookup when no standard
+method implementation can be found using the normal lookup.
+
+ This hook is generally reserved for "Foundation" libraries such as
+GNUstep Base, which use it to implement their high-level method
+forwarding API, typically based around the 'forwardInvocation:' method.
+So, unless you are implementing your own "Foundation" library, you
+should not set this hook.
+
+ In a typical forwarding implementation, the '__objc_msg_forward2' hook
+function determines the argument and return type of the method that is
+being looked up, and then creates a function that takes these arguments
+and has that return type, and returns it to the caller.  Creating this
+function is non-trivial and is typically performed using a dedicated
+library such as 'libffi'.
+
+ The forwarding method implementation thus created is returned by
+'objc_msg_lookup()' and is executed as if it was a normal method
+implementation.  When the forwarding method implementation is called, it
+is usually expected to pack all arguments into some sort of object
+(typically, an 'NSInvocation' in a "Foundation" library), and hand it
+over to the programmer ('forwardInvocation:') who is then allowed to
+manipulate the method invocation using a high-level API provided by the
+"Foundation" library.  For example, the programmer may want to examine
+the method invocation arguments and name and potentially change them
+before forwarding the method invocation to one or more local objects
+('performInvocation:') or even to remote objects (by using Distributed
+Objects or some other mechanism).  When all this completes, the return
+value is passed back and must be returned correctly to the original
+caller.
+
+ Note that the GNU Objective-C runtime currently provides no support for
+method forwarding or method invocations other than the
+'__objc_msg_forward2' hook.
+
+ If the forwarding hook does not exist or returns 'NULL', the runtime
+currently attempts forwarding using an older, deprecated API, and if
+that fails, it aborts the program.  In future versions of the GNU
+Objective-C runtime, the runtime will immediately abort.
+
+
+File: llvm.info,  Node: Compatibility,  Next: Trouble,  Prev: Objective-C,  Up: Top
+
+9 Binary Compatibility
+**********************
+
+Binary compatibility encompasses several related concepts:
+
+"application binary interface (ABI)"
+     The set of runtime conventions followed by all of the tools that
+     deal with binary representations of a program, including compilers,
+     assemblers, linkers, and language runtime support.  Some ABIs are
+     formal with a written specification, possibly designed by multiple
+     interested parties.  Others are simply the way things are actually
+     done by a particular set of tools.
+
+"ABI conformance"
+     A compiler conforms to an ABI if it generates code that follows all
+     of the specifications enumerated by that ABI.  A library conforms
+     to an ABI if it is implemented according to that ABI.  An
+     application conforms to an ABI if it is built using tools that
+     conform to that ABI and does not contain source code that
+     specifically changes behavior specified by the ABI.
+
+"calling conventions"
+     Calling conventions are a subset of an ABI that specify of how
+     arguments are passed and function results are returned.
+
+"interoperability"
+     Different sets of tools are interoperable if they generate files
+     that can be used in the same program.  The set of tools includes
+     compilers, assemblers, linkers, libraries, header files, startup
+     files, and debuggers.  Binaries produced by different sets of tools
+     are not interoperable unless they implement the same ABI.  This
+     applies to different versions of the same tools as well as tools
+     from different vendors.
+
+"intercallability"
+     Whether a function in a binary built by one set of tools can call a
+     function in a binary built by a different set of tools is a subset
+     of interoperability.
+
+"implementation-defined features"
+     Language standards include lists of implementation-defined features
+     whose behavior can vary from one implementation to another.  Some
+     of these features are normally covered by a platform's ABI and
+     others are not.  The features that are not covered by an ABI
+     generally affect how a program behaves, but not intercallability.
+
+"compatibility"
+     Conformance to the same ABI and the same behavior of
+     implementation-defined features are both relevant for
+     compatibility.
+
+ The application binary interface implemented by a C or C++ compiler
+affects code generation and runtime support for:
+
+   * size and alignment of data types
+   * layout of structured types
+   * calling conventions
+   * register usage conventions
+   * interfaces for runtime arithmetic support
+   * object file formats
+
+ In addition, the application binary interface implemented by a C++
+compiler affects code generation and runtime support for:
+   * name mangling
+   * exception handling
+   * invoking constructors and destructors
+   * layout, alignment, and padding of classes
+   * layout and alignment of virtual tables
+
+ Some GCC compilation options cause the compiler to generate code that
+does not conform to the platform's default ABI.  Other options cause
+different program behavior for implementation-defined features that are
+not covered by an ABI.  These options are provided for consistency with
+other compilers that do not follow the platform's default ABI or the
+usual behavior of implementation-defined features for the platform.  Be
+very careful about using such options.
+
+ Most platforms have a well-defined ABI that covers C code, but ABIs
+that cover C++ functionality are not yet common.
+
+ Starting with GCC 3.2, GCC binary conventions for C++ are based on a
+written, vendor-neutral C++ ABI that was designed to be specific to
+64-bit Itanium but also includes generic specifications that apply to
+any platform.  This C++ ABI is also implemented by other compiler
+vendors on some platforms, notably GNU/Linux and BSD systems.  We have
+tried hard to provide a stable ABI that will be compatible with future
+GCC releases, but it is possible that we will encounter problems that
+make this difficult.  Such problems could include different
+interpretations of the C++ ABI by different vendors, bugs in the ABI, or
+bugs in the implementation of the ABI in different compilers.  GCC's
+'-Wabi' switch warns when G++ generates code that is probably not
+compatible with the C++ ABI.
+
+ The C++ library used with a C++ compiler includes the Standard C++
+Library, with functionality defined in the C++ Standard, plus language
+runtime support.  The runtime support is included in a C++ ABI, but
+there is no formal ABI for the Standard C++ Library.  Two
+implementations of that library are interoperable if one follows the
+de-facto ABI of the other and if they are both built with the same
+compiler, or with compilers that conform to the same ABI for C++
+compiler and runtime support.
+
+ When G++ and another C++ compiler conform to the same C++ ABI, but the
+implementations of the Standard C++ Library that they normally use do
+not follow the same ABI for the Standard C++ Library, object files built
+with those compilers can be used in the same program only if they use
+the same C++ library.  This requires specifying the location of the C++
+library header files when invoking the compiler whose usual library is
+not being used.  The location of GCC's C++ header files depends on how
+the GCC build was configured, but can be seen by using the G++ '-v'
+option.  With default configuration options for G++ 3.3 the compile line
+for a different C++ compiler needs to include
+
+         -IGCC_INSTALL_DIRECTORY/include/c++/3.3
+
+ Similarly, compiling code with G++ that must use a C++ library other
+than the GNU C++ library requires specifying the location of the header
+files for that other library.
+
+ The most straightforward way to link a program to use a particular C++
+library is to use a C++ driver that specifies that C++ library by
+default.  The 'g++' driver, for example, tells the linker where to find
+GCC's C++ library ('libstdc++') plus the other libraries and startup
+files it needs, in the proper order.
+
+ If a program must use a different C++ library and it's not possible to
+do the final link using a C++ driver that uses that library by default,
+it is necessary to tell 'g++' the location and name of that library.  It
+might also be necessary to specify different startup files and other
+runtime support libraries, and to suppress the use of GCC's support
+libraries with one or more of the options '-nostdlib', '-nostartfiles',
+and '-nodefaultlibs'.
+
+
+File: llvm.info,  Node: Trouble,  Next: Bugs,  Prev: Compatibility,  Up: Top
+
+10 Known Causes of Trouble with GCC
+***********************************
+
+This section describes known problems that affect users of GCC.  Most of
+these are not GCC bugs per se--if they were, we would fix them.  But the
+result for a user may be like the result of a bug.
+
+ Some of these problems are due to bugs in other software, some are
+missing features that are too much work to add, and some are places
+where people's opinions differ as to what is best.
+
+* Menu:
+
+* Actual Bugs::         Bugs we will fix later.
+* Interoperation::      Problems using GCC with other compilers,
+                        and with certain linkers, assemblers and debuggers.
+* Incompatibilities::   GCC is incompatible with traditional C.
+* Fixed Headers::       GCC uses corrected versions of system header files.
+                        This is necessary, but doesn't always work smoothly.
+* Standard Libraries::  GCC uses the system C library, which might not be
+                        compliant with the ISO C standard.
+* Disappointments::     Regrettable things we can't change, but not quite bugs.
+* C++ Misunderstandings:: Common misunderstandings with GNU C++.
+* Non-bugs::            Things we think are right, but some others disagree.
+* Warnings and Errors:: Which problems in your code get warnings,
+                        and which get errors.
+
+
+File: llvm.info,  Node: Actual Bugs,  Next: Interoperation,  Up: Trouble
+
+10.1 Actual Bugs We Haven't Fixed Yet
+=====================================
+
+   * The 'fixincludes' script interacts badly with automounters; if the
+     directory of system header files is automounted, it tends to be
+     unmounted while 'fixincludes' is running.  This would seem to be a
+     bug in the automounter.  We don't know any good way to work around
+     it.
+
+
+File: llvm.info,  Node: Interoperation,  Next: Incompatibilities,  Prev: Actual Bugs,  Up: Trouble
+
+10.2 Interoperation
+===================
+
+This section lists various difficulties encountered in using GCC
+together with other compilers or with the assemblers, linkers, libraries
+and debuggers on certain systems.
+
+   * On many platforms, GCC supports a different ABI for C++ than do
+     other compilers, so the object files compiled by GCC cannot be used
+     with object files generated by another C++ compiler.
+
+     An area where the difference is most apparent is name mangling.
+     The use of different name mangling is intentional, to protect you
+     from more subtle problems.  Compilers differ as to many internal
+     details of C++ implementation, including: how class instances are
+     laid out, how multiple inheritance is implemented, and how virtual
+     function calls are handled.  If the name encoding were made the
+     same, your programs would link against libraries provided from
+     other compilers--but the programs would then crash when run.
+     Incompatible libraries are then detected at link time, rather than
+     at run time.
+
+   * On some BSD systems, including some versions of Ultrix, use of
+     profiling causes static variable destructors (currently used only
+     in C++) not to be run.
+
+   * On a SPARC, GCC aligns all values of type 'double' on an 8-byte
+     boundary, and it expects every 'double' to be so aligned.  The Sun
+     compiler usually gives 'double' values 8-byte alignment, with one
+     exception: function arguments of type 'double' may not be aligned.
+
+     As a result, if a function compiled with Sun CC takes the address
+     of an argument of type 'double' and passes this pointer of type
+     'double *' to a function compiled with GCC, dereferencing the
+     pointer may cause a fatal signal.
+
+     One way to solve this problem is to compile your entire program
+     with GCC.  Another solution is to modify the function that is
+     compiled with Sun CC to copy the argument into a local variable;
+     local variables are always properly aligned.  A third solution is
+     to modify the function that uses the pointer to dereference it via
+     the following function 'access_double' instead of directly with
+     '*':
+
+          inline double
+          access_double (double *unaligned_ptr)
+          {
+            union d2i { double d; int i[2]; };
+
+            union d2i *p = (union d2i *) unaligned_ptr;
+            union d2i u;
+
+            u.i[0] = p->i[0];
+            u.i[1] = p->i[1];
+
+            return u.d;
+          }
+
+     Storing into the pointer can be done likewise with the same union.
+
+   * On Solaris, the 'malloc' function in the 'libmalloc.a' library may
+     allocate memory that is only 4 byte aligned.  Since GCC on the
+     SPARC assumes that doubles are 8 byte aligned, this may result in a
+     fatal signal if doubles are stored in memory allocated by the
+     'libmalloc.a' library.
+
+     The solution is to not use the 'libmalloc.a' library.  Use instead
+     'malloc' and related functions from 'libc.a'; they do not have this
+     problem.
+
+   * On the HP PA machine, ADB sometimes fails to work on functions
+     compiled with GCC.  Specifically, it fails to work on functions
+     that use 'alloca' or variable-size arrays.  This is because GCC
+     doesn't generate HP-UX unwind descriptors for such functions.  It
+     may even be impossible to generate them.
+
+   * Debugging ('-g') is not supported on the HP PA machine, unless you
+     use the preliminary GNU tools.
+
+   * Taking the address of a label may generate errors from the HP-UX PA
+     assembler.  GAS for the PA does not have this problem.
+
+   * Using floating point parameters for indirect calls to static
+     functions will not work when using the HP assembler.  There simply
+     is no way for GCC to specify what registers hold arguments for
+     static functions when using the HP assembler.  GAS for the PA does
+     not have this problem.
+
+   * In extremely rare cases involving some very large functions you may
+     receive errors from the HP linker complaining about an out of
+     bounds unconditional branch offset.  This used to occur more often
+     in previous versions of GCC, but is now exceptionally rare.  If you
+     should run into it, you can work around by making your function
+     smaller.
+
+   * GCC compiled code sometimes emits warnings from the HP-UX assembler
+     of the form:
+
+          (warning) Use of GR3 when
+            frame >= 8192 may cause conflict.
+
+     These warnings are harmless and can be safely ignored.
+
+   * In extremely rare cases involving some very large functions you may
+     receive errors from the AIX Assembler complaining about a
+     displacement that is too large.  If you should run into it, you can
+     work around by making your function smaller.
+
+   * The 'libstdc++.a' library in GCC relies on the SVR4 dynamic linker
+     semantics which merges global symbols between libraries and
+     applications, especially necessary for C++ streams functionality.
+     This is not the default behavior of AIX shared libraries and
+     dynamic linking.  'libstdc++.a' is built on AIX with
+     "runtime-linking" enabled so that symbol merging can occur.  To
+     utilize this feature, the application linked with 'libstdc++.a'
+     must include the '-Wl,-brtl' flag on the link line.  G++ cannot
+     impose this because this option may interfere with the semantics of
+     the user program and users may not always use 'g++' to link his or
+     her application.  Applications are not required to use the
+     '-Wl,-brtl' flag on the link line--the rest of the 'libstdc++.a'
+     library which is not dependent on the symbol merging semantics will
+     continue to function correctly.
+
+   * An application can interpose its own definition of functions for
+     functions invoked by 'libstdc++.a' with "runtime-linking" enabled
+     on AIX.  To accomplish this the application must be linked with
+     "runtime-linking" option and the functions explicitly must be
+     exported by the application ('-Wl,-brtl,-bE:exportfile').
+
+   * AIX on the RS/6000 provides support (NLS) for environments outside
+     of the United States.  Compilers and assemblers use NLS to support
+     locale-specific representations of various objects including
+     floating-point numbers ('.' vs ',' for separating decimal
+     fractions).  There have been problems reported where the library
+     linked with GCC does not produce the same floating-point formats
+     that the assembler accepts.  If you have this problem, set the
+     'LANG' environment variable to 'C' or 'En_US'.
+
+   * Even if you specify '-fdollars-in-identifiers', you cannot
+     successfully use '$' in identifiers on the RS/6000 due to a
+     restriction in the IBM assembler.  GAS supports these identifiers.
+
+
+File: llvm.info,  Node: Incompatibilities,  Next: Fixed Headers,  Prev: Interoperation,  Up: Trouble
+
+10.3 Incompatibilities of GCC
+=============================
+
+There are several noteworthy incompatibilities between GNU C and K&R
+(non-ISO) versions of C.
+
+   * GCC normally makes string constants read-only.  If several
+     identical-looking string constants are used, GCC stores only one
+     copy of the string.
+
+     One consequence is that you cannot call 'mktemp' with a string
+     constant argument.  The function 'mktemp' always alters the string
+     its argument points to.
+
+     Another consequence is that 'sscanf' does not work on some very old
+     systems when passed a string constant as its format control string
+     or input.  This is because 'sscanf' incorrectly tries to write into
+     the string constant.  Likewise 'fscanf' and 'scanf'.
+
+     The solution to these problems is to change the program to use
+     'char'-array variables with initialization strings for these
+     purposes instead of string constants.
+
+   * '-2147483648' is positive.
+
+     This is because 2147483648 cannot fit in the type 'int', so
+     (following the ISO C rules) its data type is 'unsigned long int'.
+     Negating this value yields 2147483648 again.
+
+   * GCC does not substitute macro arguments when they appear inside of
+     string constants.  For example, the following macro in GCC
+
+          #define foo(a) "a"
+
+     will produce output '"a"' regardless of what the argument A is.
+
+   * When you use 'setjmp' and 'longjmp', the only automatic variables
+     guaranteed to remain valid are those declared 'volatile'.  This is
+     a consequence of automatic register allocation.  Consider this
+     function:
+
+          jmp_buf j;
+
+          foo ()
+          {
+            int a, b;
+
+            a = fun1 ();
+            if (setjmp (j))
+              return a;
+
+            a = fun2 ();
+            /* 'longjmp (j)' may occur in 'fun3'. */
+            return a + fun3 ();
+          }
+
+     Here 'a' may or may not be restored to its first value when the
+     'longjmp' occurs.  If 'a' is allocated in a register, then its
+     first value is restored; otherwise, it keeps the last value stored
+     in it.
+
+     If you use the '-W' option with the '-O' option, you will get a
+     warning when GCC thinks such a problem might be possible.
+
+   * Programs that use preprocessing directives in the middle of macro
+     arguments do not work with GCC.  For example, a program like this
+     will not work:
+
+          foobar (
+          #define luser
+                  hack)
+
+     ISO C does not permit such a construct.
+
+   * K&R compilers allow comments to cross over an inclusion boundary
+     (i.e. started in an include file and ended in the including file).
+
+   * Declarations of external variables and functions within a block
+     apply only to the block containing the declaration.  In other
+     words, they have the same scope as any other declaration in the
+     same place.
+
+     In some other C compilers, an 'extern' declaration affects all the
+     rest of the file even if it happens within a block.
+
+   * In traditional C, you can combine 'long', etc., with a typedef
+     name, as shown here:
+
+          typedef int foo;
+          typedef long foo bar;
+
+     In ISO C, this is not allowed: 'long' and other type modifiers
+     require an explicit 'int'.
+
+   * PCC allows typedef names to be used as function parameters.
+
+   * Traditional C allows the following erroneous pair of declarations
+     to appear together in a given scope:
+
+          typedef int foo;
+          typedef foo foo;
+
+   * GCC treats all characters of identifiers as significant.  According
+     to K&R-1 (2.2), "No more than the first eight characters are
+     significant, although more may be used.".  Also according to K&R-1
+     (2.2), "An identifier is a sequence of letters and digits; the
+     first character must be a letter.  The underscore _ counts as a
+     letter.", but GCC also allows dollar signs in identifiers.
+
+   * PCC allows whitespace in the middle of compound assignment
+     operators such as '+='.  GCC, following the ISO standard, does not
+     allow this.
+
+   * GCC complains about unterminated character constants inside of
+     preprocessing conditionals that fail.  Some programs have English
+     comments enclosed in conditionals that are guaranteed to fail; if
+     these comments contain apostrophes, GCC will probably report an
+     error.  For example, this code would produce an error:
+
+          #if 0
+          You can't expect this to work.
+          #endif
+
+     The best solution to such a problem is to put the text into an
+     actual C comment delimited by '/*...*/'.
+
+   * Many user programs contain the declaration 'long time ();'.  In the
+     past, the system header files on many systems did not actually
+     declare 'time', so it did not matter what type your program
+     declared it to return.  But in systems with ISO C headers, 'time'
+     is declared to return 'time_t', and if that is not the same as
+     'long', then 'long time ();' is erroneous.
+
+     The solution is to change your program to use appropriate system
+     headers ('<time.h>' on systems with ISO C headers) and not to
+     declare 'time' if the system header files declare it, or failing
+     that to use 'time_t' as the return type of 'time'.
+
+   * When compiling functions that return 'float', PCC converts it to a
+     double.  GCC actually returns a 'float'.  If you are concerned with
+     PCC compatibility, you should declare your functions to return
+     'double'; you might as well say what you mean.
+
+   * When compiling functions that return structures or unions, GCC
+     output code normally uses a method different from that used on most
+     versions of Unix.  As a result, code compiled with GCC cannot call
+     a structure-returning function compiled with PCC, and vice versa.
+
+     The method used by GCC is as follows: a structure or union which is
+     1, 2, 4 or 8 bytes long is returned like a scalar.  A structure or
+     union with any other size is stored into an address supplied by the
+     caller (usually in a special, fixed register, but on some machines
+     it is passed on the stack).  The target hook
+     'TARGET_STRUCT_VALUE_RTX' tells GCC where to pass this address.
+
+     By contrast, PCC on most target machines returns structures and
+     unions of any size by copying the data into an area of static
+     storage, and then returning the address of that storage as if it
+     were a pointer value.  The caller must copy the data from that
+     memory area to the place where the value is wanted.  GCC does not
+     use this method because it is slower and nonreentrant.
+
+     On some newer machines, PCC uses a reentrant convention for all
+     structure and union returning.  GCC on most of these machines uses
+     a compatible convention when returning structures and unions in
+     memory, but still returns small structures and unions in registers.
+
+     You can tell GCC to use a compatible convention for all structure
+     and union returning with the option '-fpcc-struct-return'.
+
+   * GCC complains about program fragments such as '0x74ae-0x4000' which
+     appear to be two hexadecimal constants separated by the minus
+     operator.  Actually, this string is a single "preprocessing token".
+     Each such token must correspond to one token in C.  Since this does
+     not, GCC prints an error message.  Although it may appear obvious
+     that what is meant is an operator and two values, the ISO C
+     standard specifically requires that this be treated as erroneous.
+
+     A "preprocessing token" is a "preprocessing number" if it begins
+     with a digit and is followed by letters, underscores, digits,
+     periods and 'e+', 'e-', 'E+', 'E-', 'p+', 'p-', 'P+', or 'P-'
+     character sequences.  (In strict C90 mode, the sequences 'p+',
+     'p-', 'P+' and 'P-' cannot appear in preprocessing numbers.)
+
+     To make the above program fragment valid, place whitespace in front
+     of the minus sign.  This whitespace will end the preprocessing
+     number.
+
+
+File: llvm.info,  Node: Fixed Headers,  Next: Standard Libraries,  Prev: Incompatibilities,  Up: Trouble
+
+10.4 Fixed Header Files
+=======================
+
+GCC needs to install corrected versions of some system header files.
+This is because most target systems have some header files that won't
+work with GCC unless they are changed.  Some have bugs, some are
+incompatible with ISO C, and some depend on special features of other
+compilers.
+
+ Installing GCC automatically creates and installs the fixed header
+files, by running a program called 'fixincludes'.  Normally, you don't
+need to pay attention to this.  But there are cases where it doesn't do
+the right thing automatically.
+
+   * If you update the system's header files, such as by installing a
+     new system version, the fixed header files of GCC are not
+     automatically updated.  They can be updated using the 'mkheaders'
+     script installed in 'LIBEXECDIR/gcc/TARGET/VERSION/install-tools/'.
+
+   * On some systems, header file directories contain machine-specific
+     symbolic links in certain places.  This makes it possible to share
+     most of the header files among hosts running the same version of
+     the system on different machine models.
+
+     The programs that fix the header files do not understand this
+     special way of using symbolic links; therefore, the directory of
+     fixed header files is good only for the machine model used to build
+     it.
+
+     It is possible to make separate sets of fixed header files for the
+     different machine models, and arrange a structure of symbolic links
+     so as to use the proper set, but you'll have to do this by hand.
+
+
+File: llvm.info,  Node: Standard Libraries,  Next: Disappointments,  Prev: Fixed Headers,  Up: Trouble
+
+10.5 Standard Libraries
+=======================
+
+GCC by itself attempts to be a conforming freestanding implementation.
+*Note Language Standards Supported by GCC: Standards, for details of
+what this means.  Beyond the library facilities required of such an
+implementation, the rest of the C library is supplied by the vendor of
+the operating system.  If that C library doesn't conform to the C
+standards, then your programs might get warnings (especially when using
+'-Wall') that you don't expect.
+
+ For example, the 'sprintf' function on SunOS 4.1.3 returns 'char *'
+while the C standard says that 'sprintf' returns an 'int'.  The
+'fixincludes' program could make the prototype for this function match
+the Standard, but that would be wrong, since the function will still
+return 'char *'.
+
+ If you need a Standard compliant library, then you need to find one, as
+GCC does not provide one.  The GNU C library (called 'glibc') provides
+ISO C, POSIX, BSD, SystemV and X/Open compatibility for GNU/Linux and
+HURD-based GNU systems; no recent version of it supports other systems,
+though some very old versions did.  Version 2.2 of the GNU C library
+includes nearly complete C99 support.  You could also ask your operating
+system vendor if newer libraries are available.
+
+
+File: llvm.info,  Node: Disappointments,  Next: C++ Misunderstandings,  Prev: Standard Libraries,  Up: Trouble
+
+10.6 Disappointments and Misunderstandings
+==========================================
+
+These problems are perhaps regrettable, but we don't know any practical
+way around them.
+
+   * Certain local variables aren't recognized by debuggers when you
+     compile with optimization.
+
+     This occurs because sometimes GCC optimizes the variable out of
+     existence.  There is no way to tell the debugger how to compute the
+     value such a variable "would have had", and it is not clear that
+     would be desirable anyway.  So GCC simply does not mention the
+     eliminated variable when it writes debugging information.
+
+     You have to expect a certain amount of disagreement between the
+     executable and your source code, when you use optimization.
+
+   * Users often think it is a bug when GCC reports an error for code
+     like this:
+
+          int foo (struct mumble *);
+
+          struct mumble { ... };
+
+          int foo (struct mumble *x)
+          { ... }
+
+     This code really is erroneous, because the scope of 'struct mumble'
+     in the prototype is limited to the argument list containing it.  It
+     does not refer to the 'struct mumble' defined with file scope
+     immediately below--they are two unrelated types with similar names
+     in different scopes.
+
+     But in the definition of 'foo', the file-scope type is used because
+     that is available to be inherited.  Thus, the definition and the
+     prototype do not match, and you get an error.
+
+     This behavior may seem silly, but it's what the ISO standard
+     specifies.  It is easy enough for you to make your code work by
+     moving the definition of 'struct mumble' above the prototype.  It's
+     not worth being incompatible with ISO C just to avoid an error for
+     the example shown above.
+
+   * Accesses to bit-fields even in volatile objects works by accessing
+     larger objects, such as a byte or a word.  You cannot rely on what
+     size of object is accessed in order to read or write the bit-field;
+     it may even vary for a given bit-field according to the precise
+     usage.
+
+     If you care about controlling the amount of memory that is
+     accessed, use volatile but do not use bit-fields.
+
+   * GCC comes with shell scripts to fix certain known problems in
+     system header files.  They install corrected copies of various
+     header files in a special directory where only GCC will normally
+     look for them.  The scripts adapt to various systems by searching
+     all the system header files for the problem cases that we know
+     about.
+
+     If new system header files are installed, nothing automatically
+     arranges to update the corrected header files.  They can be updated
+     using the 'mkheaders' script installed in
+     'LIBEXECDIR/gcc/TARGET/VERSION/install-tools/'.
+
+   * On 68000 and x86 systems, for instance, you can get paradoxical
+     results if you test the precise values of floating point numbers.
+     For example, you can find that a floating point value which is not
+     a NaN is not equal to itself.  This results from the fact that the
+     floating point registers hold a few more bits of precision than fit
+     in a 'double' in memory.  Compiled code moves values between memory
+     and floating point registers at its convenience, and moving them
+     into memory truncates them.
+
+     You can partially avoid this problem by using the '-ffloat-store'
+     option (*note Optimize Options::).
+
+   * On AIX and other platforms without weak symbol support, templates
+     need to be instantiated explicitly and symbols for static members
+     of templates will not be generated.
+
+   * On AIX, GCC scans object files and library archives for static
+     constructors and destructors when linking an application before the
+     linker prunes unreferenced symbols.  This is necessary to prevent
+     the AIX linker from mistakenly assuming that static constructor or
+     destructor are unused and removing them before the scanning can
+     occur.  All static constructors and destructors found will be
+     referenced even though the modules in which they occur may not be
+     used by the program.  This may lead to both increased executable
+     size and unexpected symbol references.
+
+
+File: llvm.info,  Node: C++ Misunderstandings,  Next: Non-bugs,  Prev: Disappointments,  Up: Trouble
+
+10.7 Common Misunderstandings with GNU C++
+==========================================
+
+C++ is a complex language and an evolving one, and its standard
+definition (the ISO C++ standard) was only recently completed.  As a
+result, your C++ compiler may occasionally surprise you, even when its
+behavior is correct.  This section discusses some areas that frequently
+give rise to questions of this sort.
+
+* Menu:
+
+* Static Definitions::  Static member declarations are not definitions
+* Name lookup::         Name lookup, templates, and accessing members of base classes
+* Temporaries::         Temporaries may vanish before you expect
+* Copy Assignment::     Copy Assignment operators copy virtual bases twice
+
+
+File: llvm.info,  Node: Static Definitions,  Next: Name lookup,  Up: C++ Misunderstandings
+
+10.7.1 Declare _and_ Define Static Members
+------------------------------------------
+
+When a class has static data members, it is not enough to _declare_ the
+static member; you must also _define_ it.  For example:
+
+     class Foo
+     {
+       ...
+       void method();
+       static int bar;
+     };
+
+ This declaration only establishes that the class 'Foo' has an 'int'
+named 'Foo::bar', and a member function named 'Foo::method'.  But you
+still need to define _both_ 'method' and 'bar' elsewhere.  According to
+the ISO standard, you must supply an initializer in one (and only one)
+source file, such as:
+
+     int Foo::bar = 0;
+
+ Other C++ compilers may not correctly implement the standard behavior.
+As a result, when you switch to 'g++' from one of these compilers, you
+may discover that a program that appeared to work correctly in fact does
+not conform to the standard: 'g++' reports as undefined symbols any
+static data members that lack definitions.
+
+
+File: llvm.info,  Node: Name lookup,  Next: Temporaries,  Prev: Static Definitions,  Up: C++ Misunderstandings
+
+10.7.2 Name Lookup, Templates, and Accessing Members of Base Classes
+--------------------------------------------------------------------
+
+The C++ standard prescribes that all names that are not dependent on
+template parameters are bound to their present definitions when parsing
+a template function or class.(1)  Only names that are dependent are
+looked up at the point of instantiation.  For example, consider
+
+       void foo(double);
+
+       struct A {
+         template <typename T>
+         void f () {
+           foo (1);        // 1
+           int i = N;      // 2
+           T t;
+           t.bar();        // 3
+           foo (t);        // 4
+         }
+
+         static const int N;
+       };
+
+ Here, the names 'foo' and 'N' appear in a context that does not depend
+on the type of 'T'.  The compiler will thus require that they are
+defined in the context of use in the template, not only before the point
+of instantiation, and will here use '::foo(double)' and 'A::N',
+respectively.  In particular, it will convert the integer value to a
+'double' when passing it to '::foo(double)'.
+
+ Conversely, 'bar' and the call to 'foo' in the fourth marked line are
+used in contexts that do depend on the type of 'T', so they are only
+looked up at the point of instantiation, and you can provide
+declarations for them after declaring the template, but before
+instantiating it.  In particular, if you instantiate 'A::f<int>', the
+last line will call an overloaded '::foo(int)' if one was provided, even
+if after the declaration of 'struct A'.
+
+ This distinction between lookup of dependent and non-dependent names is
+called two-stage (or dependent) name lookup.  G++ implements it since
+version 3.4.
+
+ Two-stage name lookup sometimes leads to situations with behavior
+different from non-template codes.  The most common is probably this:
+
+       template <typename T> struct Base {
+         int i;
+       };
+
+       template <typename T> struct Derived : public Base<T> {
+         int get_i() { return i; }
+       };
+
+ In 'get_i()', 'i' is not used in a dependent context, so the compiler
+will look for a name declared at the enclosing namespace scope (which is
+the global scope here).  It will not look into the base class, since
+that is dependent and you may declare specializations of 'Base' even
+after declaring 'Derived', so the compiler can't really know what 'i'
+would refer to.  If there is no global variable 'i', then you will get
+an error message.
+
+ In order to make it clear that you want the member of the base class,
+you need to defer lookup until instantiation time, at which the base
+class is known.  For this, you need to access 'i' in a dependent
+context, by either using 'this->i' (remember that 'this' is of type
+'Derived<T>*', so is obviously dependent), or using 'Base<T>::i'.
+Alternatively, 'Base<T>::i' might be brought into scope by a
+'using'-declaration.
+
+ Another, similar example involves calling member functions of a base
+class:
+
+       template <typename T> struct Base {
+           int f();
+       };
+
+       template <typename T> struct Derived : Base<T> {
+           int g() { return f(); };
+       };
+
+ Again, the call to 'f()' is not dependent on template arguments (there
+are no arguments that depend on the type 'T', and it is also not
+otherwise specified that the call should be in a dependent context).
+Thus a global declaration of such a function must be available, since
+the one in the base class is not visible until instantiation time.  The
+compiler will consequently produce the following error message:
+
+       x.cc: In member function `int Derived<T>::g()':
+       x.cc:6: error: there are no arguments to `f' that depend on a template
+          parameter, so a declaration of `f' must be available
+       x.cc:6: error: (if you use `-fpermissive', G++ will accept your code, but
+          allowing the use of an undeclared name is deprecated)
+
+ To make the code valid either use 'this->f()', or 'Base<T>::f()'.
+Using the '-fpermissive' flag will also let the compiler accept the
+code, by marking all function calls for which no declaration is visible
+at the time of definition of the template for later lookup at
+instantiation time, as if it were a dependent call.  We do not recommend
+using '-fpermissive' to work around invalid code, and it will also only
+catch cases where functions in base classes are called, not where
+variables in base classes are used (as in the example above).
+
+ Note that some compilers (including G++ versions prior to 3.4) get
+these examples wrong and accept above code without an error.  Those
+compilers do not implement two-stage name lookup correctly.
+
+   ---------- Footnotes ----------
+
+   (1) The C++ standard just uses the term "dependent" for names that
+depend on the type or value of template parameters.  This shorter term
+will also be used in the rest of this section.
+
+
+File: llvm.info,  Node: Temporaries,  Next: Copy Assignment,  Prev: Name lookup,  Up: C++ Misunderstandings
+
+10.7.3 Temporaries May Vanish Before You Expect
+-----------------------------------------------
+
+It is dangerous to use pointers or references to _portions_ of a
+temporary object.  The compiler may very well delete the object before
+you expect it to, leaving a pointer to garbage.  The most common place
+where this problem crops up is in classes like string classes,
+especially ones that define a conversion function to type 'char *' or
+'const char *'--which is one reason why the standard 'string' class
+requires you to call the 'c_str' member function.  However, any class
+that returns a pointer to some internal structure is potentially subject
+to this problem.
+
+ For example, a program may use a function 'strfunc' that returns
+'string' objects, and another function 'charfunc' that operates on
+pointers to 'char':
+
+     string strfunc ();
+     void charfunc (const char *);
+
+     void
+     f ()
+     {
+       const char *p = strfunc().c_str();
+       ...
+       charfunc (p);
+       ...
+       charfunc (p);
+     }
+
+In this situation, it may seem reasonable to save a pointer to the C
+string returned by the 'c_str' member function and use that rather than
+call 'c_str' repeatedly.  However, the temporary string created by the
+call to 'strfunc' is destroyed after 'p' is initialized, at which point
+'p' is left pointing to freed memory.
+
+ Code like this may run successfully under some other compilers,
+particularly obsolete cfront-based compilers that delete temporaries
+along with normal local variables.  However, the GNU C++ behavior is
+standard-conforming, so if your program depends on late destruction of
+temporaries it is not portable.
+
+ The safe way to write such code is to give the temporary a name, which
+forces it to remain until the end of the scope of the name.  For
+example:
+
+     const string& tmp = strfunc ();
+     charfunc (tmp.c_str ());
+
+
+File: llvm.info,  Node: Copy Assignment,  Prev: Temporaries,  Up: C++ Misunderstandings
+
+10.7.4 Implicit Copy-Assignment for Virtual Bases
+-------------------------------------------------
+
+When a base class is virtual, only one subobject of the base class
+belongs to each full object.  Also, the constructors and destructors are
+invoked only once, and called from the most-derived class.  However,
+such objects behave unspecified when being assigned.  For example:
+
+     struct Base{
+       char *name;
+       Base(char *n) : name(strdup(n)){}
+       Base& operator= (const Base& other){
+        free (name);
+        name = strdup (other.name);
+       }
+     };
+
+     struct A:virtual Base{
+       int val;
+       A():Base("A"){}
+     };
+
+     struct B:virtual Base{
+       int bval;
+       B():Base("B"){}
+     };
+
+     struct Derived:public A, public B{
+       Derived():Base("Derived"){}
+     };
+
+     void func(Derived &d1, Derived &d2)
+     {
+       d1 = d2;
+     }
+
+ The C++ standard specifies that 'Base::Base' is only called once when
+constructing or copy-constructing a Derived object.  It is unspecified
+whether 'Base::operator=' is called more than once when the implicit
+copy-assignment for Derived objects is invoked (as it is inside 'func'
+in the example).
+
+ G++ implements the "intuitive" algorithm for copy-assignment: assign
+all direct bases, then assign all members.  In that algorithm, the
+virtual base subobject can be encountered more than once.  In the
+example, copying proceeds in the following order: 'val', 'name' (via
+'strdup'), 'bval', and 'name' again.
+
+ If application code relies on copy-assignment, a user-defined
+copy-assignment operator removes any uncertainties.  With such an
+operator, the application can define whether and how the virtual base
+subobject is assigned.
+
+
+File: llvm.info,  Node: Non-bugs,  Next: Warnings and Errors,  Prev: C++ Misunderstandings,  Up: Trouble
+
+10.8 Certain Changes We Don't Want to Make
+==========================================
+
+This section lists changes that people frequently request, but which we
+do not make because we think GCC is better without them.
+
+   * Checking the number and type of arguments to a function which has
+     an old-fashioned definition and no prototype.
+
+     Such a feature would work only occasionally--only for calls that
+     appear in the same file as the called function, following the
+     definition.  The only way to check all calls reliably is to add a
+     prototype for the function.  But adding a prototype eliminates the
+     motivation for this feature.  So the feature is not worthwhile.
+
+   * Warning about using an expression whose type is signed as a shift
+     count.
+
+     Shift count operands are probably signed more often than unsigned.
+     Warning about this would cause far more annoyance than good.
+
+   * Warning about assigning a signed value to an unsigned variable.
+
+     Such assignments must be very common; warning about them would
+     cause more annoyance than good.
+
+   * Warning when a non-void function value is ignored.
+
+     C contains many standard functions that return a value that most
+     programs choose to ignore.  One obvious example is 'printf'.
+     Warning about this practice only leads the defensive programmer to
+     clutter programs with dozens of casts to 'void'.  Such casts are
+     required so frequently that they become visual noise.  Writing
+     those casts becomes so automatic that they no longer convey useful
+     information about the intentions of the programmer.  For functions
+     where the return value should never be ignored, use the
+     'warn_unused_result' function attribute (*note Function
+     Attributes::).
+
+   * Making '-fshort-enums' the default.
+
+     This would cause storage layout to be incompatible with most other
+     C compilers.  And it doesn't seem very important, given that you
+     can get the same result in other ways.  The case where it matters
+     most is when the enumeration-valued object is inside a structure,
+     and in that case you can specify a field width explicitly.
+
+   * Making bit-fields unsigned by default on particular machines where
+     "the ABI standard" says to do so.
+
+     The ISO C standard leaves it up to the implementation whether a
+     bit-field declared plain 'int' is signed or not.  This in effect
+     creates two alternative dialects of C.
+
+     The GNU C compiler supports both dialects; you can specify the
+     signed dialect with '-fsigned-bitfields' and the unsigned dialect
+     with '-funsigned-bitfields'.  However, this leaves open the
+     question of which dialect to use by default.
+
+     Currently, the preferred dialect makes plain bit-fields signed,
+     because this is simplest.  Since 'int' is the same as 'signed int'
+     in every other context, it is cleanest for them to be the same in
+     bit-fields as well.
+
+     Some computer manufacturers have published Application Binary
+     Interface standards which specify that plain bit-fields should be
+     unsigned.  It is a mistake, however, to say anything about this
+     issue in an ABI.  This is because the handling of plain bit-fields
+     distinguishes two dialects of C.  Both dialects are meaningful on
+     every type of machine.  Whether a particular object file was
+     compiled using signed bit-fields or unsigned is of no concern to
+     other object files, even if they access the same bit-fields in the
+     same data structures.
+
+     A given program is written in one or the other of these two
+     dialects.  The program stands a chance to work on most any machine
+     if it is compiled with the proper dialect.  It is unlikely to work
+     at all if compiled with the wrong dialect.
+
+     Many users appreciate the GNU C compiler because it provides an
+     environment that is uniform across machines.  These users would be
+     inconvenienced if the compiler treated plain bit-fields differently
+     on certain machines.
+
+     Occasionally users write programs intended only for a particular
+     machine type.  On these occasions, the users would benefit if the
+     GNU C compiler were to support by default the same dialect as the
+     other compilers on that machine.  But such applications are rare.
+     And users writing a program to run on more than one type of machine
+     cannot possibly benefit from this kind of compatibility.
+
+     This is why GCC does and will treat plain bit-fields in the same
+     fashion on all types of machines (by default).
+
+     There are some arguments for making bit-fields unsigned by default
+     on all machines.  If, for example, this becomes a universal de
+     facto standard, it would make sense for GCC to go along with it.
+     This is something to be considered in the future.
+
+     (Of course, users strongly concerned about portability should
+     indicate explicitly in each bit-field whether it is signed or not.
+     In this way, they write programs which have the same meaning in
+     both C dialects.)
+
+   * Undefining '__STDC__' when '-ansi' is not used.
+
+     Currently, GCC defines '__STDC__' unconditionally.  This provides
+     good results in practice.
+
+     Programmers normally use conditionals on '__STDC__' to ask whether
+     it is safe to use certain features of ISO C, such as function
+     prototypes or ISO token concatenation.  Since plain 'gcc' supports
+     all the features of ISO C, the correct answer to these questions is
+     "yes".
+
+     Some users try to use '__STDC__' to check for the availability of
+     certain library facilities.  This is actually incorrect usage in an
+     ISO C program, because the ISO C standard says that a conforming
+     freestanding implementation should define '__STDC__' even though it
+     does not have the library facilities.  'gcc -ansi -pedantic' is a
+     conforming freestanding implementation, and it is therefore
+     required to define '__STDC__', even though it does not come with an
+     ISO C library.
+
+     Sometimes people say that defining '__STDC__' in a compiler that
+     does not completely conform to the ISO C standard somehow violates
+     the standard.  This is illogical.  The standard is a standard for
+     compilers that claim to support ISO C, such as 'gcc -ansi'--not for
+     other compilers such as plain 'gcc'.  Whatever the ISO C standard
+     says is relevant to the design of plain 'gcc' without '-ansi' only
+     for pragmatic reasons, not as a requirement.
+
+     GCC normally defines '__STDC__' to be 1, and in addition defines
+     '__STRICT_ANSI__' if you specify the '-ansi' option, or a '-std'
+     option for strict conformance to some version of ISO C.  On some
+     hosts, system include files use a different convention, where
+     '__STDC__' is normally 0, but is 1 if the user specifies strict
+     conformance to the C Standard.  GCC follows the host convention
+     when processing system include files, but when processing user
+     files it follows the usual GNU C convention.
+
+   * Undefining '__STDC__' in C++.
+
+     Programs written to compile with C++-to-C translators get the value
+     of '__STDC__' that goes with the C compiler that is subsequently
+     used.  These programs must test '__STDC__' to determine what kind
+     of C preprocessor that compiler uses: whether they should
+     concatenate tokens in the ISO C fashion or in the traditional
+     fashion.
+
+     These programs work properly with GNU C++ if '__STDC__' is defined.
+     They would not work otherwise.
+
+     In addition, many header files are written to provide prototypes in
+     ISO C but not in traditional C.  Many of these header files can
+     work without change in C++ provided '__STDC__' is defined.  If
+     '__STDC__' is not defined, they will all fail, and will all need to
+     be changed to test explicitly for C++ as well.
+
+   * Deleting "empty" loops.
+
+     Historically, GCC has not deleted "empty" loops under the
+     assumption that the most likely reason you would put one in a
+     program is to have a delay, so deleting them will not make real
+     programs run any faster.
+
+     However, the rationale here is that optimization of a nonempty loop
+     cannot produce an empty one.  This held for carefully written C
+     compiled with less powerful optimizers but is not always the case
+     for carefully written C++ or with more powerful optimizers.  Thus
+     GCC will remove operations from loops whenever it can determine
+     those operations are not externally visible (apart from the time
+     taken to execute them, of course).  In case the loop can be proved
+     to be finite, GCC will also remove the loop itself.
+
+     Be aware of this when performing timing tests, for instance the
+     following loop can be completely removed, provided
+     'some_expression' can provably not change any global state.
+
+          {
+             int sum = 0;
+             int ix;
+
+             for (ix = 0; ix != 10000; ix++)
+                sum += some_expression;
+          }
+
+     Even though 'sum' is accumulated in the loop, no use is made of
+     that summation, so the accumulation can be removed.
+
+   * Making side effects happen in the same order as in some other
+     compiler.
+
+     It is never safe to depend on the order of evaluation of side
+     effects.  For example, a function call like this may very well
+     behave differently from one compiler to another:
+
+          void func (int, int);
+
+          int i = 2;
+          func (i++, i++);
+
+     There is no guarantee (in either the C or the C++ standard language
+     definitions) that the increments will be evaluated in any
+     particular order.  Either increment might happen first.  'func'
+     might get the arguments '2, 3', or it might get '3, 2', or even '2,
+     2'.
+
+   * Making certain warnings into errors by default.
+
+     Some ISO C testsuites report failure when the compiler does not
+     produce an error message for a certain program.
+
+     ISO C requires a "diagnostic" message for certain kinds of invalid
+     programs, but a warning is defined by GCC to count as a diagnostic.
+     If GCC produces a warning but not an error, that is correct ISO C
+     support.  If testsuites call this "failure", they should be run
+     with the GCC option '-pedantic-errors', which will turn these
+     warnings into errors.
+
+
+File: llvm.info,  Node: Warnings and Errors,  Prev: Non-bugs,  Up: Trouble
+
+10.9 Warning Messages and Error Messages
+========================================
+
+The GNU compiler can produce two kinds of diagnostics: errors and
+warnings.  Each kind has a different purpose:
+
+     "Errors" report problems that make it impossible to compile your
+     program.  GCC reports errors with the source file name and line
+     number where the problem is apparent.
+
+     "Warnings" report other unusual conditions in your code that _may_
+     indicate a problem, although compilation can (and does) proceed.
+     Warning messages also report the source file name and line number,
+     but include the text 'warning:' to distinguish them from error
+     messages.
+
+ Warnings may indicate danger points where you should check to make sure
+that your program really does what you intend; or the use of obsolete
+features; or the use of nonstandard features of GNU C or C++.  Many
+warnings are issued only if you ask for them, with one of the '-W'
+options (for instance, '-Wall' requests a variety of useful warnings).
+
+ GCC always tries to compile your program if possible; it never
+gratuitously rejects a program whose meaning is clear merely because
+(for instance) it fails to conform to a standard.  In some cases,
+however, the C and C++ standards specify that certain extensions are
+forbidden, and a diagnostic _must_ be issued by a conforming compiler.
+The '-pedantic' option tells GCC to issue warnings in such cases;
+'-pedantic-errors' says to make them errors instead.  This does not mean
+that _all_ non-ISO constructs get warnings or errors.
+
+ *Note Options to Request or Suppress Warnings: Warning Options, for
+more detail on these and related command-line options.
+
+
+File: llvm.info,  Node: Bugs,  Next: Service,  Prev: Trouble,  Up: Top
+
+11 Reporting Bugs
+*****************
+
+Your bug reports play an essential role in making GCC reliable.
+
+ When you encounter a problem, the first thing to do is to see if it is
+already known.  *Note Trouble::.  If it isn't known, then you should
+report the problem.
+
+* Menu:
+
+* Criteria:  Bug Criteria.   Have you really found a bug?
+* Reporting: Bug Reporting.  How to report a bug effectively.
+
+
+File: llvm.info,  Node: Bug Criteria,  Next: Bug Reporting,  Up: Bugs
+
+11.1 Have You Found a Bug?
+==========================
+
+If you are not sure whether you have found a bug, here are some
+guidelines:
+
+   * If the compiler gets a fatal signal, for any input whatever, that
+     is a compiler bug.  Reliable compilers never crash.
+
+   * If the compiler produces invalid assembly code, for any input
+     whatever (except an 'asm' statement), that is a compiler bug,
+     unless the compiler reports errors (not just warnings) which would
+     ordinarily prevent the assembler from being run.
+
+   * If the compiler produces valid assembly code that does not
+     correctly execute the input source code, that is a compiler bug.
+
+     However, you must double-check to make sure, because you may have a
+     program whose behavior is undefined, which happened by chance to
+     give the desired results with another C or C++ compiler.
+
+     For example, in many nonoptimizing compilers, you can write 'x;' at
+     the end of a function instead of 'return x;', with the same
+     results.  But the value of the function is undefined if 'return' is
+     omitted; it is not a bug when GCC produces different results.
+
+     Problems often result from expressions with two increment
+     operators, as in 'f (*p++, *p++)'.  Your previous compiler might
+     have interpreted that expression the way you intended; GCC might
+     interpret it another way.  Neither compiler is wrong.  The bug is
+     in your code.
+
+     After you have localized the error to a single source line, it
+     should be easy to check for these things.  If your program is
+     correct and well defined, you have found a compiler bug.
+
+   * If the compiler produces an error message for valid input, that is
+     a compiler bug.
+
+   * If the compiler does not produce an error message for invalid
+     input, that is a compiler bug.  However, you should note that your
+     idea of "invalid input" might be someone else's idea of "an
+     extension" or "support for traditional practice".
+
+   * If you are an experienced user of one of the languages GCC
+     supports, your suggestions for improvement of GCC are welcome in
+     any case.
+
+
+File: llvm.info,  Node: Bug Reporting,  Prev: Bug Criteria,  Up: Bugs
+
+11.2 How and Where to Report Bugs
+=================================
+
+Bugs should be reported to the bug database at support@embecosm.com
+(mailto:support@embecosm.com).
+
+
+File: llvm.info,  Node: Service,  Next: Contributing,  Prev: Bugs,  Up: Top
+
+12 How To Get Help with GCC
+***************************
+
+If you need help installing, using or changing GCC, there are two ways
+to find it:
+
+   * Send a message to a suitable network mailing list.  First try
+     <gcc-help@gcc.gnu.org> (for help installing or using GCC), and if
+     that brings no response, try <gcc@gcc.gnu.org>.  For help changing
+     GCC, ask <gcc@gcc.gnu.org>.  If you think you have found a bug in
+     GCC, please report it following the instructions at *note Bug
+     Reporting::.
+
+   * Look in the service directory for someone who might help you for a
+     fee.  The service directory is found at
+     <http://www.fsf.org/resources/service>.
+
+ For further information, see <http://gcc.gnu.org/faq.html#support>.
+
+
+File: llvm.info,  Node: Contributing,  Next: Funding,  Prev: Service,  Up: Top
+
+13 Contributing to GCC Development
+**********************************
+
+If you would like to help pretest GCC releases to assure they work well,
+current development sources are available by SVN (see
+<http://gcc.gnu.org/svn.html>).  Source and binary snapshots are also
+available for FTP; see <http://gcc.gnu.org/snapshots.html>.
+
+ If you would like to work on improvements to GCC, please read the
+advice at these URLs:
+
+     <http://gcc.gnu.org/contribute.html>
+     <http://gcc.gnu.org/contributewhy.html>
+
+for information on how to make useful contributions and avoid
+duplication of effort.  Suggested projects are listed at
+<http://gcc.gnu.org/projects/>.
+
+
+File: llvm.info,  Node: Funding,  Next: GNU Project,  Prev: Contributing,  Up: Top
+
+Funding Free Software
+*********************
+
+If you want to have more free software a few years from now, it makes
+sense for you to help encourage people to contribute funds for its
+development.  The most effective approach known is to encourage
+commercial redistributors to donate.
+
+ Users of free software systems can boost the pace of development by
+encouraging for-a-fee distributors to donate part of their selling price
+to free software developers--the Free Software Foundation, and others.
+
+ The way to convince distributors to do this is to demand it and expect
+it from them.  So when you compare distributors, judge them partly by
+how much they give to free software development.  Show distributors they
+must compete to be the one who gives the most.
+
+ To make this approach work, you must insist on numbers that you can
+compare, such as, "We will donate ten dollars to the Frobnitz project
+for each disk sold."  Don't be satisfied with a vague promise, such as
+"A portion of the profits are donated," since it doesn't give a basis
+for comparison.
+
+ Even a precise fraction "of the profits from this disk" is not very
+meaningful, since creative accounting and unrelated business decisions
+can greatly alter what fraction of the sales price counts as profit.  If
+the price you pay is $50, ten percent of the profit is probably less
+than a dollar; it might be a few cents, or nothing at all.
+
+ Some redistributors do development work themselves.  This is useful
+too; but to keep everyone honest, you need to inquire how much they do,
+and what kind.  Some kinds of development make much more long-term
+difference than others.  For example, maintaining a separate version of
+a program contributes very little; maintaining the standard version of a
+program for the whole community contributes much.  Easy new ports
+contribute little, since someone else would surely do them; difficult
+ports such as adding a new CPU to the GNU Compiler Collection contribute
+more; major new features or packages contribute the most.
+
+ By establishing the idea that supporting further development is "the
+proper thing to do" when distributing free software for a fee, we can
+assure a steady flow of resources into making more free software.
+
+     Copyright (C) 1994 Free Software Foundation, Inc.
+     Verbatim copying and redistribution of this section is permitted
+     without royalty; alteration is not permitted.
+
+
+File: llvm.info,  Node: GNU Project,  Next: Copying,  Prev: Funding,  Up: Top
+
+The GNU Project and GNU/Linux
+*****************************
+
+The GNU Project was launched in 1984 to develop a complete Unix-like
+operating system which is free software: the GNU system.  (GNU is a
+recursive acronym for "GNU's Not Unix"; it is pronounced "guh-NEW".)
+Variants of the GNU operating system, which use the kernel Linux, are
+now widely used; though these systems are often referred to as "Linux",
+they are more accurately called GNU/Linux systems.
+
+ For more information, see:
+     <http://www.gnu.org/>
+     <http://www.gnu.org/gnu/linux-and-gnu.html>
+
+
+File: llvm.info,  Node: Copying,  Next: GNU Free Documentation License,  Prev: GNU Project,  Up: Top
+
+GNU General Public License
+**************************
+
+                        Version 3, 29 June 2007
+
+     Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
+
+     Everyone is permitted to copy and distribute verbatim copies of this
+     license document, but changing it is not allowed.
+
+Preamble
+========
+
+The GNU General Public License is a free, copyleft license for software
+and other kinds of works.
+
+ The licenses for most software and other practical works are designed
+to take away your freedom to share and change the works.  By contrast,
+the GNU General Public License is intended to guarantee your freedom to
+share and change all versions of a program-to make sure it remains free
+software for all its users.  We, the Free Software Foundation, use the
+GNU General Public License for most of our software; it applies also to
+any other work released this way by its authors.  You can apply it to
+your programs, too.
+
+ When we speak of free software, we are referring to freedom, not price.
+Our General Public Licenses are designed to make sure that you have the
+freedom to distribute copies of free software (and charge for them if
+you wish), that you receive source code or can get it if you want it,
+that you can change the software or use pieces of it in new free
+programs, and that you know you can do these things.
+
+ To protect your rights, we need to prevent others from denying you
+these rights or asking you to surrender the rights.  Therefore, you have
+certain responsibilities if you distribute copies of the software, or if
+you modify it: responsibilities to respect the freedom of others.
+
+ For example, if you distribute copies of such a program, whether gratis
+or for a fee, you must pass on to the recipients the same freedoms that
+you received.  You must make sure that they, too, receive or can get the
+source code.  And you must show them these terms so they know their
+rights.
+
+ Developers that use the GNU GPL protect your rights with two steps: (1)
+assert copyright on the software, and (2) offer you this License giving
+you legal permission to copy, distribute and/or modify it.
+
+ For the developers' and authors' protection, the GPL clearly explains
+that there is no warranty for this free software.  For both users' and
+authors' sake, the GPL requires that modified versions be marked as
+changed, so that their problems will not be attributed erroneously to
+authors of previous versions.
+
+ Some devices are designed to deny users access to install or run
+modified versions of the software inside them, although the manufacturer
+can do so.  This is fundamentally incompatible with the aim of
+protecting users' freedom to change the software.  The systematic
+pattern of such abuse occurs in the area of products for individuals to
+use, which is precisely where it is most unacceptable.  Therefore, we
+have designed this version of the GPL to prohibit the practice for those
+products.  If such problems arise substantially in other domains, we
+stand ready to extend this provision to those domains in future versions
+of the GPL, as needed to protect the freedom of users.
+
+ Finally, every program is threatened constantly by software patents.
+States should not allow patents to restrict development and use of
+software on general-purpose computers, but in those that do, we wish to
+avoid the special danger that patents applied to a free program could
+make it effectively proprietary.  To prevent this, the GPL assures that
+patents cannot be used to render the program non-free.
+
+ The precise terms and conditions for copying, distribution and
+modification follow.
+
+TERMS AND CONDITIONS
+====================
+
+  0. Definitions.
+
+     "This License" refers to version 3 of the GNU General Public
+     License.
+
+     "Copyright" also means copyright-like laws that apply to other
+     kinds of works, such as semiconductor masks.
+
+     "The Program" refers to any copyrightable work licensed under this
+     License.  Each licensee is addressed as "you".  "Licensees" and
+     "recipients" may be individuals or organizations.
+
+     To "modify" a work means to copy from or adapt all or part of the
+     work in a fashion requiring copyright permission, other than the
+     making of an exact copy.  The resulting work is called a "modified
+     version" of the earlier work or a work "based on" the earlier work.
+
+     A "covered work" means either the unmodified Program or a work
+     based on the Program.
+
+     To "propagate" a work means to do anything with it that, without
+     permission, would make you directly or secondarily liable for
+     infringement under applicable copyright law, except executing it on
+     a computer or modifying a private copy.  Propagation includes
+     copying, distribution (with or without modification), making
+     available to the public, and in some countries other activities as
+     well.
+
+     To "convey" a work means any kind of propagation that enables other
+     parties to make or receive copies.  Mere interaction with a user
+     through a computer network, with no transfer of a copy, is not
+     conveying.
+
+     An interactive user interface displays "Appropriate Legal Notices"
+     to the extent that it includes a convenient and prominently visible
+     feature that (1) displays an appropriate copyright notice, and (2)
+     tells the user that there is no warranty for the work (except to
+     the extent that warranties are provided), that licensees may convey
+     the work under this License, and how to view a copy of this
+     License.  If the interface presents a list of user commands or
+     options, such as a menu, a prominent item in the list meets this
+     criterion.
+
+  1. Source Code.
+
+     The "source code" for a work means the preferred form of the work
+     for making modifications to it.  "Object code" means any non-source
+     form of a work.
+
+     A "Standard Interface" means an interface that either is an
+     official standard defined by a recognized standards body, or, in
+     the case of interfaces specified for a particular programming
+     language, one that is widely used among developers working in that
+     language.
+
+     The "System Libraries" of an executable work include anything,
+     other than the work as a whole, that (a) is included in the normal
+     form of packaging a Major Component, but which is not part of that
+     Major Component, and (b) serves only to enable use of the work with
+     that Major Component, or to implement a Standard Interface for
+     which an implementation is available to the public in source code
+     form.  A "Major Component", in this context, means a major
+     essential component (kernel, window system, and so on) of the
+     specific operating system (if any) on which the executable work
+     runs, or a compiler used to produce the work, or an object code
+     interpreter used to run it.
+
+     The "Corresponding Source" for a work in object code form means all
+     the source code needed to generate, install, and (for an executable
+     work) run the object code and to modify the work, including scripts
+     to control those activities.  However, it does not include the
+     work's System Libraries, or general-purpose tools or generally
+     available free programs which are used unmodified in performing
+     those activities but which are not part of the work.  For example,
+     Corresponding Source includes interface definition files associated
+     with source files for the work, and the source code for shared
+     libraries and dynamically linked subprograms that the work is
+     specifically designed to require, such as by intimate data
+     communication or control flow between those subprograms and other
+     parts of the work.
+
+     The Corresponding Source need not include anything that users can
+     regenerate automatically from other parts of the Corresponding
+     Source.
+
+     The Corresponding Source for a work in source code form is that
+     same work.
+
+  2. Basic Permissions.
+
+     All rights granted under this License are granted for the term of
+     copyright on the Program, and are irrevocable provided the stated
+     conditions are met.  This License explicitly affirms your unlimited
+     permission to run the unmodified Program.  The output from running
+     a covered work is covered by this License only if the output, given
+     its content, constitutes a covered work.  This License acknowledges
+     your rights of fair use or other equivalent, as provided by
+     copyright law.
+
+     You may make, run and propagate covered works that you do not
+     convey, without conditions so long as your license otherwise
+     remains in force.  You may convey covered works to others for the
+     sole purpose of having them make modifications exclusively for you,
+     or provide you with facilities for running those works, provided
+     that you comply with the terms of this License in conveying all
+     material for which you do not control copyright.  Those thus making
+     or running the covered works for you must do so exclusively on your
+     behalf, under your direction and control, on terms that prohibit
+     them from making any copies of your copyrighted material outside
+     their relationship with you.
+
+     Conveying under any other circumstances is permitted solely under
+     the conditions stated below.  Sublicensing is not allowed; section
+     10 makes it unnecessary.
+
+  3. Protecting Users' Legal Rights From Anti-Circumvention Law.
+
+     No covered work shall be deemed part of an effective technological
+     measure under any applicable law fulfilling obligations under
+     article 11 of the WIPO copyright treaty adopted on 20 December
+     1996, or similar laws prohibiting or restricting circumvention of
+     such measures.
+
+     When you convey a covered work, you waive any legal power to forbid
+     circumvention of technological measures to the extent such
+     circumvention is effected by exercising rights under this License
+     with respect to the covered work, and you disclaim any intention to
+     limit operation or modification of the work as a means of
+     enforcing, against the work's users, your or third parties' legal
+     rights to forbid circumvention of technological measures.
+
+  4. Conveying Verbatim Copies.
+
+     You may convey verbatim copies of the Program's source code as you
+     receive it, in any medium, provided that you conspicuously and
+     appropriately publish on each copy an appropriate copyright notice;
+     keep intact all notices stating that this License and any
+     non-permissive terms added in accord with section 7 apply to the
+     code; keep intact all notices of the absence of any warranty; and
+     give all recipients a copy of this License along with the Program.
+
+     You may charge any price or no price for each copy that you convey,
+     and you may offer support or warranty protection for a fee.
+
+  5. Conveying Modified Source Versions.
+
+     You may convey a work based on the Program, or the modifications to
+     produce it from the Program, in the form of source code under the
+     terms of section 4, provided that you also meet all of these
+     conditions:
+
+       a. The work must carry prominent notices stating that you
+          modified it, and giving a relevant date.
+
+       b. The work must carry prominent notices stating that it is
+          released under this License and any conditions added under
+          section 7.  This requirement modifies the requirement in
+          section 4 to "keep intact all notices".
+
+       c. You must license the entire work, as a whole, under this
+          License to anyone who comes into possession of a copy.  This
+          License will therefore apply, along with any applicable
+          section 7 additional terms, to the whole of the work, and all
+          its parts, regardless of how they are packaged.  This License
+          gives no permission to license the work in any other way, but
+          it does not invalidate such permission if you have separately
+          received it.
+
+       d. If the work has interactive user interfaces, each must display
+          Appropriate Legal Notices; however, if the Program has
+          interactive interfaces that do not display Appropriate Legal
+          Notices, your work need not make them do so.
+
+     A compilation of a covered work with other separate and independent
+     works, which are not by their nature extensions of the covered
+     work, and which are not combined with it such as to form a larger
+     program, in or on a volume of a storage or distribution medium, is
+     called an "aggregate" if the compilation and its resulting
+     copyright are not used to limit the access or legal rights of the
+     compilation's users beyond what the individual works permit.
+     Inclusion of a covered work in an aggregate does not cause this
+     License to apply to the other parts of the aggregate.
+
+  6. Conveying Non-Source Forms.
+
+     You may convey a covered work in object code form under the terms
+     of sections 4 and 5, provided that you also convey the
+     machine-readable Corresponding Source under the terms of this
+     License, in one of these ways:
+
+       a. Convey the object code in, or embodied in, a physical product
+          (including a physical distribution medium), accompanied by the
+          Corresponding Source fixed on a durable physical medium
+          customarily used for software interchange.
+
+       b. Convey the object code in, or embodied in, a physical product
+          (including a physical distribution medium), accompanied by a
+          written offer, valid for at least three years and valid for as
+          long as you offer spare parts or customer support for that
+          product model, to give anyone who possesses the object code
+          either (1) a copy of the Corresponding Source for all the
+          software in the product that is covered by this License, on a
+          durable physical medium customarily used for software
+          interchange, for a price no more than your reasonable cost of
+          physically performing this conveying of source, or (2) access
+          to copy the Corresponding Source from a network server at no
+          charge.
+
+       c. Convey individual copies of the object code with a copy of the
+          written offer to provide the Corresponding Source.  This
+          alternative is allowed only occasionally and noncommercially,
+          and only if you received the object code with such an offer,
+          in accord with subsection 6b.
+
+       d. Convey the object code by offering access from a designated
+          place (gratis or for a charge), and offer equivalent access to
+          the Corresponding Source in the same way through the same
+          place at no further charge.  You need not require recipients
+          to copy the Corresponding Source along with the object code.
+          If the place to copy the object code is a network server, the
+          Corresponding Source may be on a different server (operated by
+          you or a third party) that supports equivalent copying
+          facilities, provided you maintain clear directions next to the
+          object code saying where to find the Corresponding Source.
+          Regardless of what server hosts the Corresponding Source, you
+          remain obligated to ensure that it is available for as long as
+          needed to satisfy these requirements.
+
+       e. Convey the object code using peer-to-peer transmission,
+          provided you inform other peers where the object code and
+          Corresponding Source of the work are being offered to the
+          general public at no charge under subsection 6d.
+
+     A separable portion of the object code, whose source code is
+     excluded from the Corresponding Source as a System Library, need
+     not be included in conveying the object code work.
+
+     A "User Product" is either (1) a "consumer product", which means
+     any tangible personal property which is normally used for personal,
+     family, or household purposes, or (2) anything designed or sold for
+     incorporation into a dwelling.  In determining whether a product is
+     a consumer product, doubtful cases shall be resolved in favor of
+     coverage.  For a particular product received by a particular user,
+     "normally used" refers to a typical or common use of that class of
+     product, regardless of the status of the particular user or of the
+     way in which the particular user actually uses, or expects or is
+     expected to use, the product.  A product is a consumer product
+     regardless of whether the product has substantial commercial,
+     industrial or non-consumer uses, unless such uses represent the
+     only significant mode of use of the product.
+
+     "Installation Information" for a User Product means any methods,
+     procedures, authorization keys, or other information required to
+     install and execute modified versions of a covered work in that
+     User Product from a modified version of its Corresponding Source.
+     The information must suffice to ensure that the continued
+     functioning of the modified object code is in no case prevented or
+     interfered with solely because modification has been made.
+
+     If you convey an object code work under this section in, or with,
+     or specifically for use in, a User Product, and the conveying
+     occurs as part of a transaction in which the right of possession
+     and use of the User Product is transferred to the recipient in
+     perpetuity or for a fixed term (regardless of how the transaction
+     is characterized), the Corresponding Source conveyed under this
+     section must be accompanied by the Installation Information.  But
+     this requirement does not apply if neither you nor any third party
+     retains the ability to install modified object code on the User
+     Product (for example, the work has been installed in ROM).
+
+     The requirement to provide Installation Information does not
+     include a requirement to continue to provide support service,
+     warranty, or updates for a work that has been modified or installed
+     by the recipient, or for the User Product in which it has been
+     modified or installed.  Access to a network may be denied when the
+     modification itself materially and adversely affects the operation
+     of the network or violates the rules and protocols for
+     communication across the network.
+
+     Corresponding Source conveyed, and Installation Information
+     provided, in accord with this section must be in a format that is
+     publicly documented (and with an implementation available to the
+     public in source code form), and must require no special password
+     or key for unpacking, reading or copying.
+
+  7. Additional Terms.
+
+     "Additional permissions" are terms that supplement the terms of
+     this License by making exceptions from one or more of its
+     conditions.  Additional permissions that are applicable to the
+     entire Program shall be treated as though they were included in
+     this License, to the extent that they are valid under applicable
+     law.  If additional permissions apply only to part of the Program,
+     that part may be used separately under those permissions, but the
+     entire Program remains governed by this License without regard to
+     the additional permissions.
+
+     When you convey a copy of a covered work, you may at your option
+     remove any additional permissions from that copy, or from any part
+     of it.  (Additional permissions may be written to require their own
+     removal in certain cases when you modify the work.)  You may place
+     additional permissions on material, added by you to a covered work,
+     for which you have or can give appropriate copyright permission.
+
+     Notwithstanding any other provision of this License, for material
+     you add to a covered work, you may (if authorized by the copyright
+     holders of that material) supplement the terms of this License with
+     terms:
+
+       a. Disclaiming warranty or limiting liability differently from
+          the terms of sections 15 and 16 of this License; or
+
+       b. Requiring preservation of specified reasonable legal notices
+          or author attributions in that material or in the Appropriate
+          Legal Notices displayed by works containing it; or
+
+       c. Prohibiting misrepresentation of the origin of that material,
+          or requiring that modified versions of such material be marked
+          in reasonable ways as different from the original version; or
+
+       d. Limiting the use for publicity purposes of names of licensors
+          or authors of the material; or
+
+       e. Declining to grant rights under trademark law for use of some
+          trade names, trademarks, or service marks; or
+
+       f. Requiring indemnification of licensors and authors of that
+          material by anyone who conveys the material (or modified
+          versions of it) with contractual assumptions of liability to
+          the recipient, for any liability that these contractual
+          assumptions directly impose on those licensors and authors.
+
+     All other non-permissive additional terms are considered "further
+     restrictions" within the meaning of section 10.  If the Program as
+     you received it, or any part of it, contains a notice stating that
+     it is governed by this License along with a term that is a further
+     restriction, you may remove that term.  If a license document
+     contains a further restriction but permits relicensing or conveying
+     under this License, you may add to a covered work material governed
+     by the terms of that license document, provided that the further
+     restriction does not survive such relicensing or conveying.
+
+     If you add terms to a covered work in accord with this section, you
+     must place, in the relevant source files, a statement of the
+     additional terms that apply to those files, or a notice indicating
+     where to find the applicable terms.
+
+     Additional terms, permissive or non-permissive, may be stated in
+     the form of a separately written license, or stated as exceptions;
+     the above requirements apply either way.
+
+  8. Termination.
+
+     You may not propagate or modify a covered work except as expressly
+     provided under this License.  Any attempt otherwise to propagate or
+     modify it is void, and will automatically terminate your rights
+     under this License (including any patent licenses granted under the
+     third paragraph of section 11).
+
+     However, if you cease all violation of this License, then your
+     license from a particular copyright holder is reinstated (a)
+     provisionally, unless and until the copyright holder explicitly and
+     finally terminates your license, and (b) permanently, if the
+     copyright holder fails to notify you of the violation by some
+     reasonable means prior to 60 days after the cessation.
+
+     Moreover, your license from a particular copyright holder is
+     reinstated permanently if the copyright holder notifies you of the
+     violation by some reasonable means, this is the first time you have
+     received notice of violation of this License (for any work) from
+     that copyright holder, and you cure the violation prior to 30 days
+     after your receipt of the notice.
+
+     Termination of your rights under this section does not terminate
+     the licenses of parties who have received copies or rights from you
+     under this License.  If your rights have been terminated and not
+     permanently reinstated, you do not qualify to receive new licenses
+     for the same material under section 10.
+
+  9. Acceptance Not Required for Having Copies.
+
+     You are not required to accept this License in order to receive or
+     run a copy of the Program.  Ancillary propagation of a covered work
+     occurring solely as a consequence of using peer-to-peer
+     transmission to receive a copy likewise does not require
+     acceptance.  However, nothing other than this License grants you
+     permission to propagate or modify any covered work.  These actions
+     infringe copyright if you do not accept this License.  Therefore,
+     by modifying or propagating a covered work, you indicate your
+     acceptance of this License to do so.
+
+  10. Automatic Licensing of Downstream Recipients.
+
+     Each time you convey a covered work, the recipient automatically
+     receives a license from the original licensors, to run, modify and
+     propagate that work, subject to this License.  You are not
+     responsible for enforcing compliance by third parties with this
+     License.
+
+     An "entity transaction" is a transaction transferring control of an
+     organization, or substantially all assets of one, or subdividing an
+     organization, or merging organizations.  If propagation of a
+     covered work results from an entity transaction, each party to that
+     transaction who receives a copy of the work also receives whatever
+     licenses to the work the party's predecessor in interest had or
+     could give under the previous paragraph, plus a right to possession
+     of the Corresponding Source of the work from the predecessor in
+     interest, if the predecessor has it or can get it with reasonable
+     efforts.
+
+     You may not impose any further restrictions on the exercise of the
+     rights granted or affirmed under this License.  For example, you
+     may not impose a license fee, royalty, or other charge for exercise
+     of rights granted under this License, and you may not initiate
+     litigation (including a cross-claim or counterclaim in a lawsuit)
+     alleging that any patent claim is infringed by making, using,
+     selling, offering for sale, or importing the Program or any portion
+     of it.
+
+  11. Patents.
+
+     A "contributor" is a copyright holder who authorizes use under this
+     License of the Program or a work on which the Program is based.
+     The work thus licensed is called the contributor's "contributor
+     version".
+
+     A contributor's "essential patent claims" are all patent claims
+     owned or controlled by the contributor, whether already acquired or
+     hereafter acquired, that would be infringed by some manner,
+     permitted by this License, of making, using, or selling its
+     contributor version, but do not include claims that would be
+     infringed only as a consequence of further modification of the
+     contributor version.  For purposes of this definition, "control"
+     includes the right to grant patent sublicenses in a manner
+     consistent with the requirements of this License.
+
+     Each contributor grants you a non-exclusive, worldwide,
+     royalty-free patent license under the contributor's essential
+     patent claims, to make, use, sell, offer for sale, import and
+     otherwise run, modify and propagate the contents of its contributor
+     version.
+
+     In the following three paragraphs, a "patent license" is any
+     express agreement or commitment, however denominated, not to
+     enforce a patent (such as an express permission to practice a
+     patent or covenant not to sue for patent infringement).  To "grant"
+     such a patent license to a party means to make such an agreement or
+     commitment not to enforce a patent against the party.
+
+     If you convey a covered work, knowingly relying on a patent
+     license, and the Corresponding Source of the work is not available
+     for anyone to copy, free of charge and under the terms of this
+     License, through a publicly available network server or other
+     readily accessible means, then you must either (1) cause the
+     Corresponding Source to be so available, or (2) arrange to deprive
+     yourself of the benefit of the patent license for this particular
+     work, or (3) arrange, in a manner consistent with the requirements
+     of this License, to extend the patent license to downstream
+     recipients.  "Knowingly relying" means you have actual knowledge
+     that, but for the patent license, your conveying the covered work
+     in a country, or your recipient's use of the covered work in a
+     country, would infringe one or more identifiable patents in that
+     country that you have reason to believe are valid.
+
+     If, pursuant to or in connection with a single transaction or
+     arrangement, you convey, or propagate by procuring conveyance of, a
+     covered work, and grant a patent license to some of the parties
+     receiving the covered work authorizing them to use, propagate,
+     modify or convey a specific copy of the covered work, then the
+     patent license you grant is automatically extended to all
+     recipients of the covered work and works based on it.
+
+     A patent license is "discriminatory" if it does not include within
+     the scope of its coverage, prohibits the exercise of, or is
+     conditioned on the non-exercise of one or more of the rights that
+     are specifically granted under this License.  You may not convey a
+     covered work if you are a party to an arrangement with a third
+     party that is in the business of distributing software, under which
+     you make payment to the third party based on the extent of your
+     activity of conveying the work, and under which the third party
+     grants, to any of the parties who would receive the covered work
+     from you, a discriminatory patent license (a) in connection with
+     copies of the covered work conveyed by you (or copies made from
+     those copies), or (b) primarily for and in connection with specific
+     products or compilations that contain the covered work, unless you
+     entered into that arrangement, or that patent license was granted,
+     prior to 28 March 2007.
+
+     Nothing in this License shall be construed as excluding or limiting
+     any implied license or other defenses to infringement that may
+     otherwise be available to you under applicable patent law.
+
+  12. No Surrender of Others' Freedom.
+
+     If conditions are imposed on you (whether by court order, agreement
+     or otherwise) that contradict the conditions of this License, they
+     do not excuse you from the conditions of this License.  If you
+     cannot convey a covered work so as to satisfy simultaneously your
+     obligations under this License and any other pertinent obligations,
+     then as a consequence you may not convey it at all.  For example,
+     if you agree to terms that obligate you to collect a royalty for
+     further conveying from those to whom you convey the Program, the
+     only way you could satisfy both those terms and this License would
+     be to refrain entirely from conveying the Program.
+
+  13. Use with the GNU Affero General Public License.
+
+     Notwithstanding any other provision of this License, you have
+     permission to link or combine any covered work with a work licensed
+     under version 3 of the GNU Affero General Public License into a
+     single combined work, and to convey the resulting work.  The terms
+     of this License will continue to apply to the part which is the
+     covered work, but the special requirements of the GNU Affero
+     General Public License, section 13, concerning interaction through
+     a network will apply to the combination as such.
+
+  14. Revised Versions of this License.
+
+     The Free Software Foundation may publish revised and/or new
+     versions of the GNU General Public License from time to time.  Such
+     new versions will be similar in spirit to the present version, but
+     may differ in detail to address new problems or concerns.
+
+     Each version is given a distinguishing version number.  If the
+     Program specifies that a certain numbered version of the GNU
+     General Public License "or any later version" applies to it, you
+     have the option of following the terms and conditions either of
+     that numbered version or of any later version published by the Free
+     Software Foundation.  If the Program does not specify a version
+     number of the GNU General Public License, you may choose any
+     version ever published by the Free Software Foundation.
+
+     If the Program specifies that a proxy can decide which future
+     versions of the GNU General Public License can be used, that
+     proxy's public statement of acceptance of a version permanently
+     authorizes you to choose that version for the Program.
+
+     Later license versions may give you additional or different
+     permissions.  However, no additional obligations are imposed on any
+     author or copyright holder as a result of your choosing to follow a
+     later version.
+
+  15. Disclaimer of Warranty.
+
+     THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY
+     APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE
+     COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS"
+     WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
+     INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+     MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE ENTIRE
+     RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU.
+     SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
+     NECESSARY SERVICING, REPAIR OR CORRECTION.
+
+  16. Limitation of Liability.
+
+     IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN
+     WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES
+     AND/OR CONVEYS THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR
+     DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR
+     CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE
+     THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA
+     BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD
+     PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER
+     PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF
+     THE POSSIBILITY OF SUCH DAMAGES.
+
+  17. Interpretation of Sections 15 and 16.
+
+     If the disclaimer of warranty and limitation of liability provided
+     above cannot be given local legal effect according to their terms,
+     reviewing courts shall apply local law that most closely
+     approximates an absolute waiver of all civil liability in
+     connection with the Program, unless a warranty or assumption of
+     liability accompanies a copy of the Program in return for a fee.
+
+END OF TERMS AND CONDITIONS
+===========================
+
+How to Apply These Terms to Your New Programs
+=============================================
+
+If you develop a new program, and you want it to be of the greatest
+possible use to the public, the best way to achieve this is to make it
+free software which everyone can redistribute and change under these
+terms.
+
+ To do so, attach the following notices to the program.  It is safest to
+attach them to the start of each source file to most effectively state
+the exclusion of warranty; and each file should have at least the
+"copyright" line and a pointer to where the full notice is found.
+
+     ONE LINE TO GIVE THE PROGRAM'S NAME AND A BRIEF IDEA OF WHAT IT DOES.
+     Copyright (C) YEAR NAME OF AUTHOR
+
+     This program is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation, either version 3 of the License, or (at
+     your option) any later version.
+
+     This program is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+     General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+ Also add information on how to contact you by electronic and paper
+mail.
+
+ If the program does terminal interaction, make it output a short notice
+like this when it starts in an interactive mode:
+
+     PROGRAM Copyright (C) YEAR NAME OF AUTHOR
+     This program comes with ABSOLUTELY NO WARRANTY; for details type 'show w'.
+     This is free software, and you are welcome to redistribute it
+     under certain conditions; type 'show c' for details.
+
+ The hypothetical commands 'show w' and 'show c' should show the
+appropriate parts of the General Public License.  Of course, your
+program's commands might be different; for a GUI interface, you would
+use an "about box".
+
+ You should also get your employer (if you work as a programmer) or
+school, if any, to sign a "copyright disclaimer" for the program, if
+necessary.  For more information on this, and how to apply and follow
+the GNU GPL, see <http://www.gnu.org/licenses/>.
+
+ The GNU General Public License does not permit incorporating your
+program into proprietary programs.  If your program is a subroutine
+library, you may consider it more useful to permit linking proprietary
+applications with the library.  If this is what you want to do, use the
+GNU Lesser General Public License instead of this License.  But first,
+please read <http://www.gnu.org/philosophy/why-not-lgpl.html>.
 

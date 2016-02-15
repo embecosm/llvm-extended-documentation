@@ -1,4 +1,4 @@
-This is llvm.info, produced by makeinfo version 5.2 from llvm.texi.
+This is llvm.info, produced by makeinfo version 6.0 from llvm.texi.
 
 Copyright (C) 2015 Embecosm Limited
 Copyright (C) 1988-2015 Free Software Foundation, Inc.
@@ -466,23 +466,24 @@ whichever one is not the default.
 * C++ Dialect Options:: Variations on C++.
 * Objective-C and Objective-C++ Dialect Options:: Variations on Objective-C
                         and Objective-C++.
-* Language Independent Options:: Controlling how diagnostics should be
+* Diagnostic Message Formatting Options:: Controlling how diagnostics should be
                         formatted.
 * Warning Options::     How picky should the compiler be?
 * Debugging Options::   Symbol tables, measurements, and debugging dumps.
 * Optimize Options::    How much optimization?
+* Instrumentation Options:: Enabling profiling and extra run-time error checking.
 * Preprocessor Options:: Controlling header files and macro definitions.
                          Also, getting dependency information for Make.
 * Assembler Options::   Passing options to the assembler.
 * Link Options::        Specifying libraries and so on.
 * Directory Options::   Where to find header files and libraries.
                         Where to find the compiler executable files.
-* Spec Files::          How to pass switches to sub-processes.
-* Target Options::      Running a cross-compiler, or an old version of LLVM.
-* Submodel Options::    Specifying minor hardware or convention variations,
-                        such as 68010 vs 68020.
 * Code Gen Options::    Specifying conventions for function calls, data layout
                         and register usage.
+* Developer Options::   Printing Clang/LLVM configuration info, statistics, and
+                        debugging dumps.
+* Submodel Options::    Target-specific options, such as compiling for a
+                        specific processor variant.
 * Environment Variables:: Env vars that affect LLVM.
 * Precompiled Headers:: Compiling a header once, and using it many times.
 
@@ -497,321 +498,1443 @@ in the following sections.  For convenience, options supported by LLVM
 and not by GCC and vice-versa are indicated in each section below.
 
  The following target architectures supported by GCC are not supported
-by LLVM: Adapteva Epiphany, ARC, AVR, Blackfin, C6X, CRIS, CR16, DEC
-Alpha, FR30, FRV, H8/300, HPPA, IA-64, LM32, M32R/D, M32C, M680x0,
-MCore, MeP, MicroBlaze, MMIX, MN10300, Moxie, NDS32, Nios II, PDP-11,
-picoChip, RL78, RS/6000, RX, Score, SH, SPU, TILE-Gx, TILEPro, V850,
-VAX, Visium, Xstormy16, Xtensa.
+by LLVM: Adapteva Epiphany, ARC, Blackfin, C6X, CRIS, CR16, DEC Alpha,
+FR30, FRV, H8/300, HPPA, IA-64, LM32, M32R/D, M32C, M680x0, MCore, MeP,
+MicroBlaze, MMIX, MN10300, Moxie, NDS32, Nios II, PDP-11, picoChip,
+RL78, RS/6000, RX, Score, SH, SPU, TILE-Gx, TILEPro, V850, VAX, Visium,
+Xstormy16, Xtensa.
 
  The following target architectures are supported by LLVM, but not by
 GCC: Hexagon, XCore.
 
 _Overall Options_
      *Note Options Controlling the Kind of Output: Overall Options.
-          -c  -S  -E  -o FILE  -no-canonical-prefixes
-          -pipe  -pass-exit-codes
-          -x LANGUAGE  -v  -###  --help --version
+
+     _Options supported by both LLVM and GCC_
+          @FILE
+              -###
+              -c
+              -E
+              -fplugin=FILE
+              --help
+              -o FILE
+              -pipe
+           -S
+              -v
+              --version
+              -x LANGUAGE
+
+
+     _Options only supported by LLVM_
+          -fbuild-session-file=FILE
+              -fbuild-session-timestamp=SECS
+           -emit-ast
+              -emit-llvm
+              --gcc-toolchain=DIR
+              -help
+              -ObjC
+           -ObjC++
+              -Qunused-arguments
+              -working-directory DIR
+              -Xclang
+
+
+     _Options only supported by GCC_
+          -fdump-ada-spec[-slim]
+              -fada-spec-parent=UNIT
+           -fdump-go-spec=FILE
+              -fno-canonical-system-headers
+           -fplugin-arg-NAME=ARG
+              --help=CLASS[,...]
+           -pass-exit-codes
+              -specs=FILE
+              --target-help
+              -wrapper
+
 
 _C Language Options_
      *Note Options Controlling C Dialect: C Dialect Options.
-          -ansi  -std=STANDARD  -fgnu89-inline
-          -aux-info FILENAME  -fno-asm  -fno-builtin
-          -fno-builtin-FUNCTION  -fhosted  -ffreestanding  -fopenmp
-          -fms-extensions  -trigraphs  -fcond-mismatch  -funsigned-char
-          -fsigned-char  -flax-vector-conversions  -fsigned-bitfields
+
+     _Options supported by both LLVM and GCC_
+          -ansi
+              -ffreestanding
+              -fgnu89-inline
+              -fhosted
+           -flax-vector-conversions
+              -fms-extensions
+              -fno-asm
+              -fno-builtin
+           -fno-builtin-FUNCTION
+              -fopenmp
+              -fsigned-bitfields
+              -fsigned-char
+           -funsigned-bitfields
+              -funsigned-char
+              -std=STANDARD
+              -traditional
+           -trigraphs
+
+
+     _Options only supported by LLVM_
+          -fblocks
+              -fborland-extensions
+              -femit-all-decls
+           -fms-compatibility
+              -fms-compatibility-version=NUM
+           -fmsc-version=NUM
+              -fno-gnu-inline-asm
+              -fno-spell-checking
+           -fpascal-strings
+              -funique-section-names
+              -fwritable-strings
+
+
+     _Options only supported by GCC_
+          -aux-info FILENAME
+              -fallow-parameterless-variadic-functions
+           -fcilkplus
+              -fgnu-tm
+              -fcond-mismatch
+              -fopenacc
+           -fopenmp-simd
+              -fplan9-extensions
+              -fsso-struct=ENDIANNESS
+           -traditional-cpp
+
 
 _C++ Language Options_
      *Note Options Controlling C++ Dialect: C++ Dialect Options.
+
+     _Options supported by both LLVM and GCC_
           -fno-access-control
-          -fconstexpr-depth=N
-          -fno-elide-constructors
-          -ffor-scope  -fno-for-scope  -fno-gnu-keywords
-          -fno-implicit-templates
-          -fms-extensions
-          -fno-operator-names
-          -fpermissive
-          -fno-rtti  -fstrict-enums
-          -ftemplate-backtrace-limit=N
-          -ftemplate-depth=N
-          -fno-threadsafe-statics  -fuse-cxa-atexit
-          -fvisibility-inlines-hidden
-          -fvisibility-ms-compat
-          -fext-numeric-literals
-          -fno-weak  -nostdinc++
-          -Wctor-dtor-privacy
-          -Wdelete-non-virtual-dtor -Wnarrowing
-          -Wnoexcept -Wnon-virtual-dtor  -Wreorder
-          -Weffc++
-          -Wold-style-cast
-          -Woverloaded-virtual
-          -Wsign-promo
+              -fcheck-new
+              -fconstexpr-depth=N
+           -ffor-scope
+              -ffriend-injection
+              -fms-extensions
+           -fno-elide-constructors
+              -fno-gnu-keywords
+              -fno-implicit-templates
+           -fno-implement-inlines
+              -fno-operator-names
+              -fno-rtti
+           -fno-threadsafe-statics
+              -fpermissive
+              -fsized-deallocation
+           -ftemplate-backtrace-limit=N
+              -ftemplate-depth=N
+              -fuse-cxa-atexit
+           -fvisibility-inlines-hidden
+              -fvisibility-ms-compat
+              -nostdinc++
+           -Wabi
+              -Wconversion-null
+              -Wctor-dtor-privacy
+              -Wdelete-non-virtual-dtor
+           -Weffc++
+              -Wnarrowing
+              -Wnon-virtual-dtor
+              -Wold-style-cast
+           -Woverloaded-virtual
+              -Wreorder
+              -Wsign-promo
+
+
+     _Options only supported by LLVM_
+          -fcxx-exceptions
+              -fdelayed-template-parsing
+           -fno-assume-sane-operator-new
+              -fshow-overloads=OPT
+
+
+     _Options only supported by GCC_
+          -fabi-version=N
+              -fabi-compat-version=N
+              -fdeduce-init-list
+           -fext-numeric-literals
+              -fno-enforce-eh-specs
+              -fno-for-scope
+           -fno-implicit-inline-templates
+              -fno-nonansi-builtins
+           -fno-optional-diags
+              -fno-pretty-templates
+              -fno-weak
+           -fnothrow-opt
+              -frepo
+              -Wabi=N
+              -Wabi-tag
+              -Wliteral-suffix
+           -Wmultiple-inheritance
+              -Wnamespaces
+              -Wno-non-template-friend
+           -Wno-pmf-conversions
+              -Wno-terminate
+              -Wnoexcept
+           -Wstrict-null-sentinel
+              -Wtemplates
+              -Wvirtual-inheritance
+
 
 _Objective-C and Objective-C++ Language Options_
      *Note Options Controlling Objective-C and Objective-C++ Dialects:
      Objective-C and Objective-C++ Dialect Options.
-          -fconstant-string-class=CLASS-NAME
-          -fgnu-runtime  -fnext-runtime  -fobjc-abi-version=N
-          -fobjc-call-cxx-cdtors  -fobjc-exceptions  -fobjc-gc  -Wno-protocol
-          -Wselector  -Wstrict-selector-match  -Wundeclared-selector
-          -print-objc-runtime-info
 
-_Language Independent Options_
-     *Note Options to Control Diagnostic Messages Formatting: Language
-     Independent Options.
-          -fmessage-length=N
-          -fdiagnostics-show-location=[once|every-line]
-          -fdiagnostics-color=[auto|never|always]
-          -fno-diagnostics-show-option
+     _Options supported by both LLVM and GCC_
+          -fconstant-string-class=CLASS-NAME
+              -fgnu-runtime
+           -fnext-runtime
+              -fobjc-abi-version=N
+              -fobjc-call-cxx-cdtors
+           -fobjc-exceptions
+              -fobjc-gc
+              -objcmt-atomic-property
+           -objcmt-migrate-CATEGORY
+              -objcmt-ns-nonatomic-iosonly
+           -objcmt-returns-innerpointer-property
+              -Wno-protocol
+           -Wselector
+              -Wstrict-selector-match
+              -Wundeclared-selector
+
+
+     _Options only supported by LLVM_
+          -fno-constant-cfstrings
+              -fobjc-arc
+              -fobjc-arc-exceptions
+           -fobjc-gc-only
+              -fobjc-runtime=RUNTIME
+           -objcmt-whitelist-dir-path=DIR
+              -rewrite-legacy-objc
+              -rewrite-objc
+
+
+     _Options only supported by GCC_
+          -fextern-tls-init
+              -fivar-visibility=[public|protected|private|package]
+           -fno-default-inline
+              -fno-lifetime-dse
+              -fno-local-ivars
+           -fno-nil-receivers
+              -fobjc-direct-dispatch
+              -fobjc-nilcheck
+           -fobjc-std=STD
+              -freplace-objc-classes
+              -fzero-link
+              -gen-decls
+           -print-objc-runtime-info
+              -Wassign-intercept
+
+
+_Diagnostic Message Formatting Options_
+     *Note Options to Control Diagnostic Messages Formatting: Diagnostic
+     Message Formatting Options.
+
+     _Options supported by both LLVM and GCC_
+          -fdiagnostics-color[=auto|never|always]
+           -fdiagnostics-show-location=[once|every-line]
+           -fmessage-length=N
+              -fno-diagnostics-show-option
+
+
+     _Options only supported by LLVM_
+          -fansi-escape-codes
+              -fcolor-diagnostics
+           -fdiagnostics-parseable-fixits
+           -fdiagnostics-print-source-range-info
+           -fdiagnostics-show-note-include-stack
+           -fdiagnostics-show-template-tree
+           -fno-diagnostics-fixit-info
+              -fno-elide-type
+           -fno-show-source-location
+              -serialize-diagnostics FILE
+
+
+     _Options only supported by GCC_
+          -fno-diagnostics-show-caret
+
 
 _Warning Options_
      *Note Options to Request or Suppress Warnings: Warning Options.
-          -fsyntax-only  -fmax-errors=N  -w   -Werror  -Werror=WARNING
-          -Wfatal-errors  -Wpedantic  -pedantic-errors -Wall  -W  -Wextra
-          -Waddress  -Waggregate-return  -Warray-bounds  -Wno-attributes
-          -Wno-builtin-macro-redefined  -Wcast-align  -Wcast-qual  -Wchar-subscripts
-          -Wclobbered  -Wcomment  -Wcomments  -Wconversion  -Wno-deprecated
-          -Wno-deprecated-declarations  -Wdisabled-optimization  -Wno-div-by-zero
-          -Wempty-body  -Wenum-compare  -Wfloat-equal  -Wformat
-          -Wno-format-extra-args  -Wformat-nonliteral  -Wformat-security
-          -Wformat-y2k  -Wno-format-zero-length  -Wframe-larger-than=LEN  -Winline
-          -Wno-int-to-pointer-cast  -Winvalid-pch  -Wlarger-than=LEN
-          -Wlogical-not-parentheses  -Wlong-long  -Wmain  -Wmissing-braces
-          -Wmissing-field-initializers  -Wmissing-format-attribute  -Wno-multichar
-          -Wnonnull  -Wodr  -Wno-overflow  -Woverlength-strings  -Wpacked  -Wpadded
-          -Wparentheses  -Wpointer-arith  -Wredundant-decls  -Wreturn-type
-          -Wsequence-point  -Wshadow  -Wno-shadow-ivar  -Wshift-count-negative
-          -Wshift-count-overflow  -Wsign-compare  -Wsign-conversion
-          -Wsizeof-array-argument  -Wsizeof-pointer-memaccess  -Wstack-protector
-          -Wstrict-aliasing  -Wstrict-aliasing=n  -Wstrict-overflow -Wstrict-overflow=N
-          -Wswitch  -Wswitch-default  -Wswitch-enum  -Wsystem-headers  -Wtrigraphs
-          -Wtype-limits  -Wuninitialized  -Wunknown-pragmas  -Wunused
-          -Wunused-function  -Wunused-label  -Wunused-parameter  -Wno-unused-result
-          -Wunused-value  -Wunused-variable  -Wvarargs  -Wvariadic-macros  -Wvla
-          -Wvolatile-register-var  -Wwrite-strings
 
-_Preprocessor-only Warning Options_
-          -Wno-endif-labels  -Wundef
+     _Options supported by both LLVM and GCC_
+          -fsyntax-only
+              -pedantic
+              -pedantic-errors
+              -w
+              -Wall
+           -Werror[=WARNING]
+              -Wextra
+              -Wfatal-errors
+              -Wpedantic
 
-_C, C++, Objective-C and Objective-C++-only Warning Options_
-          -Winit-self  -Wmissing-declarations  -Wmissing-include-dirs
+
+     _Options only supported by LLVM_
+          -Weverything
+
+
+     _Options only supported by GCC_
+          -fmax-errors=N
+
+
+_Detailed Warning Options_
+
+     _Options supported by both LLVM and GCC_
+          -Waddress
+              -Waggregate-return
+              -Warray-bounds
+              -Wno-attributes
+           -Wno-builtin-macro-redefined
+              -Wc++-compat
+              -Wc++0x-compat
+           -Wc++11-compat
+              -Wc++14-compat
+              -Wcast-align
+              -Wcast-qual
+           -Wchar-subscripts
+              -Wcomment
+              -Wcomments
+              -Wconversion
+              -Wdate-time
+           -Wdelete-incomplete
+              -Wno-deprecated
+              -Wno-deprecated-declarations
+           -Wdisabled-optimization
+              -Wno-div-by-zero
+              -Wdouble-promotion
+           -Wempty-body
+              -Wno-endif-labels
+              -Wenum-compare
+              -Wfloat-conversion
+           -Wfloat-equal
+              -Wformat[=0|2]
+              -Wno-format-extra-args
+              -Wformat-nonliteral
+           -Wformat-security
+              -Wformat-y2k
+              -Wformat-zero-length
+           -Wframe-larger-than=LEN
+              -Wignored-qualifiers
+              -Wimplicit
+           -Wimplicit-function-declaration
+              -Wimplicit-int
+           -Wincompatible-pointer-types
+              -Wno-inherited-variadic-ctor
+              -Winit-self
+           -Winline
+              -Wno-int-conversion
+              -Wno-int-to-pointer-cast
+           -Wno-invalid-offsetof
+              -Winvalid-pch
+              -Wlarger-than=LEN
+           -Wlarger-than-LEN
+              -Wlogical-not-parentheses
+              -Wlong-long
+              -Wmain
+           -Wmissing-braces
+              -Wmissing-field-initializers
+           -Wmissing-format-attribute
+              -Wmissing-include-dirs
+              -Wmissing-noreturn
+           -Wno-multichar
+              -Wnonnull
+              -Wnull-dereference
+              -Wodr
+              -Wno-overflow
+           -Woverlength-strings
+              -Wpacked
+              -Wpadded
+              -Wparentheses
+           -Wpointer-arith
+              -Wno-pointer-to-int-cast
+              -Wno-pragmas
+           -Wredundant-decls
+              -Wreturn-type
+              -Wsequence-point
+           -Wshadow
+              -Wno-shadow-ivar
+              -Wshift-count-negative
+           -Wshift-count-overflow
+              -Wshift-negative-value
+              -Wshift-overflow
+           -Wsign-compare
+              -Wsign-conversion
+              -Wsizeof-array-argument
+           -Wsizeof-pointer-memaccess
+              -Wstack-protector
+              -Wstrict-aliasing[=1|2]
+           -Wstrict-overflow[=N]
+              -Wswitch
+              -Wswitch-bool
+              -Wswitch-default
+           -Wswitch-enum
+              -Wsystem-headers
+              -Wtautological-compare
+              -Wtrigraphs
+           -Wtype-limits
+              -Wundef
+              -Wuninitialized
+              -Wunknown-pragmas
+              -Wunused
+           -Wunused-const-variable
+              -Wunused-function
+              -Wunused-label
+           -Wunused-local-typedefs
+              -Wunused-parameter
+              -Wno-unused-result
+           -Wunused-value
+              -Wunused-variable
+              -Wno-varargs
+              -Wvariadic-macros
+           -Wvla
+              -Wvolatile-register-var
+              -Wwrite-strings
+
+
+     _Options only supported by LLVM_
+          -Wno-abstract-final-class
+              -Wabstract-vbase-init
+           -Waddress-of-array-temporary
+              -Waddress-of-temporary
+              -Wambiguous-macro
+           -Wambiguous-member-template
+              -Wanalyzer-incompatible-plugin
+           -Wanonymous-pack-parens
+              -Warc-bridge-casts-disallowed-in-nonarc
+           -Warc
+              -Warc-maybe-repeated-use-of-weak
+              -Warc-non-pod-memaccess
+           -Warc-performSelector-leaks
+              -Warc-repeated-use-of-weak
+           -Warc-retain-cycles
+              -Warc-unsafe-retained-assign
+           -Warray-bounds-pointer-arithmetic
+              -Wasm
+              -Wasm-operand-widths
+           -Wno-assign-enum
+              -Watomic-properties
+           -Watomic-property-with-user-defined-accessor
+              -Wno-auto-import
+           -Wno-auto-storage-class
+              -Wauto-var-id
+           -Wavailability
+              -Wbackslash-newline-escape
+              -Wbad-array-new-length
+           -Wbind-to-temporary-copy
+              -Wbitfield-constant-conversion
+           -Wbitwise-op-parentheses
+              -Wbool-conversion
+              -Wbool-conversions
+           -Wbridge-cast
+              -Wbuiltin-requires-header
+              -Wc++0x-extensions
+           -Wc++0x-narrowing
+              -Wc++11-compat-pedantic
+           -Wc++11-compat-reserved-user-defined-literal
+              -Wc11-extensions
+           -Wc++11-extensions
+              -Wc++11-extra-semi
+              -Wc++11-long-long
+           -Wc++11-narrowing
+              -Wc++1y-extensions
+              -Wc++98-c++11-compat
+           -Wc++98-c++11-compat-pedantic
+              -Wc++98-compat-bind-to-temporary-copy
+           -Wc++98-compat
+              -Wc++98-compat-local-type-template-args
+           -Wc++98-compat-pedantic
+              -Wc++98-compat-unnamed-type-template-args
+           -Wc99-compat
+              -Wno-c99-extensions
+              -Wcast-of-sel-type
+           -WCFString-literal
+              -Wchar-align
+              -Wcompare-distinct-pointer-types
+           -Wcomplex-component-init
+              -Wconditional-type-mismatch
+           -Wconditional-uninitialized
+              -Wconfig-macros
+              -Wconstant-conversion
+           -Wconstant-logical-operand
+              -Wconstexpr-not-const
+           -Wconsumed
+              -Wcovered-switch-default
+              -Wcustom-atomic-properties
+           -Wdangling-else
+              -Wdangling-field
+              -Wdangling-initializer-list
+           -Wdelegating-ctor-cycles
+              -Wdeprecated-increment-bool
+           -Wdeprecated-implementations
+              -Wdeprecated-objc-isa-usage
+           -Wdeprecated-objc-pointer-introspection
+           -Wdeprecated-objc-pointer-introspection-performSelector
+           -Wdeprecated-register
+              -Wdeprecated-writable-strings
+           -Wdirect-ivar-access
+              -Wdisabled-macro-expansion
+           -Wdiscard-qual
+              -Wdistributed-object-modifiers
+              -Wdivision-by-zero
+           -Wdocumentation-deprecated-sync
+              -Wdocumentation
+              -Wdocumentation-html
+           -Wdocumentation-pedantic
+              -Wdocumentation-unknown-command
+           -Wdollar-in-identifier-extension
+              -Wduplicate-decl-specifier
+           -Wduplicate-enum
+              -Wduplicate-method-arg
+           -Wduplicate-method-match
+              -Wdynamic-class-memaccess
+              -Wembedded-directive
+           -Wempty-translation-unit
+              -Wenum-conversion
+              -Wexit-time-destructors
+           -Wexplicit-ownership-type
+              -Wextended-offsetof
+              -Wextern-c-compat
+           -Wextern-initializer
+              -Wno-extra-qualification
+              -Wextra-semi
+           -Wextra-tokens
+              -Wflexible-array-extensions
+              -Wformat-invalid-specifier
+           -Wformat-non-iso
+              -Wformat-pedantic
+              -Wfour-char-constants
+           -Wgcc-compat
+              -Wglobal-constructors
+              -Wgnu-array-member-paren-init
+           -Wgnu-conditional-omitted-operand
+              -Wgnu-designator
+              -Wgnu
+           -Wgnu-static-float-init
+              -Wheader-guard
+              -Wheader-hygiene
+           -Widiomatic-parentheses
+              -Wignored-attributes
+           -Wimplicit-atomic-properties
+           -Wimplicit-conversion-floating-point-to-bool
+           -Wimplicit-exception-spec-mismatch
+              -Wimplicit-fallthrough
+           -Wimplicit-fallthrough-per-function
+              -Wimplicit-retain-self
+           -Wimport-preprocessor-directive-pedantic
+           -Wincompatible-library-redeclaration
+           -Wincompatible-pointer-types-discards-qualifiers
+           -Wno-incomplete-module
+              -Wincomplete-implementation
+           -Wincomplete-umbrella
+              -Winitializer-overrides
+           -Wint-conversions
+              -Wno-int-to-void-pointer-cast
+           -Winteger-overflow
+              -Winvalid-constexpr
+              -Winvalid-iboutlet
+           -Winvalid-noreturn
+              -Winvalid-pp-token
+              -Winvalid-source-encoding
+           -Winvalid-token-paste
+              -Wno-keyword-compat
+              -Wknr-promoted-parameter
+           -Wlanguage-extension-token
+              -Wlarge-by-value-copy
+              -Wno-liblto
+           -Wno-literal-conversion
+              -Wno-literal-range
+              -Wlocal-type-template-args
+           -Wlogical-op-parentheses
+              -Wloop-analysis
+              -Wmain-return-type
+           -Wmalformed-warning-check
+              -Wmethod-signatures
+           -Wmicrosoft
+              -Wmicrosoft-exists
+           -Wmismatched-parameter-types
+              -Wmismatched-return-types
+           -Wmismatched-tags
+              -Wmissing-method-return-type
+           -Wmissing-selector-name
+              -Wmissing-sysroot
+           -Wmissing-variable-declarations
+              -Wmodule-conflict
+           -Wmost
+              -Wmultiple-move-vbase
+              -Wnested-anon-types
+           -Wnewline-eof
+              -Wnon-gcc
+              -Wnon-literal-null-conversion
+           -Wnon-pod-varargs
+              -Wnonportable-cfstrings
+              -WNSObject-attribute
+           -Wnull-arithmetic
+              -Wnull-character
+           -Wnull-conversion
+              -Wobjc-autosynthesis-property-ivar-name-match
+           -Wobjc-cocoa-api
+              -Wobjc-forward-class-redefinition
+           -Wobjc-interface-ivars
+              -Wobjc-literal-compare
+           -Wobjc-method-access
+              -Wobjc-missing-property-synthesis
+           -Wobjc-missing-super-calls
+              -Wobjc-noncopy-retain-block-property
+           -Wobjc-nonunified-exceptions
+              -Wobjc-property-implementation
+           -Wobjc-property-implicit-mismatch
+           -Wobjc-property-matches-cocoa-ownership-rule
+           -Wobjc-property-no-attribute
+              -Wobjc-string-concatenation
+           -Wobjc-property-synthesis
+              -Wobjc-protocol-method-implementation
+           -Wobjc-protocol-property-synthesis
+              -Wobjc-readonly-with-setter-property
+           -Wobjc-redundant-api-use
+              -Wobjc-redundant-literal-use
+              -Wobjc-root-class
+           -Wobjc-string-compare
+              -Wopenmp-clauses
+              -Wno-out-of-line-declaration
+           -Wover-aligned
+              -Wno-override-module
+           -Woverloaded-shift-op-parentheses
+              -Woverriding-method-mismatch
+           -Wparentheses-equality
+              -Wno-pointer-type-mismatch
+           -W#pragma-messages
+              -Wpredefined-identifier-outside-function
+           -Wprivate-extern
+              -Wproperty-attribute-mismatch
+           -Wprotocol-property-synthesis-ambiguity
+           -Wreadonly-iboutlet-property
+              -Wreceiver-expr
+              -Wreceiver-forward-class
+           -Wreceiver-is-weak
+              -Wreinterpret-base-class
+           -Wrequires-super-attribute
+              -Wreserved-user-defined-literal
+           -Wno-return-stack-address
+              -Wreturn-type-c-linkage
+              -Wsection
+           -Wselector-type-mismatch
+              -Wself-assign
+              -Wself-assign-field
+           -Wsemicolon-before-method-body
+              -Wsentinel
+              -Wserialized-diagnostics
+           -Wshift-op-parentheses
+              -Wshift-sign-overflow
+              -Wshorten-64-to-32
+           -Wsizeof-array-decay
+              -Wsometimes-uninitialized
+           -Wsource-uses-openmp
+              -Wstatic-float-init
+              -Wstatic-in-inline
+           -Wstatic-inline-explicit-instantiation
+              -Wstatic-local-in-inline
+           -Wstatic-self-init
+              -Wstring-compare
+              -Wstring-conversion
+           -Wstring-plus-char
+              -Wstring-plus-int
+              -Wstrlcpy-strlcat-size
+           -Wstrncat-size
+              -Wsuper-class-method-mismatch
+           -Wtautological-constant-out-of-range-compare
+           -Wtentative-definition-incomplete-type
+              -Wthread-safety-analysis
+           -Wthread-safety-attributes
+              -Wthread-safety-beta
+              -Wthread-safety
+           -Wthread-safety-precise
+              -Wtypedef-redefinition
+              -Wtypename-missing
+           -Wtype-safety
+              -Wno-unavailable-declarations
+           -Wundefined-inline
+              -Wundefined-internal
+           -Wundefined-reinterpret-cast
+              -Wunicode
+              -Wunicode-whitespace
+           -Wunknown-warning-option
+              -Wunnamed-type-template-args
+           -Wunneeded-internal-declaration
+              -Wunneeded-member-function
+           -Wunsequenced
+              -Wno-unsupported-friend
+           -Wunsupported-visibility
+              -Wunused-command-line-argument
+           -Wunused-comparison
+              -Wunused-exception-parameter
+           -Wunused-member-function
+              -Wunused-private-field
+              -Wunused-property-ivar
+           -Wunused-volatile-lvalue
+              -Wused-but-marked-unused
+           -Wuser-defined-literals
+              -Wvector-conversion
+              -Wvector-conversions
+           -Wvexing-parse
+              -Wvisibility
+              -Wvla-extension
+              -W#warnings
+           -Wweak-template-vtables
+              -Wweak-vtables
+              -Wzero-length-array
+
+
+     _Options only supported by GCC_
+          -Wno-aggressive-loop-optimizations
+              -Warray-bounds=N
+           -Wbool-compare
+              -Wc90-c99-compat
+              -Wc99-c11-compat
+              -Wclobbered
+           -Wconditionally-supported
+              -Wcoverage-mismatch
+              -Wno-cpp
+           -Wno-designated-init
+              -Wno-discarded-array-qualifiers
+           -Wno-discarded-qualifiers
+              -Wduplicated-cond
+              -Wformat=1
+           -Wno-format-contains-nul
+              -Wformat-signedness
+              -Wframe-address
+           -Wno-free-nonheap-object
+              -Whsa
+              -Winvalid-memory-model
+           -Wjump-misses-init
+              -Wlogical-op
+              -Wlto-type-mismatch
+           -Wmaybe-uninitialized
+              -Wmemset-transposed-args
+           -Wmisleading-indentation
+              -Wnormalized=[none|id|nfc|nfkc]
+              -Wopenmp-simd
+           -Woverride-init
+              -Woverride-init-side-effects
+              -Wpacked-bitfield-compat
+           -Wno-pedantic-ms-format
+              -Wplacement-new
+              -Wno-return-local-addr
+           -Wno-scalar-storage-order
+              -Wshift-overflow=N
+              -Wstack-usage=LEN
+           -Wstrict-aliasing=3
+              -Wsubobject-linkage
+           -Wsuggest-attribute=[pure|const|noreturn|format]
+              -Wsuggest-final-methods
+           -Wsuggest-final-types
+              -Wsuggest-override
+              -Wsync-nand
+           -Wtrampolines
+              -Wunsafe-loop-optimizations
+           -Wunsuffixed-float-constants
+              -Wunused-but-set-parameter
+           -Wunused-but-set-variable
+              -Wuseless-cast
+              -Wvector-operation-performance
+           -Wno-virtual-move-assign
+              -Wzero-as-null-pointer-constant
+
 
 _C and Objective-C-only Warning Options_
-          -Wbad-function-cast  -Wc++-compat  -Wdeclaration-after-statement
-          -Wignored-qualifiers  -Wimplicit  -Wimplicit-function-declaration
-          -Wimplicit-int  -Wno-incompatible-pointer-types  -Wno-int-conversion
-          -Wmissing-prototypes  -Wnested-externs  -Wpointer-sign
-          -Wno-pointer-to-int-cast  -Wstrict-prototypes
 
-_C++ and Objective-C++-only Warning Options_
-          -Wc++11-compat  -Wno-conversion-null  -Wdelete-incomplete
-          -Wno-inherited-variadic-ctor  -Wuseless-cast
+     _Options supported by both LLVM and GCC_
+          -Wbad-function-cast
+              -Wdeclaration-after-statement
+           -Wmissing-declarations
+              -Wmissing-prototypes
+              -Wnested-externs
+           -Wold-style-definition
+              -Wpointer-sign
+              -Wstrict-prototypes
+
+
+     _Options only supported by LLVM_
+
+
+     _Options only supported by GCC_
+          -Wmissing-parameter-type
+              -Wold-style-declaration
+              -Wtraditional
+           -Wtraditional-conversion
+
 
 _Debugging Options_
      *Note Options for Debugging Your Program or Clang/LLVM: Debugging
      Options.
-          -dLETTERS  -dumpspecs  -dumpmachine  -dumpversion
-          -fsanitize=STYLE -fsanitize-recover -fsanitize-recover=STYLE
-          -fasan-shadow-offset=NUMBER -fsanitize-undefined-trap-on-error
-          -fcheck-pointer-bounds -fchkp-check-incomplete-type
-          -fchkp-first-field-has-own-bounds -fchkp-narrow-bounds
-          -fchkp-narrow-to-innermost-array -fchkp-optimize
-          -fchkp-use-fast-string-functions -fchkp-use-nochk-string-functions
-          -fchkp-use-static-bounds -fchkp-use-static-const-bounds
-          -fchkp-treat-zero-dynamic-size-as-infinite -fchkp-check-read
-          -fchkp-check-read -fchkp-check-write -fchkp-store-bounds
-          -fchkp-instrument-calls -fchkp-instrument-marked-only
-          -fchkp-use-wrappers
-          -fdbg-cnt-list -fdbg-cnt=COUNTER-VALUE-LIST
-          -fdisable-ipa-PASS_NAME
-          -fdisable-rtl-PASS_NAME
-          -fdisable-rtl-PASS-NAME=RANGE-LIST
-          -fdisable-tree-PASS_NAME
-          -fdisable-tree-PASS-NAME=RANGE-LIST
-          -fdump-noaddr -fdump-unnumbered -fdump-unnumbered-links
-          -fdump-translation-unit[-N]
-          -fdump-class-hierarchy[-N]
-          -fdump-ipa-all -fdump-ipa-cgraph -fdump-ipa-inline
-          -fdump-passes
-          -fdump-statistics
-          -fdump-tree-all
-          -fdump-tree-original[-N]
-          -fdump-tree-optimized[-N]
-          -fdump-tree-cfg -fdump-tree-alias
-          -fdump-tree-ch
-          -fdump-tree-ssa[-N] -fdump-tree-pre[-N]
-          -fdump-tree-ccp[-N] -fdump-tree-dce[-N]
-          -fdump-tree-gimple[-raw]
-          -fdump-tree-dom[-N]
-          -fdump-tree-dse[-N]
-          -fdump-tree-phiprop[-N]
-          -fdump-tree-phiopt[-N]
-          -fdump-tree-forwprop[-N]
-          -fdump-tree-copyrename[-N]
-          -fdump-tree-nrv -fdump-tree-vect
-          -fdump-tree-sink
-          -fdump-tree-sra[-N]
-          -fdump-tree-forwprop[-N]
-          -fdump-tree-fre[-N]
-          -fdump-tree-vtable-verify
-          -fdump-tree-vrp[-N]
-          -fdump-tree-storeccp[-N]
-          -fdump-final-insns=FILE
-          -fcompare-debug[=OPTS]  -fcompare-debug-second
-          -feliminate-dwarf2-dups -fno-eliminate-unused-debug-types
-          -feliminate-unused-debug-symbols -femit-class-debug-always
-          -fenable-KIND-PASS
-          -fenable-KIND-PASS=RANGE-LIST
-          -fdebug-types-section -fmem-report-wpa
-          -fmem-report -fpre-ipa-mem-report -fpost-ipa-mem-report -fprofile-arcs
-          -fopt-info
-          -fopt-info-OPTIONS[=FILE]
-          -frandom-seed=NUMBER -fsched-verbose=N
-          -fsel-sched-verbose -fsel-sched-dump-cfg -fsel-sched-pipelining-verbose
-          -fstack-usage  -ftest-coverage  -ftime-report -fvar-tracking
-          -fvar-tracking-assignments  -fvar-tracking-assignments-toggle
-          -g  -gLEVEL  -gtoggle  -gcoff  -gdwarf-VERSION
-          -ggdb  -grecord-gcc-switches  -gno-record-gcc-switches
-          -gstabs  -gstabs+  -gstrict-dwarf  -gno-strict-dwarf
-          -gvms  -gxcoff  -gxcoff+ -gz[=TYPE]
-          -fno-merge-debug-strings -fno-dwarf2-cfi-asm
+
+     _Options supported by both LLVM and GCC_
           -fdebug-prefix-map=OLD=NEW
-          -femit-struct-debug-baseonly -femit-struct-debug-reduced
-          -femit-struct-debug-detailed[=SPEC-LIST]
-          -p  -pg  -print-file-name=LIBRARY  -print-libgcc-file-name
-          -print-multi-directory  -print-multi-lib  -print-multi-os-directory
-          -print-prog-name=PROGRAM  -print-search-dirs  -Q
-          -print-sysroot -print-sysroot-headers-suffix
-          -save-temps -save-temps=cwd -save-temps=obj -time[=FILE]
+              -fdebug-types-section
+           -fno-dwarf2-cfi-asm
+              -fno-eliminate-unused-debug-types
+           -g[LEVEL]
+              -ggdb[LEVEL]
+              -gdwarf[-VERSION]
+              -ggnu-pubnames
+           -gno-record-gcc-switches
+              -gsplit-dwarf
+              -gstrict-dwarf
+
+
+     _Options only supported by LLVM_
+          -fno-standalone-debug
+              -fstandalone-debug
+              -gcodeview
+              -gfull
+           -gline-tables-only
+              -gmodules
+              -gused
+
+
+     _Options only supported by GCC_
+          -feliminate-dwarf2-dups
+              -feliminate-unused-debug-symbols
+           -femit-class-debug-always
+              -femit-struct-debug-baseonly
+           -femit-struct-debug-detailed[=SPEC-LIST]
+              -femit-struct-debug-reduced
+           -fno-merge-debug-strings
+              -fvar-tracking
+              -fvar-tracking-assignments
+           -gcoff[LEVEL]
+              -gpubnames
+              -gstabs[LEVEL]
+              -gstabs+
+              -gtoggle
+           -gvms[LEVEL]
+              -gxcoff[LEVEL]
+              -gxcoff+
+              -gz[=TYPE]
+
 
 _Optimization Options_
      *Note Options that Control Optimization: Optimize Options.
-          -faggressive-loop-optimizations -falign-functions[=N]
-          -falign-jumps[=N]
-          -falign-labels[=N] -falign-loops[=N]
-          -fassociative-math -fauto-profile -fauto-profile[=PATH]
-          -fauto-inc-dec -fbranch-probabilities
-          -fbranch-target-load-optimize -fbranch-target-load-optimize2
-          -fbtr-bb-exclusive -fcaller-saves
-          -fcheck-data-deps -fcombine-stack-adjustments -fconserve-stack
-          -fcompare-elim -fcprop-registers -fcrossjumping
-          -fcse-follow-jumps -fcse-skip-blocks -fcx-fortran-rules
-          -fcx-limited-range
-          -fdata-sections -fdce -fdelayed-branch
-          -fdelete-null-pointer-checks -fdevirtualize -fdevirtualize-speculatively
-          -fdevirtualize-at-ltrans -fdse
-          -fearly-inlining -fipa-sra -fexpensive-optimizations -ffat-lto-objects
-          -ffast-math -ffinite-math-only -ffloat-store -fexcess-precision=STYLE
-          -fforward-propagate -ffp-contract=STYLE -ffunction-sections
-          -fgcse -fgcse-after-reload -fgcse-las -fgcse-lm -fgraphite-identity
-          -fgcse-sm -fhoist-adjacent-loads -fif-conversion
-          -fif-conversion2 -findirect-inlining
-          -finline-functions -finline-functions-called-once -finline-limit=N
-          -finline-small-functions -fipa-cp -fipa-cp-clone -fipa-cp-alignment
-          -fipa-pta -fipa-profile -fipa-pure-const -fipa-reference -fipa-icf
-          -fira-algorithm=ALGORITHM
-          -fira-region=REGION -fira-hoist-pressure
-          -fira-loop-pressure -fno-ira-share-save-slots
-          -fno-ira-share-spill-slots -fira-verbose=N
-          -fisolate-erroneous-paths-dereference -fisolate-erroneous-paths-attribute
-          -fivopts -fkeep-inline-functions -fkeep-static-consts
-          -flive-range-shrinkage
-          -floop-block -floop-interchange -floop-strip-mine
-          -floop-unroll-and-jam -floop-nest-optimize
-          -floop-parallelize-all -flra-remat -flto -flto-compression-level
-          -flto-partition=ALG -flto-report -flto-report-wpa -fmerge-all-constants
-          -fmerge-constants -fmodulo-sched -fmodulo-sched-allow-regmoves
-          -fmove-loop-invariants -fno-branch-count-reg
-          -fno-defer-pop -fno-function-cse -fno-guess-branch-probability
-          -fno-inline -fno-math-errno -fno-peephole -fno-peephole2
-          -fno-sched-interblock -fno-sched-spec -fno-signed-zeros
-          -fno-toplevel-reorder -fno-trapping-math -fno-zero-initialized-in-bss
-          -fomit-frame-pointer -foptimize-sibling-calls
-          -fpartial-inlining -fpeel-loops -fpredictive-commoning
-          -fprefetch-loop-arrays -fprofile-report
-          -fprofile-correction -fprofile-dir=PATH -fprofile-generate
-          -fprofile-generate=PATH
-          -fprofile-use -fprofile-use=PATH -fprofile-values
-          -fprofile-reorder-functions
-          -freciprocal-math -free -frename-registers -freorder-blocks
-          -freorder-blocks-and-partition -freorder-functions
-          -frerun-cse-after-loop -freschedule-modulo-scheduled-loops
-          -frounding-math -fsched2-use-superblocks -fsched-pressure
-          -fsched-spec-load -fsched-spec-load-dangerous
-          -fsched-stalled-insns-dep[=N] -fsched-stalled-insns[=N]
-          -fsched-group-heuristic -fsched-critical-path-heuristic
-          -fsched-spec-insn-heuristic -fsched-rank-heuristic
-          -fsched-last-insn-heuristic -fsched-dep-count-heuristic
-          -fschedule-fusion
-          -fschedule-insns -fschedule-insns2 -fsection-anchors
-          -fselective-scheduling -fselective-scheduling2
-          -fsel-sched-pipelining -fsel-sched-pipelining-outer-loops
-          -fsemantic-interposition
-          -fshrink-wrap -fsignaling-nans -fsingle-precision-constant
-          -fsplit-ivs-in-unroller -fsplit-wide-types -fssa-phiopt
-          -fstack-protector -fstack-protector-all -fstack-protector-strong
-          -fstack-protector-explicit -fstdarg-opt -fstrict-aliasing
-          -fstrict-overflow -fthread-jumps -ftracer -ftree-bit-ccp
-          -ftree-builtin-call-dce -ftree-ccp -ftree-ch
-          -ftree-coalesce-inline-vars -ftree-coalesce-vars -ftree-copy-prop
-          -ftree-copyrename -ftree-dce -ftree-dominator-opts -ftree-dse
-          -ftree-forwprop -ftree-fre -ftree-loop-if-convert
-          -ftree-loop-if-convert-stores -ftree-loop-im
-          -ftree-phiprop -ftree-loop-distribution -ftree-loop-distribute-patterns
-          -ftree-loop-ivcanon -ftree-loop-linear -ftree-loop-optimize
-          -ftree-loop-vectorize
-          -ftree-parallelize-loops=N -ftree-pre -ftree-partial-pre -ftree-pta
-          -ftree-reassoc -ftree-sink -ftree-slsr -ftree-sra
-          -ftree-switch-conversion -ftree-tail-merge -ftree-ter
-          -ftree-vectorize -ftree-vrp
-          -funit-at-a-time -funroll-all-loops -funroll-loops
-          -funsafe-loop-optimizations -funsafe-math-optimizations -funswitch-loops
-          -fipa-ra -fvariable-expansion-in-unroller -fvect-cost-model -fvpt
-          -fweb -fwhole-program -fwpa -fuse-linker-plugin
-          --param NAME=VALUE
-          -O  -O0  -O1  -O2  -O3  -Os -Ofast -Og
+
+     _Options supported by both LLVM and GCC_
+          -fassociative-math
+              -fdata-sections
+              -ffast-math
+           -ffinite-math-only
+              -ffp-contract=STYLE
+              -ffunction-sections
+           -flto[full|thin]
+              -fno-math-errno
+              -fmerge-all-constants
+              -fno-inline
+           -fomit-frame-pointer
+              -foptimize-sibling-calls
+              -fprofile-use=[PATH]
+           -freciprocal-math
+              -fno-signed-zeros
+              -fstrict-aliasing
+              -fstrict-enums
+           -fstrict-overflow
+              -fno-trapping-math
+              -ftree-slp-vectorize
+           -funit-at-a-time
+              -funroll-loops
+              -fno-zero-initialized-in-bss
+           -funsafe-math-optimizations
+              -ftree-vectorize
+              -O
+              -O0
+              -O1
+              -O2
+           -O3
+              -Ofast
+              -Os
+              --param ssp-buffer-size=N
+
+
+     _Options only supported by LLVM_
+          -fno-reroll-loops
+              -freroll-loops
+              -fslp-vectorize-aggressive
+           -fslp-vectorize
+              -fstrict-vtable-pointers
+              -fthinlto-index=FILE
+           -fvectorize
+              -mllvm OPTION
+              -mrelax-all
+              -O4
+              -Oz
+
+
+     _Options only supported by GCC_
+          -faggressive-loop-optimizations
+              -falign-functions[=N]
+           -falign-jumps[=N]
+              -falign-labels[=N]
+              -falign-loops[=N]
+           -fauto-inc-dec
+              -fauto-profile[=PATH]
+              -fno-branch-count-reg
+           -fbranch-probabilities
+              -fbranch-target-load-optimize
+           -fbranch-target-load-optimize2
+              -fbtr-bb-exclusive -fcaller-saves
+           -fcombine-stack-adjustments
+              -fcompare-elim
+              -fconserve-stack
+           -fcprop-registers
+              -fcrossjumping
+              -fcse-follow-jumps
+              -fcse-skip-blocks
+           -fcx-fortran-rules
+              -fcx-limited-range
+              -fdce
+              -fdeclone-ctor-dtor
+           -fno-defer-pop
+              -fdelayed-branch
+              -fdelete-null-pointer-checks
+           -fdevirtualize
+              -fdevirtualize-at-ltrans
+              -fdevirtualize-speculatively
+           -fdse
+              -fearly-inlining
+              -fexcess-precision=STYLE
+           -fexpensive-optimizations
+              -ffat-lto-objects
+              -fipa-sra
+              -ffloat-store
+           -fforward-propagate
+              -fno-function-cse
+              -fgcse
+              -fgcse-after-reload
+           -fgcse-las
+              -fgcse-lm
+              -fgcse-sm
+              -fgraphite-identity
+           -fno-guess-branch-probability
+              -fhoist-adjacent-loads
+              -fif-conversion
+           -fif-conversion2
+              -findirect-inlining
+              -finline-functions
+           -finline-functions-called-once
+              -finline-limit=N
+           -finline-small-functions
+              -fipa-cp
+              -fipa-cp-alignment
+              -fipa-cp-clone
+           -fipa-icf
+              -fipa-profile
+              -fipa-pta
+              -fipa-pure-const
+              -fipa-ra
+           -fipa-reference
+              -fira-algorithm=ALGORITHM
+              -fira-hoist-pressure
+           -fira-loop-pressure
+              -fira-region=REGION
+              -fno-ira-share-save-slots
+           -fno-ira-share-spill-slots
+              -fisolate-erroneous-paths-attribute
+           -fisolate-erroneous-paths-dereference
+              -fivopts
+              -fkeep-inline-functions
+           -fkeep-static-consts
+              -fkeep-static-functions
+              -flive-range-shrinkage
+           -floop-block
+              -floop-interchange
+              -floop-nest-optimize
+           -floop-parallelize-all
+              -floop-strip-mine
+              -floop-unroll-and-jam
+           -flra-remat
+              -flto-compression-level
+              -flto-partition=ALG
+           -flto-odr-type-merging
+              -fmerge-constants
+              -fmodulo-sched
+           -fmodulo-sched-allow-regmoves
+              -fmove-loop-invariants
+              -foptimize-strlen
+           -fpartial-inlining
+              -fpeel-loops
+              -fno-peephole
+              -fno-peephole2
+           -fpredictive-commoning
+              -fprefetch-loop-arrays
+              -fprofile-correction
+           -fprofile-values
+              -fprofile-reorder-functions
+              -free
+           -frename-registers
+              -freorder-blocks
+           -freorder-blocks-algorithm=ALGORITHM
+              -freorder-blocks-and-partition
+           -freorder-functions
+              -frerun-cse-after-loop
+           -freschedule-modulo-scheduled-loops
+              -frounding-math
+           -fsched-critical-path-heuristic
+              -fsched-dep-count-heuristic
+           -fsched-group-heuristic
+              -fno-sched-interblock
+           -fsched-last-insn-heuristic
+              -fsched-pressure
+              -fsched-rank-heuristic
+           -fno-sched-spec
+              -fsched-spec-insn-heuristic
+              -fsched-spec-load
+           -fsched-spec-load-dangerous
+              -fsched-stalled-insns[=N]
+           -fsched-stalled-insns-dep[=N]
+              -fsched2-use-superblocks
+           -fschedule-fusion
+              -fschedule-insns
+              -fschedule-insns2
+           -fsection-anchors
+              -fsel-sched-pipelining
+           -fsel-sched-pipelining-outer-loops
+              -fselective-scheduling
+           -fselective-scheduling2
+              -fsemantic-interposition
+              -fshrink-wrap
+           -fsignaling-nans
+              -fsimd-cost-model=MODEL
+              -fsingle-precision-constant
+           -fsplit-ivs-in-unroller
+              -fsplit-paths
+              -fsplit-wide-types
+           -fssa-backprop
+              -fssa-phiopt
+              -fstdarg-opt
+              -fthread-jumps
+           -fno-toplevel-reorder
+              -ftracer
+              -ftree-bit-ccp
+           -ftree-builtin-call-dce
+              -ftree-ccp
+              -ftree-ch
+           -ftree-coalesce-inlined-vars
+              -ftree-coalesce-vars
+           -ftree-copy-prop
+              -ftree-copyrename
+              -ftree-dce
+           -ftree-dominator-opts
+              -ftree-dse
+              -ftree-forwprop
+           -ftree-fre
+              -ftree-loop-distribute-patterns
+           -ftree-loop-distribution
+              -ftree-loop-if-convert
+           -ftree-loop-if-convert-stores
+              -ftree-loop-im
+           -ftree-loop-ivcanon -ftree-loop-linear
+              -ftree-loop-optimize
+           -ftree-loop-vectorize
+              -ftree-parallelize-loops=N
+              -ftree-partial-pre
+           -ftree-phiprop
+              -ftree-pre
+              -ftree-pta
+           -ftree-reassoc
+              -ftree-sink
+              -ftree-slsr
+              -ftree-sra
+           -ftree-switch-conversion
+              -ftree-tail-merge
+              -ftree-ter
+           -ftree-vrp
+              -funroll-all-loops
+              -funsafe-loop-optimizations
+           -funswitch-loops
+              -fuse-linker-plugin
+           -fvariable-expansion-in-unroller
+              -fvect-cost-model
+              -fvpt
+              -fweb
+           -fwhole-program
+              -Og
+              --param NAME=VALUE
+
+
+_Program Instrumentation Options_
+     *Note Program Instrumentation Options: Instrumentation Options.
+
+     _Options supported by both LLVM and GCC_
+          --coverage
+              -finstrument-functions
+              -fprofile-arcs
+           -fprofile-generate[=PATH]
+              -fsanitize=STYLE
+           -fsanitize-recover[=STYLE]
+              -fsanitize-undefined-trap-on-error
+           -fsplit-stack
+              -fstack-check
+              -fstack-protector
+           -fstack-protector-all
+              -fstack-protector-strong
+           -ftest-coverage
+              -pg
+
+
+     _Options only supported by LLVM_
+          --analyze
+              -fcoverage-mapping
+              -fprofile-instr-generate[=FILE]
+           -fprofile-instr-use[=FILE]
+              -fprofile-sample-use=FILE
+           -fsanitize-address-field-padding=N
+              -fsanitize-blacklist=FILE
+           -fsanitize=STYLE
+              -fsanitize-cfi-cross-dso
+           -fsanitize-coverage=STYLE
+              -fsanitize-memory-track-origins[N]
+           -fsanitize-memory-use-after-dtor
+              -fsanitize-recover=STYLE
+           -fsanitize-stats
+              -fsanitize-trap=STYLE
+
+
+     _Options only supported by GCC_
+          -fasan-shadow-offset=NUMBER
+              -fbounds-check
+              -fcheck-data-deps
+           -fcheck-pointer-bounds
+              -fchkp-check-incomplete-type
+           -fchkp-first-field-has-own-bounds
+              -fchkp-narrow-bounds
+           -fchkp-narrow-to-innermost-array
+              -fchkp-optimize
+           -fchkp-use-fast-string-functions
+              -fchkp-use-nochk-string-functions
+           -fchkp-use-static-bounds
+              -fchkp-use-static-const-bounds
+           -fchkp-treat-zero-dynamic-size-as-infinite
+              -fchkp-check-read
+           -fchkp-check-read
+              -fchkp-check-write
+           -fchkp-store-bounds
+              -fchkp-instrument-calls
+           -fchkp-instrument-marked-only
+              -fchkp-use-wrappers
+           -finstrument-functions-exclude-function-list=SYM,SYM,...
+           -finstrument-functions-exclude-file-list=FILE,FILE,...
+           -fprofile-dir=PATH
+              -fsanitize-coverage=trace-pc
+           -fsanitize-recover=STYLE
+              -fsanitize-sections=S1,S2,...
+           -fno-stack-limit
+              -fstack-limit-register=REG
+           -fstack-limit-symbol=SYM
+              -fstack-protector-explicit
+           -fvtable-verify=[std|preinit|none]
+              -fvtv-counts
+           -fvtv-debug
+              -p
+
 
 _Preprocessor Options_
      *Note Options Controlling the Preprocessor: Preprocessor Options.
-          -AQUESTION=ANSWER
-          -A-QUESTION[=ANSWER]
-          -C  -dD  -dI  -dM  -dN -dU
-          -DMACRO[=DEFN]  -E  -H
-          -idirafter DIR
-          -include FILE  -imacros FILE
-          -iprefix FILE  -iwithprefix DIR
-          -iwithprefixbefore DIR  -isystem DIR
-          -imultilib DIR -isysroot DIR
-          -M  -MM  -MF  -MG  -MP  -MQ  -MT  -MD  -MMD  -nostdinc -nostdinc++
-          -P  -fdebug-cpp -ftrack-macro-expansion[=LEVEL]
-          -fworking-directory -fpch-deps -fpch-preprocess -fdirectives-only
-          -fdollars-in-identifiers -fextended-identifiers
-          -fno-canonical-system-headers -fpreprocessed -ftabstop=WIDTH
-          -fexec-charset=CHARSET -fwide-exec-charset=CHARSET
-          -finput-charset=CHARSET -fno-show-column
-          -remap  -undef  -UMACRO
-          -Wp,OPTION -Wunused-macros -Wno-endif-labels -Wundef
-          -Xpreprocessor OPTION -no-integrated-cpp
 
-_Assembler Option_
+     _Options supported by both LLVM and GCC_
+          -C
+              -DMACRO[=DEFN]
+              -dD
+              -dM
+              -E
+              -fdollars-in-identifiers
+           -fexec-charset=CHARSET
+              -fextended-identifiers
+              -finput-charset=CHARSET
+           -fpch-preprocess
+              -fno-show-column
+              -ftabstop=WIDTH
+              -H
+           -idirafter DIR
+              -imacros FILE
+              -include FILE
+              -iprefix FILE
+           -isysroot DIR
+              -isystem DIR
+              -iwithprefix DIR
+              -iwithprefixbefore DIR
+           -M
+              -MD
+              -MF
+              -MG
+              -MM
+              -MMD
+              -MP
+              -MQ
+              -MT
+              -no-integrated-cpp
+           -nostdinc
+              -P
+              -trigraphs
+              -UMACRO
+              -undef
+              -Wp,OPTION
+           -Xpreprocessor
+
+
+     _Options only supported by LLVM_
+          -cxx-isystem=FILE
+              -fcomment-block-commands=CMD
+              -fdeclspec
+           -ftrigraphs
+              -iframeworkDIR
+              -include-pch FILE
+           -index-header-map
+              -iwithsysroot DIR
+              --migrate
+           -MV
+              --no-system-header-prefix=PREFIX
+              -nobuiltininc
+           -relocatable-pch
+              --system-header-prefix=PREFIX
+              -verify-pch
+
+
+     _Options only supported by GCC_
+          -AQUESTION=ANSWER
+              -A-QUESTION[=ANSWER]
+              -dI
+              -dN
+              -fdebug-cpp
+           -fdirectives-only
+              -fpch-deps
+              -fpreprocessed
+           -ftrack-macro-expansion
+              -fwide-exec-charset=CHARSET
+           -fworking-directory
+              -imultilib DIR
+              -remap
+
+
+_Assembler Options_
      *Note Passing Options to the Assembler: Assembler Options.
-          -Wa,OPTION  -Xassembler OPTION
+
+     _Options supported by both LLVM and GCC_
+          -Wa,OPTION
+              -Xassembler OPTION
+
+
+     _Options only supported by LLVM_
+          -fno-integrated-as
+
+
+     _Options only supported by GCC_
+
+
+
 
 _Linker Options_
      *Note Options for Linking: Link Options.
-          OBJECT-FILE-NAME  -fuse-ld=LINKER -lLIBRARY
-          -nostartfiles  -nodefaultlibs  -nostdlib -pie -rdynamic
-          -s  -static -static-libgcc -static-libstdc++
-          -static-libasan -static-libtsan -static-liblsan -static-libubsan
-          -static-libmpx -static-libmpxwrappers
-          -shared -shared-libgcc  -symbolic
-          -T SCRIPT  -Wl,OPTION  -Xlinker OPTION
-          -u SYMBOL -z KEYWORD
+
+     _Options supported by both LLVM and GCC_
+          -fuse-ld=LINKER
+              -lLIBRARY
+              -nodefaultlibs
+              -nostartfiles
+           -nostdlib
+              -pie
+              -rdynamic
+              -s
+              -shared
+              -static
+              -static-libgcc
+           -Wl,OPTION
+              -Xlinker OPTION
+              -u SYMBOL
+              -z KEYWORD
+
+
+     _Options only supported by LLVM_
+          -fno-autolink
+              -fno-use-init-array
+              -fuse-init-array
+              -fveclib=LIB
+           -mincremental-linker-compatible
+              -stdlib=LIB
+
+
+     _Options only supported by GCC_
+          -shared-libgcc
+              -static-libasan
+              -static-liblsan
+              -static-libmpx
+           -static-libmpxwrappers
+              -static-libstdc++
+              -static-libtsan
+           -static-libubsan
+              -symbolic
+              -T SCRIPT
+
 
 _Directory Options_
      *Note Options for Directory Search: Directory Options.
-          -BPREFIX -IDIR -iplugindir=DIR
-          -iquoteDIR -LDIR -specs=FILE -I-
-          --sysroot=DIR --no-sysroot-suffix
+
+     _Options supported by both LLVM and GCC_
+          -IDIR
+          -iquoteDIR
+          -LDIR
+          --sysroot=DIR
+
+
+     _Options only supported by LLVM_
+
+
+     _Options only supported by GCC_
+          -BPREFIX
+          -I-
+          -iplugindir=DIR
+          -no-canonical-prefixes
+          --no-sysroot-suffix
+
+
+_Code Generation Options_
+     *Note Options for Code Generation Conventions: Code Gen Options.
+
+     _Options supported by both LLVM and GCC_
+          -fasynchronous-unwind-tables
+              -fno-common
+              -fexceptions
+              -fno-ident
+           -fnon-call-exceptions
+              -fshort-wchar
+              -fpack-struct[=N]
+           -fPIC
+              -fpic
+              -fPIE
+              -fpie
+              -fshort-enums
+              -ftls-model=MODEL
+           -ftrapv
+              -funwind-tables
+              -fverbose-asm
+           -fvisibility=[default|internal|hidden|protected]
+              -fwrapv
+           --target=TRIPLET
+
+
+     _Options only supported by LLVM_
+          -fapple-kext
+              -fapple-pragma-pack
+              -fapplication-extension
+           -fmax-type-align=N
+              -ftrap-function=FUNCTION
+           -ftrapv-handler=HANDLER
+              -mllvm OPTION
+              -mstack-alignment=N
+           -mstack-probe-size=N
+              -mthread-model MODEL
+              -resource-dir=DIR
+           -target TRIPLET
+
+
+     _Options only supported by GCC_
+          -fcall-saved-REG
+              -fcall-used-REG
+              -fdelete-dead-exceptions
+           -ffixed-REG
+              -fno-gnu-unique
+              -finhibit-size-directive
+           -fno-jump-tables
+              -fleading-underscore
+              -fpcc-struct-return
+           -fno-plt
+              -frecord-gcc-switches
+              -freg-struct-return
+           -fshort-double
+              -fstack-reuse=REUSE_LEVEL
+           -fstrict-volatile-bitfields
+              -fsync-libcalls
+
+
+_Developer Options_
+     *Note GCC Developer Options: Developer Options.
+
+     _Options supported by both LLVM and GCC_
+          -dumpmachine
+          -dumpversion
+          -frandom-seed=STRING
+          -ftime-report
+          -print-file-name=LIBRARY
+          -print-libgcc-file-name
+          -print-multi-directory
+          -print-multi-lib
+          -print-prog-name=PROGRAM
+          -print-search-dirs
+          -save-temps -save-temps=[cwd|obj]
+
+
+     _Options only supported by LLVM_
+          -ccc-arcmt-check
+          -ccc-arcmt-migrate DIR
+          -ccc-arcmt-modify
+          -ccc-gcc-name FILE
+          -ccc-install-dir DIR
+          -ccc-objcmt-migrate DIR
+          -ccc-pch-is-pch
+          -ccc-pch-is-pth
+          -ccc-print-bindings
+          -ccc-print-phases
+          --driver-mode=MODE
+          -print-ivar-layout
+          -Reverything
+          -Rpass=PASS
+          -Rpass-analysis=PASS
+          -Rpass-missed=PASS
+          -Xanalyzer
+          -via-file-asm
+
+
+     _Options only supported by GCC_
+          -dLETTERS
+          -dumpspecs
+          -fchecking
+          -fcompare-debug[=OPTS]
+          -fcompare-debug-second
+          -fdbg-cnt=COUNTER-VALUE-LIST
+          -fdbg-cnt-list
+          -fdisable-ipa-PASS_NAME
+          -fdisable-rtl-PASS-NAME[=RANGE-LIST]
+          -fdisable-tree-PASS-NAME[=RANGE-LIST]
+          -fdump-class-hierarchy[-N]
+          -fdump-final-insns=FILE
+          -fdump-ipa-all
+          -fdump-ipa-cgraph
+          -fdump-ipa-inline
+          -fdump-noaddr
+          -fdump-passes
+          -fdump-rtl-PASS[=FILENAME]
+          -fdump-statistics[-OPTION]
+          -fdump-tree[-SWITCH[-OPTIONS][=FILENAME]]
+          -fdump-unnumbered
+          -fdump-unnumbered-links
+          -fdump-translation-unit[-N]
+          -fenable-KIND-PASS[=RANGE-LIST]
+          -fira-verbose=N
+          -flto-report
+          -flto-report-wpa
+          -fmem-report
+          -fmem-report-wpa
+          -fopt-info[-OPTIONS[=FILE]]
+          -fpost-ipa-mem-report
+          -fpre-ipa-mem-report
+          -fprofile-report
+          -freport-bug
+          -fsched-verbose=N
+          -fstack-usage
+          -fstats
+          -fvar-tracking-assignments-toggle
+          -gtoggle
+          -print-multi-os-directory
+          -print-multiarch
+          -print-sysroot
+          -print-sysroot-headers-suffix
+          -Q
+          -time[=FILE]
+
 
 _Machine Dependent Options_
      *Note Hardware Models and Configurations: Submodel Options.
@@ -825,294 +1948,6 @@ _Machine Dependent Options_
           -mtls-dialect=desc  -mtls-dialect=traditional
           -mfix-cortex-a53-835769  -mno-fix-cortex-a53-835769
           -march=NAME  -mcpu=NAME  -mtune=NAME
-
-     _ARM Options_
-          -mapcs-frame  -mno-apcs-frame
-          -mabi=NAME
-          -mapcs-stack-check  -mno-apcs-stack-check
-          -mapcs-float  -mno-apcs-float
-          -mapcs-reentrant  -mno-apcs-reentrant
-          -msched-prolog  -mno-sched-prolog
-          -mlittle-endian  -mbig-endian
-          -mfloat-abi=NAME
-          -mfp16-format=NAME
-          -mthumb-interwork  -mno-thumb-interwork
-          -mcpu=NAME  -march=NAME  -mfpu=NAME
-          -mstructure-size-boundary=N
-          -mabort-on-noreturn
-          -mlong-calls  -mno-long-calls
-          -msingle-pic-base  -mno-single-pic-base
-          -mpic-register=REG
-          -mnop-fun-dllimport
-          -mpoke-function-name
-          -mthumb  -marm
-          -mtpcs-frame  -mtpcs-leaf-frame
-          -mcaller-super-interworking  -mcallee-super-interworking
-          -mtp=NAME -mtls-dialect=DIALECT
-          -mword-relocations
-          -mfix-cortex-m3-ldrd
-          -munaligned-access
-          -mneon-for-64bits
-          -mslow-flash-data
-          -masm-syntax-unified
-          -mrestrict-it
-
-     _Darwin Options_
-          -all_load  -allowable_client  -arch  -arch_errors_fatal
-          -arch_only  -bind_at_load  -bundle  -bundle_loader
-          -client_name  -compatibility_version  -current_version
-          -dead_strip
-          -dependency-file  -dylib_file  -dylinker_install_name
-          -dynamic  -dynamiclib  -exported_symbols_list
-          -filelist  -flat_namespace  -force_cpusubtype_ALL
-          -force_flat_namespace  -headerpad_max_install_names
-          -iframework
-          -image_base  -init  -install_name  -keep_private_externs
-          -multi_module  -multiply_defined  -multiply_defined_unused
-          -noall_load   -no_dead_strip_inits_and_terms
-          -nofixprebinding -nomultidefs  -noprebind  -noseglinkedit
-          -pagezero_size  -prebind  -prebind_all_twolevel_modules
-          -private_bundle  -read_only_relocs  -sectalign
-          -sectobjectsymbols  -whyload  -seg1addr
-          -sectcreate  -sectobjectsymbols  -sectorder
-          -segaddr -segs_read_only_addr -segs_read_write_addr
-          -seg_addr_table  -seg_addr_table_filename  -seglinkedit
-          -segprot  -segs_read_only_addr  -segs_read_write_addr
-          -single_module  -static  -sub_library  -sub_umbrella
-          -twolevel_namespace  -umbrella  -undefined
-          -unexported_symbols_list  -weak_reference_mismatches
-          -whatsloaded -F -gused -gfull -mmacosx-version-min=VERSION
-          -mkernel -mone-byte-bool
-
-     _Hexagon options_
-          -mieee-rnd-near -mv1 -mv2 -mv3 -mv4 -mv5
-
-     _GNU/Linux Options_
-          -mglibc -muclibc -mbionic -mandroid
-          -tno-android-cc -tno-android-ld
-
-     _MIPS Options_
-          -EL  -EB  -march=ARCH  -mtune=ARCH
-          -mips1  -mips2  -mips3  -mips4  -mips32  -mips32r2  -mips32r3  -mips32r5
-          -mips32r6  -mips64  -mips64r2  -mips64r3  -mips64r5  -mips64r6
-          -mips16  -mno-mips16  -mflip-mips16
-          -minterlink-compressed -mno-interlink-compressed
-          -minterlink-mips16  -mno-interlink-mips16
-          -mabi=ABI  -mabicalls  -mno-abicalls
-          -mshared  -mno-shared  -mplt  -mno-plt  -mxgot  -mno-xgot
-          -mgp32  -mgp64  -mfp32  -mfpxx  -mfp64  -mhard-float  -msoft-float
-          -mno-float  -msingle-float  -mdouble-float
-          -modd-spreg -mno-odd-spreg
-          -mabs=MODE  -mnan=ENCODING
-          -mdsp  -mno-dsp  -mdspr2  -mno-dspr2
-          -mmcu -mmno-mcu
-          -meva -mno-eva
-          -mvirt -mno-virt
-          -mxpa -mno-xpa
-          -mmicromips -mno-micromips
-          -mfpu=FPU-TYPE
-          -msmartmips  -mno-smartmips
-          -mpaired-single  -mno-paired-single  -mdmx  -mno-mdmx
-          -mips3d  -mno-mips3d  -mmt  -mno-mt  -mllsc  -mno-llsc
-          -mlong64  -mlong32  -msym32  -mno-sym32
-          -GNUM  -mlocal-sdata  -mno-local-sdata
-          -mextern-sdata  -mno-extern-sdata  -mgpopt  -mno-gopt
-          -membedded-data  -mno-embedded-data
-          -muninit-const-in-rodata  -mno-uninit-const-in-rodata
-          -mcode-readable=SETTING
-          -msplit-addresses  -mno-split-addresses
-          -mexplicit-relocs  -mno-explicit-relocs
-          -mcheck-zero-division  -mno-check-zero-division
-          -mdivide-traps  -mdivide-breaks
-          -mmemcpy  -mno-memcpy  -mlong-calls  -mno-long-calls
-          -mmad -mno-mad -mimadd -mno-imadd -mfused-madd  -mno-fused-madd  -nocpp
-          -mfix-24k -mno-fix-24k
-          -mfix-r4000  -mno-fix-r4000  -mfix-r4400  -mno-fix-r4400
-          -mfix-r10000 -mno-fix-r10000  -mfix-rm7000 -mno-fix-rm7000
-          -mfix-vr4120  -mno-fix-vr4120
-          -mfix-vr4130  -mno-fix-vr4130  -mfix-sb1  -mno-fix-sb1
-          -mflush-func=FUNC  -mno-flush-func
-          -mbranch-cost=NUM  -mbranch-likely  -mno-branch-likely
-          -mfp-exceptions -mno-fp-exceptions
-          -mvr4130-align -mno-vr4130-align -msynci -mno-synci
-          -mrelax-pic-calls -mno-relax-pic-calls -mmcount-ra-address
-
-     _MSP430 Options_
-          -msim -masm-hex -mmcu= -mcpu= -mlarge -msmall -mrelax
-          -mhwmult= -minrt
-
-     _Nvidia PTX Options_
-          -m32 -m64 -mmainkernel
-
-     _PowerPC Options_ See RS/6000 and PowerPC Options.
-
-     _RS/6000 and PowerPC Options_
-          -mcpu=CPU-TYPE
-          -mtune=CPU-TYPE
-          -mcmodel=CODE-MODEL
-          -mpowerpc64
-          -maltivec  -mno-altivec
-          -mpowerpc-gpopt  -mno-powerpc-gpopt
-          -mpowerpc-gfxopt  -mno-powerpc-gfxopt
-          -mmfcrf  -mno-mfcrf  -mpopcntb  -mno-popcntb -mpopcntd -mno-popcntd
-          -mfprnd  -mno-fprnd
-          -mcmpb -mno-cmpb -mmfpgpr -mno-mfpgpr -mhard-dfp -mno-hard-dfp
-          -mfull-toc   -mminimal-toc  -mno-fp-in-toc  -mno-sum-in-toc
-          -m64  -m32  -mxl-compat  -mno-xl-compat  -mpe
-          -malign-power  -malign-natural
-          -msoft-float  -mhard-float  -mmultiple  -mno-multiple
-          -msingle-float -mdouble-float -msimple-fpu
-          -mstring  -mno-string  -mupdate  -mno-update
-          -mavoid-indexed-addresses  -mno-avoid-indexed-addresses
-          -mfused-madd  -mno-fused-madd  -mbit-align  -mno-bit-align
-          -mstrict-align  -mno-strict-align  -mrelocatable
-          -mno-relocatable  -mrelocatable-lib  -mno-relocatable-lib
-          -mtoc  -mno-toc  -mlittle  -mlittle-endian  -mbig  -mbig-endian
-          -mdynamic-no-pic  -maltivec -mswdiv  -msingle-pic-base
-          -mprioritize-restricted-insns=PRIORITY
-          -msched-costly-dep=DEPENDENCE_TYPE
-          -minsert-sched-nops=SCHEME
-          -mcall-sysv  -mcall-netbsd
-          -maix-struct-return  -msvr4-struct-return
-          -mabi=ABI-TYPE -msecure-plt -mbss-plt
-          -mblock-move-inline-limit=NUM
-          -misel -mno-isel
-          -misel=yes  -misel=no
-          -mspe -mno-spe
-          -mspe=yes  -mspe=no
-          -mpaired
-          -mgen-cell-microcode -mwarn-cell-microcode
-          -mvrsave -mno-vrsave
-          -mmulhw -mno-mulhw
-          -mdlmzb -mno-dlmzb
-          -mfloat-gprs=yes  -mfloat-gprs=no -mfloat-gprs=single -mfloat-gprs=double
-          -mprototype  -mno-prototype
-          -msim  -mmvme  -mads  -myellowknife  -memb  -msdata
-          -msdata=OPT  -mvxworks  -G NUM  -pthread
-          -mrecip -mrecip=OPT -mno-recip -mrecip-precision
-          -mno-recip-precision
-          -mveclibabi=TYPE -mfriz -mno-friz
-          -mpointers-to-nested-functions -mno-pointers-to-nested-functions
-          -msave-toc-indirect -mno-save-toc-indirect
-          -mpower8-fusion -mno-mpower8-fusion -mpower8-vector -mno-power8-vector
-          -mcrypto -mno-crypto -mdirect-move -mno-direct-move
-          -mquad-memory -mno-quad-memory
-          -mquad-memory-atomic -mno-quad-memory-atomic
-          -mcompat-align-parm -mno-compat-align-parm
-          -mupper-regs-df -mno-upper-regs-df -mupper-regs-sf -mno-upper-regs-sf
-          -mupper-regs -mno-upper-regs
-
-     _S/390 and zSeries Options_
-          -mtune=CPU-TYPE  -march=CPU-TYPE
-          -mhard-float  -msoft-float  -mhard-dfp -mno-hard-dfp
-          -mlong-double-64 -mlong-double-128
-          -mbackchain  -mno-backchain -mpacked-stack  -mno-packed-stack
-          -msmall-exec  -mno-small-exec  -mmvcle -mno-mvcle
-          -m64  -m31  -mdebug  -mno-debug  -mesa  -mzarch
-          -mtpf-trace -mno-tpf-trace  -mfused-madd  -mno-fused-madd
-          -mwarn-framesize  -mwarn-dynamicstack  -mstack-size -mstack-guard
-          -mhotpatch=HALFWORDS,HALFWORDS
-
-     _Solaris 2 Options_
-          -mclear-hwcap -mno-clear-hwcap -mimpure-text  -mno-impure-text
-          -pthreads -pthread
-
-     _SPARC Options_
-          -mcpu=CPU-TYPE
-          -mtune=CPU-TYPE
-          -mcmodel=CODE-MODEL
-          -mmemory-model=MEM-MODEL
-          -m32  -m64  -mapp-regs  -mno-app-regs
-          -mfaster-structs  -mno-faster-structs  -mflat  -mno-flat
-          -mfpu  -mno-fpu  -mhard-float  -msoft-float
-          -mhard-quad-float  -msoft-quad-float
-          -mstack-bias  -mno-stack-bias
-          -munaligned-doubles  -mno-unaligned-doubles
-          -muser-mode  -mno-user-mode
-          -mv8plus  -mno-v8plus  -mvis  -mno-vis
-          -mvis2  -mno-vis2  -mvis3  -mno-vis3
-          -mcbcond -mno-cbcond
-          -mfmaf  -mno-fmaf  -mpopc  -mno-popc
-          -mfix-at697f -mfix-ut699
-
-     _System V Options_
-          -Qy  -Qn  -YP,PATHS  -Ym,DIR
-
-     _VMS Options_
-          -mvms-return-codes -mdebug-main=PREFIX -mmalloc64
-          -mpointer-size=SIZE
-
-     _VxWorks Options_
-          -mrtp  -non-static  -Bstatic  -Bdynamic
-          -Xbind-lazy  -Xbind-now
-
-     _x86 Options_
-          -mtune=CPU-TYPE  -march=CPU-TYPE
-          -mtune-ctrl=FEATURE-LIST -mdump-tune-features -mno-default
-          -mfpmath=UNIT
-          -masm=DIALECT  -mno-fancy-math-387
-          -mno-fp-ret-in-387  -msoft-float
-          -mno-wide-multiply  -mrtd  -malign-double
-          -mpreferred-stack-boundary=NUM
-          -mincoming-stack-boundary=NUM
-          -mcld -mcx16 -msahf -mmovbe -mcrc32
-          -mrecip -mrecip=OPT
-          -mvzeroupper -mprefer-avx128
-          -mmmx  -msse  -msse2 -msse3 -mssse3 -msse4.1 -msse4.2 -msse4 -mavx
-          -mavx2 -mavx512f -mavx512pf -mavx512er -mavx512cd -msha
-          -maes -mpclmul -mfsgsbase -mrdrnd -mf16c -mfma -mprefetchwt1
-          -mclflushopt -mxsavec -mxsaves
-          -msse4a -m3dnow -mpopcnt -mabm -mbmi -mtbm -mfma4 -mxop -mlzcnt
-          -mbmi2 -mfxsr -mxsave -mxsaveopt -mrtm -mlwp -mmpx -mthreads
-          -mno-align-stringops  -minline-all-stringops
-          -minline-stringops-dynamically -mstringop-strategy=ALG
-          -mmemcpy-strategy=STRATEGY -mmemset-strategy=STRATEGY
-          -mpush-args  -maccumulate-outgoing-args  -m128bit-long-double
-          -m96bit-long-double -mlong-double-64 -mlong-double-80 -mlong-double-128
-          -mregparm=NUM  -msseregparm
-          -mveclibabi=TYPE -mvect8-ret-in-mem
-          -mpc32 -mpc64 -mpc80 -mstackrealign
-          -momit-leaf-frame-pointer  -mno-red-zone -mno-tls-direct-seg-refs
-          -mcmodel=CODE-MODEL -mabi=NAME -maddress-mode=MODE
-          -m32 -m64 -mx32 -m16 -mlarge-data-threshold=NUM
-          -msse2avx -mfentry -mrecord-mcount -mnop-mcount -m8bit-idiv
-          -mavx256-split-unaligned-load -mavx256-split-unaligned-store
-          -malign-data=TYPE -mstack-protector-guard=GUARD
-
-     _x86 Windows Options_
-          -mconsole -mcygwin -mno-cygwin -mdll
-          -mnop-fun-dllimport -mthread
-          -municode -mwin32 -mwindows -fno-set-stack-executable
-
-     _XCore Options_ There are no options specific to the XMOS XCore
-     architecture.
-
-     _zSeries Options_ See S/390 and zSeries Options.
-
-_Code Generation Options_
-     *Note Options for Code Generation Conventions: Code Gen Options.
-          -fcall-saved-REG  -fcall-used-REG
-          -ffixed-REG  -fexceptions
-          -fnon-call-exceptions  -fdelete-dead-exceptions  -funwind-tables
-          -fasynchronous-unwind-tables
-          -fno-gnu-unique
-          -finhibit-size-directive  -finstrument-functions
-          -finstrument-functions-exclude-function-list=SYM,SYM,...
-          -finstrument-functions-exclude-file-list=FILE,FILE,...
-          -fno-common  -fno-ident
-          -fpcc-struct-return  -fpic  -fPIC -fpie -fPIE
-          -fno-jump-tables
-          -frecord-gcc-switches
-          -freg-struct-return  -fshort-enums
-          -fshort-double  -fshort-wchar
-          -fverbose-asm  -fpack-struct[=N]  -fstack-check
-          -fstack-limit-register=REG  -fstack-limit-symbol=SYM
-          -fno-stack-limit -fsplit-stack
-          -fleading-underscore  -ftls-model=MODEL
-          -fstack-reuse=REUSE_LEVEL
-          -ftrapv  -fwrapv  -fbounds-check
-          -fvisibility=[default|internal|hidden|protected]
-          -fstrict-volatile-bitfields -fsync-libcalls
 
 
 File: llvm.info,  Node: Overall Options,  Next: Invoking Clang/LLVM for C++,  Prev: Option Summary,  Up: Invoking LLVM
@@ -1467,9 +2302,9 @@ accepts:
      'iso9899:199x'
           ISO C99.  This standard is substantially completely supported,
           modulo bugs and floating-point issues (mainly but not entirely
-          relating to optional C99 features from Annexes F and G). See <http://gcc.gnu.org/c99status.html>
-          for more information.  The names 'c9x' and 'iso9899:199x' are
-          deprecated.
+          relating to optional C99 features from Annexes F and G). See
+          <http://gcc.gnu.org/c99status.html> for more information.  The
+          names 'c9x' and 'iso9899:199x' are deprecated.
 
      'c11'
      'c1x'
@@ -2034,7 +2869,7 @@ generation of C++ programs are not supported by Clang/LLVM:
      unsignedness, but the standard mandates the current behavior.
 
 
-File: llvm.info,  Node: Objective-C and Objective-C++ Dialect Options,  Next: Language Independent Options,  Prev: C++ Dialect Options,  Up: Invoking LLVM
+File: llvm.info,  Node: Objective-C and Objective-C++ Dialect Options,  Next: Diagnostic Message Formatting Options,  Prev: C++ Dialect Options,  Up: Invoking LLVM
 
 3.6 Options Controlling Objective-C and Objective-C++ Dialects
 ==============================================================
@@ -2186,7 +3021,7 @@ Objective-C++ programs:
      by value, if any.
 
 
-File: llvm.info,  Node: Language Independent Options,  Next: Warning Options,  Prev: Objective-C and Objective-C++ Dialect Options,  Up: Invoking LLVM
+File: llvm.info,  Node: Diagnostic Message Formatting Options,  Next: Warning Options,  Prev: Objective-C and Objective-C++ Dialect Options,  Up: Invoking LLVM
 
 3.7 Options to Control Diagnostic Messages Formatting
 =====================================================
@@ -2283,7 +3118,7 @@ supported by Clang/LLVM:
      '-fno-diagnostics-show-option' flag suppresses that behavior.
 
 
-File: llvm.info,  Node: Warning Options,  Next: Debugging Options,  Prev: Language Independent Options,  Up: Invoking LLVM
+File: llvm.info,  Node: Warning Options,  Next: Debugging Options,  Prev: Diagnostic Message Formatting Options,  Up: Invoking LLVM
 
 3.8 Options to Request or Suppress Warnings
 ===========================================
@@ -3977,8 +4812,7 @@ different behavior
 
 '-dumpspecs'
      Print the compiler's built-in specs--and don't do anything else.
-     (This is used when LLVM itself is being built.)  *Note Spec
-     Files::.
+     (This is used when LLVM itself is being built.)
 
 '-fno-eliminate-unused-debug-types'
      Normally, when producing DWARF 2 output, LLVM avoids producing
@@ -3992,7 +4826,7 @@ different behavior
      amount of wasted space.
 
 
-File: llvm.info,  Node: Optimize Options,  Next: Preprocessor Options,  Prev: Debugging Options,  Up: Invoking LLVM
+File: llvm.info,  Node: Optimize Options,  Next: Instrumentation Options,  Prev: Debugging Options,  Up: Invoking LLVM
 
 3.10 Options That Control Optimization
 ======================================

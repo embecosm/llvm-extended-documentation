@@ -2444,8 +2444,6 @@ run_only_gcc  -lcode -L`pwd`/gcc dummy.c
 run_only_llvm -lcode -L`pwd`/llvm dummy.c
 run_only_gcc  -l code -L`pwd`/gcc dummy.c
 run_only_llvm -l code -L`pwd`/llvm dummy.c
-run_only_gcc  -L`pwd`/gcc -lcode dummy.c
-run_only_llvm -L`pwd`/llvm -lcode dummy.c
 run_only_gcc -lobjc dummy.m  # LLVM bug - needs to be told where to look
 run_both -nodefaultlibs -c dummy.c
 run_both -nostartfiles dummy.c
@@ -2484,7 +2482,6 @@ run_gcc -static-libmpxwrappers dummy.c
 run_gcc -static-libstdc++ dummy.c
 run_gcc -static-libtsan dummy.c
 run_gcc -static-libubsan dummy.c
-run_gcc -no-pie dummy.c
 run_gcc -T dummy.script -c dummy.c
 logcon ""
 
@@ -2534,11 +2531,11 @@ logcon ""
 logcon "Code gen options for both LLVM and GCC"
 
 run_both -fasynchronous-unwind-tables dummy.c
-run_both -fcommon dummy.c
+run_both -fcommon dummy.c # Default
 run_both -fexceptions dummy.c
 run_both -fno-common dummy.c
 run_both -fno-ident dummy.c
-run_both -fno-short-wchar dummy.c
+run_both -fno-short-wchar dummy.c # Default
 run_both -fnon-call-exceptions dummy.c
 run_both -fpack-struct dummy.c
 run_both -fpack-struct=4 dummy.c
@@ -2560,12 +2557,6 @@ run_both -fvisibility=hidden dummy.c
 run_both -fvisibility=internal dummy.c
 run_both -fvisibility=protected dummy.c
 run_both -fwrapv dummy.c
-run_both -mms-bitfields dummy.c
-run_both -mno-ms-bitfields dummy.c
-run_both -momit-leaf-frame-pointer dummy.c
-run_both -mrtd dummy.c
-run_both -msoft-float dummy.c
-run_both -mstackrealign dummy.c
 run_both --target=i686-pc-linux-gnu -c dummy.c
 logcon ""
 
@@ -2577,9 +2568,7 @@ run_llvm -fapplication-extension dummy.c
 run_llvm -fmax-type-align=2 dummy.c
 run_llvm -ftrap-function=main dummy.c
 run_llvm -ftrapv-handler=main dummy.c
-run_llvm -meabi gnu dummy.c # Meaning is target specific
 run_llvm -mllvm -addr-sink-using-gep dummy.c # One example from cc1
-run_llvm -mno-implicit-float dummy.c
 run_llvm -mstack-alignment=2 dummy.c
 run_llvm -mstack-probe-size=2 dummy.c
 run_llvm -mthread-model posix dummy.c
@@ -3134,9 +3123,9 @@ run_gcc -flto-report dummy.c
 run_gcc -flto-report-wpa dummy.c
 run_gcc -fmem-report dummy.c
 run_gcc -fmem-report-wpa dummy.c
-run_gcc -fno-checking dummy.c
-run_gcc -fno-compare-debug dummy.cpp
-run_gcc -fno-var-tracking-assignments-toggle dummy.c
+run_gcc -fno-checking dummy.c # Default
+run_gcc -fno-compare-debug dummy.cpp # Default
+run_gcc -fno-var-tracking-assignments-toggle dummy.c # Default
 run_gcc -fopt-info dummy.c
 run_gcc -fopt-info-all dummy.c
 run_gcc -fopt-info-all=dummy.out dummy.c
@@ -3215,6 +3204,7 @@ run_dummy -install_name dummy.c # Darwin
 run_dummy -keep_private_externs dummy.c # Darwin
 run_dummy -mabicalls dummy.c # MIPS only
 run_dummy -mcrc dummy.c # ARM only
+run_dummy -meabi gnu dummy.c # ARM only
 run_dummy -mfix-cortex-a53-835769 # AArch64 only
 run_dummy -mfp32 dummy.c # MIPS only
 run_dummy -mfp64 dummy.c # MIPS only
@@ -3224,6 +3214,7 @@ run_dummy -mgeneral-regs-only dummy.c # AArch64 only
 run_dummy -mglobal-merge dummy.c # ARM only
 run_dummy -mhvx dummy.c # Hexagon only
 run_dummy -mhvx-double dummy.c # Hexagon only
+run_dummy -mno-implicit-float dummy.c
 run_dummy -mios-version-min=10 dummy.c # Darwin only
 run_dummy -mips1 dummy.c # MIPS only
 run_dummy -mips2 dummy.c # MIPS only
@@ -3242,6 +3233,7 @@ run_dummy -mips64r6 dummy.c # MIPS only
 run_dummy -mips64 dummy.c # MIPS only
 run_dummy -mlong-calls dummy.c # ARM only
 run_dummy -mmacosx-version-min=10 dummy.c # Darwin only
+run_dummy -mms-bitfields dummy.c # x86 only
 run_dummy -mmsa dummy.c # MIPS only
 run_dummy -mno-abicalls dummy.c # MIPS only
 run_dummy -mno-global-merge dummy.c # ARM only
@@ -3249,14 +3241,19 @@ run_dummy -mno-hvx dummy.c # Hexagon only
 run_dummy -mno-hvx-double dummy.c # Hexagon only
 run_dummy -mno-long-calls dummy.c # ARM only
 run_dummy -mno-movt dummy.c # ARM only
+run_dummy -mno-ms-bitfields dummy.c # x86 only
 run_dummy -mno-msa dummy.c # MIPS only
 run_dummy -mno-odd-spreg dummy.c # MIPS only
 run_dummy -mno-restrict-it dummy.c # ARM8 only
 run_dummy -mno-unaligned-access dummy.c # AArch32/AArch64 only
 run_dummy -mnocrc dummy.c # ARM only
 run_dummy -modd-spreg dummy.c # MIPS only
+run_dummy -momit-leaf-frame-pointer dummy.c # x86 only
 run_dummy -mqdsp6-compat dummy.c # Hexagon only
 run_dummy -mrestrict-it dummy.c # ARM8 only
+run_dummy -mrtd dummy.c # x86 only
+run_dummy -msoft-float dummy.c # x86 only
+run_dummy -mstackrealign dummy.c # x86 only
 run_dummy -mstrict-align dummy.c # AArch32/AArch64 only
 run_dummy -munaligned-access dummy.c # AArch32/AArch64 only
 run_dummy -mno-fix-cortex-a53-835769 # AArch64 only

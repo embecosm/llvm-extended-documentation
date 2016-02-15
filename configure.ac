@@ -54,9 +54,9 @@ AC_SUBST(DITA18DIR_ARG)
 AC_SUBST(FOPCONF_ARG)
 
 # Set some TexInfo variables.  We'll think about a better way to do this.
-GCC_VERSION_DATE="16 Mar 2015, commit ID 9dbe51a"
-LLVM_VERSION="3.7"
-PKGVERSION="3.7"
+GCC_VERSION_DATE="11 Feb 2016, commit ID b86fba3"
+LLVM_VERSION="3.8"
+PKGVERSION="3.8"
 BUGURL="www.embecosm.com"
 BUGURL_TEXI="@uref{mailto:support@@embecosm.com,support@@embecosm.com}"
 AC_SUBST(GCC_VERSION_DATE)
