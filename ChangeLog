@@ -1,3 +1,18 @@
+2016-02-17  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* llvm-assembler-manual/llvm-assembler.info: Regenerated.
+	* llvm-user-manual/invoke.texi: Provide details of options in
+	sections up until Warnings.
+	* llvm-user-manual/llvm.info: Regenerated.
+	* llvm-user-manual/llvm.info-1: Regenerated.
+	* llvm-user-manual/llvm.info-2: Regenerated.
+	* llvm-user-manual/llvm.info-3: Regenerated.
+	* llvm-user-manual/llvm.info-5: Regenerated.
+	* llvm-user-manual/llvm.info-6: Regenerated.
+	* support-code/opt-check.sh: Tidied up.
+	* support-code/todo.org: Restore content actually deleted in
+	commit two before.
+
 2016-02-15  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	Summary of all LLVM and GCC options is now complete. It can be

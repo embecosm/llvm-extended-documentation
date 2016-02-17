@@ -226,10 +226,10 @@ GCC: Hexagon, XCore.
 }
 
 @emph{Options only supported by LLVM}
-@gccoptlist{-fbuild-session-file=@var{file}
-@    -fbuild-session-timestamp=@var{secs}
-@gol -emit-ast
+@gccoptlist{-emit-ast
 @    -emit-llvm
+@gol -fbuild-session-file=@var{file}
+@    -fbuild-session-timestamp=@var{secs}
 @    --gcc-toolchain=@var{dir}
 @    -help
 @    -ObjC
@@ -240,8 +240,8 @@ GCC: Hexagon, XCore.
 }
 
 @emph{Options only supported by GCC}
-@gccoptlist{-fdump-ada-spec@r{[}-slim@r{]}
-@    -fada-spec-parent=@var{unit}
+@gccoptlist{-fada-spec-parent=@var{unit}
+@    -fdump-ada-spec@r{[}-slim@r{]}
 @gol -fdump-go-spec=@var{file}
 @    -fno-canonical-system-headers
 @gol -fplugin-arg-@var{name}=@var{arg}
@@ -258,22 +258,22 @@ GCC: Hexagon, XCore.
 
 @emph{Options supported by both LLVM and GCC}
 @gccoptlist{-ansi
+@    -fno-asm
+@    -fno-builtin
+@gol -fno-builtin-@var{function}
 @    -ffreestanding
 @    -fgnu89-inline
 @    -fhosted
 @gol -flax-vector-conversions
 @    -fms-extensions
-@    -fno-asm
-@    -fno-builtin
-@gol -fno-builtin-@var{function}
 @    -fopenmp
 @    -fsigned-bitfields
-@    -fsigned-char
-@gol -funsigned-bitfields
-@    -funsigned-char
+@gol -fsigned-char
 @    -std=@var{standard}
 @    -traditional
-@gol -trigraphs
+@    -trigraphs
+@gol -funsigned-bitfields
+@    -funsigned-char
 }
 
 @emph{Options only supported by LLVM}
@@ -294,8 +294,8 @@ GCC: Hexagon, XCore.
 @gccoptlist{-aux-info @var{filename}
 @    -fallow-parameterless-variadic-functions
 @gol -fcilkplus
-@    -fgnu-tm
 @    -fcond-mismatch
+@    -fgnu-tm
 @    -fopenacc
 @gol -fopenmp-simd
 @    -fplan9-extensions
@@ -310,20 +310,19 @@ GCC: Hexagon, XCore.
 @gccoptlist{-fno-access-control
 @    -fcheck-new
 @    -fconstexpr-depth=@var{n}
-@gol -ffor-scope
-@    -ffriend-injection
-@    -fms-extensions
 @gol -fno-elide-constructors
-@    -fno-gnu-keywords
+@    -ffor-scope
+@    -ffriend-injection
+@gol -fno-gnu-keywords
 @    -fno-implicit-templates
 @gol -fno-implement-inlines
 @    -fno-operator-names
+@gol -fpermissive
 @    -fno-rtti
-@gol -fno-threadsafe-statics
-@    -fpermissive
 @    -fsized-deallocation
 @gol -ftemplate-backtrace-limit=@var{n}
 @    -ftemplate-depth=@var{n}
+@gol -fno-threadsafe-statics
 @    -fuse-cxa-atexit
 @gol -fvisibility-inlines-hidden
 @    -fvisibility-ms-compat
@@ -342,9 +341,9 @@ GCC: Hexagon, XCore.
 }
 
 @emph{Options only supported by LLVM}
-@gccoptlist{-fcxx-exceptions
-@    -fdelayed-template-parsing
-@gol -fno-assume-sane-operator-new
+@gccoptlist{-fno-assume-sane-operator-new
+@    -fcxx-exceptions
+@gol -fdelayed-template-parsing
 @    -fshow-overloads=@var{opt}
 }
 
@@ -432,21 +431,21 @@ Objective-C and Objective-C++ Dialects}.
 @emph{Options supported by both LLVM and GCC}
 @gccoptlist{-fdiagnostics-color@r{[}=auto@r{|}never@r{|}always@r{]}
 @gol -fdiagnostics-show-location=@r{[}once@r{|}every-line@r{]}
-@gol -fmessage-length=@var{n}
-@    -fno-diagnostics-show-option
+@gol -fno-diagnostics-show-option
+@    -fmessage-length=@var{n}
 }
 
 @emph{Options only supported by LLVM}
 @gccoptlist{-fansi-escape-codes
 @    -fcolor-diagnostics
+@gol -fno-diagnostics-fixit-info
 @gol -fdiagnostics-parseable-fixits
 @gol -fdiagnostics-print-source-range-info
 @gol -fdiagnostics-show-note-include-stack
 @gol -fdiagnostics-show-template-tree
-@gol -fno-diagnostics-fixit-info
 @    -fno-elide-type
-@gol -fno-show-source-location
 @    -serialize-diagnostics @var{file}
+@gol -fno-show-source-location
 }
 
 @emph{Options only supported by GCC}
@@ -534,7 +533,6 @@ Objective-C and Objective-C++ Dialects}.
 @    -Wmissing-field-initializers
 @gol -Wmissing-format-attribute
 @    -Wmissing-include-dirs
-@    -Wmissing-noreturn
 @gol -Wno-multichar
 @    -Wnonnull
 @    -Wnull-dereference
@@ -599,8 +597,8 @@ Objective-C and Objective-C++ Dialects}.
 @gol -Wambiguous-member-template
 @    -Wanalyzer-incompatible-plugin
 @gol -Wanonymous-pack-parens
-@    -Warc-bridge-casts-disallowed-in-nonarc
-@gol -Warc
+@    -Warc
+@gol -Warc-bridge-casts-disallowed-in-nonarc
 @    -Warc-maybe-repeated-use-of-weak
 @    -Warc-non-pod-memaccess
 @gol -Warc-performSelector-leaks
@@ -1648,6 +1646,10 @@ Objective-C and Objective-C++ Dialects}.
 
 @c For now AArch is kept as a placeholder
 
+@emph{At the time of writing, this section is a placeholder.  There
+has been no attempt to verify which AAarch64 options are valid with
+LLVM.}
+
 @emph{AArch64 Options}
 @gccoptlist{-mabi=@var{name}  -mbig-endian  -mlittle-endian @gol
 -mgeneral-regs-only @gol
@@ -1660,7 +1662,6 @@ Objective-C and Objective-C++ Dialects}.
 
 @end table
 
-
 @node Overall Options
 @section Options Controlling the Kind of Output
 
@@ -1672,20 +1673,16 @@ assembler input file produces an object file, and linking combines all
 the object files (those newly compiled, and those specified as input)
 into an executable file.
 
-@emph{Note:} Unlike GCC, Clang/LLVM has an integrated assembler; there
-is no separate standalone assembler program.
-
-The following GCC options are not supported by Clang/LLVM:
-@gccoptlist{--help=@{@var{class}@r{|[}^@r{]}@var{qualifier}@}@r{[},@dots{}@r{]} @gol
--wrapper, -fplugin=@var{name}.so -fplugin-arg-@var{name}-@var{key}=@var{value} @gol
--fdump-ada-spec@r{[}-slim@r{]} -fada-spec-parent=@var{unit} -fdump-go-spec=@var{file}}
-
-The following GCC options are accepted by Clang/LLVM, but do nothing, and by
-default will issue a warning message:
-@gccoptlist{--target-help --pass-exit-codes}
-
-The following options behave differently under Clang/LLVM compared to GCC.
-@gccoptlist{--no-canonical-prefixes}
+@emph{Note:} Not all GCC options are supported by Clang/LLVM.
+@xref{Option Summary,,Option Summary}, for details of:
+@itemize @bullet
+@item
+those options supported by both Clang/LLVM and GCC;
+@item
+those options only supported by Clang/LLVM; and
+@item
+those options supported only by GCC.
+@end itemize
 
 @cindex file name suffix
 For any given input file, the file name suffix determines what kind of
@@ -1770,11 +1767,164 @@ An object file to be fed straight into linking.
 Any file name with no recognized suffix is treated this way.
 @end table
 
+The following Clang/LLVM options provide overall control of the type
+of output from the compiler.
+
+@table @gcctabopt
+@item @@@var{file}
+@opindex @@
+Read command-line options from @var{file}.  The options read are
+inserted in place of the original @@@var{file} option.  If @var{file}
+does not exist, or cannot be read, then the option will be treated
+literally, and not removed.
+
+Options in @var{file} are separated by whitespace.  A whitespace
+character may be included in an option by surrounding the entire
+option in either single or double quotes.  Any character (including a
+backslash) may be included by prefixing the character to be included
+with a backslash.  The @var{file} may itself contain additional
+@@@var{file} options; any such options will be processed recursively.
+
+@item -###
+@opindex ###
+Like @option{-v} except the commands are not executed and arguments
+are quoted unless they contain only alphanumeric characters or @code{./-_}.
+This is useful for shell scripts to capture the driver-generated command lines.
+
+@item -c
+@opindex c
+Compile or assemble the source files, but do not link.  The linking
+stage simply is not done.  The ultimate output is in the form of an
+object file for each source file.
+
+By default, the object file name for a source file is made by replacing
+the suffix @samp{.c}, @samp{.i}, @samp{.s}, etc., with @samp{.o}.
+
+Unrecognized input files, not requiring compilation or assembly, are
+ignored.
+
+@item -E
+@opindex E
+Stop after the preprocessing stage; do not run the compiler proper.  The
+output is in the form of preprocessed source code, which is sent to the
+standard output.
+
+Input files that don't require preprocessing are ignored.
+
+@item -emit-ast
+@opindex emit-ast
+
+Clang/LLVM option for future documentation.
+
+@item -emit-llvm
+@opindex emit-llvm
+
+Clang/LLVM option for future documentation.
+
+@item -fbuild-session-file=@var{file}
+@opindex fbuild-session-file
+
+Clang/LLVM option for future documentation.
+
+@item -fbuild-session-timestamp=@var{secs}
+@opindex fbuild-session-timestamp
+
+Clang/LLVM option for future documentation.
+
+@item -fplugin=@var{name}.so
+@opindex fplugin
+Load the plugin code in file @var{name}.so, assumed to be a shared
+object to be dlopen'd by the compiler.
+
+@emph{Note:} Unlike GCC, Clang/LLVM has no mechansim equivalent to
+@option{-fplugin-arg} to pass arguments to callbacks.
+
+@item --gcc-toolchain=@var{dir}
+@opindex gcc-toolchain
+
+Clang/LLVM option for future documentation.
+
+@item --help
+@itemx -help
+@opindex help
+Print (on the standard output) a description of the command-line options
+understood by @command{clang}.  If the @option{-v} option is also specified
+then @option{--help} is also passed on to the various processes
+invoked by @command{clang}, so that they can display the command-line options
+they accept.  If the @option{-Wextra} option has also been specified
+(prior to the @option{--help} option), then command-line options that
+have no documentation associated with them are also displayed.
+
+@emph{Note:} The @option{-help} (with a single hyphen) is a Clang/LLVM
+specific variant
+
+@item -o @var{file}
+@cindex output file option
+@opindex o
+Place output in file @var{file}.  This applies to whatever
+sort of output is being produced, whether it be an executable file,
+an object file, an assembler file or preprocessed C code.
+
+If @option{-o} is not specified, the default is to put an executable
+file in @file{a.out}, the object file for
+@file{@var{source}.@var{suffix}} in @file{@var{source}.o}, its
+assembler file in @file{@var{source}.s}, a precompiled header file in
+@file{@var{source}.@var{suffix}.gch}, and all preprocessed C source on
+standard output.
+
+@item -ObjC
+@opindex ObjC
+
+Clang/LLVM option for future documentation.
+
+@item -ObjC++
+@opindex ObjC++
+
+Clang/LLVM option for future documentation.
+
+@item -pipe
+@opindex pipe
+Use pipes rather than temporary files for communication between the
+various stages of compilation.  This fails to work on some systems where
+the assembler is unable to read from a pipe; but GNU assemblers have
+no trouble.  It is also not an issue where the Clang/LLVM integrated
+assembler is used.
+
+@item -Qunused-arguments
+@opindex Qunused-arguments
+
+Clang/LLVM option for future documentation.
+
+@item -S
+@opindex S
+Stop after the stage of compilation proper; do not assemble.  The output
+is in the form of an assembler code file for each non-assembler input
+file specified.
+
+By default, the assembler file name for a source file is made by
+replacing the suffix @samp{.c}, @samp{.i}, etc., with @samp{.s}.
+
+Input files that don't require compilation are ignored.
+
+@item -v
+@opindex v
+Print (on standard error output) the commands executed to run the stages
+of compilation.  Also print the version number of the compiler driver
+program and of the preprocessor and the compiler proper.
+
+@item --version
+@opindex version
+Display the version number and copyrights of the invoked Clang/LLVM@.
+
+@item -working-directory @var{dir}
+@opindex working-directory
+
+Clang/LLVM option for future documentation.
+
+@item -x @var{language}
 @opindex x
 You can specify the input language explicitly with the @option{-x} option:
 
-@table @gcctabopt
-@item -x @var{language}
 Specify explicitly the @var{language} for the following input files
 (rather than letting the compiler choose a default based on the file
 name suffix).  This option applies to all following input files until
@@ -1792,125 +1942,11 @@ Turn off any specification of a language, so that subsequent files are
 handled according to their file name suffixes (as they are if @option{-x}
 has not been used at all).
 
-@item -pass-exit-codes
-@opindex pass-exit-codes
-This option is accepted by Clang/LLVM for compatibility with GCC, but
-will do nothing, and by default issues a warning message.
-@end table
+@item -Xclang
+@opindex Xclang
 
-If you only want some of the stages of compilation, you can use
-@option{-x} (or filename suffixes) to tell @command{clang} where to start, and
-one of the options @option{-c}, @option{-S}, or @option{-E} to say where
-@command{clang} is to stop.  Note that some combinations (for example,
-@samp{-x cpp-output -E}) instruct @command{clang} to do nothing at all.
+Clang/LLVM option for future documentation.
 
-@table @gcctabopt
-@item -c
-@opindex c
-Compile or assemble the source files, but do not link.  The linking
-stage simply is not done.  The ultimate output is in the form of an
-object file for each source file.
-
-By default, the object file name for a source file is made by replacing
-the suffix @samp{.c}, @samp{.i}, @samp{.s}, etc., with @samp{.o}.
-
-Unrecognized input files, not requiring compilation or assembly, are
-ignored.
-
-@item -S
-@opindex S
-Stop after the stage of compilation proper; do not assemble.  The output
-is in the form of an assembler code file for each non-assembler input
-file specified.
-
-By default, the assembler file name for a source file is made by
-replacing the suffix @samp{.c}, @samp{.i}, etc., with @samp{.s}.
-
-Input files that don't require compilation are ignored.
-
-@item -E
-@opindex E
-Stop after the preprocessing stage; do not run the compiler proper.  The
-output is in the form of preprocessed source code, which is sent to the
-standard output.
-
-Input files that don't require preprocessing are ignored.
-
-@cindex output file option
-@item -o @var{file}
-@opindex o
-Place output in file @var{file}.  This applies to whatever
-sort of output is being produced, whether it be an executable file,
-an object file, an assembler file or preprocessed C code.
-
-If @option{-o} is not specified, the default is to put an executable
-file in @file{a.out}, the object file for
-@file{@var{source}.@var{suffix}} in @file{@var{source}.o}, its
-assembler file in @file{@var{source}.s}, a precompiled header file in
-@file{@var{source}.@var{suffix}.gch}, and all preprocessed C source on
-standard output.
-
-@item -v
-@opindex v
-Print (on standard error output) the commands executed to run the stages
-of compilation.  Also print the version number of the compiler driver
-program and of the preprocessor and the compiler proper.
-
-@item -###
-@opindex ###
-Like @option{-v} except the commands are not executed and arguments
-are quoted unless they contain only alphanumeric characters or @code{./-_}.
-This is useful for shell scripts to capture the driver-generated command lines.
-
-@item -pipe
-@opindex pipe
-Use pipes rather than temporary files for communication between the
-various stages of compilation.  @emph{Note:} Unlike GCC, LLVM does not
-have a separate assembler, so problems communicating with a separate
-assembler do not arise.
-
-@item --help
-@opindex help
-Print (on the standard output) a description of the command-line options
-understood by @command{clang}.  If the @option{-v} option is also specified
-then @option{--help} is also passed on to the various processes
-invoked by @command{clang}, so that they can display the command-line options
-they accept.  If the @option{-Wextra} option has also been specified
-(prior to the @option{--help} option), then command-line options that
-have no documentation associated with them are also displayed.
-
-@item --target-help
-@opindex target-help
-This option is accepted by Clang/LLVM for compatibility with GCC, but
-will do nothing, and by default issues a warning message.
-
-@item -no-canonical-prefixes
-@opindex no-canonical-prefixes
-Do not expand any symbolic links, resolve references to @samp{/../}
-or @samp{/./}, or make the path absolute when generating a relative
-prefix.
-
-@emph{Note:} This behaves slightly differently with Clang/LLVM
-compared to GCC.  The absence of paths even applies to the
-@command{clang} command itself, when it is reinvoked by the driver.
-So the command must be a fully qualified filename.
-
-@item --version
-@opindex version
-Display the version number and copyrights of the invoked LLVM@.
-
-@item @@@var{file}
-Read command-line options from @var{file}.  The options read are
-inserted in place of the original @@@var{file} option.  If @var{file}
-does not exist, or cannot be read, then the option will be treated
-literally, and not removed.
-
-Options in @var{file} are separated by whitespace.  A whitespace
-character may be included in an option by surrounding the entire
-option in either single or double quotes.  Any character (including a
-backslash) may be included by prefixing the character to be included
-with a backslash.  The @var{file} may itself contain additional
-@@@var{file} options; any such options will be processed recursively.
 @end table
 
 @node Invoking Clang/LLVM for C++
@@ -1928,12 +1964,12 @@ compiler the same way as for compiling C programs.
 
 @findex clang++
 However, the use of @command{clang} does not add the C++ library.
-@command{clang++} is a program that automatically
-specifies linking against the C++ library.  It treats @samp{.c},
-@samp{.h} and @samp{.i} files as C++ source files instead of C source
-files unless @option{-x} is used.  This program is also useful when
-precompiling a C header file with a @samp{.h} extension for use in C++
-compilations.
+@command{clang++} is a program that automatically specifies linking
+against the C++ library.  It treats @samp{.c}, @samp{.h} and @samp{.i}
+files as C++ source files instead of C source files unless @option{-x}
+is used.  This program is also useful when precompiling a C header
+file with a @samp{.h} extension for use in C++ compilations.  Target
+specific variants will also be installed as @command{@var{arch}-c++}.
 
 @cindex invoking @command{clang++}
 When you compile C++ programs, you may specify many of the same
@@ -1951,18 +1987,20 @@ explanations of options that are meaningful only for C++ programs.
 @cindex language dialect options
 @cindex options, dialect
 
-The following GCC options are not supported by Clang/LLVM:
-@gccoptlist{-fallow-parameterless-variadic-functions  -fopenacc @gol
--fopenmp-simd  -fcilkplus  -fgnu-tm  -fplan9-extensions  -traditional @gol
--traditional-cpp  -fcond-mismatch  -funsigned-bitfields @gol
--fno-signed-bitfields  -fno-unsigned-bitfields}
+The following Clang/LLVM options control the dialect of C (or
+languages derived from C, such as C++, Objective-C and Objective-C++)
+that the compiler accepts:
 
-The following options behave differently under Clang/LLVM compared to GCC.
-@gccoptlist{-aux-info @var{filename}}
-
-The following options control the dialect of C (or languages derived
-from C, such as C++, Objective-C and Objective-C++) that the compiler
-accepts:
+@emph{Note:} Not all GCC options are supported by Clang/LLVM.
+@xref{Option Summary,,Option Summary}, for details of:
+@itemize @bullet
+@item
+those options supported by both Clang/LLVM and GCC;
+@item
+those options only supported by Clang/LLVM; and
+@item
+those options supported only by GCC.
+@end itemize
 
 @table @gcctabopt
 @cindex ANSI support
@@ -2005,6 +2043,206 @@ functions when @option{-ansi} is used.  @xref{Other Builtins,,Other
 built-in functions provided by LLVM}, for details of the functions
 affected.
 
+@item -fno-asm
+@opindex fno-asm
+Do not recognize @code{asm}, @code{inline} or @code{typeof} as a
+keyword, so that code can use these words as identifiers.  You can use
+the keywords @code{__asm__}, @code{__inline__} and @code{__typeof__}
+instead.  @option{-ansi} implies @option{-fno-asm}.
+
+In C++, this switch only affects the @code{typeof} keyword, since
+@code{asm} and @code{inline} are standard keywords.  You may want to
+use the @option{-fno-gnu-keywords} flag instead, which has the same
+effect.  In C99 mode (@option{-std=c99} or @option{-std=gnu99}), this
+switch only affects the @code{asm} and @code{typeof} keywords, since
+@code{inline} is a standard keyword in ISO C99.
+
+@item -fblocks
+@opindex fblocks
+
+Clang/LLVM option for future documentation.
+
+@item -fborland-extensions
+@opindex fborland-extensions
+
+Clang/LLVM option for future documentation.
+
+@item -fno-builtin
+@itemx -fno-builtin-@var{function}
+@opindex fno-builtin
+@cindex built-in functions
+Don't recognize built-in functions that do not begin with
+@samp{__builtin_} as prefix.  @xref{Other Builtins,,Other built-in
+functions provided by LLVM}, for details of the functions affected,
+including those which are not built-in functions when @option{-ansi} or
+@option{-std} options for strict ISO C conformance are used because they
+do not have an ISO standard meaning.
+
+Clang/LLVM normally generates special code to handle certain built-in functions
+more efficiently; for instance, calls to @code{alloca} may become single
+instructions which adjust the stack directly, and calls to @code{memcpy}
+may become inline copy loops.  The resulting code is often both smaller
+and faster, but since the function calls no longer appear as such, you
+cannot set a breakpoint on those calls, nor can you change the behavior
+of the functions by linking with a different library.  In addition,
+when a function is recognized as a built-in function, Clang/LLVM may use
+information about that function to warn about problems with calls to
+that function, or to generate more efficient code, even if the
+resulting code still contains calls to that function.  For example,
+warnings are given with @option{-Wformat} for bad calls to
+@code{printf} when @code{printf} is built in and @code{strlen} is
+known not to modify global memory.
+
+With the @option{-fno-builtin-@var{function}} option
+only the built-in function @var{function} is
+disabled.  @var{function} must not begin with @samp{__builtin_}.  If a
+function is named that is not built-in in this version of Clang/LLVM, this
+option is ignored.  There is no corresponding
+@option{-fbuiltin-@var{function}} option; if you wish to enable
+built-in functions selectively when using @option{-fno-builtin} or
+@option{-ffreestanding}, you may define macros such as:
+
+@smallexample
+#define abs(n)          __builtin_abs ((n))
+#define strcpy(d, s)    __builtin_strcpy ((d), (s))
+@end smallexample
+
+@item -femit-all-decls
+@opindex femit-all-decls
+
+Clang/LLVM option for future documentation.
+
+@item -ffreestanding
+@opindex ffreestanding
+@cindex hosted environment
+
+Assert that compilation targets a freestanding environment.  This
+implies @option{-fno-builtin}.  A freestanding environment
+is one in which the standard library may not exist, and program startup may
+not necessarily be at @code{main}.  The most obvious example is an OS kernel.
+This is equivalent to @option{-fno-hosted}.
+
+@xref{Standards,,Language Standards Supported by LLVM}, for details of
+freestanding and hosted environments.
+
+@item -fgnu89-inline
+@opindex fgnu89-inline
+The option @option{-fgnu89-inline} tells Clang/LLVM to use the
+traditional GNU semantics for @code{inline} functions when in C99
+mode.  @xref{Inline,,An Inline Function is As Fast As a Macro}.  Using
+this option is roughly equivalent to adding the @code{gnu_inline}
+function attribute to all inline functions (@pxref{Function
+Attributes}).
+
+The option @option{-fno-gnu89-inline} explicitly tells Clang/LLVM to
+use the C99 semantics for @code{inline} when in C99 or gnu99 mode
+(i.e., it specifies the default behavior).  This option is not
+supported in @option{-std=c90} or @option{-std=gnu90} mode.
+
+The preprocessor macros @code{__GNUC_GNU_INLINE__} and
+@code{__GNUC_STDC_INLINE__} may be used to check which semantics are
+in effect for @code{inline} functions.  @xref{Common Predefined
+Macros,,,cpp,The C Preprocessor}.
+
+@item -fno-gnu-inline-asm
+@opindex fno-gnu-inline-asm
+
+Clang/LLVM option for future documentation.
+
+@item -fhosted
+@opindex fhosted
+@cindex hosted environment
+
+Assert that compilation targets a hosted environment.  This implies
+@option{-fbuiltin}.  A hosted environment is one in which the
+entire standard library is available, and in which @code{main} has a return
+type of @code{int}.  Examples are nearly everything except a kernel.
+This is equivalent to @option{-fno-freestanding}.
+
+@item -flax-vector-conversions
+@opindex flax-vector-conversions
+Allow implicit conversions between vectors with differing numbers of
+elements and/or incompatible element types.  This option should not be
+used for new code.
+
+@item -fms-compatibility
+@opindex fms-compatibility
+
+Clang/LLVM option for future documentation.  Also valid for C++.
+
+@item -fms-compatibility-version=@var{n}
+@opindex fms-compatibility-version
+
+Clang/LLVM option for future documentation.  Also valid for C++.
+
+@item -fms-extensions
+@opindex fms-extensions
+Accept some non-standard constructs used in Microsoft header files.
+
+In C++ code, this allows member names in structures to be similar
+to previous types declarations.
+
+@smallexample
+typedef int UOW;
+struct ABC @{
+  UOW UOW;
+@};
+@end smallexample
+
+Some cases of unnamed fields in structures and unions are only
+accepted with this option.  @xref{Unnamed Fields,,Unnamed struct/union
+fields within structs/unions}, for details.
+
+Note that this option is off for all targets but x86
+targets using ms-abi.
+
+@item -fmsc-version=@var{n}
+@opindex fmsc-version
+
+Clang/LLVM option for future documentation.  Also valid for C++.
+
+@item -fopenmp
+@opindex fopenmp
+@cindex OpenMP parallel
+Enable handling of OpenMP directives @code{#pragma omp} in C/C++.
+When @option{-fopenmp} is specified, the compiler generates parallel
+code according to the OpenMP Application Program Interface v4.0
+@w{@uref{http://www.openmp.org/}}.  This option implies
+@option{-pthread}, and thus is only supported on targets that have
+support for @option{-pthread}.  Unlike GCC there is no
+@option{-fopenmp-simd}, which would be implied by @option{-fopenmp}.
+
+@item -fpascal-strings
+@opindex fpascal-strings
+
+Clang/LLVM option for future documentation.
+
+@item -fsigned-bitfields
+@itemx -funsigned-bitfields
+@itemx -fno-signed-bitfields
+@itemx -fno-unsigned-bitfields
+@opindex fsigned-bitfields
+@opindex funsigned-bitfields
+@opindex fno-signed-bitfields
+@opindex fno-unsigned-bitfields
+These options control whether a bit-field is signed or unsigned, when the
+declaration does not use either @code{signed} or @code{unsigned}.  By
+default, such a bit-field is signed, because this is consistent: the
+basic integer types such as @code{int} are signed types.
+
+@item -fsigned-char
+@opindex fsigned-char
+Let the type @code{char} be signed, like @code{signed char}.
+
+Note that this is equivalent to @option{-fno-unsigned-char}, which is
+the negative form of @option{-funsigned-char}.  Likewise, the option
+@option{-fno-signed-char} is equivalent to @option{-funsigned-char}.
+
+@item -fno-spell-checking
+@opindex fno-spell-checking
+
+Clang/LLVM option for future documentation.
+
 @item -std=
 @opindex std
 Determine the language standard. @xref{Standards,,Language Standards
@@ -2016,7 +2254,7 @@ The compiler can accept several base standards, such as @samp{c90} or
 @samp{gnu90} or @samp{gnu++98}.  When a base standard is specified, the
 compiler accepts all programs following that standard plus those
 using GNU extensions that do not contradict it.  For example,
-@option{-std=c90} turns off certain features of LLVM that are
+@option{-std=c90} turns off certain features of Clang/LLVM that are
 incompatible with ISO C90, such as the @code{asm} and @code{typeof}
 keywords, but not other GNU extensions that do not have a meaning in
 ISO C90, such as omitting the middle term of a @code{?:}
@@ -2081,8 +2319,7 @@ additional defect reports. Same as @option{-ansi} for C++ code.
 
 @item gnu++98
 @itemx gnu++03
-GNU dialect of @option{-std=c++98}.  This is the default for
-C++ code.
+GNU dialect of @option{-std=c++98}.
 
 @item c++11
 @itemx c++0x
@@ -2102,6 +2339,7 @@ The name @samp{c++1y} is deprecated.
 @item gnu++14
 @itemx gnu++1y
 GNU dialect of @option{-std=c++14}.
+This is the default for C++ code.
 The name @samp{gnu++1y} is deprecated.
 
 @item c++1z
@@ -2115,161 +2353,27 @@ and will almost certainly change in incompatible ways in future
 releases.
 @end table
 
-@item -fgnu89-inline
-@opindex fgnu89-inline
-The option @option{-fgnu89-inline} tells LLVM to use the traditional
-GNU semantics for @code{inline} functions when in C99 mode.
-@xref{Inline,,An Inline Function is As Fast As a Macro}.
-Using this option is roughly equivalent to adding the
-@code{gnu_inline} function attribute to all inline functions
-(@pxref{Function Attributes}).
+@cindex traditional C language
+@cindex C language, traditional
+@item -traditional
+@opindex traditional
+This option caused older versions of GCC to attempt to emulate a
+pre-standard C compiler.  On both GCC and Clang/LLVM is is now only
+supported with the @option{-E} switch.  The preprocessor continues to
+support a pre-standard mode.  @xref{Preprocessor Options}.
 
-The option @option{-fno-gnu89-inline} explicitly tells LLVM to use the
-C99 semantics for @code{inline} when in C99 or gnu99 mode (i.e., it
-specifies the default behavior).
-This option is not supported in @option{-std=c90} or
-@option{-std=gnu90} mode.
-
-The preprocessor macros @code{__GNUC_GNU_INLINE__} and
-@code{__GNUC_STDC_INLINE__} may be used to check which semantics are
-in effect for @code{inline} functions.  @xref{Common Predefined
-Macros,,,cpp,The C Preprocessor}.
-
-@item -aux-info @var{filename}
-@opindex aux-info
-Clang/LLVM intends this to be an option provided for compatibility
-with GCC, but which does nothing.  However the implementation fails to
-recognize the following @var{filename} argument which will be treated
-as another source file on the command line, usually causing an error.
-
-@emph{Note:} Unlike GCC, this option is silently ignored in any
-language other than C@.
-
-@item -fno-asm
-@opindex fno-asm
-Do not recognize @code{asm}, @code{inline} or @code{typeof} as a
-keyword, so that code can use these words as identifiers.  You can use
-the keywords @code{__asm__}, @code{__inline__} and @code{__typeof__}
-instead.  @option{-ansi} implies @option{-fno-asm}.
-
-In C++, this switch only affects the @code{typeof} keyword, since
-@code{asm} and @code{inline} are standard keywords.  You may want to
-use the @option{-fno-gnu-keywords} flag instead, which has the same
-effect.  In C99 mode (@option{-std=c99} or @option{-std=gnu99}), this
-switch only affects the @code{asm} and @code{typeof} keywords, since
-@code{inline} is a standard keyword in ISO C99.
-
-@item -fno-builtin
-@itemx -fno-builtin-@var{function}
-@opindex fno-builtin
-@cindex built-in functions
-Don't recognize built-in functions that do not begin with
-@samp{__builtin_} as prefix.  @xref{Other Builtins,,Other built-in
-functions provided by LLVM}, for details of the functions affected,
-including those which are not built-in functions when @option{-ansi} or
-@option{-std} options for strict ISO C conformance are used because they
-do not have an ISO standard meaning.
-
-Clang/LLVM normally generates special code to handle certain built-in functions
-more efficiently; for instance, calls to @code{alloca} may become single
-instructions which adjust the stack directly, and calls to @code{memcpy}
-may become inline copy loops.  The resulting code is often both smaller
-and faster, but since the function calls no longer appear as such, you
-cannot set a breakpoint on those calls, nor can you change the behavior
-of the functions by linking with a different library.  In addition,
-when a function is recognized as a built-in function, LLVM may use
-information about that function to warn about problems with calls to
-that function, or to generate more efficient code, even if the
-resulting code still contains calls to that function.  For example,
-warnings are given with @option{-Wformat} for bad calls to
-@code{printf} when @code{printf} is built in and @code{strlen} is
-known not to modify global memory.
-
-With the @option{-fno-builtin-@var{function}} option
-only the built-in function @var{function} is
-disabled.  @var{function} must not begin with @samp{__builtin_}.  If a
-function is named that is not built-in in this version of Clang/LLVM, this
-option is ignored.  There is no corresponding
-@option{-fbuiltin-@var{function}} option; if you wish to enable
-built-in functions selectively when using @option{-fno-builtin} or
-@option{-ffreestanding}, you may define macros such as:
-
-@smallexample
-#define abs(n)          __builtin_abs ((n))
-#define strcpy(d, s)    __builtin_strcpy ((d), (s))
-@end smallexample
-
-@item -fhosted
-@opindex fhosted
-@cindex hosted environment
-
-Assert that compilation targets a hosted environment.  This implies
-@option{-fbuiltin}.  A hosted environment is one in which the
-entire standard library is available, and in which @code{main} has a return
-type of @code{int}.  Examples are nearly everything except a kernel.
-This is equivalent to @option{-fno-freestanding}.
-
-@item -ffreestanding
-@opindex ffreestanding
-@cindex hosted environment
-
-Assert that compilation targets a freestanding environment.  This
-implies @option{-fno-builtin}.  A freestanding environment
-is one in which the standard library may not exist, and program startup may
-not necessarily be at @code{main}.  The most obvious example is an OS kernel.
-This is equivalent to @option{-fno-hosted}.
-
-@xref{Standards,,Language Standards Supported by LLVM}, for details of
-freestanding and hosted environments.
-
-@item -fopenmp
-@opindex fopenmp
-@cindex OpenMP parallel
-Enable handling of OpenMP directives @code{#pragma omp} in C/C++ and
-@code{!$omp} in Fortran.  When @option{-fopenmp} is specified, the
-compiler generates parallel code according to the OpenMP Application
-Program Interface v4.0 @w{@uref{http://www.openmp.org/}}.  This option
-implies @option{-pthread}, and thus is only supported on targets that
-have support for @option{-pthread}. @option{-fopenmp} implies
-@option{-fopenmp-simd}.
-
-@item -fms-extensions
-@opindex fms-extensions
-Accept some non-standard constructs used in Microsoft header files.
-
-In C++ code, this allows member names in structures to be similar
-to previous types declarations.
-
-@smallexample
-typedef int UOW;
-struct ABC @{
-  UOW UOW;
-@};
-@end smallexample
-
-Some cases of unnamed fields in structures and unions are only
-accepted with this option.  @xref{Unnamed Fields,,Unnamed struct/union
-fields within structs/unions}, for details.
-
-Note that this option is off for all targets but x86
-targets using ms-abi.
+@emph{Note:} The GCC option @option{-traditional-cpp} is not supported
+by Clang/LLVM.
 
 @item -trigraphs
 @opindex trigraphs
 Support ISO C trigraphs.  The @option{-ansi} option (and @option{-std}
 options for strict ISO C conformance) implies @option{-trigraphs}.
 
-@item -fcond-mismatch
-@opindex fcond-mismatch
-Allow conditional expressions with mismatched types in the second and
-third arguments.  The value of such an expression is void.  This option
-is not supported for C++.
+@item -funique-section-names
+@opindex funique-section-names
 
-@item -flax-vector-conversions
-@opindex flax-vector-conversions
-Allow implicit conversions between vectors with differing numbers of
-elements and/or incompatible element types.  This option should not be
-used for new code.
+Clang/LLVM option for future documentation.
 
 @item -funsigned-char
 @opindex funsigned-char
@@ -2290,33 +2394,19 @@ The type @code{char} is always a distinct type from each of
 @code{signed char} or @code{unsigned char}, even though its behavior
 is always just like one of those two.
 
-@item -fsigned-char
-@opindex fsigned-char
-Let the type @code{char} be signed, like @code{signed char}.
+@item -fwritable-strings
+@opindex fwritable-strings
 
-Note that this is equivalent to @option{-fno-unsigned-char}, which is
-the negative form of @option{-funsigned-char}.  Likewise, the option
-@option{-fno-signed-char} is equivalent to @option{-funsigned-char}.
+Clang/LLVM option for future documentation.
 
-@item -fsigned-bitfields
-@opindex fsigned-bitfields
-This option controls whether a bit-field is signed or unsigned, when the
-declaration does not use either @code{signed} or @code{unsigned}.  By
-default, such a bit-field is signed, because this is consistent: the
-basic integer types such as @code{int} are signed types.  Thus this
-option reinforces the default behavior
-
-@emph{Note:} GCC provides a wider range of options to force unsigned
-behavior and prevent either signed or unsigned behavior, but these are
-not available in LLVM.
 @end table
 
 @node C++ Dialect Options
 @section Options Controlling C++ Dialect
-
 @cindex compiler options, C++
 @cindex C++ options, command-line
 @cindex options, C++
+
 This section describes the command-line options that are only meaningful
 for C++ programs.  You can also use most of the Clang/LLVM compiler options
 regardless of what language your program is in.  For example, you
@@ -2331,17 +2421,19 @@ In this example, only @option{-frepo} is an option meant
 only for C++ programs; you can use the other options with any
 language supported by LLVM@.
 
-The following GCC options for C++ programs are not supported by
-Clang/LLVM:
-@gccoptlist{-fabi-version=@var{n}  -fabi-compat-version=@var{n}  -fcheck-new  @gol
--fdeduce-init-list  -ffriend-injection  -fno-enforce-eh-specs @gol
--fextern-tls-init  -fno-extern-tls-init  -fno-implicit-inline-templates @gol
--fno-implement-inlines  -fno-nonansi-builtins  -fnothrow-opt @gol
--fno-optional-diags  -fno-pretty-templates  -frepo  -fsized-deallocation @gol
--fstats  -fno-use-cxa-get-exception-ptr  -fvtable-verify=@r{[}std@r{|}preinit@r{|}none@r{]} @gol
--fvtv-debug  -fvtv-counts  -fno-weak}
+@emph{Note:} Not all GCC options are supported by Clang/LLVM.
+@xref{Option Summary,,Option Summary}, for details of:
+@itemize @bullet
+@item
+those options supported by both Clang/LLVM and GCC;
+@item
+those options only supported by Clang/LLVM; and
+@item
+those options supported only by GCC.
+@end itemize
 
-Here is a list of options that are @emph{only} for compiling C++ programs:
+Here is a list of Clang/LLVM options that are @emph{only} for
+compiling C++ programs:
 
 @table @gcctabopt
 
@@ -2350,12 +2442,39 @@ Here is a list of options that are @emph{only} for compiling C++ programs:
 Turn off all access checking.  This switch is mainly useful for working
 around bugs in the access control code.
 
+@item -fno-assume-sane-operator-new
+@opindex fno-assume-sane-operator-new
+
+Clang/LLVM option for future documentation.
+
+@item -fcheck-new
+@opindex fcheck-new
+Check that the pointer returned by @code{operator new} is non-null
+before attempting to modify the storage allocated.  This check is
+normally unnecessary because the C++ standard specifies that
+@code{operator new} only returns @code{0} if it is declared
+@code{throw()}, in which case the compiler always checks the
+return value even without this option.  In all other cases, when
+@code{operator new} has a non-empty exception specification, memory
+exhaustion is signalled by throwing @code{std::bad_alloc}.  See also
+@samp{new (nothrow)}.
+
 @item -fconstexpr-depth=@var{n}
 @opindex fconstexpr-depth
 Set the maximum nested evaluation depth for C++11 constexpr functions
 to @var{n}.  A limit is needed to detect endless recursion during
 constant expression evaluation.  The minimum specified by the standard
 is 512.
+
+@item -fcxx-exceptions
+@opindex fcxx-exceptions
+
+Clang/LLVM option for future documentation.
+
+@item -fdelayed-template-parsing
+@opindex fdelayed-template-parsing
+
+Clang/LLVM option for future documentation.
 
 @item -fno-elide-constructors
 @opindex fno-elide-constructors
@@ -2380,6 +2499,20 @@ If neither flag is given, the default is to follow the standard,
 but to allow and give a warning for old-style code that would
 otherwise be invalid, or have different behavior.
 
+@item -ffriend-injection
+@opindex ffriend-injection
+Inject friend functions into the enclosing namespace, so that they are
+visible outside the scope of the class in which they are declared.
+Friend functions were documented to work this way in the old Annotated
+C++ Reference Manual.
+
+However, in ISO C++ a friend function that is not declared
+in an enclosing scope can only be found using argument dependent
+lookup.  Clang/LLVM defaults to the standard behavior.
+
+This option is for compatibility, and may be removed in a future
+release of Clang/LLVM.
+
 @item -fno-gnu-keywords
 @opindex fno-gnu-keywords
 Do not recognize @code{typeof} as a keyword, so that code can use this
@@ -2392,10 +2525,11 @@ Never emit code for non-inline templates that are instantiated
 implicitly (i.e.@: by use); only emit code for explicit instantiations.
 @xref{Template Instantiation}, for more information.
 
-@item -fms-extensions
-@opindex fms-extensions
-Disable Wpedantic warnings about constructs used in MFC, such as implicit
-int and getting a pointer to member function via non-standard syntax.
+@item -fno-implement-inlines
+@opindex fno-implement-inlines
+To save space, do not emit out-of-line copies of inline functions
+controlled by @code{#pragma implementation}.  This causes linker
+errors if these functions are not inlined everywhere they are called.
 
 @item -fno-operator-names
 @opindex fno-operator-names
@@ -2420,14 +2554,24 @@ needed. The @code{dynamic_cast} operator can still be used for casts that
 do not require run-time type information, i.e.@: casts to @code{void *} or to
 unambiguous base classes.
 
-@item -fstrict-enums
-@opindex fstrict-enums
-Allow the compiler to optimize using the assumption that a value of
-enumerated type can only be one of the values of the enumeration (as
-defined in the C++ standard; basically, a value that can be
-represented in the minimum number of bits needed to represent all the
-enumerators).  This assumption may not be valid if the program uses a
-cast to convert an arbitrary integer value to the enumerated type.
+@item -fsized-deallocation
+@opindex fsized-deallocation
+Enable the built-in global declarations
+@smallexample
+void operator delete (void *, std::size_t) noexcept;
+void operator delete[] (void *, std::size_t) noexcept;
+@end smallexample
+as introduced in C++14.  This is useful for user-defined replacement
+deallocation functions that, for example, use the size of the object
+to make deallocation faster.  Enabled by default under
+@option{-std=c++14} and above.  The flag @option{-Wsized-deallocation}
+warns about places that might want to add a definition.
+
+@item -fshow-overloads=@var{opt}
+@opindex fshow-overloads
+
+Clang/LLVM option for future documentation.  Permitted values of
+@var{opt} are @option{all} and @option{best}.
 
 @item -ftemplate-backtrace-limit=@var{n}
 @opindex ftemplate-backtrace-limit
@@ -2488,10 +2632,10 @@ as their linkage might otherwise cross a shared library boundary.
 
 @item -fvisibility-ms-compat
 @opindex fvisibility-ms-compat
-This flag attempts to use visibility settings to make LLVM's C++
+This flag attempts to use visibility settings to make Clang/LLVM's C++
 linkage model compatible with that of Microsoft Visual Studio.
 
-The flag makes these changes to LLVM's linkage model:
+The flag makes these changes to Clang/LLVM's linkage model:
 
 @enumerate
 @item
@@ -2520,40 +2664,44 @@ and that pointers to function members defined in different shared
 objects may not compare equal.  When this flag is given, it is a
 violation of the ODR to define types with the same name differently.
 
-@item -fext-numeric-literals @r{(C++ and Objective-C++ only)}
-@opindex fext-numeric-literals
-@opindex fno-ext-numeric-literals
-Accept imaginary, fixed-point, or machine-defined
-literal number suffixes as GNU extensions.
-When this option is turned off these suffixes are treated
-as C++11 user-defined literal numeric suffixes.
-This is on by default for all pre-C++11 dialects and all GNU dialects:
-@option{-std=c++98}, @option{-std=gnu++98}, @option{-std=gnu++11},
-@option{-std=gnu++14}.
-This option is off by default
-for ISO C++11 onwards (@option{-std=c++11}, ...).
-
-@item -fno-weak
-@opindex fno-weak
-Do not use weak symbol support, even if it is provided by the linker.
-By default, G++ uses weak symbols if they are available.  This
-option exists only for testing, and should not be used by end-users;
-it results in inferior code and has no benefits.  This option may
-be removed in a future release of G++.
-
 @item -nostdinc++
-@xref{op nostdinc++,, -nostdinc++}.
+@opindex nostdinc++
+Do not search for header files in the standard directories specific to
+C++, but do still search the other standard directories.  (This option
+is used when building the C++ library.)
 @end table
 
 In addition, these optimization, warning, and code generation options
 have meanings only for C++ programs:
 
-The following GCC options for optimization, warning, and code
-generation of C++ programs are not supported by Clang/LLVM:
-@gccoptlist{-Wabi=@var{n}  -Wliteral-suffix  -Wstrict-null-sentinel @gol
--Wno-non-template-friend  -Wno-pmf-conversions}
-
 @table @gcctabopt
+@item -Wabi @r{(C++ and Objective-C++ only)}
+@opindex Wabi
+@opindex Wno-abi
+Warn when Clang/LLVM it generates code that is probably not compatible
+with the vendor-neutral C++ ABI@.  Normally @option{-Wabi} will warn
+only if there is a check added later in a release series for an ABI
+issue discovered since the initial release.  Unlike GCC, there is no
+option @option{-fabi-version=@var{n}}) to select an older ABI, nor is
+there an option to warn about an explicit version number,
+@option{-Wabi=@var{n}}.
+
+Although an effort has been made to warn about
+all such cases, there are probably some cases that are not warned about,
+even though Clang/LLVM is generating incompatible code.  There may also be
+cases where warnings are emitted even though the code that is generated
+is compatible.
+
+You should rewrite your code to avoid these warnings if you are
+concerned about the fact that code generated by G++ may not be binary
+compatible with code generated by other compilers.
+
+@item -Wno-conversion-null @r{(C++ and Objective-C++ only)}
+@opindex Wconversion-null
+@opindex Wno-conversion-null
+Do not warn for conversions between @code{NULL} and non-pointer
+types. @option{-Wconversion-null} is enabled by default.
+
 @item -Wctor-dtor-privacy @r{(C++ and Objective-C++ only)}
 @opindex Wctor-dtor-privacy
 @opindex Wno-ctor-dtor-privacy
@@ -2572,66 +2720,6 @@ an instance of a derived class through a pointer to a base class if the
 base class does not have a virtual destructor.  This warning is enabled
 by @option{-Wall}.
 
-@item -Wnarrowing @r{(C++ and Objective-C++ only)}
-@opindex Wnarrowing
-@opindex Wno-narrowing
-Warn when a narrowing conversion prohibited by C++11 occurs within
-@samp{@{ @}}, e.g.
-
-@smallexample
-int i = @{ 2.2 @}; // error: narrowing from double to int
-@end smallexample
-
-This flag is included in @option{-Wall} and @option{-Wc++11-compat}.
-
-With @option{-std=c++11}, @option{-Wno-narrowing} suppresses for
-non-constants the diagnostic required by the standard.  Note that this
-does not affect the meaning of well-formed code; narrowing conversions
-are still considered ill-formed in SFINAE context.
-
-@item -Wnoexcept @r{(C++ and Objective-C++ only)}
-@opindex Wnoexcept
-@opindex Wno-noexcept
-Warn when a noexcept-expression evaluates to false because of a call
-to a function that does not have a non-throwing exception
-specification (i.e. @code{throw()} or @code{noexcept}) but is known by
-the compiler to never throw an exception.
-
-@item -Wnon-virtual-dtor @r{(C++ and Objective-C++ only)}
-@opindex Wnon-virtual-dtor
-@opindex Wno-non-virtual-dtor
-Warn when a class has virtual functions and an accessible non-virtual
-destructor itself or in an accessible polymorphic base class, in which
-case it is possible but unsafe to delete an instance of a derived
-class through a pointer to the class itself or base class.  This
-warning is automatically enabled if @option{-Weffc++} is specified.
-
-@item -Wreorder @r{(C++ and Objective-C++ only)}
-@opindex Wreorder
-@opindex Wno-reorder
-@cindex reordering, warning
-@cindex warning for reordering of member initializers
-Warn when the order of member initializers given in the code does not
-match the order in which they must be executed.  For instance:
-
-@smallexample
-struct A @{
-  int i;
-  int j;
-  A(): j (0), i (1) @{ @}
-@};
-@end smallexample
-
-@noindent
-The compiler rearranges the member initializers for @code{i}
-and @code{j} to match the declaration order of the members, emitting
-a warning to that effect.  This warning is enabled by @option{-Wall}.
-
-@end table
-
-The following @option{-W@dots{}} options are not affected by @option{-Wall}.
-
-@table @gcctabopt
 @item -Weffc++ @r{(C++ and Objective-C++ only)}
 @opindex Weffc++
 @opindex Wno-effc++
@@ -2670,6 +2758,32 @@ When selecting this option, be aware that the standard library
 headers do not obey all of these guidelines; use @samp{grep -v}
 to filter out those warnings.
 
+@item -Wnarrowing @r{(C++ and Objective-C++ only)}
+@opindex Wnarrowing
+@opindex Wno-narrowing
+Warn when a narrowing conversion prohibited by C++11 occurs within
+@samp{@{ @}}, e.g.
+
+@smallexample
+int i = @{ 2.2 @}; // error: narrowing from double to int
+@end smallexample
+
+This flag is included in @option{-Wall} and @option{-Wc++11-compat}.
+
+With @option{-std=c++11}, @option{-Wno-narrowing} suppresses for
+non-constants the diagnostic required by the standard.  Note that this
+does not affect the meaning of well-formed code; narrowing conversions
+are still considered ill-formed in SFINAE context.
+
+@item -Wnon-virtual-dtor @r{(C++ and Objective-C++ only)}
+@opindex Wnon-virtual-dtor
+@opindex Wno-non-virtual-dtor
+Warn when a class has virtual functions and an accessible non-virtual
+destructor itself or in an accessible polymorphic base class, in which
+case it is possible but unsafe to delete an instance of a derived
+class through a pointer to the class itself or base class.  This
+warning is automatically enabled if @option{-Weffc++} is specified.
+
 @item -Wold-style-cast @r{(C++ and Objective-C++ only)}
 @opindex Wold-style-cast
 @opindex Wno-old-style-cast
@@ -2707,6 +2821,27 @@ b->f();
 @noindent
 fails to compile.
 
+@item -Wreorder @r{(C++ and Objective-C++ only)}
+@opindex Wreorder
+@opindex Wno-reorder
+@cindex reordering, warning
+@cindex warning for reordering of member initializers
+Warn when the order of member initializers given in the code does not
+match the order in which they must be executed.  For instance:
+
+@smallexample
+struct A @{
+  int i;
+  int j;
+  A(): j (0), i (1) @{ @}
+@};
+@end smallexample
+
+@noindent
+The compiler rearranges the member initializers for @code{i}
+and @code{j} to match the declaration order of the members, emitting
+a warning to that effect.  This warning is enabled by @option{-Wall}.
+
 @item -Wsign-promo @r{(C++ and Objective-C++ only)}
 @opindex Wsign-promo
 @opindex Wno-sign-promo
@@ -2714,22 +2849,23 @@ Warn when overload resolution chooses a promotion from unsigned or
 enumerated type to a signed type, over a conversion to an unsigned type of
 the same size.  Previous versions of G++ tried to preserve
 unsignedness, but the standard mandates the current behavior.
+
 @end table
 
 @node Objective-C and Objective-C++ Dialect Options
 @section Options Controlling Objective-C and Objective-C++ Dialects
-
 @cindex compiler options, Objective-C and Objective-C++
 @cindex Objective-C and Objective-C++ options, command-line
 @cindex options, Objective-C and Objective-C++
+
 (@emph{Note:} This manual does not describe the Objective-C and Objective-C++
 languages themselves.  @xref{Standards,,Language Standards
 Supported by LLVM}, for references.)
 
-This section describes the command-line options that are only meaningful
-for Objective-C and Objective-C++ programs.  You can also use most of
-the language-independent GNU compiler options.
-For example, you might compile a file @file{some_class.m} like this:
+This section describes the command-line options that are only
+meaningful for Objective-C and Objective-C++ programs.  You can also
+use most of the language-independent Clang/LLVM compiler options.  For
+example, you might compile a file @file{some_class.m} like this:
 
 @smallexample
 clang -g -fgnu-runtime -O -c some_class.m
@@ -2738,22 +2874,26 @@ clang -g -fgnu-runtime -O -c some_class.m
 @noindent
 In this example, @option{-fgnu-runtime} is an option meant only for
 Objective-C and Objective-C++ programs; you can use the other options with
-any language supported by LLVM@.
+any language supported by Clang/LLVM@.
 
 Note that since Objective-C is an extension of the C language, Objective-C
 compilations may also use options specific to the C front-end (e.g.,
 @option{-Wtraditional}).  Similarly, Objective-C++ compilations may use
 C++-specific options (e.g., @option{-Wabi}).
 
-The following GCC options for ObjectiveC and ObjectiveC++ programs are
-not supported by Clang/LLVM:
-@gccoptlist{-fno-nil-receivers  -fobjc-direct-dispatch  -fobjc-nilcheck @gol
--fobjc-std=objc1  -freplace-objc-classes  -fzero-link  -fno-local-ivars @gol
--fivar-visibility=@r{[}public@r{|}protected@r{|}private@r{|}package@r{]} @gol
--gen-decls  -Wassign-intercept}
+@emph{Note:} Not all GCC options are supported by Clang/LLVM.
+@xref{Option Summary,,Option Summary}, for details of:
+@itemize @bullet
+@item
+those options supported by both Clang/LLVM and GCC;
+@item
+those options only supported by Clang/LLVM; and
+@item
+those options supported only by GCC.
+@end itemize
 
-Here is a list of options that are @emph{only} for compiling Objective-C
-and Objective-C++ programs:
+Here is a list of Clang/LLVM options that are @emph{only} for
+compiling Objective-C and Objective-C++ programs:
 
 @table @gcctabopt
 @item -fconstant-string-class=@var{class-name}
@@ -2788,6 +2928,16 @@ traditional (32-bit) ABI with support for properties and other
 Objective-C 2.0 additions.  Version 2 is the modern (64-bit) ABI.  If
 nothing is specified, the default is Version 0 on 32-bit target
 machines, and Version 2 on 64-bit target machines.
+
+@item -fobjc-arc
+@opindex -fobjc-arc
+
+Clang/LLVM option for future documentation.
+
+@item -fobjc-arc-exceptions
+@opindex -fobjc-arc-exceptions
+
+Clang/LLVM option for future documentation.
 
 @item -fobjc-call-cxx-cdtors
 @opindex fobjc-call-cxx-cdtors
@@ -2831,6 +2981,69 @@ programs.  This option is only available with the NeXT runtime; the
 GNU runtime has a different garbage collection implementation that
 does not require special compiler flags.
 
+@item -fobjc-gc-only
+@opindex -fobjc-gc-only
+
+Clang/LLVM option for future documentation.
+
+@item -fobjc-runtime=@var{runtime}
+@opindex -fobjc-runtime
+
+Clang/LLVM option for future documentation.
+
+@item -objcmt-atomic-property
+@opindex fobjcmt-atomic-property
+
+Undocumented GCC option also supported by Clang/LLVM.
+
+@item -objcmt-migrate-@var{category}
+@opindex objcmt-migrate
+@opindex objcmt-migrate-all
+@opindex objcmt-migrate-annotation
+@opindex objcmt-migrate-designated-init
+@opindex objcmt-migrate-instancetype
+@opindex objcmt-migrate-literals
+@opindex objcmt-migrate-ns-macros
+@opindex objcmt-migrate-property-dot-syntax
+@opindex objcmt-migrate-property
+@opindex objcmt-migrate-protocol-conformance
+@opindex objcmt-migrate-readonly-property
+@opindex objcmt-migrate-readwrite-property
+@opindex objcmt-migrate-subscripting
+
+Undocumented GCC option also supported by Clang/LLVM.
+
+@item -objcmt-ns-nonatomic-iosonly
+@opindex objcmt-ns-nonatomic-iosonly
+
+Undocumented GCC option also supported by Clang/LLVM.
+
+@item -objcmt-returns-innerpointer-property
+@opindex objcmt-returns-innerpointer-property
+
+Undocumented GCC option also supported by Clang/LLVM.
+
+@item -objcmt-whitelist-dir-path=@var{dir}
+@opindex -objcmt-whitelist-dir-path=@var{dir}
+
+Clang/LLVM option for future documentation.
+
+@item -rewrite-legacy-objc
+@opindex -rewrite-legacy-objc
+
+Clang/LLVM option for future documentation.
+
+@item -rewrite-objc
+@opindex -rewrite-objc
+
+Clang/LLVM option for future documentation.
+
+@end table
+
+In addition, these optimization, warning, and code generation options
+have meanings only for C++ programs:
+
+@table @gcctabopt
 @item -Wno-protocol @r{(Objective-C and Objective-C++ only)}
 @opindex Wno-protocol
 @opindex Wprotocol
@@ -2880,11 +3093,6 @@ while @option{-Wselector} only performs its checks in the final stage of
 compilation.  This also enforces the coding style convention
 that methods and selectors must be declared before being used.
 
-@item -print-objc-runtime-info
-@opindex print-objc-runtime-info
-Generate C header describing the largest structure that is passed by
-value, if any.
-
 @end table
 
 @node Diagnostic Message Formatting Options
@@ -2895,38 +3103,33 @@ value, if any.
 
 Traditionally, diagnostic messages have been formatted irrespective of
 the output device's aspect (e.g.@: its width, @dots{}).  You can use the
-options described below
+Clang/LLVM options described below
 to control the formatting algorithm for diagnostic messages,
 e.g.@: how many characters per line, how often source location
 information should be reported.  Note that some language front ends may not
 honor these options.
 
-The following GCC option controlling diagnostic messages is not
-supported by Clang/LLVM:
-@gccoptlist{-fno-diagnostics-show-caret}
+@emph{Note:} Not all GCC options are supported by Clang/LLVM.
+@xref{Option Summary,,Option Summary}, for details of:
+@itemize @bullet
+@item
+those options supported by both Clang/LLVM and GCC;
+@item
+those options only supported by Clang/LLVM; and
+@item
+those options supported only by GCC.
+@end itemize
 
 @table @gcctabopt
-@item -fmessage-length=@var{n}
-@opindex fmessage-length
-Try to format error messages so that they fit on lines of about
-@var{n} characters.  If @var{n} is zero, then no line-wrapping is
-done; each error message appears on a single line.  This is the
-default for all front ends.
+@item -fansi-escape-codes
+@opindex fansi-escape-codes
 
-@item -fdiagnostics-show-location=once
-@opindex fdiagnostics-show-location
-Only meaningful in line-wrapping mode.  Instructs the diagnostic messages
-reporter to emit source location information @emph{once}; that is, in
-case the message is too long to fit on a single physical line and has to
-be wrapped, the source location won't be emitted (as prefix) again,
-over and over, in subsequent continuation lines.  This is the default
-behavior.
+Clang/LLVM option for future documentation.
 
-@item -fdiagnostics-show-location=every-line
-Only meaningful in line-wrapping mode.  Instructs the diagnostic
-messages reporter to emit the same source location information (as
-prefix) for physical lines that result from the process of breaking
-a message which is too long to fit on a single line.
+@item -fcolor-diagnostics
+@opindex fcolor-diagnostics
+
+Clang/LLVM option for future documentation.
 
 @item -fdiagnostics-color[=@var{WHEN}]
 @itemx -fno-diagnostics-color
@@ -3004,6 +3207,41 @@ SGR substring for location information, @samp{file:line} or
 SGR substring for information printed within quotes.
 @end table
 
+@item -fno-diagnostics-fixit-info
+@opindex fno-diagnostics-fixit-info
+
+Clang/LLVM option for future documentation.
+
+@item -fdiagnostics-parseable-fixits
+@opindex fdiagnostics-parseable-fixits
+
+Clang/LLVM option for future documentation.
+
+@item -fdiagnostics-print-source-range-info
+@opindex fdiagnostics-print-source-range-info
+
+Clang/LLVM option for future documentation.
+
+@item -fdiagnostics-show-location=once
+@opindex fdiagnostics-show-location
+Only meaningful in line-wrapping mode.  Instructs the diagnostic messages
+reporter to emit source location information @emph{once}; that is, in
+case the message is too long to fit on a single physical line and has to
+be wrapped, the source location won't be emitted (as prefix) again,
+over and over, in subsequent continuation lines.  This is the default
+behavior.
+
+@item -fdiagnostics-show-location=every-line
+Only meaningful in line-wrapping mode.  Instructs the diagnostic
+messages reporter to emit the same source location information (as
+prefix) for physical lines that result from the process of breaking
+a message which is too long to fit on a single line.
+
+@item -fdiagnostics-show-note-include-stack
+@opindex fdiagnostics-show-note-include-stack
+
+Clang/LLVM option for future documentation.
+
 @item -fno-diagnostics-show-option
 @opindex fno-diagnostics-show-option
 @opindex fdiagnostics-show-option
@@ -3011,6 +3249,33 @@ By default, each diagnostic emitted includes text indicating the
 command-line option that directly controls the diagnostic (if such an
 option is known to the diagnostic machinery).  Specifying the
 @option{-fno-diagnostics-show-option} flag suppresses that behavior.
+
+@item -fdiagnostics-show-template-tree
+@opindex fdiagnostics-show-template-tree
+
+Clang/LLVM option for future documentation.
+
+@item -fno-elide-type
+@opindex fno-elide-type
+
+Clang/LLVM option for future documentation.
+
+@item -fmessage-length=@var{n}
+@opindex fmessage-length
+Try to format error messages so that they fit on lines of about
+@var{n} characters.  If @var{n} is zero, then no line-wrapping is
+done; each error message appears on a single line.  This is the
+default for all front ends.
+
+@item -serialize-diagnostics @var{file}
+@opindex serialize-diagnostics
+
+Clang/LLVM option for future documentation.
+
+@item -fno-show-source-location
+@opindex fno-show-source-location
+
+Clang/LLVM option for future documentation.
 
 @end table
 
@@ -3025,39 +3290,19 @@ Warnings are diagnostic messages that report constructions that
 are not inherently erroneous but that are risky or suggest there
 may have been an error.
 
-The following GCC options controlling warning and error messages are not
-supported by Clang/LLVM:
-@gccoptlist{-Wno-aggressive-loop-optimizations  -Wbool-compare  -Wc90-c99-compat @gol
--Wc99-c11-compat  -Wc++14-compat  -Wno-coverage-mismatch  -Wclobbered @gol
--Wconditionally-supported  -Wno-cpp  -Wno-date-time  -Wno-designated-init @gol
--Wno-discarded-qualifiers  -Wno-discarded-qualifiers @gol
--Wno-discarded-array-qualifiers  -Wdouble-promotion  -Wfloat-conversion @gol
--Wformat-contains-nul  -Wformat-signedness  -Wno-free-nonheap-object @gol
--Wno-invalid-offsetof  -Wjump-misses-init  -Wlogical-op @gol
--Wmaybe-uninitialized  -Wmemset-transposed-args  -Wmissing-parameter-type @gol
--Wnormalized=@r{[}none@r{|}id@r{|}nfc@r{|}nfkc@r{]}  -Wold-style-declaration @gol
--Wold-style-definition  -Wopenmp-simd  -Woverride-init @gol
--Wpacked-bitfield-compat  -Wno-pedantic-ms-format -Wno-return-local-addr @gol
--Wsized-deallocation  -Wstack-usage=@var{len} -Wsuggest-attribute=@r{[}pure@r{|}const@r{|}noreturn@r{|}format@r{]} @gol
--Wsuggest-final-types  -Wsuggest-final-methods  -Wsuggest-override @gol
--Wswitch-bool  -Wsync-nand  -Wtraditional  -Wtraditional-conversion @gol
--Wtrampolines  -Wno-pragmas  -Wunsafe-loop-optimizations @gol
--Wunused-but-set-parameter  -Wunsuffixed-float-constants  @gol
--Wunused-local-typedefs  -Wunused-but-set-variable @gol
--Wvector-operation-performance  -Wvirtual-move-assign @gol
--Wzero-as-null-pointer-constant}
-
-The following GCC options are accepted by Clang/LLVM, but do nothing, and by
-default will issue a warning message:
-@gccoptlist{-fmax-errors=@var{n}}
-
-The following GCC options are accepted by Clang/LLVM, but have
-different behavior
-@gccoptlist{-Warray-bounds -Wformat  -Wframe-larger-than=@var{len}  -Wlarger-than=@var{len} @gol
--Wno-odr  -Wvla}
+@emph{Note:} Not all GCC options are supported by Clang/LLVM.
+@xref{Option Summary,,Option Summary}, for details of:
+@itemize @bullet
+@item
+those options supported by both Clang/LLVM and GCC;
+@item
+those options only supported by Clang/LLVM; and
+@item
+those options supported only by GCC.
+@end itemize
 
 The following language-independent options do not enable specific
-warnings but control the kinds of diagnostics produced by GCC@.
+warnings but control the kinds of diagnostics produced by Clang/LLVM@.
 
 @table @gcctabopt
 @cindex syntax checking
@@ -3065,82 +3310,6 @@ warnings but control the kinds of diagnostics produced by GCC@.
 @opindex fsyntax-only
 Check the code for syntax errors, but don't do anything beyond that.
 
-@item -fmax-errors=@var{n}
-@opindex fmax-errors
-This option is accepted by Clang/LLVM for compatibility with GCC, but
-will do nothing, and by default issues a warning message.
-
-@item -w
-@opindex w
-Inhibit all warning messages.
-
-@item -Werror
-@opindex Werror
-@opindex Wno-error
-Make all warnings into errors.
-
-@item -Werror=@var{warning}
-@opindex Werror=@var{warning}
-@opindex Wno-error=@var{warning}
-Make the specified warning into an error.  The specifier for a warning
-is appended; for example @option{-Werror=switch} turns the warnings
-controlled by @option{-Wswitch} into errors.  This switch takes a
-negative form, to be used to negate @option{-Werror} for specific
-warnings; for example @option{-Wno-error=switch} makes
-@option{-Wswitch} warnings not be errors, even when @option{-Werror}
-is in effect.
-
-The warning message for each controllable warning includes the
-option that controls the warning.  That option can then be used with
-@option{-Werror=} and @option{-Wno-error=} as described above.
-(Printing of the option in the warning message can be disabled using the
-@option{-fno-diagnostics-show-option} flag.)
-
-Note that specifying @option{-Werror=}@var{foo} automatically implies
-@option{-W}@var{foo}.  However, @option{-Wno-error=}@var{foo} does not
-imply anything.
-
-@item -Wfatal-errors
-@item -Wno-fatal-errors
-@opindex Wfatal-errors
-@opindex Wno-fatal-errors
-This option causes the compiler to abort compilation on the first error
-occurred rather than trying to keep going and printing further error
-messages.
-
-@end table
-
-You can request many specific warnings with options beginning with
-@samp{-W}, for example @option{-Wimplicit} to request warnings on
-implicit declarations.  Each of these specific warning options also
-has a negative form beginning @samp{-Wno-} to turn off warnings; for
-example, @option{-Wno-implicit}.  This manual lists only one of the
-two forms, whichever is not the default, although both are listed in
-the index.  For further preprocessor-specific options also refer to
-@xref{Preprocessor Options}.  For further language-specific options
-also refer to @xref{C Dialect Options}, @ref{C++ Dialect Options} and
-@ref{Objective-C and Objective-C++ Dialect Options}.  For convenience,
-options in these sections are cross-referenced from here.
-
-Some options, such as @option{-Wall} and @option{-Wextra}, turn on other
-options, such as @option{-Wunused}, which may turn on further options,
-such as @option{-Wunused-value}. The combined effect of positive and
-negative forms is that more specific options have priority over less
-specific ones, independently of their position in the command-line. For
-options of the same specificity, the last one takes effect. Options
-enabled or disabled via pragmas (@pxref{Diagnostic Pragmas}) take effect
-as if they appeared at the end of the command-line.
-
-When an unrecognized warning option is requested (e.g.,
-@option{-Wunknown-warning}), LLVM emits a diagnostic stating
-that the option is not recognized.  However, if the @option{-Wno-} form
-is used, the behavior is slightly different: no diagnostic is
-produced for @option{-Wno-unknown-warning} unless other diagnostics
-are being produced.  This allows the use of new @option{-Wno-} options
-with old compilers, but if something goes wrong, the compiler
-warns that an unrecognized option is present.
-
-@table @gcctabopt
 @item -Wpedantic
 @itemx -pedantic
 @opindex pedantic
@@ -3192,6 +3361,10 @@ at compile-time and in some other cases that do not prevent compilation
 of programs that are valid according to the standard. This is not
 equivalent to @option{-Werror=pedantic}, since there are errors enabled
 by this option and not enabled by the latter and vice versa.
+
+@item -w
+@opindex w
+Inhibit all warning messages.
 
 @item -Wall
 @opindex Wall
@@ -3245,6 +3418,40 @@ some cases, and there is no simple way to modify the code to suppress
 the warning. Some of them are enabled by @option{-Wextra} but many of
 them must be enabled individually.
 
+@item -Werror
+@opindex Werror
+@opindex Wno-error
+Make all warnings into errors.
+
+@item -Werror=@var{warning}
+@opindex Werror=@var{warning}
+@opindex Wno-error=@var{warning}
+Make the specified warning into an error.  The specifier for a warning
+is appended; for example @option{-Werror=switch} turns the warnings
+controlled by @option{-Wswitch} into errors.  This switch takes a
+negative form, to be used to negate @option{-Werror} for specific
+warnings; for example @option{-Wno-error=switch} makes
+@option{-Wswitch} warnings not be errors, even when @option{-Werror}
+is in effect.
+
+The warning message for each controllable warning includes the
+option that controls the warning.  That option can then be used with
+@option{-Werror=} and @option{-Wno-error=} as described above.
+(Printing of the option in the warning message can be disabled using the
+@option{-fno-diagnostics-show-option} flag.)
+
+Note that specifying @option{-Werror=}@var{foo} automatically implies
+@option{-W}@var{foo}.  However, @option{-Wno-error=}@var{foo} does not
+imply anything.
+
+@item -Weverything
+@opindex Weverything
+
+Enable all warning messages.  In general this is not all that useful,
+since some warnings are contradictory.  In particular it is impossible
+to write a C++ program that compiles under @option{-Weverything}
+without warnings.
+
 @item -Wextra
 @opindex W
 @opindex Wextra
@@ -3296,6 +3503,61 @@ constructor.
 
 @end itemize
 
+@item -Wfatal-errors
+@item -Wno-fatal-errors
+@opindex Wfatal-errors
+@opindex Wno-fatal-errors
+This option causes the compiler to abort compilation on the first error
+occurred rather than trying to keep going and printing further error
+messages.
+
+@end table
+
+You can request many specific warnings with options beginning with
+@samp{-W}, for example @option{-Wimplicit} to request warnings on
+implicit declarations.  Each of these specific warning options also
+has a negative form beginning @samp{-Wno-} to turn off warnings; for
+example, @option{-Wno-implicit}.  This manual lists only one of the
+two forms, whichever is not the default, although both are listed in
+the index.  For further preprocessor-specific options also refer to
+@xref{Preprocessor Options}.  For further language-specific options
+also refer to @xref{C Dialect Options}, @ref{C++ Dialect Options} and
+@ref{Objective-C and Objective-C++ Dialect Options}.  For convenience,
+options in these sections are cross-referenced from here.
+
+Some options, such as @option{-Wall} and @option{-Wextra}, turn on other
+options, such as @option{-Wunused}, which may turn on further options,
+such as @option{-Wunused-value}. The combined effect of positive and
+negative forms is that more specific options have priority over less
+specific ones, independently of their position in the command-line. For
+options of the same specificity, the last one takes effect. Options
+enabled or disabled via pragmas (@pxref{Diagnostic Pragmas}) take effect
+as if they appeared at the end of the command-line.
+
+When an unrecognized warning option is requested (e.g.,
+@option{-Wunknown-warning}), Clang/LLVM emits a diagnostic stating
+that the option is not recognized.  However, if the @option{-Wno-} form
+is used, the behavior is slightly different: no diagnostic is
+produced for @option{-Wno-unknown-warning} unless other diagnostics
+are being produced.  This allows the use of new @option{-Wno-} options
+with old compilers, but if something goes wrong, the compiler
+warns that an unrecognized option is present.
+
+@emph{Note:} This behavior differs from GCC, which will silently
+accept any options beginning with @option{-Wno-} even if the warning
+is unknown.
+
+@table @gcctabopt
+@item -Wno-abstract-final-class
+@opindex Wno-abstract-final-class
+
+Clang/LLVM option for future documentation.
+
+@item -Wabstract-vbase-init
+@opindex Wabstract-vbase-init
+
+Clang/LLVM option for future documentation.
+
 @item -Waddress
 @opindex Waddress
 @opindex Wno-address
@@ -3311,12 +3573,82 @@ behavior and are not portable in C, so they usually indicate that the
 programmer intended to use @code{strcmp}.  This warning is enabled by
 @option{-Wall}.
 
+@item -Waddress-of-array-temporary
+@opindex Waddress-of-array-temporary
+
+Clang/LLVM option for future documentation.
+
+@item -Waddress-of-temporary
+@opindex Waddress-of-temporary
+
+Clang/LLVM option for future documentation.
+
 @item -Waggregate-return
 @opindex Waggregate-return
 @opindex Wno-aggregate-return
 Warn if any functions that return structures or unions are defined or
 called.  (In languages where you can return an array, this also elicits
 a warning.)
+
+@item -Wambiguous-macro
+@opindex Wambiguous-macro
+
+Clang/LLVM option for future documentation.
+
+@item -Wambiguous-member-template
+@opindex Wambiguous-member-template
+
+Clang/LLVM option for future documentation.
+
+@item -Wanalyzer-incompatible-plugin
+@opindex Wanalyzer-incompatible-plugin
+
+Clang/LLVM option for future documentation.
+
+@item -Wanonymous-pack-parens
+@opindex Wanonymous-pack-parens
+
+Clang/LLVM option for future documentation.
+
+@item -Warc
+@opindex Warc
+
+Clang/LLVM option for future documentation.
+
+@item -Warc-bridge-casts-disallowed-in-nonarc
+@opindex Warc-bridge-casts-disallowed-in-nonarc
+
+Clang/LLVM option for future documentation.
+
+@item -Warc-maybe-repeated-use-of-weak
+@opindex Warc-maybe-repeated-use-of-weak
+
+Clang/LLVM option for future documentation.
+
+@item -Warc-non-pod-memaccess
+@opindex Warc-non-pod-memaccess
+
+Clang/LLVM option for future documentation.
+
+@item -Warc-performSelector-leaks
+@opindex Warc-performSelector-leaks
+
+Clang/LLVM option for future documentation.
+
+@item -Warc-repeated-use-of-weak
+@opindex Warc-repeated-use-of-weak
+
+Clang/LLVM option for future documentation.
+
+@item -Warc-retain-cycles
+@opindex Warc-retain-cycles
+
+Clang/LLVM option for future documentation.
+
+@item -Warc-unsafe-retained-assign
+@opindex Warc-unsafe-retained-assign
+
+Clang/LLVM option for future documentation.
 
 @item -Warray-bounds
 @opindex Wno-array-bounds
@@ -3326,6 +3658,36 @@ Unlike GCC, Clang/LLVM does not support the
 subscripts to arrays that are always out of bounds. This warning is
 enabled by @option{-Wall}.
 
+@item -Warray-bounds-pointer-arithmetic
+@opindex Warray-bounds-pointer-arithmetic
+
+Clang/LLVM option for future documentation.
+
+@item -Wasm
+@opindex Wasm
+
+Clang/LLVM option for future documentation.
+
+@item -Wasm-operand-widths
+@opindex Wasm-operand-widths
+
+Clang/LLVM option for future documentation.
+
+@item -Wno-assign-enum
+@opindex Wno-assign-enum
+
+Clang/LLVM option for future documentation.
+
+@item -Watomic-properties
+@opindex Watomic-properties
+
+Clang/LLVM option for future documentation.
+
+@item -Watomic-property-with-user-defined-accessor
+@opindex Watomic-property-with-user-defined-accessor
+
+Clang/LLVM option for future documentation.
+
 @item -Wno-attributes
 @opindex Wno-attributes
 @opindex Wattributes
@@ -3334,12 +3696,196 @@ unrecognized attributes, function attributes applied to variables,
 etc.  This does not stop errors for incorrect use of supported
 attributes.
 
+@item -Wno-auto-import
+@opindex Wno-auto-import
+
+Clang/LLVM option for future documentation.
+
+@item -Wno-auto-storage-class
+@opindex Wno-auto-storage-class
+
+Clang/LLVM option for future documentation.
+
+@item -Wauto-var-id
+@opindex Wauto-var-id
+
+Clang/LLVM option for future documentation.
+
+@item -Wavailability
+@opindex Wavailability
+
+Clang/LLVM option for future documentation.
+
+@item -Wbackslash-newline-escape
+@opindex Wbackslash-newline-escape
+
+Clang/LLVM option for future documentation.
+
+@item -Wbad-array-new-length
+@opindex Wbad-array-new-length
+
+Clang/LLVM option for future documentation.
+
+@item -Wbind-to-temporary-copy
+@opindex Wbind-to-temporary-copy
+
+Clang/LLVM option for future documentation.
+
+@item -Wbitfield-constant-conversion
+@opindex Wbitfield-constant-conversion
+
+Clang/LLVM option for future documentation.
+
+@item -Wbitwise-op-parentheses
+@opindex Wbitwise-op-parentheses
+
+Clang/LLVM option for future documentation.
+
+@item -Wbool-conversion
+@opindex Wbool-conversion
+
+Clang/LLVM option for future documentation.
+
+@item -Wbool-conversions
+@opindex Wbool-conversions
+
+Clang/LLVM option for future documentation.
+
+@item -Wbridge-cast
+@opindex Wbridge-cast
+
+Clang/LLVM option for future documentation.
+
 @item -Wno-builtin-macro-redefined
 @opindex Wno-builtin-macro-redefined
 @opindex Wbuiltin-macro-redefined
 Do not warn if certain built-in macros are redefined.  This suppresses
 warnings for redefinition of @code{__TIMESTAMP__}, @code{__TIME__},
 @code{__DATE__}, @code{__FILE__}, and @code{__BASE_FILE__}.
+
+@item -Wbuiltin-requires-header
+@opindex Wbuiltin-requires-header
+
+Clang/LLVM option for future documentation.
+
+@item -Wc++-compat @r{(C and Objective-C only)}
+@opindex Wc++-compat
+Warn about ISO C constructs that are outside of the common subset of
+ISO C and ISO C++, e.g.@: request for implicit conversion from
+@code{void *} to a pointer to non-@code{void} type.
+
+@item -Wc++0x-compat @r{(C and Objective-C only)}
+@opindex Wc++0x-compat
+
+Undocumented warning supported by both GCC and Clang/LLVM for future
+documentation.
+
+@item -Wc++0x-extensions
+@opindex Wc++0x-extensions
+
+Clang/LLVM option for future documentation.
+
+@item -Wc++0x-narrowing
+@opindex Wc++0x-narrowing
+
+Clang/LLVM option for future documentation.
+
+@item -Wc++11-compat @r{(C++ and Objective-C++ only)}
+@opindex Wc++11-compat
+Warn about C++ constructs whose meaning differs between ISO C++ 1998
+and ISO C++ 2011, e.g., identifiers in ISO C++ 1998 that are keywords
+in ISO C++ 2011.  This warning turns on @option{-Wnarrowing} and is
+enabled by @option{-Wall}.
+
+@item -Wc++11-compat-pedantic
+@opindex Wc++11-compat-pedantic
+
+Clang/LLVM option for future documentation.
+
+@item -Wc++11-compat-reserved-user-defined-literal
+@opindex Wc++11-compat-reserved-user-defined-literal
+
+Clang/LLVM option for future documentation.
+
+@item -Wc11-extensions
+@opindex Wc11-extensions
+
+Clang/LLVM option for future documentation.
+
+@item -Wc++11-extensions
+@opindex Wc++11-extensions
+
+Clang/LLVM option for future documentation.
+
+@item -Wc++11-extra-semi
+@opindex Wc++11-extra-semi
+
+Clang/LLVM option for future documentation.
+
+@item -Wc++11-long-long
+@opindex Wc++11-long-long
+
+Clang/LLVM option for future documentation.
+
+@item -Wc++11-narrowing
+@opindex Wc++11-narrowing
+
+Clang/LLVM option for future documentation.
+
+@item -Wc++1y-extensions
+@opindex Wc++1y-extensions
+
+Clang/LLVM option for future documentation.
+
+@item -Wc++14-compat @r{(C++ and Objective-C++ only)}
+@opindex Wc++14-compat
+Warn about C++ constructs whose meaning differs between ISO C++ 2011
+and ISO C++ 2014.  This warning is enabled by @option{-Wall}.
+
+@item -Wc++98-c++11-compat
+@opindex Wc++98-c++11-compat
+
+Clang/LLVM option for future documentation.
+
+@item -Wc++98-c++11-compat-pedantic
+@opindex Wc++98-c++11-compat-pedantic
+
+Clang/LLVM option for future documentation.
+
+@item -Wc++98-compat-bind-to-temporary-copy
+@opindex Wc++98-compat-bind-to-temporary-copy
+
+Clang/LLVM option for future documentation.
+
+@item -Wc++98-compat
+@opindex Wc++98-compat
+
+Clang/LLVM option for future documentation.
+
+@item -Wc++98-compat-local-type-template-args
+@opindex Wc++98-compat-local-type-template-args
+
+Clang/LLVM option for future documentation.
+
+@item -Wc++98-compat-pedantic
+@opindex Wc++98-compat-pedantic
+
+Clang/LLVM option for future documentation.
+
+@item -Wc++98-compat-unnamed-type-template-args
+@opindex Wc++98-compat-unnamed-type-template-args
+
+Clang/LLVM option for future documentation.
+
+@item -Wc99-compat
+@opindex Wc99-compat
+
+Clang/LLVM option for future documentation.
+
+@item -Wno-c99-extensions
+@opindex Wno-c99-extensions
+
+Clang/LLVM option for future documentation.
 
 @item -Wcast-align
 @opindex Wcast-align
@@ -3369,6 +3915,21 @@ is unsafe, as in this example:
   **p = 'b';
 @end smallexample
 
+@item -Wcast-of-sel-type
+@opindex Wcast-of-sel-type
+
+Clang/LLVM option for future documentation.
+
+@item -WCFString-literal
+@opindex WCFString-literal
+
+Clang/LLVM option for future documentation.
+
+@item -Wchar-align
+@opindex Wchar-align
+
+Clang/LLVM option for future documentation.
+
 @item -Wchar-subscripts
 @opindex Wchar-subscripts
 @opindex Wno-char-subscripts
@@ -3378,6 +3939,7 @@ machines.
 This warning is enabled by @option{-Wall}.
 
 @item -Wcomment
+@itemx -Wcomments
 @opindex Wcomment
 @opindex Wcomments
 @opindex Wno-comment
@@ -3385,6 +3947,51 @@ This warning is enabled by @option{-Wall}.
 Warn whenever a comment-start sequence @samp{/*} appears in a @samp{/*}
 comment, or whenever a Backslash-Newline appears in a @samp{//} comment.
 This warning is enabled by @option{-Wall}.
+
+@item -Wcompare-distinct-pointer-types
+@opindex Wcompare-distinct-pointer-types
+
+Clang/LLVM option for future documentation.
+
+@item -Wcomplex-component-init
+@opindex Wcomplex-component-init
+
+Clang/LLVM option for future documentation.
+
+@item -Wconditional-type-mismatch
+@opindex Wconditional-type-mismatch
+
+Clang/LLVM option for future documentation.
+
+@item -Wconditional-uninitialized
+@opindex Wconditional-uninitialized
+
+Clang/LLVM option for future documentation.
+
+@item -Wconfig-macros
+@opindex Wconfig-macros
+
+Clang/LLVM option for future documentation.
+
+@item -Wconstant-conversion
+@opindex Wconstant-conversion
+
+Clang/LLVM option for future documentation.
+
+@item -Wconstant-logical-operand
+@opindex Wconstant-logical-operand
+
+Clang/LLVM option for future documentation.
+
+@item -Wconstexpr-not-const
+@opindex Wconstexpr-not-const
+
+Clang/LLVM option for future documentation.
+
+@item -Wconsumed
+@opindex Wconsumed
+
+Clang/LLVM option for future documentation.
 
 @item -Wconversion
 @opindex Wconversion
@@ -3406,6 +4013,49 @@ reference to them. Warnings about conversions between signed and
 unsigned integers are disabled by default in C++ unless
 @option{-Wsign-conversion} is explicitly enabled.
 
+@item -Wcovered-switch-default
+@opindex Wcovered-switch-default
+
+Clang/LLVM option for future documentation.
+
+@item -Wcustom-atomic-properties
+@opindex Wcustom-atomic-properties
+
+Clang/LLVM option for future documentation.
+
+@item -Wdangling-else
+@opindex Wdangling-else
+
+Clang/LLVM option for future documentation.
+
+@item -Wdangling-field
+@opindex Wdangling-field
+
+Clang/LLVM option for future documentation.
+
+@item -Wdangling-initializer-list
+@opindex Wdangling-initializer-list
+
+Clang/LLVM option for future documentation.
+
+@item -Wdate-time
+@opindex Wdate-time
+@opindex Wno-date-time
+Warn when macros @code{__TIME__}, @code{__DATE__} or @code{__TIMESTAMP__}
+are encountered as they might prevent bit-wise-identical reproducible
+compilations.
+
+@item -Wdelegating-ctor-cycles
+@opindex Wdelegating-ctor-cycles
+
+Clang/LLVM option for future documentation.
+
+@item -Wdelete-incomplete @r{(C++ and Objective-C++ only)}
+@opindex Wdelete-incomplete
+@opindex Wno-delete-incomplete
+Warn when deleting a pointer to incomplete type, which may cause
+undefined behavior at runtime.  This warning is enabled by default.
+
 @item -Wno-deprecated
 @opindex Wno-deprecated
 @opindex Wdeprecated
@@ -3419,6 +4069,51 @@ variables (@pxref{Variable Attributes}), and types (@pxref{Type
 Attributes}) marked as deprecated by using the @code{deprecated}
 attribute.
 
+@item -Wdeprecated-increment-bool
+@opindex Wdeprecated-increment-bool
+
+Clang/LLVM option for future documentation.
+
+@item -Wdeprecated-implementations
+@opindex Wdeprecated-implementations
+
+Clang/LLVM option for future documentation.
+
+@item -Wdeprecated-objc-isa-usage
+@opindex Wdeprecated-objc-isa-usage
+
+Clang/LLVM option for future documentation.
+
+@item -Wdeprecated-objc-pointer-introspection
+@opindex Wdeprecated-objc-pointer-introspection
+
+Clang/LLVM option for future documentation.
+
+@item -Wdeprecated-objc-pointer-introspection-performSelector
+@opindex Wdeprecated-objc-pointer-introspection-performSelector
+
+Clang/LLVM option for future documentation.
+
+@item -Wdeprecated-register
+@opindex Wdeprecated-register
+
+Clang/LLVM option for future documentation.
+
+@item -Wdeprecated-writable-strings
+@opindex Wdeprecated-writable-strings
+
+Clang/LLVM option for future documentation.
+
+@item -Wdirect-ivar-access
+@opindex Wdirect-ivar-access
+
+Clang/LLVM option for future documentation.
+
+@item -Wdisabled-macro-expansion
+@opindex Wdisabled-macro-expansion
+
+Clang/LLVM option for future documentation.
+
 @item -Wdisabled-optimization
 @opindex Wdisabled-optimization
 @opindex Wno-disabled-optimization
@@ -3429,6 +4124,16 @@ effectively.  Often, the problem is that your code is too big or too
 complex; LLVM refuses to optimize programs when the optimization
 itself is likely to take inordinate amounts of time.
 
+@item -Wdiscard-qual
+@opindex Wdiscard-qual
+
+Clang/LLVM option for future documentation.
+
+@item -Wdistributed-object-modifiers
+@opindex Wdistributed-object-modifiers
+
+Clang/LLVM option for future documentation.
+
 @item -Wno-div-by-zero
 @opindex Wno-div-by-zero
 @opindex Wdiv-by-zero
@@ -3436,11 +4141,110 @@ Do not warn about compile-time integer division by zero.  Floating-point
 division by zero is not warned about, as it can be a legitimate way of
 obtaining infinities and NaNs.
 
+@item -Wdivision-by-zero
+@opindex Wdivision-by-zero
+
+Clang/LLVM option for future documentation.
+
+@item -Wdocumentation-deprecated-sync
+@opindex Wdocumentation-deprecated-sync
+
+Clang/LLVM option for future documentation.
+
+@item -Wdocumentation
+@opindex Wdocumentation
+
+Clang/LLVM option for future documentation.
+
+@item -Wdocumentation-html
+@opindex Wdocumentation-html
+
+Clang/LLVM option for future documentation.
+
+@item -Wdocumentation-pedantic
+@opindex Wdocumentation-pedantic
+
+Clang/LLVM option for future documentation.
+
+@item -Wdocumentation-unknown-command
+@opindex Wdocumentation-unknown-command
+
+Clang/LLVM option for future documentation.
+
+@item -Wdollar-in-identifier-extension
+@opindex Wdollar-in-identifier-extension
+
+Clang/LLVM option for future documentation.
+
+@item -Wdouble-promotion @r{(C, C++, Objective-C and Objective-C++ only)}
+@opindex Wdouble-promotion
+@opindex Wno-double-promotion
+Give a warning when a value of type @code{float} is implicitly
+promoted to @code{double}.  CPUs with a 32-bit ``single-precision''
+floating-point unit implement @code{float} in hardware, but emulate
+@code{double} in software.  On such a machine, doing computations
+using @code{double} values is much more expensive because of the
+overhead required for software emulation.
+
+It is easy to accidentally do computations with @code{double} because
+floating-point literals are implicitly of type @code{double}.  For
+example, in:
+@smallexample
+@group
+float area(float radius)
+@{
+   return 3.14159 * radius * radius;
+@}
+@end group
+@end smallexample
+the compiler performs the entire computation with @code{double}
+because the floating-point literal is a @code{double}.
+
+@item -Wduplicate-decl-specifier
+@opindex Wduplicate-decl-specifier
+
+Clang/LLVM option for future documentation.
+
+@item -Wduplicate-enum
+@opindex Wduplicate-enum
+
+Clang/LLVM option for future documentation.
+
+@item -Wduplicate-method-arg
+@opindex Wduplicate-method-arg
+
+Clang/LLVM option for future documentation.
+
+@item -Wduplicate-method-match
+@opindex Wduplicate-method-match
+
+Clang/LLVM option for future documentation.
+
+@item -Wdynamic-class-memaccess
+@opindex Wdynamic-class-memaccess
+
+Clang/LLVM option for future documentation.
+
+@item -Wembedded-directive
+@opindex Wembedded-directive
+
+Clang/LLVM option for future documentation.
+
 @item -Wempty-body
 @opindex Wempty-body
 @opindex Wno-empty-body
 Warn if an empty body occurs in an @code{if}, @code{else} or @code{do
 while} statement.  This warning is also enabled by @option{-Wextra}.
+
+@item -Wempty-translation-unit
+@opindex Wempty-translation-unit
+
+Clang/LLVM option for future documentation.
+
+@item -Wno-endif-labels
+@opindex Wno-endif-labels
+@opindex Wendif-labels
+Do not warn whenever an @code{#else} or an @code{#endif} are followed by text.
 
 @item -Wenum-compare
 @opindex Wenum-compare
@@ -3449,6 +4253,64 @@ Warn about a comparison between values of different enumerated types.
 In C++ enumeral mismatches in conditional expressions are also
 diagnosed and the warning is enabled by default.  In C this warning is
 enabled by @option{-Wall}.
+
+@item -Wenum-conversion
+@opindex Wenum-conversion
+
+Clang/LLVM option for future documentation.
+
+@item -Wexit-time-destructors
+@opindex Wexit-time-destructors
+
+Clang/LLVM option for future documentation.
+
+@item -Wexplicit-ownership-type
+@opindex Wexplicit-ownership-type
+
+Clang/LLVM option for future documentation.
+
+@item -Wextended-offsetof
+@opindex Wextended-offsetof
+
+Clang/LLVM option for future documentation.
+
+@item -Wextern-c-compat
+@opindex Wextern-c-compat
+
+Clang/LLVM option for future documentation.
+
+@item -Wextern-initializer
+@opindex Wextern-initializer
+
+Clang/LLVM option for future documentation.
+
+@item -Wno-extra-qualification
+@opindex Wno-extra-qualification
+
+Clang/LLVM option for future documentation.
+
+@item -Wextra-semi
+@opindex Wextra-semi
+
+Clang/LLVM option for future documentation.
+
+@item -Wextra-tokens
+@opindex Wextra-tokens
+
+Clang/LLVM option for future documentation.
+
+@item -Wflexible-array-extensions
+@opindex Wflexible-array-extensions
+
+Clang/LLVM option for future documentation.
+
+@item -Wfloat-conversion
+@opindex Wfloat-conversion
+@opindex Wno-float-conversion
+Warn for implicit conversions that reduce the precision of a real value.
+This includes conversions from real to integer, and from higher precision
+real to lower precision real values.  This option is also enabled by
+@option{-Wconversion}.
 
 @item -Wfloat-equal
 @opindex Wfloat-equal
@@ -3467,7 +4329,8 @@ this is done with the relational operators, so equality comparisons are
 probably mistaken.
 
 @item -Wformat
-@itemx -Wformat=@var{n}
+@itemx -Wformat=0
+@itemx -Wformat=1
 @opindex Wformat
 @opindex Wno-format
 @opindex ffreestanding
@@ -3495,8 +4358,20 @@ in the selected standard version (but not for @code{strfmon} formats,
 since those are not in any version of the C standard).  @xref{C Dialect
 Options,,Options Controlling C Dialect}.
 
-Unlike GCC, Clang/LLVM does not support the @option{-Wformat=@var{n}}
-version of this option.
+Option @option{-Wformat} is equivalent to @option{-Wformat=1}, and
+@option{-Wno-format} is equivalent to @option{-Wformat=0}.  Since
+@option{-Wformat} also checks for null format arguments for several
+functions, @option{-Wformat} also implies @option{-Wnonnull}.  Some
+aspects of this level of format checking can be disabled by the
+options: @option{-Wno-format-contains-nul},
+@option{-Wno-format-extra-args}, and @option{-Wno-format-zero-length}.
+@option{-Wformat} is enabled by @option{-Wall}.
+
+@item -Wformat=2
+@opindex Wformat=2
+Enable @option{-Wformat} plus additional format checks.  Currently
+equivalent to @option{-Wformat -Wformat-nonliteral -Wformat-security
+-Wformat-y2k}.
 
 @item -Wno-format-extra-args
 @opindex Wno-format-extra-args
@@ -3513,12 +4388,27 @@ in the case of @code{scanf} formats, this option suppresses the
 warning if the unused arguments are all pointers, since the Single
 Unix Specification says that such unused arguments are allowed.
 
+@item -Wformat-invalid-specifier
+@opindex Wformat-invalid-specifier
+
+Clang/LLVM option for future documentation.
+
+@item -Wformat-non-iso
+@opindex Wformat-non-iso
+
+Clang/LLVM option for future documentation.
+
 @item -Wformat-nonliteral
 @opindex Wformat-nonliteral
 @opindex Wno-format-nonliteral
 If @option{-Wformat} is specified, also warn if the format string is not a
 string literal and so cannot be checked, unless the format function
 takes its format arguments as a @code{va_list}.
+
+@item -Wformat-pedantic
+@opindex Wformat-pedantic
+
+Clang/LLVM option for future documentation.
 
 @item -Wformat-security
 @opindex Wformat-security
@@ -3545,6 +4435,11 @@ formats that may yield only a two-digit year.
 If @option{-Wformat} is specified, do not warn about zero-length formats.
 The C standard specifies that zero-length formats are allowed.
 
+@item -Wfour-char-constants
+@opindex Wfour-char-constants
+
+Clang/LLVM option for future documentation.
+
 @item -Wframe-larger-than=@var{len}
 @opindex Wframe-larger-than
 Warn if the size of a function frame is larger than @var{len} bytes.
@@ -3558,6 +4453,195 @@ whether or not to issue a warning.
 
 @emph{Note:}  It appears that Clang/LLVM may just silently ignore this
 option.  Some experimentation for any particular architecture is advised.
+
+@item -Wgcc-compat
+@opindex Wgcc-compat
+
+Clang/LLVM option for future documentation.
+
+@item -Wglobal-constructors
+@opindex Wglobal-constructors
+
+Clang/LLVM option for future documentation.
+
+@item -Wgnu-array-member-paren-init
+@opindex Wgnu-array-member-paren-init
+
+Clang/LLVM option for future documentation.
+
+@item -Wgnu-conditional-omitted-operand
+@opindex Wgnu-conditional-omitted-operand
+
+Clang/LLVM option for future documentation.
+
+@item -Wgnu-designator
+@opindex Wgnu-designator
+
+Clang/LLVM option for future documentation.
+
+@item -Wgnu
+@opindex Wgnu
+
+Clang/LLVM option for future documentation.
+
+@item -Wgnu-static-float-init
+@opindex Wgnu-static-float-init
+
+Clang/LLVM option for future documentation.
+
+@item -Wheader-guard
+@opindex Wheader-guard
+
+Clang/LLVM option for future documentation.
+
+@item -Wheader-hygiene
+@opindex Wheader-hygiene
+
+Clang/LLVM option for future documentation.
+
+@item -Widiomatic-parentheses
+@opindex Widiomatic-parentheses
+
+Clang/LLVM option for future documentation.
+
+@item -Wignored-attributes
+@opindex Wignored-attributes
+
+Clang/LLVM option for future documentation.
+
+@item -Wignored-qualifiers @r{(C and C++ only)}
+@opindex Wignored-qualifiers
+@opindex Wno-ignored-qualifiers
+Warn if the return type of a function has a type qualifier
+such as @code{const}.  For ISO C such a type qualifier has no effect,
+since the value returned by a function is not an lvalue.
+For C++, the warning is only emitted for scalar types or @code{void}.
+ISO C prohibits qualified @code{void} return types on function
+definitions, so such return types always receive a warning
+even without this option.
+
+This warning is also enabled by @option{-Wextra}.
+
+@item -Wimplicit @r{(C and Objective-C only)}
+@opindex Wimplicit
+@opindex Wno-implicit
+Same as @option{-Wimplicit-int} and @option{-Wimplicit-function-declaration}.
+This warning is enabled by @option{-Wall}.
+
+@item -Wimplicit-atomic-properties
+@opindex Wimplicit-atomic-properties
+
+Clang/LLVM option for future documentation.
+
+@item -Wimplicit-conversion-floating-point-to-bool
+@opindex Wimplicit-conversion-floating-point-to-bool
+
+Clang/LLVM option for future documentation.
+
+@item -Wimplicit-exception-spec-mismatch
+@opindex Wimplicit-exception-spec-mismatch
+
+Clang/LLVM option for future documentation.
+
+@item -Wimplicit-fallthrough
+@opindex Wimplicit-fallthrough
+
+Clang/LLVM option for future documentation.
+
+@item -Wimplicit-fallthrough-per-function
+@opindex Wimplicit-fallthrough-per-function
+
+Clang/LLVM option for future documentation.
+
+@item -Wimplicit-function-declaration @r{(C and Objective-C only)}
+@opindex Wimplicit-function-declaration
+@opindex Wno-implicit-function-declaration
+Give a warning whenever a function is used before being declared. In
+C99 mode (@option{-std=c99} or @option{-std=gnu99}), this warning is
+enabled by default and it is made into an error by
+@option{-pedantic-errors}. This warning is also enabled by
+@option{-Wall}.
+
+@item -Wimplicit-int @r{(C and Objective-C only)}
+@opindex Wimplicit-int
+@opindex Wno-implicit-int
+Warn when a declaration does not specify a type.
+This warning is enabled by @option{-Wall}.
+
+@item -Wimplicit-retain-self
+@opindex Wimplicit-retain-self
+
+Clang/LLVM option for future documentation.
+
+@item -Wimport-preprocessor-directive-pedantic
+@opindex Wimport-preprocessor-directive-pedantic
+
+Clang/LLVM option for future documentation.
+
+@item -Wincompatible-library-redeclaration
+@opindex Wincompatible-library-redeclaration
+
+Clang/LLVM option for future documentation.
+
+@item -Wno-incompatible-pointer-types @r{(C and Objective-C only)}
+@opindex Wno-incompatible-pointer-types
+@opindex Wincompatible-pointer-types
+Do not warn when there is a conversion between pointers that have incompatible
+types.  This warning is for cases not covered by @option{-Wno-pointer-sign},
+which warns for pointer argument passing or assignment with different
+signedness.
+
+@item -Wincompatible-pointer-types-discards-qualifiers
+@opindex Wincompatible-pointer-types-discards-qualifiers
+
+Clang/LLVM option for future documentation.
+
+@item -Wno-incomplete-module
+@opindex Wno-incomplete-module
+
+Clang/LLVM option for future documentation.
+
+@item -Wincomplete-implementation
+@opindex Wincomplete-implementation
+
+Clang/LLVM option for future documentation.
+
+@item -Wincomplete-umbrella
+@opindex Wincomplete-umbrella
+
+Clang/LLVM option for future documentation.
+
+@item -Wno-inherited-variadic-ctor @r{(C++ and Objective-C++ only)}
+@opindex Winherited-variadic-ctor
+@opindex Wno-inherited-variadic-ctor
+Suppress warnings about use of C++11 inheriting constructors when the
+base class inherited from has a C variadic constructor; the warning is
+on by default because the ellipsis is not inherited.
+
+@item -Winit-self @r{(C, C++, Objective-C and Objective-C++ only)}
+@opindex Winit-self
+@opindex Wno-init-self
+Warn about uninitialized variables that are initialized with themselves.
+Note this option can only be used with the @option{-Wuninitialized} option.
+
+For example, LLVM warns about @code{i} being uninitialized in the
+following snippet only when @option{-Winit-self} has been specified:
+@smallexample
+@group
+int f()
+@{
+  int i = i;
+  return i;
+@}
+@end group
+@end smallexample
+
+This warning is enabled by @option{-Wall} in C++.
+
+@item -Winitializer-overrides
+@opindex Winitializer-overrides
+
+Clang/LLVM option for future documentation.
 
 @item -Winline
 @opindex Winline
@@ -3573,6 +4657,19 @@ that has already been done in the current function.  Therefore,
 seemingly insignificant changes in the source program can cause the
 warnings produced by @option{-Winline} to appear or disappear.
 
+@item -Wno-int-conversion @r{(C and Objective-C only)}
+@opindex Wno-int-conversion
+@opindex Wint-conversion
+Do not warn about incompatible integer to pointer and pointer to integer
+conversions.  This warning is about implicit conversions; for explicit
+conversions the warnings @option{-Wno-int-to-pointer-cast} and
+@option{-Wno-pointer-to-int-cast} may be used.
+
+@item -Wint-conversions
+@opindex Wint-conversions
+
+Clang/LLVM option for future documentation.
+
 @item -Wno-int-to-pointer-cast
 @opindex Wno-int-to-pointer-cast
 @opindex Wint-to-pointer-cast
@@ -3580,19 +4677,114 @@ Suppress warnings from casts to pointer type of an integer of a
 different size. In C++, casting to a pointer type of smaller size is
 an error. @option{Wint-to-pointer-cast} is enabled by default.
 
+@item -Wno-int-to-void-pointer-cast
+@opindex Wno-int-to-void-pointer-cast
+
+Clang/LLVM option for future documentation.
+
+@item -Winteger-overflow
+@opindex Winteger-overflow
+
+Clang/LLVM option for future documentation.
+
+@item -Winvalid-constexpr
+@opindex Winvalid-constexpr
+
+Clang/LLVM option for future documentation.
+
+@item -Winvalid-iboutlet
+@opindex Winvalid-iboutlet
+
+Clang/LLVM option for future documentation.
+
+@item -Winvalid-noreturn
+@opindex Winvalid-noreturn
+
+Clang/LLVM option for future documentation.
+
+@item -Wno-invalid-offsetof @r{(C++ and Objective-C++ only)}
+@opindex Wno-invalid-offsetof
+@opindex Winvalid-offsetof
+Suppress warnings from applying the @code{offsetof} macro to a non-POD
+type.  According to the 2014 ISO C++ standard, applying @code{offsetof}
+to a non-standard-layout type is undefined.  In existing C++ implementations,
+however, @code{offsetof} typically gives meaningful results.
+This flag is for users who are aware that they are
+writing nonportable code and who have deliberately chosen to ignore the
+warning about it.
+
+The restrictions on @code{offsetof} may be relaxed in a future version
+of the C++ standard.
+
 @item -Winvalid-pch
 @opindex Winvalid-pch
 @opindex Wno-invalid-pch
 Warn if a precompiled header (@pxref{Precompiled Headers}) is found in
 the search path but can't be used.
 
+@item -Winvalid-pp-token
+@opindex Winvalid-pp-token
+
+Clang/LLVM option for future documentation.
+
+@item -Winvalid-source-encoding
+@opindex Winvalid-source-encoding
+
+Clang/LLVM option for future documentation.
+
+@item -Winvalid-token-paste
+@opindex Winvalid-token-paste
+
+Clang/LLVM option for future documentation.
+
+@item -Wno-keyword-compat
+@opindex Wno-keyword-compat
+
+Clang/LLVM option for future documentation.
+
+@item -Wknr-promoted-parameter
+@opindex Wknr-promoted-parameter
+
+Clang/LLVM option for future documentation.
+
+@item -Wlanguage-extension-token
+@opindex Wlanguage-extension-token
+
+Clang/LLVM option for future documentation.
+
+@item -Wlarge-by-value-copy
+@opindex Wlarge-by-value-copy
+
+Clang/LLVM option for future documentation.
+
 @item -Wlarger-than=@var{len}
+@itemx -Wlarger-than-@var{len}
 @opindex Wlarger-than=@var{len}
 @opindex Wlarger-than-@var{len}
 Warn whenever an object of larger than @var{len} bytes is defined.
 
 @emph{Note:}  It appears that Clang/LLVM may just silently ignore this
 option.  Some experimentation for any particular architecture is advised.
+
+@item -Wno-liblto
+@opindex Wno-liblto
+
+Clang/LLVM option for future documentation.
+
+@item -Wno-literal-conversion
+@opindex Wno-literal-conversion
+
+Clang/LLVM option for future documentation.
+
+@item -Wno-literal-range
+@opindex Wno-literal-range
+
+Clang/LLVM option for future documentation.
+
+@item -Wlocal-type-template-args
+@opindex Wlocal-type-template-args
+
+Clang/LLVM option for future documentation.
 
 @item -Wlogical-not-parentheses
 @opindex Wlogical-not-parentheses
@@ -3614,12 +4806,22 @@ if ((!a) > 1) @{ @dots{} @}
 
 This warning is enabled by @option{-Wall}.
 
+@item -Wlogical-op-parentheses
+@opindex Wlogical-op-parentheses
+
+Clang/LLVM option for future documentation.
+
 @item -Wlong-long
 @opindex Wlong-long
 @opindex Wno-long-long
 Warn if @code{long long} type is used.  This is enabled by either
 @option{-Wpedantic} or @option{-Wtraditional} in ISO C90 and C++98
 modes.  To inhibit the warning messages, use @option{-Wno-long-long}.
+
+@item -Wloop-analysis
+@opindex Wloop-analysis
+
+Clang/LLVM option for future documentation.
 
 @item -Wmain
 @opindex Wmain
@@ -3629,6 +4831,46 @@ a function with external linkage, returning int, taking either zero
 arguments, two, or three arguments of appropriate types.  This warning
 is enabled by default in C++ and is enabled by either @option{-Wall}
 or @option{-Wpedantic}.
+
+@item -Wmain-return-type
+@opindex Wmain-return-type
+
+Clang/LLVM option for future documentation.
+
+@item -Wmalformed-warning-check
+@opindex Wmalformed-warning-check
+
+Clang/LLVM option for future documentation.
+
+@item -Wmethod-signatures
+@opindex Wmethod-signatures
+
+Clang/LLVM option for future documentation.
+
+@item -Wmicrosoft
+@opindex Wmicrosoft
+
+Clang/LLVM option for future documentation.
+
+@item -Wmicrosoft-exists
+@opindex Wmicrosoft-exists
+
+Clang/LLVM option for future documentation.
+
+@item -Wmismatched-parameter-types
+@opindex Wmismatched-parameter-types
+
+Clang/LLVM option for future documentation.
+
+@item -Wmismatched-return-types
+@opindex Wmismatched-return-types
+
+Clang/LLVM option for future documentation.
+
+@item -Wmismatched-tags
+@opindex Wmismatched-tags
+
+Clang/LLVM option for future documentation.
 
 @item -Wmissing-braces
 @opindex Wmissing-braces
@@ -3700,12 +4942,77 @@ function that calls a function like @code{vprintf} or @code{vscanf},
 but this might not always be the case, and some functions for which
 @code{format} attributes are appropriate may not be detected.
 
+@item -Wmissing-include-dirs @r{(C, C++, Objective-C and Objective-C++ only)}
+@opindex Wmissing-include-dirs
+@opindex Wno-missing-include-dirs
+Warn if a user-supplied include directory does not exist.
+
+@item -Wmissing-method-return-type
+@opindex Wmissing-method-return-type
+
+Clang/LLVM option for future documentation.
+
+@item -Wmissing-selector-name
+@opindex Wmissing-selector-name
+
+Clang/LLVM option for future documentation.
+
+@item -Wmissing-sysroot
+@opindex Wmissing-sysroot
+
+Clang/LLVM option for future documentation.
+
+@item -Wmissing-variable-declarations
+@opindex Wmissing-variable-declarations
+
+Clang/LLVM option for future documentation.
+
+@item -Wmodule-conflict
+@opindex Wmodule-conflict
+
+Clang/LLVM option for future documentation.
+
+@item -Wmost
+@opindex Wmost
+
+Clang/LLVM option for future documentation.
+
 @item -Wno-multichar
 @opindex Wno-multichar
 @opindex Wmultichar
 Do not warn if a multicharacter constant (@samp{'FOOF'}) is used.
 Usually they indicate a typo in the user's code, as they have
 implementation-defined values, and should not be used in portable code.
+
+@item -Wmultiple-move-vbase
+@opindex Wmultiple-move-vbase
+
+Clang/LLVM option for future documentation.
+
+@item -Wnested-anon-types
+@opindex Wnested-anon-types
+
+Clang/LLVM option for future documentation.
+
+@item -Wnewline-eof
+@opindex Wnewline-eof
+
+Clang/LLVM option for future documentation.
+
+@item -Wnon-gcc
+@opindex Wnon-gcc
+
+Clang/LLVM option for future documentation.
+
+@item -Wnon-literal-null-conversion
+@opindex Wnon-literal-null-conversion
+
+Clang/LLVM option for future documentation.
+
+@item -Wnon-pod-varargs
+@opindex Wnon-pod-varargs
+
+Clang/LLVM option for future documentation.
 
 @item -Wnonnull
 @opindex Wnonnull
@@ -3716,6 +5023,155 @@ requiring a non-null value by the @code{nonnull} function attribute.
 @option{-Wnonnull} is included in @option{-Wall} and @option{-Wformat}.  It
 can be disabled with the @option{-Wno-nonnull} option.
 
+@item -Wnonportable-cfstrings
+@opindex Wnonportable-cfstrings
+
+Clang/LLVM option for future documentation.
+
+@item -WNSObject-attribute
+@opindex WNSObject-attribute
+
+Clang/LLVM option for future documentation.
+
+@item -Wnull-arithmetic
+@opindex Wnull-arithmetic
+
+Clang/LLVM option for future documentation.
+
+@item -Wnull-character
+@opindex Wnull-character
+
+Clang/LLVM option for future documentation.
+
+@item -Wnull-conversion
+@opindex Wnull-conversion
+
+Clang/LLVM option for future documentation.
+
+@item -Wnull-dereference
+@opindex Wnull-dereference
+@opindex Wno-null-dereference
+Warn if the compiler detects paths that trigger erroneous or
+undefined behavior due to dereferencing a null pointer.  This option
+is only active when @option{-fdelete-null-pointer-checks} is active,
+which is enabled by optimizations in most targets.  The precision of
+the warnings depends on the optimization options used.
+
+@item -Wobjc-autosynthesis-property-ivar-name-match
+@opindex Wobjc-autosynthesis-property-ivar-name-match
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-cocoa-api
+@opindex Wobjc-cocoa-api
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-forward-class-redefinition
+@opindex Wobjc-forward-class-redefinition
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-interface-ivars
+@opindex Wobjc-interface-ivars
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-literal-compare
+@opindex Wobjc-literal-compare
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-method-access
+@opindex Wobjc-method-access
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-missing-property-synthesis
+@opindex Wobjc-missing-property-synthesis
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-missing-super-calls
+@opindex Wobjc-missing-super-calls
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-noncopy-retain-block-property
+@opindex Wobjc-noncopy-retain-block-property
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-nonunified-exceptions
+@opindex Wobjc-nonunified-exceptions
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-property-implementation
+@opindex Wobjc-property-implementation
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-property-implicit-mismatch
+@opindex Wobjc-property-implicit-mismatch
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-property-matches-cocoa-ownership-rule
+@opindex Wobjc-property-matches-cocoa-ownership-rule
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-property-no-attribute
+@opindex Wobjc-property-no-attribute
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-string-concatenation
+@opindex Wobjc-string-concatenation
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-property-synthesis
+@opindex Wobjc-property-synthesis
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-protocol-method-implementation
+@opindex Wobjc-protocol-method-implementation
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-protocol-property-synthesis
+@opindex Wobjc-protocol-property-synthesis
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-readonly-with-setter-property
+@opindex Wobjc-readonly-with-setter-property
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-redundant-api-use
+@opindex Wobjc-redundant-api-use
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-redundant-literal-use
+@opindex Wobjc-redundant-literal-use
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-root-class
+@opindex Wobjc-root-class
+
+Clang/LLVM option for future documentation.
+
+@item -Wobjc-string-compare
+@opindex Wobjc-string-compare
+
+Clang/LLVM option for future documentation.
+
 @item -Wno-odr
 @opindex Wno-odr
 @opindex Wodr
@@ -3725,6 +5181,21 @@ optimization.  Enabled by default.
 @emph{Note:} It is not clear whether this option does anything with
 LLVM, since with GCC it requires @option{-flto-odr-type-merging} to be
 enabled, and this flag is not available with Clang/LLVM.
+
+@item -Wopenmp-clauses
+@opindex Wopenmp-clauses
+
+Clang/LLVM option for future documentation.
+
+@item -Wno-out-of-line-declaration
+@opindex Wno-out-of-line-declaration
+
+Clang/LLVM option for future documentation.
+
+@item -Wover-aligned
+@opindex Wover-aligned
+
+Clang/LLVM option for future documentation.
 
 @item -Wno-overflow
 @opindex Wno-overflow
@@ -3747,6 +5218,21 @@ minimum maximum, so we do not diagnose overlength strings in C++@.
 
 This option is implied by @option{-Wpedantic}, and can be disabled with
 @option{-Wno-overlength-strings}.
+
+@item -Wno-override-module
+@opindex Wno-override-module
+
+Clang/LLVM option for future documentation.
+
+@item -Woverloaded-shift-op-parentheses
+@opindex Woverloaded-shift-op-parentheses
+
+Clang/LLVM option for future documentation.
+
+@item -Woverriding-method-mismatch
+@opindex Woverriding-method-mismatch
+
+Clang/LLVM option for future documentation.
 
 @item -Wpacked
 @opindex Wpacked
@@ -3839,6 +5325,11 @@ inside the conditional expression instead.
 
 This warning is enabled by @option{-Wall}.
 
+@item -Wparentheses-equality
+@opindex Wparentheses-equality
+
+Clang/LLVM option for future documentation.
+
 @item -Wpointer-arith
 @opindex Wpointer-arith
 @opindex Wno-pointer-arith
@@ -3848,11 +5339,94 @@ convenience in calculations with @code{void *} pointers and pointers
 to functions.  In C++, warn also when an arithmetic operation involves
 @code{NULL}.  This warning is also enabled by @option{-Wpedantic}.
 
+@item -Wno-pointer-to-int-cast @r{(C and Objective-C only)}
+@opindex Wno-pointer-to-int-cast
+@opindex Wpointer-to-int-cast
+Suppress warnings from casts from a pointer to an integer type of a
+different size.
+
+@item -Wno-pointer-type-mismatch
+@opindex Wno-pointer-type-mismatch
+
+Clang/LLVM option for future documentation.
+
+@item -W#pragma-messages
+@opindex W#pragma-messages
+
+Clang/LLVM option for future documentation.
+
+@item -Wno-pragmas
+@opindex Wno-pragmas
+@opindex Wpragmas
+Do not warn about misuses of pragmas, such as incorrect parameters,
+invalid syntax, or conflicts between pragmas.  See also
+@option{-Wunknown-pragmas}.
+
+@item -Wpredefined-identifier-outside-function
+@opindex Wpredefined-identifier-outside-function
+
+Clang/LLVM option for future documentation.
+
+@item -Wprivate-extern
+@opindex Wprivate-extern
+
+Clang/LLVM option for future documentation.
+
+@item -Wproperty-attribute-mismatch
+@opindex Wproperty-attribute-mismatch
+
+Clang/LLVM option for future documentation.
+
+@item -Wprotocol-property-synthesis-ambiguity
+@opindex Wprotocol-property-synthesis-ambiguity
+
+Clang/LLVM option for future documentation.
+
+@item -Wreadonly-iboutlet-property
+@opindex Wreadonly-iboutlet-property
+
+Clang/LLVM option for future documentation.
+
+@item -Wreceiver-expr
+@opindex Wreceiver-expr
+
+Clang/LLVM option for future documentation.
+
+@item -Wreceiver-forward-class
+@opindex Wreceiver-forward-class
+
+Clang/LLVM option for future documentation.
+
+@item -Wreceiver-is-weak
+@opindex Wreceiver-is-weak
+
+Clang/LLVM option for future documentation.
+
 @item -Wredundant-decls
 @opindex Wredundant-decls
 @opindex Wno-redundant-decls
 Warn if anything is declared more than once in the same scope, even in
 cases where multiple declaration is valid and changes nothing.
+
+@item -Wreinterpret-base-class
+@opindex Wreinterpret-base-class
+
+Clang/LLVM option for future documentation.
+
+@item -Wrequires-super-attribute
+@opindex Wrequires-super-attribute
+
+Clang/LLVM option for future documentation.
+
+@item -Wreserved-user-defined-literal
+@opindex Wreserved-user-defined-literal
+
+Clang/LLVM option for future documentation.
+
+@item -Wno-return-stack-address
+@opindex Wno-return-stack-address
+
+Clang/LLVM option for future documentation.
 
 @item -Wreturn-type
 @opindex Wreturn-type
@@ -3869,6 +5443,41 @@ message, even when @option{-Wno-return-type} is specified.  The only
 exceptions are @code{main} and functions defined in system headers.
 
 This warning is enabled by @option{-Wall}.
+
+@item -Wreturn-type-c-linkage
+@opindex Wreturn-type-c-linkage
+
+Clang/LLVM option for future documentation.
+
+@item -Wsection
+@opindex Wsection
+
+Clang/LLVM option for future documentation.
+
+@item -Wselector-type-mismatch
+@opindex Wselector-type-mismatch
+
+Clang/LLVM option for future documentation.
+
+@item -Wself-assign
+@opindex Wself-assign
+
+Clang/LLVM option for future documentation.
+
+@item -Wself-assign-field
+@opindex Wself-assign-field
+
+Clang/LLVM option for future documentation.
+
+@item -Wsemicolon-before-method-body
+@opindex Wsemicolon-before-method-body
+
+Clang/LLVM option for future documentation.
+
+@item -Wsentinel
+@opindex Wsentinel
+
+Clang/LLVM option for future documentation.
 
 @item -Wsequence-point
 @opindex Wsequence-point
@@ -3916,6 +5525,11 @@ definitions, may be found on the GCC readings page, at
 
 This warning is enabled by @option{-Wall} for C and C++.
 
+@item -Wserialized-diagnostics
+@opindex Wserialized-diagnostics
+
+Clang/LLVM option for future documentation.
+
 @item -Wshadow
 @opindex Wshadow
 @opindex Wno-shadow
@@ -3940,6 +5554,34 @@ Warn if shift count is negative. This warning is enabled by default.
 @opindex Wshift-count-overflow
 @opindex Wno-shift-count-overflow
 Warn if shift count >= width of type. This warning is enabled by default.
+
+@item -Wshift-negative-value
+@opindex Wshift-negative-value
+@opindex Wno-shift-negative-value
+Warn if left shifting a negative value.  This warning is enabled by
+@option{-Wextra} in C99 and C++11 modes (and newer).
+
+@item -Wshift-op-parentheses
+@opindex Wshift-op-parentheses
+
+Clang/LLVM option for future documentation.
+
+@item -Wshift-overflow
+@itemx -Wshift-overflow=@var{n}
+@opindex Wshift-overflow
+@opindex Wno-shift-overflow
+Warn about left shift overflows.  This warning is enabled by
+default in C99 and C++11 modes (and newer).
+
+@item -Wshift-sign-overflow
+@opindex Wshift-sign-overflow
+
+Clang/LLVM option for future documentation.
+
+@item -Wshorten-64-to-32
+@opindex Wshorten-64-to-32
+
+Clang/LLVM option for future documentation.
 
 @item -Wsign-compare
 @opindex Wsign-compare
@@ -3968,6 +5610,11 @@ Warn when the @code{sizeof} operator is applied to a parameter that is
 declared as an array in a function definition.  This warning is enabled by
 default for C and C++ programs.
 
+@item -Wsizeof-array-decay
+@opindex Wsizeof-array-decay
+
+Clang/LLVM option for future documentation.
+
 @item -Wsizeof-pointer-memaccess
 @opindex Wsizeof-pointer-memaccess
 @opindex Wno-sizeof-pointer-memaccess
@@ -3978,11 +5625,46 @@ but a pointer, and suggests a possible fix, or about
 @code{memcpy (&foo, ptr, sizeof (&foo));}.  This warning is enabled by
 @option{-Wall}.
 
+@item -Wsometimes-uninitialized
+@opindex Wsometimes-uninitialized
+
+Clang/LLVM option for future documentation.
+
+@item -Wsource-uses-openmp
+@opindex Wsource-uses-openmp
+
+Clang/LLVM option for future documentation.
+
 @item -Wstack-protector
 @opindex Wstack-protector
 @opindex Wno-stack-protector
 This option is only active when @option{-fstack-protector} is active.  It
 warns about functions that are not protected against stack smashing.
+
+@item -Wstatic-float-init
+@opindex Wstatic-float-init
+
+Clang/LLVM option for future documentation.
+
+@item -Wstatic-in-inline
+@opindex Wstatic-in-inline
+
+Clang/LLVM option for future documentation.
+
+@item -Wstatic-inline-explicit-instantiation
+@opindex Wstatic-inline-explicit-instantiation
+
+Clang/LLVM option for future documentation.
+
+@item -Wstatic-local-in-inline
+@opindex Wstatic-local-in-inline
+
+Clang/LLVM option for future documentation.
+
+@item -Wstatic-self-init
+@opindex Wstatic-self-init
+
+Clang/LLVM option for future documentation.
 
 @item -Wstrict-aliasing
 @opindex Wstrict-aliasing
@@ -3995,7 +5677,7 @@ included in @option{-Wall}.
 It is equivalent to @option{-Wstrict-aliasing=3}
 
 @item -Wstrict-aliasing=n
-@opindex Wstrict-aliasing=n
+@opindex Wstrict-aliasing
 This option is only active when @option{-fstrict-aliasing} is active.
 It warns about code that might break the strict aliasing rules that the
 compiler is using for optimization.
@@ -4011,21 +5693,14 @@ false negatives.  However, it has many false positives.
 Warns for all pointer conversions between possibly incompatible types,
 even if never dereferenced.  Runs in the front end only.
 
-Level 2: Aggressive, quick, not too precise.
-May still have many false positives (not as many as level 1 though),
-and few false negatives (but possibly more than level 1).
-Unlike level 1, it only warns when an address is taken.  Warns about
-incomplete types.  Runs in the front end only.
+Level 2: Aggressive, quick, not too precise (default for
+@option{-Wstrict-aliasing}).  May still have many false positives (not
+as many as level 1 though), and few false negatives (but possibly more
+than level 1).  Unlike level 1, it only warns when an address is
+taken.  Warns about incomplete types.  Runs in the front end only.
 
-Level 3 (default for @option{-Wstrict-aliasing}):
-Should have very few false positives and few false
-negatives.  Slightly slower than levels 1 or 2 when optimization is enabled.
-Takes care of the common pun+dereference pattern in the front end:
-@code{*(int*)&some_float}.
-If optimization is enabled, it also runs in the back end, where it deals
-with multiple statement cases using flow-sensitive points-to information.
-Only warns when the converted pointer is dereferenced.
-Does not warn about incomplete types.
+@emph{Note:} GCC has Level 3, which is the default, but no such level
+is supported by Clang/LLVM.
 
 @item -Wstrict-overflow
 @itemx -Wstrict-overflow=@var{n}
@@ -4080,6 +5755,249 @@ highest warning level because this simplification applies to many
 comparisons, so this warning level gives a very large number of
 false positives.
 @end table
+
+
+@VALIDUPTOHERE
+
+@item -Wstring-compare
+@opindex Wstring-compare
+
+Clang/LLVM option for future documentation.
+
+@item -Wstring-conversion
+@opindex Wstring-conversion
+
+Clang/LLVM option for future documentation.
+
+@item -Wstring-plus-char
+@opindex Wstring-plus-char
+
+Clang/LLVM option for future documentation.
+
+@item -Wstring-plus-int
+@opindex Wstring-plus-int
+
+Clang/LLVM option for future documentation.
+
+@item -Wstrlcpy-strlcat-size
+@opindex Wstrlcpy-strlcat-size
+
+Clang/LLVM option for future documentation.
+
+@item -Wstrncat-size
+@opindex Wstrncat-size
+
+Clang/LLVM option for future documentation.
+
+@item -Wsuper-class-method-mismatch
+@opindex Wsuper-class-method-mismatch
+
+Clang/LLVM option for future documentation.
+
+@item -Wtautological-constant-out-of-range-compare
+@opindex Wtautological-constant-out-of-range-compare
+
+Clang/LLVM option for future documentation.
+
+@item -Wtentative-definition-incomplete-type
+@opindex Wtentative-definition-incomplete-type
+
+Clang/LLVM option for future documentation.
+
+@item -Wthread-safety-analysis
+@opindex Wthread-safety-analysis
+
+Clang/LLVM option for future documentation.
+
+@item -Wthread-safety-attributes
+@opindex Wthread-safety-attributes
+
+Clang/LLVM option for future documentation.
+
+@item -Wthread-safety-beta
+@opindex Wthread-safety-beta
+
+Clang/LLVM option for future documentation.
+
+@item -Wthread-safety
+@opindex Wthread-safety
+
+Clang/LLVM option for future documentation.
+
+@item -Wthread-safety-precise
+@opindex Wthread-safety-precise
+
+Clang/LLVM option for future documentation.
+
+@item -Wtypedef-redefinition
+@opindex Wtypedef-redefinition
+
+Clang/LLVM option for future documentation.
+
+@item -Wtypename-missing
+@opindex Wtypename-missing
+
+Clang/LLVM option for future documentation.
+
+@item -Wtype-safety
+@opindex Wtype-safety
+
+Clang/LLVM option for future documentation.
+
+@item -Wno-unavailable-declarations
+@opindex Wno-unavailable-declarations
+
+Clang/LLVM option for future documentation.
+
+@item -Wundefined-inline
+@opindex Wundefined-inline
+
+Clang/LLVM option for future documentation.
+
+@item -Wundefined-internal
+@opindex Wundefined-internal
+
+Clang/LLVM option for future documentation.
+
+@item -Wundefined-reinterpret-cast
+@opindex Wundefined-reinterpret-cast
+
+Clang/LLVM option for future documentation.
+
+@item -Wunicode
+@opindex Wunicode
+
+Clang/LLVM option for future documentation.
+
+@item -Wunicode-whitespace
+@opindex Wunicode-whitespace
+
+Clang/LLVM option for future documentation.
+
+@item -Wunknown-warning-option
+@opindex Wunknown-warning-option
+
+Clang/LLVM option for future documentation.
+
+@item -Wunnamed-type-template-args
+@opindex Wunnamed-type-template-args
+
+Clang/LLVM option for future documentation.
+
+@item -Wunneeded-internal-declaration
+@opindex Wunneeded-internal-declaration
+
+Clang/LLVM option for future documentation.
+
+@item -Wunneeded-member-function
+@opindex Wunneeded-member-function
+
+Clang/LLVM option for future documentation.
+
+@item -Wunsequenced
+@opindex Wunsequenced
+
+Clang/LLVM option for future documentation.
+
+@item -Wno-unsupported-friend
+@opindex Wno-unsupported-friend
+
+Clang/LLVM option for future documentation.
+
+@item -Wunsupported-visibility
+@opindex Wunsupported-visibility
+
+Clang/LLVM option for future documentation.
+
+@item -Wunused-command-line-argument
+@opindex Wunused-command-line-argument
+
+Clang/LLVM option for future documentation.
+
+@item -Wunused-comparison
+@opindex Wunused-comparison
+
+Clang/LLVM option for future documentation.
+
+@item -Wunused-exception-parameter
+@opindex Wunused-exception-parameter
+
+Clang/LLVM option for future documentation.
+
+@item -Wunused-member-function
+@opindex Wunused-member-function
+
+Clang/LLVM option for future documentation.
+
+@item -Wunused-private-field
+@opindex Wunused-private-field
+
+Clang/LLVM option for future documentation.
+
+@item -Wunused-property-ivar
+@opindex Wunused-property-ivar
+
+Clang/LLVM option for future documentation.
+
+@item -Wunused-volatile-lvalue
+@opindex Wunused-volatile-lvalue
+
+Clang/LLVM option for future documentation.
+
+@item -Wused-but-marked-unused
+@opindex Wused-but-marked-unused
+
+Clang/LLVM option for future documentation.
+
+@item -Wuser-defined-literals
+@opindex Wuser-defined-literals
+
+Clang/LLVM option for future documentation.
+
+@item -Wvector-conversion
+@opindex Wvector-conversion
+
+Clang/LLVM option for future documentation.
+
+@item -Wvector-conversions
+@opindex Wvector-conversions
+
+Clang/LLVM option for future documentation.
+
+@item -Wvexing-parse
+@opindex Wvexing-parse
+
+Clang/LLVM option for future documentation.
+
+@item -Wvisibility
+@opindex Wvisibility
+
+Clang/LLVM option for future documentation.
+
+@item -Wvla-extension
+@opindex Wvla-extension
+
+Clang/LLVM option for future documentation.
+
+@item -W#warnings
+@opindex W#warnings
+
+Clang/LLVM option for future documentation.
+
+@item -Wweak-template-vtables
+@opindex Wweak-template-vtables
+
+Clang/LLVM option for future documentation.
+
+@item -Wweak-vtables
+@opindex Wweak-vtables
+
+Clang/LLVM option for future documentation.
+
+@item -Wzero-length-array
+@opindex Wzero-length-array
+
+Clang/LLVM option for future documentation.
 
 @item -Wswitch
 @opindex Wswitch
@@ -4286,31 +6204,8 @@ When compiling C++, warn about the deprecated conversion from string
 literals to @code{char *}.  This warning is enabled by default for C++
 programs.
 
-@item -Wno-endif-labels
-@xref{op Wno-endif-labels,, -Wundef}.
-
 @item -Wundef
 @xref{op Wundef,, -Wundef}.
-
-@item -Winit-self @r{(C, C++, Objective-C and Objective-C++ only)}
-@opindex Winit-self
-@opindex Wno-init-self
-Warn about uninitialized variables that are initialized with themselves.
-Note this option can only be used with the @option{-Wuninitialized} option.
-
-For example, LLVM warns about @code{i} being uninitialized in the
-following snippet only when @option{-Winit-self} has been specified:
-@smallexample
-@group
-int f()
-@{
-  int i = i;
-  return i;
-@}
-@end group
-@end smallexample
-
-This warning is enabled by @option{-Wall} in C++.
 
 @item -Wmissing-declarations @r{(C, C++, Objective-C and Objective-C++ only)}
 @opindex Wmissing-declarations
@@ -4323,11 +6218,6 @@ non-prototype declarations; use @option{-Wmissing-prototypes} to detect
 missing prototypes.  In C++, no warnings are issued for function templates,
 or for inline functions, or for functions in anonymous namespaces.
 
-@item -Wmissing-include-dirs @r{(C, C++, Objective-C and Objective-C++ only)}
-@opindex Wmissing-include-dirs
-@opindex Wno-missing-include-dirs
-Warn if a user-supplied include directory does not exist.
-
 @item -Wbad-function-cast @r{(C and Objective-C only)}
 @opindex Wbad-function-cast
 @opindex Wno-bad-function-cast
@@ -4335,68 +6225,12 @@ Warn when a function call is cast to a non-matching type.
 For example, warn if a call to a function returning an integer type
 is cast to a pointer type.
 
-@item -Wc++-compat @r{(C and Objective-C only)}
-@opindex Wc++-compat
-Warn about ISO C constructs that are outside of the common subset of
-ISO C and ISO C++, e.g.@: request for implicit conversion from
-@code{void *} to a pointer to non-@code{void} type.
-
 @item -Wdeclaration-after-statement @r{(C and Objective-C only)}
 @opindex Wdeclaration-after-statement
 @opindex Wno-declaration-after-statement
 Warn when a declaration is found after a statement in a block.  This
 construct, known from C++, was introduced with ISO C99 and is by default
 allowed in LLVM@.  It is not supported by ISO C90.  @xref{Mixed Declarations}.
-
-@item -Wignored-qualifiers @r{(C and C++ only)}
-@opindex Wignored-qualifiers
-@opindex Wno-ignored-qualifiers
-Warn if the return type of a function has a type qualifier
-such as @code{const}.  For ISO C such a type qualifier has no effect,
-since the value returned by a function is not an lvalue.
-For C++, the warning is only emitted for scalar types or @code{void}.
-ISO C prohibits qualified @code{void} return types on function
-definitions, so such return types always receive a warning
-even without this option.
-
-This warning is also enabled by @option{-Wextra}.
-
-@item -Wimplicit @r{(C and Objective-C only)}
-@opindex Wimplicit
-@opindex Wno-implicit
-Same as @option{-Wimplicit-int} and @option{-Wimplicit-function-declaration}.
-This warning is enabled by @option{-Wall}.
-
-@item -Wimplicit-function-declaration @r{(C and Objective-C only)}
-@opindex Wimplicit-function-declaration
-@opindex Wno-implicit-function-declaration
-Give a warning whenever a function is used before being declared. In
-C99 mode (@option{-std=c99} or @option{-std=gnu99}), this warning is
-enabled by default and it is made into an error by
-@option{-pedantic-errors}. This warning is also enabled by
-@option{-Wall}.
-
-@item -Wimplicit-int @r{(C and Objective-C only)}
-@opindex Wimplicit-int
-@opindex Wno-implicit-int
-Warn when a declaration does not specify a type.
-This warning is enabled by @option{-Wall}.
-
-@item -Wno-incompatible-pointer-types @r{(C and Objective-C only)}
-@opindex Wno-incompatible-pointer-types
-@opindex Wincompatible-pointer-types
-Do not warn when there is a conversion between pointers that have incompatible
-types.  This warning is for cases not covered by @option{-Wno-pointer-sign},
-which warns for pointer argument passing or assignment with different
-signedness.
-
-@item -Wno-int-conversion @r{(C and Objective-C only)}
-@opindex Wno-int-conversion
-@opindex Wint-conversion
-Do not warn about incompatible integer to pointer and pointer to integer
-conversions.  This warning is about implicit conversions; for explicit
-conversions the warnings @option{-Wno-int-to-pointer-cast} and
-@option{-Wno-pointer-to-int-cast} may be used.
 
 @item -Wmissing-prototypes @r{(C and Objective-C only)}
 @opindex Wmissing-prototypes
@@ -4423,12 +6257,6 @@ This option is only supported for C and Objective-C@.  It is implied by
 @option{-Wall} and by @option{-Wpedantic}, which can be disabled with
 @option{-Wno-pointer-sign}.
 
-@item -Wno-pointer-to-int-cast @r{(C and Objective-C only)}
-@opindex Wno-pointer-to-int-cast
-@opindex Wpointer-to-int-cast
-Suppress warnings from casts from a pointer to an integer type of a
-different size.
-
 @item -Wstrict-prototypes @r{(C and Objective-C only)}
 @opindex Wstrict-prototypes
 @opindex Wno-strict-prototypes
@@ -4436,32 +6264,6 @@ Warn if a function is declared or defined without specifying the
 argument types.  (An old-style function definition is permitted without
 a warning if preceded by a declaration that specifies the argument
 types.)
-
-@item -Wc++11-compat @r{(C++ and Objective-C++ only)}
-@opindex Wc++11-compat
-Warn about C++ constructs whose meaning differs between ISO C++ 1998
-and ISO C++ 2011, e.g., identifiers in ISO C++ 1998 that are keywords
-in ISO C++ 2011.  This warning turns on @option{-Wnarrowing} and is
-enabled by @option{-Wall}.
-
-@item -Wno-conversion-null @r{(C++ and Objective-C++ only)}
-@opindex Wconversion-null
-@opindex Wno-conversion-null
-Do not warn for conversions between @code{NULL} and non-pointer
-types. @option{-Wconversion-null} is enabled by default.
-
-@item -Wdelete-incomplete @r{(C++ and Objective-C++ only)}
-@opindex Wdelete-incomplete
-@opindex Wno-delete-incomplete
-Warn when deleting a pointer to incomplete type, which may cause
-undefined behavior at runtime.  This warning is enabled by default.
-
-@item -Wno-inherited-variadic-ctor @r{(C++ and Objective-C++ only)}
-@opindex Winherited-variadic-ctor
-@opindex Wno-inherited-variadic-ctor
-Suppress warnings about use of C++11 inheriting constructors when the
-base class inherited from has a C variadic constructor; the warning is
-on by default because the ellipsis is not inherited.
 
 @item -Wuseless-cast @r{(C++ and Objective-C++ only)}
 @opindex Wuseless-cast
@@ -4474,6 +6276,17 @@ Warn when an expression is casted to its own type.
 @section Options for Debugging Your Program or LLVM
 @cindex options, debugging
 @cindex debugging information options
+
+@emph{Note:} Not all GCC options are supported by Clang/LLVM.
+@xref{Option Summary,,Option Summary}, for details of:
+@itemize @bullet
+@item
+those options supported by both Clang/LLVM and GCC;
+@item
+those options only supported by Clang/LLVM; and
+@item
+those options supported only by GCC.
+@end itemize
 
 Clang/LLVM has various special options that are used for debugging either
 your program or LLVM:
@@ -5058,6 +6871,17 @@ however, this results in a significant amount of wasted space.
 @cindex optimize options
 @cindex options, optimization
 
+@emph{Note:} Not all GCC options are supported by Clang/LLVM.
+@xref{Option Summary,,Option Summary}, for details of:
+@itemize @bullet
+@item
+those options supported by both Clang/LLVM and GCC;
+@item
+those options only supported by Clang/LLVM; and
+@item
+those options supported only by GCC.
+@end itemize
+
 These options control various sorts of optimizations.
 
 Without any optimization option, the compiler's goal is to reduce the
@@ -5252,6 +7076,16 @@ can use the following flags in the rare cases when ``fine-tuning'' of
 optimizations to be performed is desired.
 
 @table @gcctabopt
+
+@item -fstrict-enums
+@opindex fstrict-enums
+Allow the compiler to optimize using the assumption that a value of
+enumerated type can only be one of the values of the enumeration (as
+defined in the C++ standard; basically, a value that can be
+represented in the minimum number of bits needed to represent all the
+enumerators).  This assumption may not be valid if the program uses a
+cast to convert an arbitrary integer value to the enumerated type.
+
 @item -fno-defer-pop
 @opindex fno-defer-pop
 Always pop the arguments to each function call as soon as that function
@@ -6150,7 +7984,7 @@ it may significantly increase code size
 This flag is enabled by default at @option{-O3}.
 
 @item -fipa-cp-alignment
-@opindex -fipa-cp-alignment
+@opindex fipa-cp-alignment
 When enabled, this optimization propagates alignment of function
 parameters to support better vectorization and string operations.
 
@@ -8670,6 +10504,17 @@ automaton.  The default is 50.
 @cindex options, run-time error checking
 @cindex options, profiling
 
+@emph{Note:} Not all GCC options are supported by Clang/LLVM.
+@xref{Option Summary,,Option Summary}, for details of:
+@itemize @bullet
+@item
+those options supported by both Clang/LLVM and GCC;
+@item
+those options only supported by Clang/LLVM; and
+@item
+those options supported only by GCC.
+@end itemize
+
 GCC supports a number of command-line options that control adding
 run-time instrumentation to the code it normally generates.  
 For example, one purpose of instrumentation is collect profiling
@@ -9443,6 +11288,17 @@ using universal character names.
 @cindex preprocessor options
 @cindex options, preprocessor
 
+@emph{Note:} Not all GCC options are supported by Clang/LLVM.
+@xref{Option Summary,,Option Summary}, for details of:
+@itemize @bullet
+@item
+those options supported by both Clang/LLVM and GCC;
+@item
+those options only supported by Clang/LLVM; and
+@item
+those options supported only by GCC.
+@end itemize
+
 These options control the C preprocessor, which is run on each C source
 file before actual compilation.
 
@@ -10133,6 +11989,17 @@ header file is printed with @samp{...x} and a valid one with @samp{...!} .
 @node Assembler Options
 @section Passing Options to the Assembler
 
+@emph{Note:} Not all GCC options are supported by Clang/LLVM.
+@xref{Option Summary,,Option Summary}, for details of:
+@itemize @bullet
+@item
+those options supported by both Clang/LLVM and GCC;
+@item
+those options only supported by Clang/LLVM; and
+@item
+those options supported only by GCC.
+@end itemize
+
 @c prevent bad page break with this line
 You can pass options to the assembler.
 
@@ -10157,6 +12024,17 @@ If you want to pass an option that takes an argument, you must use
 @section Options for Linking
 @cindex link options
 @cindex options, linking
+
+@emph{Note:} Not all GCC options are supported by Clang/LLVM.
+@xref{Option Summary,,Option Summary}, for details of:
+@itemize @bullet
+@item
+those options supported by both Clang/LLVM and GCC;
+@item
+those options only supported by Clang/LLVM; and
+@item
+those options supported only by GCC.
+@end itemize
 
 These options come into play when the compiler links object files into
 an executable output file.  They are meaningless if the compiler is
@@ -10490,10 +12368,32 @@ permitted values and their meanings.
 @cindex options, directory search
 @cindex search path
 
+@emph{Note:} Not all GCC options are supported by Clang/LLVM.
+@xref{Option Summary,,Option Summary}, for details of:
+@itemize @bullet
+@item
+those options supported by both Clang/LLVM and GCC;
+@item
+those options only supported by Clang/LLVM; and
+@item
+those options supported only by GCC.
+@end itemize
+
 These options specify directories to search for header files, for
 libraries and for parts of the compiler:
 
 @table @gcctabopt
+@item -no-canonical-prefixes
+@opindex no-canonical-prefixes
+Do not expand any symbolic links, resolve references to @samp{/../}
+or @samp{/./}, or make the path absolute when generating a relative
+prefix.
+
+@emph{Note:} This behaves slightly differently with Clang/LLVM
+compared to GCC.  The absence of paths even applies to the
+@command{clang} command itself, when it is reinvoked by the driver.
+So the command must be a fully qualified filename.
+
 @item -I@var{dir}
 @opindex I
 Add the directory @var{dir} to the head of the list of directories to be
@@ -10644,6 +12544,17 @@ independent.
 @cindex code generation conventions
 @cindex options, code generation
 @cindex run-time options
+
+@emph{Note:} Not all GCC options are supported by Clang/LLVM.
+@xref{Option Summary,,Option Summary}, for details of:
+@itemize @bullet
+@item
+those options supported by both Clang/LLVM and GCC;
+@item
+those options only supported by Clang/LLVM; and
+@item
+those options supported only by GCC.
+@end itemize
 
 These machine-independent options control the interface conventions
 used in code generation.
@@ -11339,6 +13250,17 @@ the implementation of the @file{libatomic} runtime library.
 @cindex debug dump options
 @cindex dump options
 @cindex compilation statistics
+
+@emph{Note:} Not all GCC options are supported by Clang/LLVM.
+@xref{Option Summary,,Option Summary}, for details of:
+@itemize @bullet
+@item
+those options supported by both Clang/LLVM and GCC;
+@item
+those options only supported by Clang/LLVM; and
+@item
+those options supported only by GCC.
+@end itemize
 
 This section describes command-line options that are primarily of
 interest to GCC developers, including options to support compiler
@@ -12566,6 +14488,10 @@ is used when GCC itself is being built.)
 @cindex specifying hardware config
 @cindex hardware models and configurations, specifying
 @cindex machine dependent options
+
+@emph{At the time of writing, this section is a placeholder.  There
+has been no attempt to verify which AAarch64 options are valid with
+LLVM.}
 
 @c For now AArch64 is kept as a placeholder
 

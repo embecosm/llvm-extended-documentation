@@ -846,7 +846,7 @@ run_both -Wmissing-braces dummy.c
 run_both -Wmissing-field-initializers dummy.c
 run_both -Wmissing-format-attribute dummy.c
 run_both -Wmissing-include-dirs dummy.c
-run_both -Wmissing-noreturn dummy.c
+run_both -Wmissing-noreturn dummy.c # Deprecated - not documented.
 run_both -Wmultichar dummy.c
 # GCC will always accept negatives, so all we can check here is that LLVM
 # (which is pickier) accepts them. We separately test the positives of all

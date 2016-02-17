@@ -76,7 +76,7 @@ Introduction
 
 This manual documents how to use the Clang/LLVM compiler system as well
 as its features and incompatibilities, and how to report bugs.  It
-corresponds to Clang/LLVM version 3.7 as part of tool chain version 3.7.
+corresponds to Clang/LLVM version 3.8 as part of tool chain version 3.8.
 
  This manual is a derivative of the GNU Compiler Collection manual,
 prepared in compliance with the GNU Free Documentation License (GFDL).
@@ -494,8 +494,13 @@ File: llvm.info,  Node: Option Summary,  Next: Overall Options,  Up: Invoking LL
 ==================
 
 Here is a summary of all the options, grouped by type.  Explanations are
-in the following sections.  For convenience, options supported by LLVM
-and not by GCC and vice-versa are indicated in each section below.
+in the following sections.  For convenience, options supported by
+Clang/LLVM and not by GCC and vice-versa are indicated in each section
+below.
+
+ _At the time of writing only GCC options are documented in detail.
+This summary section should be used as a guide to which will work with
+Clang/LLVM._
 
  The following target architectures supported by GCC are not supported
 by LLVM: Adapteva Epiphany, ARC, Blackfin, C6X, CRIS, CR16, DEC Alpha,
@@ -526,10 +531,10 @@ _Overall Options_
 
 
      _Options only supported by LLVM_
-          -fbuild-session-file=FILE
-              -fbuild-session-timestamp=SECS
-           -emit-ast
+          -emit-ast
               -emit-llvm
+           -fbuild-session-file=FILE
+              -fbuild-session-timestamp=SECS
               --gcc-toolchain=DIR
               -help
               -ObjC
@@ -540,8 +545,8 @@ _Overall Options_
 
 
      _Options only supported by GCC_
-          -fdump-ada-spec[-slim]
-              -fada-spec-parent=UNIT
+          -fada-spec-parent=UNIT
+              -fdump-ada-spec[-slim]
            -fdump-go-spec=FILE
               -fno-canonical-system-headers
            -fplugin-arg-NAME=ARG
@@ -557,22 +562,22 @@ _C Language Options_
 
      _Options supported by both LLVM and GCC_
           -ansi
+              -fno-asm
+              -fno-builtin
+           -fno-builtin-FUNCTION
               -ffreestanding
               -fgnu89-inline
               -fhosted
            -flax-vector-conversions
               -fms-extensions
-              -fno-asm
-              -fno-builtin
-           -fno-builtin-FUNCTION
               -fopenmp
               -fsigned-bitfields
-              -fsigned-char
-           -funsigned-bitfields
-              -funsigned-char
+           -fsigned-char
               -std=STANDARD
               -traditional
-           -trigraphs
+              -trigraphs
+           -funsigned-bitfields
+              -funsigned-char
 
 
      _Options only supported by LLVM_
@@ -593,8 +598,8 @@ _C Language Options_
           -aux-info FILENAME
               -fallow-parameterless-variadic-functions
            -fcilkplus
-              -fgnu-tm
               -fcond-mismatch
+              -fgnu-tm
               -fopenacc
            -fopenmp-simd
               -fplan9-extensions
@@ -609,20 +614,19 @@ _C++ Language Options_
           -fno-access-control
               -fcheck-new
               -fconstexpr-depth=N
-           -ffor-scope
-              -ffriend-injection
-              -fms-extensions
            -fno-elide-constructors
-              -fno-gnu-keywords
+              -ffor-scope
+              -ffriend-injection
+           -fno-gnu-keywords
               -fno-implicit-templates
            -fno-implement-inlines
               -fno-operator-names
+           -fpermissive
               -fno-rtti
-           -fno-threadsafe-statics
-              -fpermissive
               -fsized-deallocation
            -ftemplate-backtrace-limit=N
               -ftemplate-depth=N
+           -fno-threadsafe-statics
               -fuse-cxa-atexit
            -fvisibility-inlines-hidden
               -fvisibility-ms-compat
@@ -641,9 +645,9 @@ _C++ Language Options_
 
 
      _Options only supported by LLVM_
-          -fcxx-exceptions
-              -fdelayed-template-parsing
-           -fno-assume-sane-operator-new
+          -fno-assume-sane-operator-new
+              -fcxx-exceptions
+           -fdelayed-template-parsing
               -fshow-overloads=OPT
 
 
@@ -1855,89 +1859,93 @@ _Developer Options_
 
      _Options supported by both LLVM and GCC_
           -dumpmachine
-          -dumpversion
-          -frandom-seed=STRING
-          -ftime-report
-          -print-file-name=LIBRARY
-          -print-libgcc-file-name
-          -print-multi-directory
-          -print-multi-lib
-          -print-prog-name=PROGRAM
-          -print-search-dirs
-          -save-temps -save-temps=[cwd|obj]
+              -dumpversion
+              -frandom-seed=STRING
+              -ftime-report
+           -print-file-name=LIBRARY
+              -print-libgcc-file-name
+           -print-multi-directory
+              -print-multi-lib
+              -print-prog-name=PROGRAM
+           -print-search-dirs
+              -save-temps -save-temps=[cwd|obj]
 
 
      _Options only supported by LLVM_
           -ccc-arcmt-check
-          -ccc-arcmt-migrate DIR
-          -ccc-arcmt-modify
-          -ccc-gcc-name FILE
-          -ccc-install-dir DIR
-          -ccc-objcmt-migrate DIR
-          -ccc-pch-is-pch
-          -ccc-pch-is-pth
-          -ccc-print-bindings
-          -ccc-print-phases
-          --driver-mode=MODE
-          -print-ivar-layout
-          -Reverything
-          -Rpass=PASS
-          -Rpass-analysis=PASS
-          -Rpass-missed=PASS
-          -Xanalyzer
-          -via-file-asm
+              -ccc-arcmt-migrate DIR
+              -ccc-arcmt-modify
+           -ccc-gcc-name FILE
+              -ccc-install-dir DIR
+              -ccc-objcmt-migrate DIR
+           -ccc-pch-is-pch
+              -ccc-pch-is-pth
+              -ccc-print-bindings
+           -ccc-print-phases
+              --driver-mode=MODE
+              -print-ivar-layout
+           -Reverything
+              -Rpass=PASS
+              -Rpass-analysis=PASS
+              -Rpass-missed=PASS
+           -Xanalyzer
+              -via-file-asm
 
 
      _Options only supported by GCC_
           -dLETTERS
-          -dumpspecs
-          -fchecking
-          -fcompare-debug[=OPTS]
-          -fcompare-debug-second
-          -fdbg-cnt=COUNTER-VALUE-LIST
-          -fdbg-cnt-list
-          -fdisable-ipa-PASS_NAME
-          -fdisable-rtl-PASS-NAME[=RANGE-LIST]
-          -fdisable-tree-PASS-NAME[=RANGE-LIST]
-          -fdump-class-hierarchy[-N]
-          -fdump-final-insns=FILE
-          -fdump-ipa-all
-          -fdump-ipa-cgraph
-          -fdump-ipa-inline
-          -fdump-noaddr
-          -fdump-passes
-          -fdump-rtl-PASS[=FILENAME]
-          -fdump-statistics[-OPTION]
-          -fdump-tree[-SWITCH[-OPTIONS][=FILENAME]]
-          -fdump-unnumbered
-          -fdump-unnumbered-links
-          -fdump-translation-unit[-N]
-          -fenable-KIND-PASS[=RANGE-LIST]
-          -fira-verbose=N
-          -flto-report
-          -flto-report-wpa
-          -fmem-report
-          -fmem-report-wpa
-          -fopt-info[-OPTIONS[=FILE]]
-          -fpost-ipa-mem-report
-          -fpre-ipa-mem-report
-          -fprofile-report
-          -freport-bug
-          -fsched-verbose=N
-          -fstack-usage
-          -fstats
-          -fvar-tracking-assignments-toggle
-          -gtoggle
-          -print-multi-os-directory
-          -print-multiarch
-          -print-sysroot
-          -print-sysroot-headers-suffix
-          -Q
-          -time[=FILE]
+              -dumpspecs
+              -fchecking
+              -fcompare-debug[=OPTS]
+           -fcompare-debug-second
+              -fdbg-cnt=COUNTER-VALUE-LIST
+           -fdbg-cnt-list
+              -fdisable-ipa-PASS_NAME
+           -fdisable-rtl-PASS-NAME[=RANGE-LIST]
+              -fdisable-tree-PASS-NAME[=RANGE-LIST]
+           -fdump-class-hierarchy[-N]
+              -fdump-final-insns=FILE
+           -fdump-ipa-all
+              -fdump-ipa-cgraph
+              -fdump-ipa-inline
+           -fdump-noaddr
+              -fdump-passes
+              -fdump-rtl-PASS[=FILENAME]
+            -fdump-statistics[-OPTION]
+              -fdump-tree[-SWITCH[-OPTIONS][=FILENAME]]
+           -fdump-unnumbered
+              -fdump-unnumbered-links
+           -fdump-translation-unit[-N]
+              -fenable-KIND-PASS[=RANGE-LIST]
+           -fira-verbose=N
+              -flto-report
+              -flto-report-wpa
+              -fmem-report
+           -fmem-report-wpa
+              -fopt-info[-OPTIONS[=FILE]]
+              -fpost-ipa-mem-report
+           -fpre-ipa-mem-report
+              -fprofile-report
+              -freport-bug
+           -fsched-verbose=N
+              -fstack-usage
+              -fstats
+           -fvar-tracking-assignments-toggle
+              -gtoggle
+              -print-multi-os-directory
+           -print-multiarch
+              -print-sysroot
+              -print-sysroot-headers-suffix
+           -Q
+              -time[=FILE]
 
 
 _Machine Dependent Options_
      *Note Hardware Models and Configurations: Submodel Options.
+
+     _At the time of writing, this section is a placeholder.  There has
+     been no attempt to verify which AAarch64 options are valid with
+     LLVM._
 
      _AArch64 Options_
           -mabi=NAME  -mbig-endian  -mlittle-endian
@@ -1963,21 +1971,11 @@ assembler input file produces an object file, and linking combines all
 the object files (those newly compiled, and those specified as input)
 into an executable file.
 
- _Note:_ Unlike GCC, Clang/LLVM has an integrated assembler; there is no
-separate standalone assembler program.
-
- The following GCC options are not supported by Clang/LLVM:
-     --help={CLASS|[^]QUALIFIER}[,...]
-     -wrapper, -fplugin=NAME.so -fplugin-arg-NAME-KEY=VALUE
-     -fdump-ada-spec[-slim] -fada-spec-parent=UNIT -fdump-go-spec=FILE
-
- The following GCC options are accepted by Clang/LLVM, but do nothing,
-and by default will issue a warning message:
-     --target-help --pass-exit-codes
-
- The following options behave differently under Clang/LLVM compared to
-GCC.
-     --no-canonical-prefixes
+ _Note:_ Not all GCC options are supported by Clang/LLVM. *Note Option
+Summary: Option Summary, for details of:
+   * those options supported by both Clang/LLVM and GCC;
+   * those options only supported by Clang/LLVM; and
+   * those options supported only by GCC.
 
  For any given input file, the file name suffix determines what kind of
 compilation is done:
@@ -2051,9 +2049,143 @@ compilation is done:
      An object file to be fed straight into linking.  Any file name with
      no recognized suffix is treated this way.
 
- You can specify the input language explicitly with the '-x' option:
+ The following options provide overall control of the type of output
+from the compiler.
+
+'@FILE'
+     Read command-line options from FILE.  The options read are inserted
+     in place of the original @FILE option.  If FILE does not exist, or
+     cannot be read, then the option will be treated literally, and not
+     removed.
+
+     Options in FILE are separated by whitespace.  A whitespace
+     character may be included in an option by surrounding the entire
+     option in either single or double quotes.  Any character (including
+     a backslash) may be included by prefixing the character to be
+     included with a backslash.  The FILE may itself contain additional
+     @FILE options; any such options will be processed recursively.
+
+'-###'
+     Like '-v' except the commands are not executed and arguments are
+     quoted unless they contain only alphanumeric characters or './-_'.
+     This is useful for shell scripts to capture the driver-generated
+     command lines.
+
+'-c'
+     Compile or assemble the source files, but do not link.  The linking
+     stage simply is not done.  The ultimate output is in the form of an
+     object file for each source file.
+
+     By default, the object file name for a source file is made by
+     replacing the suffix '.c', '.i', '.s', etc., with '.o'.
+
+     Unrecognized input files, not requiring compilation or assembly,
+     are ignored.
+
+'-E'
+     Stop after the preprocessing stage; do not run the compiler proper.
+     The output is in the form of preprocessed source code, which is
+     sent to the standard output.
+
+     Input files that don't require preprocessing are ignored.
+
+'-emit-ast'
+
+     Clang/LLVM option for future documentation.
+
+'-emit-llvm'
+
+     Clang/LLVM option for future documentation.
+
+'-fbuild-session-file=FILE'
+
+     Clang/LLVM option for future documentation.
+
+'-fbuild-session-timestamp=SECS'
+
+     Clang/LLVM option for future documentation.
+
+'-fplugin=NAME.so'
+     Load the plugin code in file NAME.so, assumed to be a shared object
+     to be dlopen'd by the compiler.
+
+     _Note:_ Unlike GCC, Clang/LLVM has no mechansim equivalent to
+     '-fplugin-arg' to pass arguments to callbacks.
+
+'--gcc-toolchain=DIR'
+
+     Clang/LLVM option for future documentation.
+
+'--help'
+'-help'
+     Print (on the standard output) a description of the command-line
+     options understood by 'clang'.  If the '-v' option is also
+     specified then '--help' is also passed on to the various processes
+     invoked by 'clang', so that they can display the command-line
+     options they accept.  If the '-Wextra' option has also been
+     specified (prior to the '--help' option), then command-line options
+     that have no documentation associated with them are also displayed.
+
+     _Note:_ The '-help' (with a single hyphen) is a Clang/LLVM specific
+     variant
+
+'-o FILE'
+     Place output in file FILE.  This applies to whatever sort of output
+     is being produced, whether it be an executable file, an object
+     file, an assembler file or preprocessed C code.
+
+     If '-o' is not specified, the default is to put an executable file
+     in 'a.out', the object file for 'SOURCE.SUFFIX' in 'SOURCE.o', its
+     assembler file in 'SOURCE.s', a precompiled header file in
+     'SOURCE.SUFFIX.gch', and all preprocessed C source on standard
+     output.
+
+'-ObjC'
+
+     Clang/LLVM option for future documentation.
+
+'-ObjC++'
+
+     Clang/LLVM option for future documentation.
+
+'-pipe'
+     Use pipes rather than temporary files for communication between the
+     various stages of compilation.  This fails to work on some systems
+     where the assembler is unable to read from a pipe; but GNU
+     assemblers have no trouble.  It is also not an issue where the
+     Clang/LLVM integrated assembler is used.
+
+'-Qunused-arguments'
+
+     Clang/LLVM option for future documentation.
+
+'-S'
+     Stop after the stage of compilation proper; do not assemble.  The
+     output is in the form of an assembler code file for each
+     non-assembler input file specified.
+
+     By default, the assembler file name for a source file is made by
+     replacing the suffix '.c', '.i', etc., with '.s'.
+
+     Input files that don't require compilation are ignored.
+
+'-v'
+     Print (on standard error output) the commands executed to run the
+     stages of compilation.  Also print the version number of the
+     compiler driver program and of the preprocessor and the compiler
+     proper.
+
+'--version'
+     Display the version number and copyrights of the invoked
+     Clang/LLVM.
+
+'-working-directory DIR'
+
+     Clang/LLVM option for future documentation.
 
 '-x LANGUAGE'
+     You can specify the input language explicitly with the '-x' option:
+
      Specify explicitly the LANGUAGE for the following input files
      (rather than letting the compiler choose a default based on the
      file name suffix).  This option applies to all following input
@@ -2070,110 +2202,9 @@ compilation is done:
      are handled according to their file name suffixes (as they are if
      '-x' has not been used at all).
 
-'-pass-exit-codes'
-     This option is accepted by Clang/LLVM for compatibility with GCC,
-     but will do nothing, and by default issues a warning message.
+'-Xclang'
 
- If you only want some of the stages of compilation, you can use '-x'
-(or filename suffixes) to tell 'clang' where to start, and one of the
-options '-c', '-S', or '-E' to say where 'clang' is to stop.  Note that
-some combinations (for example, '-x cpp-output -E') instruct 'clang' to
-do nothing at all.
-
-'-c'
-     Compile or assemble the source files, but do not link.  The linking
-     stage simply is not done.  The ultimate output is in the form of an
-     object file for each source file.
-
-     By default, the object file name for a source file is made by
-     replacing the suffix '.c', '.i', '.s', etc., with '.o'.
-
-     Unrecognized input files, not requiring compilation or assembly,
-     are ignored.
-
-'-S'
-     Stop after the stage of compilation proper; do not assemble.  The
-     output is in the form of an assembler code file for each
-     non-assembler input file specified.
-
-     By default, the assembler file name for a source file is made by
-     replacing the suffix '.c', '.i', etc., with '.s'.
-
-     Input files that don't require compilation are ignored.
-
-'-E'
-     Stop after the preprocessing stage; do not run the compiler proper.
-     The output is in the form of preprocessed source code, which is
-     sent to the standard output.
-
-     Input files that don't require preprocessing are ignored.
-
-'-o FILE'
-     Place output in file FILE.  This applies to whatever sort of output
-     is being produced, whether it be an executable file, an object
-     file, an assembler file or preprocessed C code.
-
-     If '-o' is not specified, the default is to put an executable file
-     in 'a.out', the object file for 'SOURCE.SUFFIX' in 'SOURCE.o', its
-     assembler file in 'SOURCE.s', a precompiled header file in
-     'SOURCE.SUFFIX.gch', and all preprocessed C source on standard
-     output.
-
-'-v'
-     Print (on standard error output) the commands executed to run the
-     stages of compilation.  Also print the version number of the
-     compiler driver program and of the preprocessor and the compiler
-     proper.
-
-'-###'
-     Like '-v' except the commands are not executed and arguments are
-     quoted unless they contain only alphanumeric characters or './-_'.
-     This is useful for shell scripts to capture the driver-generated
-     command lines.
-
-'-pipe'
-     Use pipes rather than temporary files for communication between the
-     various stages of compilation.  _Note:_ Unlike GCC, LLVM does not
-     have a separate assembler, so problems communicating with a
-     separate assembler do not arise.
-
-'--help'
-     Print (on the standard output) a description of the command-line
-     options understood by 'clang'.  If the '-v' option is also
-     specified then '--help' is also passed on to the various processes
-     invoked by 'clang', so that they can display the command-line
-     options they accept.  If the '-Wextra' option has also been
-     specified (prior to the '--help' option), then command-line options
-     that have no documentation associated with them are also displayed.
-
-'--target-help'
-     This option is accepted by Clang/LLVM for compatibility with GCC,
-     but will do nothing, and by default issues a warning message.
-
-'-no-canonical-prefixes'
-     Do not expand any symbolic links, resolve references to '/../' or
-     '/./', or make the path absolute when generating a relative prefix.
-
-     _Note:_ This behaves slightly differently with Clang/LLVM compared
-     to GCC. The absence of paths even applies to the 'clang' command
-     itself, when it is reinvoked by the driver.  So the command must be
-     a fully qualified filename.
-
-'--version'
-     Display the version number and copyrights of the invoked LLVM.
-
-'@FILE'
-     Read command-line options from FILE.  The options read are inserted
-     in place of the original @FILE option.  If FILE does not exist, or
-     cannot be read, then the option will be treated literally, and not
-     removed.
-
-     Options in FILE are separated by whitespace.  A whitespace
-     character may be included in an option by surrounding the entire
-     option in either single or double quotes.  Any character (including
-     a backslash) may be included by prefixing the character to be
-     included with a backslash.  The FILE may itself contain additional
-     @FILE options; any such options will be processed recursively.
+     Clang/LLVM option for future documentation.
 
 
 File: llvm.info,  Node: Invoking Clang/LLVM for C++,  Next: C Dialect Options,  Prev: Overall Options,  Up: Invoking LLVM
@@ -2193,7 +2224,8 @@ a program that automatically specifies linking against the C++ library.
 It treats '.c', '.h' and '.i' files as C++ source files instead of C
 source files unless '-x' is used.  This program is also useful when
 precompiling a C header file with a '.h' extension for use in C++
-compilations.
+compilations.  Target specific variants will also be installed as
+'ARCH-c++'.
 
  When you compile C++ programs, you may specify many of the same
 command-line options that you use for compiling programs in any
@@ -2210,19 +2242,15 @@ File: llvm.info,  Node: C Dialect Options,  Next: C++ Dialect Options,  Prev: In
 3.4 Options Controlling C Dialect
 =================================
 
-The following GCC options are not supported by Clang/LLVM:
-     -fallow-parameterless-variadic-functions  -fopenacc
-     -fopenmp-simd  -fcilkplus  -fgnu-tm  -fplan9-extensions  -traditional
-     -traditional-cpp  -fcond-mismatch  -funsigned-bitfields
-     -fno-signed-bitfields  -fno-unsigned-bitfields
-
- The following options behave differently under Clang/LLVM compared to
-GCC.
-     -aux-info FILENAME
-
- The following options control the dialect of C (or languages derived
+The following options control the dialect of C (or languages derived
 from C, such as C++, Objective-C and Objective-C++) that the compiler
 accepts:
+
+ _Note:_ Not all GCC options are supported by Clang/LLVM. *Note Option
+Summary: Option Summary, for details of:
+   * those options supported by both Clang/LLVM and GCC;
+   * those options only supported by Clang/LLVM; and
+   * those options supported only by GCC.
 
 '-ansi'
      In C mode, this is equivalent to '-std=c90'.  In C++ mode, it is
@@ -2260,6 +2288,175 @@ accepts:
      provided by LLVM: Other Builtins, for details of the functions
      affected.
 
+'-fno-asm'
+     Do not recognize 'asm', 'inline' or 'typeof' as a keyword, so that
+     code can use these words as identifiers.  You can use the keywords
+     '__asm__', '__inline__' and '__typeof__' instead.  '-ansi' implies
+     '-fno-asm'.
+
+     In C++, this switch only affects the 'typeof' keyword, since 'asm'
+     and 'inline' are standard keywords.  You may want to use the
+     '-fno-gnu-keywords' flag instead, which has the same effect.  In
+     C99 mode ('-std=c99' or '-std=gnu99'), this switch only affects the
+     'asm' and 'typeof' keywords, since 'inline' is a standard keyword
+     in ISO C99.
+
+'-fblocks'
+
+     Clang/LLVM option for future documentation.
+
+'-fborland-extensions'
+
+     Clang/LLVM option for future documentation.
+
+'-fno-builtin'
+'-fno-builtin-FUNCTION'
+     Don't recognize built-in functions that do not begin with
+     '__builtin_' as prefix.  *Note Other built-in functions provided by
+     LLVM: Other Builtins, for details of the functions affected,
+     including those which are not built-in functions when '-ansi' or
+     '-std' options for strict ISO C conformance are used because they
+     do not have an ISO standard meaning.
+
+     Clang/LLVM normally generates special code to handle certain
+     built-in functions more efficiently; for instance, calls to
+     'alloca' may become single instructions which adjust the stack
+     directly, and calls to 'memcpy' may become inline copy loops.  The
+     resulting code is often both smaller and faster, but since the
+     function calls no longer appear as such, you cannot set a
+     breakpoint on those calls, nor can you change the behavior of the
+     functions by linking with a different library.  In addition, when a
+     function is recognized as a built-in function, Clang/LLVM may use
+     information about that function to warn about problems with calls
+     to that function, or to generate more efficient code, even if the
+     resulting code still contains calls to that function.  For example,
+     warnings are given with '-Wformat' for bad calls to 'printf' when
+     'printf' is built in and 'strlen' is known not to modify global
+     memory.
+
+     With the '-fno-builtin-FUNCTION' option only the built-in function
+     FUNCTION is disabled.  FUNCTION must not begin with '__builtin_'.
+     If a function is named that is not built-in in this version of
+     Clang/LLVM, this option is ignored.  There is no corresponding
+     '-fbuiltin-FUNCTION' option; if you wish to enable built-in
+     functions selectively when using '-fno-builtin' or
+     '-ffreestanding', you may define macros such as:
+
+          #define abs(n)          __builtin_abs ((n))
+          #define strcpy(d, s)    __builtin_strcpy ((d), (s))
+
+'-femit-all-decls'
+
+     Clang/LLVM option for future documentation.
+
+'-ffreestanding'
+
+     Assert that compilation targets a freestanding environment.  This
+     implies '-fno-builtin'.  A freestanding environment is one in which
+     the standard library may not exist, and program startup may not
+     necessarily be at 'main'.  The most obvious example is an OS
+     kernel.  This is equivalent to '-fno-hosted'.
+
+     *Note Language Standards Supported by LLVM: Standards, for details
+     of freestanding and hosted environments.
+
+'-fgnu89-inline'
+     The option '-fgnu89-inline' tells Clang/LLVM to use the traditional
+     GNU semantics for 'inline' functions when in C99 mode.  *Note An
+     Inline Function is As Fast As a Macro: Inline.  Using this option
+     is roughly equivalent to adding the 'gnu_inline' function attribute
+     to all inline functions (*note Function Attributes::).
+
+     The option '-fno-gnu89-inline' explicitly tells Clang/LLVM to use
+     the C99 semantics for 'inline' when in C99 or gnu99 mode (i.e., it
+     specifies the default behavior).  This option is not supported in
+     '-std=c90' or '-std=gnu90' mode.
+
+     The preprocessor macros '__GNUC_GNU_INLINE__' and
+     '__GNUC_STDC_INLINE__' may be used to check which semantics are in
+     effect for 'inline' functions.  *Note (cpp)Common Predefined
+     Macros::.
+
+'-fno-gnu-inline-asm'
+
+     Clang/LLVM option for future documentation.
+
+'-fhosted'
+
+     Assert that compilation targets a hosted environment.  This implies
+     '-fbuiltin'.  A hosted environment is one in which the entire
+     standard library is available, and in which 'main' has a return
+     type of 'int'.  Examples are nearly everything except a kernel.
+     This is equivalent to '-fno-freestanding'.
+
+'-flax-vector-conversions'
+     Allow implicit conversions between vectors with differing numbers
+     of elements and/or incompatible element types.  This option should
+     not be used for new code.
+
+'-fms-compatibility'
+
+     Clang/LLVM option for future documentation.  Also valid for C++.
+
+'-fms-compatibility-version=N'
+
+     Clang/LLVM option for future documentation.  Also valid for C++.
+
+'-fms-extensions'
+     Accept some non-standard constructs used in Microsoft header files.
+
+     In C++ code, this allows member names in structures to be similar
+     to previous types declarations.
+
+          typedef int UOW;
+          struct ABC {
+            UOW UOW;
+          };
+
+     Some cases of unnamed fields in structures and unions are only
+     accepted with this option.  *Note Unnamed struct/union fields
+     within structs/unions: Unnamed Fields, for details.
+
+     Note that this option is off for all targets but x86 targets using
+     ms-abi.
+
+'-fmsc-version=N'
+
+     Clang/LLVM option for future documentation.  Also valid for C++.
+
+'-fopenmp'
+     Enable handling of OpenMP directives '#pragma omp' in C/C++.  When
+     '-fopenmp' is specified, the compiler generates parallel code
+     according to the OpenMP Application Program Interface v4.0
+     <http://www.openmp.org/>.  This option implies '-pthread', and thus
+     is only supported on targets that have support for '-pthread'.
+     Unlike GCC there is no '-fopenmp-simd', which would be implied by
+     '-fopenmp'.
+
+'-fpascal-strings'
+
+     Clang/LLVM option for future documentation.
+
+'-fsigned-bitfields'
+'-funsigned-bitfields'
+'-fno-signed-bitfields'
+'-fno-unsigned-bitfields'
+     These options control whether a bit-field is signed or unsigned,
+     when the declaration does not use either 'signed' or 'unsigned'.
+     By default, such a bit-field is signed, because this is consistent:
+     the basic integer types such as 'int' are signed types.
+
+'-fsigned-char'
+     Let the type 'char' be signed, like 'signed char'.
+
+     Note that this is equivalent to '-fno-unsigned-char', which is the
+     negative form of '-funsigned-char'.  Likewise, the option
+     '-fno-signed-char' is equivalent to '-funsigned-char'.
+
+'-fno-spell-checking'
+
+     Clang/LLVM option for future documentation.
+
 '-std='
      Determine the language standard.  *Note Language Standards
      Supported by LLVM: Standards, for details of these standard
@@ -2271,8 +2468,8 @@ accepts:
      'gnu++98'.  When a base standard is specified, the compiler accepts
      all programs following that standard plus those using GNU
      extensions that do not contradict it.  For example, '-std=c90'
-     turns off certain features of LLVM that are incompatible with ISO
-     C90, such as the 'asm' and 'typeof' keywords, but not other GNU
+     turns off certain features of Clang/LLVM that are incompatible with
+     ISO C90, such as the 'asm' and 'typeof' keywords, but not other GNU
      extensions that do not have a meaning in ISO C90, such as omitting
      the middle term of a '?:' expression.  On the other hand, when a
      GNU dialect of a standard is specified, all features supported by
@@ -2337,8 +2534,7 @@ accepts:
 
      'gnu++98'
      'gnu++03'
-          GNU dialect of '-std=c++98'.  This is the default for C++
-          code.
+          GNU dialect of '-std=c++98'.
 
      'c++11'
      'c++0x'
@@ -2357,8 +2553,8 @@ accepts:
 
      'gnu++14'
      'gnu++1y'
-          GNU dialect of '-std=c++14'.  The name 'gnu++1y' is
-          deprecated.
+          GNU dialect of '-std=c++14'.  This is the default for C++
+          code.  The name 'gnu++1y' is deprecated.
 
      'c++1z'
           The next revision of the ISO C++ standard, tentatively planned
@@ -2370,140 +2566,20 @@ accepts:
           and will almost certainly change in incompatible ways in
           future releases.
 
-'-fgnu89-inline'
-     The option '-fgnu89-inline' tells LLVM to use the traditional GNU
-     semantics for 'inline' functions when in C99 mode.  *Note An Inline
-     Function is As Fast As a Macro: Inline.  Using this option is
-     roughly equivalent to adding the 'gnu_inline' function attribute to
-     all inline functions (*note Function Attributes::).
-
-     The option '-fno-gnu89-inline' explicitly tells LLVM to use the C99
-     semantics for 'inline' when in C99 or gnu99 mode (i.e., it
-     specifies the default behavior).  This option is not supported in
-     '-std=c90' or '-std=gnu90' mode.
-
-     The preprocessor macros '__GNUC_GNU_INLINE__' and
-     '__GNUC_STDC_INLINE__' may be used to check which semantics are in
-     effect for 'inline' functions.  *Note (cpp)Common Predefined
-     Macros::.
-
-'-aux-info FILENAME'
-     Clang/LLVM intends this to be an option provided for compatibility
-     with GCC, but which does nothing.  However the implementation fails
-     to recognize the following FILENAME argument which will be treated
-     as another source file on the command line, usually causing an
-     error.
-
-     _Note:_ Unlike GCC, this option is silently ignored in any language
-     other than C.
-
-'-fno-asm'
-     Do not recognize 'asm', 'inline' or 'typeof' as a keyword, so that
-     code can use these words as identifiers.  You can use the keywords
-     '__asm__', '__inline__' and '__typeof__' instead.  '-ansi' implies
-     '-fno-asm'.
-
-     In C++, this switch only affects the 'typeof' keyword, since 'asm'
-     and 'inline' are standard keywords.  You may want to use the
-     '-fno-gnu-keywords' flag instead, which has the same effect.  In
-     C99 mode ('-std=c99' or '-std=gnu99'), this switch only affects the
-     'asm' and 'typeof' keywords, since 'inline' is a standard keyword
-     in ISO C99.
-
-'-fno-builtin'
-'-fno-builtin-FUNCTION'
-     Don't recognize built-in functions that do not begin with
-     '__builtin_' as prefix.  *Note Other built-in functions provided by
-     LLVM: Other Builtins, for details of the functions affected,
-     including those which are not built-in functions when '-ansi' or
-     '-std' options for strict ISO C conformance are used because they
-     do not have an ISO standard meaning.
-
-     Clang/LLVM normally generates special code to handle certain
-     built-in functions more efficiently; for instance, calls to
-     'alloca' may become single instructions which adjust the stack
-     directly, and calls to 'memcpy' may become inline copy loops.  The
-     resulting code is often both smaller and faster, but since the
-     function calls no longer appear as such, you cannot set a
-     breakpoint on those calls, nor can you change the behavior of the
-     functions by linking with a different library.  In addition, when a
-     function is recognized as a built-in function, LLVM may use
-     information about that function to warn about problems with calls
-     to that function, or to generate more efficient code, even if the
-     resulting code still contains calls to that function.  For example,
-     warnings are given with '-Wformat' for bad calls to 'printf' when
-     'printf' is built in and 'strlen' is known not to modify global
-     memory.
-
-     With the '-fno-builtin-FUNCTION' option only the built-in function
-     FUNCTION is disabled.  FUNCTION must not begin with '__builtin_'.
-     If a function is named that is not built-in in this version of
-     Clang/LLVM, this option is ignored.  There is no corresponding
-     '-fbuiltin-FUNCTION' option; if you wish to enable built-in
-     functions selectively when using '-fno-builtin' or
-     '-ffreestanding', you may define macros such as:
-
-          #define abs(n)          __builtin_abs ((n))
-          #define strcpy(d, s)    __builtin_strcpy ((d), (s))
-
-'-fhosted'
-
-     Assert that compilation targets a hosted environment.  This implies
-     '-fbuiltin'.  A hosted environment is one in which the entire
-     standard library is available, and in which 'main' has a return
-     type of 'int'.  Examples are nearly everything except a kernel.
-     This is equivalent to '-fno-freestanding'.
-
-'-ffreestanding'
-
-     Assert that compilation targets a freestanding environment.  This
-     implies '-fno-builtin'.  A freestanding environment is one in which
-     the standard library may not exist, and program startup may not
-     necessarily be at 'main'.  The most obvious example is an OS
-     kernel.  This is equivalent to '-fno-hosted'.
-
-     *Note Language Standards Supported by LLVM: Standards, for details
-     of freestanding and hosted environments.
-
-'-fopenmp'
-     Enable handling of OpenMP directives '#pragma omp' in C/C++ and
-     '!$omp' in Fortran.  When '-fopenmp' is specified, the compiler
-     generates parallel code according to the OpenMP Application Program
-     Interface v4.0 <http://www.openmp.org/>.  This option implies
-     '-pthread', and thus is only supported on targets that have support
-     for '-pthread'.  '-fopenmp' implies '-fopenmp-simd'.
-
-'-fms-extensions'
-     Accept some non-standard constructs used in Microsoft header files.
-
-     In C++ code, this allows member names in structures to be similar
-     to previous types declarations.
-
-          typedef int UOW;
-          struct ABC {
-            UOW UOW;
-          };
-
-     Some cases of unnamed fields in structures and unions are only
-     accepted with this option.  *Note Unnamed struct/union fields
-     within structs/unions: Unnamed Fields, for details.
-
-     Note that this option is off for all targets but x86 targets using
-     ms-abi.
+'-traditional'
+'-traditional-cpp'
+     Formerly, these options caused GCC to attempt to emulate a
+     pre-standard C compiler.  They are now only supported with the '-E'
+     switch.  The preprocessor continues to support a pre-standard mode.
+     *Note Preprocessor Options::.
 
 '-trigraphs'
      Support ISO C trigraphs.  The '-ansi' option (and '-std' options
      for strict ISO C conformance) implies '-trigraphs'.
 
-'-fcond-mismatch'
-     Allow conditional expressions with mismatched types in the second
-     and third arguments.  The value of such an expression is void.
-     This option is not supported for C++.
+'-funique-section-names'
 
-'-flax-vector-conversions'
-     Allow implicit conversions between vectors with differing numbers
-     of elements and/or incompatible element types.  This option should
-     not be used for new code.
+     Clang/LLVM option for future documentation.
 
 '-funsigned-char'
      Let the type 'char' be unsigned, like 'unsigned char'.
@@ -2523,23 +2599,9 @@ accepts:
      char' or 'unsigned char', even though its behavior is always just
      like one of those two.
 
-'-fsigned-char'
-     Let the type 'char' be signed, like 'signed char'.
+'-fwritable-strings'
 
-     Note that this is equivalent to '-fno-unsigned-char', which is the
-     negative form of '-funsigned-char'.  Likewise, the option
-     '-fno-signed-char' is equivalent to '-funsigned-char'.
-
-'-fsigned-bitfields'
-     This option controls whether a bit-field is signed or unsigned,
-     when the declaration does not use either 'signed' or 'unsigned'.
-     By default, such a bit-field is signed, because this is consistent:
-     the basic integer types such as 'int' are signed types.  Thus this
-     option reinforces the default behavior
-
-     _Note:_ GCC provides a wider range of options to force unsigned
-     behavior and prevent either signed or unsigned behavior, but these
-     are not available in LLVM.
+     Clang/LLVM option for future documentation.
 
 
 File: llvm.info,  Node: C++ Dialect Options,  Next: Objective-C and Objective-C++ Dialect Options,  Prev: C Dialect Options,  Up: Invoking LLVM
@@ -2557,15 +2619,11 @@ you might compile a file 'firstClass.C' like this:
 In this example, only '-frepo' is an option meant only for C++ programs;
 you can use the other options with any language supported by LLVM.
 
- The following GCC options for C++ programs are not supported by
-Clang/LLVM:
-     -fabi-version=N  -fabi-compat-version=N  -fcheck-new
-     -fdeduce-init-list  -ffriend-injection  -fno-enforce-eh-specs
-     -fextern-tls-init  -fno-extern-tls-init  -fno-implicit-inline-templates
-     -fno-implement-inlines  -fno-nonansi-builtins  -fnothrow-opt
-     -fno-optional-diags  -fno-pretty-templates  -frepo  -fsized-deallocation
-     -fstats  -fno-use-cxa-get-exception-ptr  -fvtable-verify=[std|preinit|none]
-     -fvtv-debug  -fvtv-counts  -fno-weak
+ _Note:_ Not all GCC options are supported by Clang/LLVM. *Note Option
+Summary: Option Summary, for details of:
+   * those options supported by both Clang/LLVM and GCC;
+   * those options only supported by Clang/LLVM; and
+   * those options supported only by GCC.
 
  Here is a list of options that are _only_ for compiling C++ programs:
 
@@ -2573,11 +2631,33 @@ Clang/LLVM:
      Turn off all access checking.  This switch is mainly useful for
      working around bugs in the access control code.
 
+'-fno-assume-sane-operator-new'
+
+     Clang/LLVM option for future documentation.
+
+'-fcheck-new'
+     Check that the pointer returned by 'operator new' is non-null
+     before attempting to modify the storage allocated.  This check is
+     normally unnecessary because the C++ standard specifies that
+     'operator new' only returns '0' if it is declared 'throw()', in
+     which case the compiler always checks the return value even without
+     this option.  In all other cases, when 'operator new' has a
+     non-empty exception specification, memory exhaustion is signalled
+     by throwing 'std::bad_alloc'.  See also 'new (nothrow)'.
+
 '-fconstexpr-depth=N'
      Set the maximum nested evaluation depth for C++11 constexpr
      functions to N.  A limit is needed to detect endless recursion
      during constant expression evaluation.  The minimum specified by
      the standard is 512.
+
+'-fcxx-exceptions'
+
+     Clang/LLVM option for future documentation.
+
+'-fdelayed-template-parsing'
+
+     Clang/LLVM option for future documentation.
 
 '-fno-elide-constructors'
      The C++ standard allows an implementation to omit creating a
@@ -2598,6 +2678,19 @@ Clang/LLVM:
      but to allow and give a warning for old-style code that would
      otherwise be invalid, or have different behavior.
 
+'-ffriend-injection'
+     Inject friend functions into the enclosing namespace, so that they
+     are visible outside the scope of the class in which they are
+     declared.  Friend functions were documented to work this way in the
+     old Annotated C++ Reference Manual.
+
+     However, in ISO C++ a friend function that is not declared in an
+     enclosing scope can only be found using argument dependent lookup.
+     Clang/LLVM defaults to the standard behavior.
+
+     This option is for compatibility, and may be removed in a future
+     release of Clang/LLVM.
+
 '-fno-gnu-keywords'
      Do not recognize 'typeof' as a keyword, so that code can use this
      word as an identifier.  You can use the keyword '__typeof__'
@@ -2609,10 +2702,10 @@ Clang/LLVM:
      instantiations.  *Note Template Instantiation::, for more
      information.
 
-'-fms-extensions'
-     Disable Wpedantic warnings about constructs used in MFC, such as
-     implicit int and getting a pointer to member function via
-     non-standard syntax.
+'-fno-implement-inlines'
+     To save space, do not emit out-of-line copies of inline functions
+     controlled by '#pragma implementation'.  This causes linker errors
+     if these functions are not inlined everywhere they are called.
 
 '-fno-operator-names'
      Do not treat the operator name keywords 'and', 'bitand', 'bitor',
@@ -2633,14 +2726,15 @@ Clang/LLVM:
      that do not require run-time type information, i.e. casts to 'void
      *' or to unambiguous base classes.
 
-'-fstrict-enums'
-     Allow the compiler to optimize using the assumption that a value of
-     enumerated type can only be one of the values of the enumeration
-     (as defined in the C++ standard; basically, a value that can be
-     represented in the minimum number of bits needed to represent all
-     the enumerators).  This assumption may not be valid if the program
-     uses a cast to convert an arbitrary integer value to the enumerated
-     type.
+'-fsized-deallocation'
+     Enable the built-in global declarations
+          void operator delete (void *, std::size_t) noexcept;
+          void operator delete[] (void *, std::size_t) noexcept;
+     as introduced in C++14.  This is useful for user-defined
+     replacement deallocation functions that, for example, use the size
+     of the object to make deallocation faster.  Enabled by default
+     under '-std=c++14' and above.  The flag '-Wsized-deallocation'
+     warns about places that might want to add a definition.
 
 '-ftemplate-backtrace-limit=N'
      Set the maximum number of template instantiation notes for a single
@@ -2697,10 +2791,10 @@ Clang/LLVM:
      boundary.  *Note Template Instantiation::.
 
 '-fvisibility-ms-compat'
-     This flag attempts to use visibility settings to make LLVM's C++
-     linkage model compatible with that of Microsoft Visual Studio.
+     This flag attempts to use visibility settings to make Clang/LLVM's
+     C++ linkage model compatible with that of Microsoft Visual Studio.
 
-     The flag makes these changes to LLVM's linkage model:
+     The flag makes these changes to Clang/LLVM's linkage model:
 
        1. It sets the default visibility to 'hidden', like
           '-fvisibility=hidden'.
@@ -2725,6 +2819,25 @@ Clang/LLVM:
      given, it is a violation of the ODR to define types with the same
      name differently.
 
+'-fshow-overloads=OPT'
+
+     Clang/LLVM option for future documentation.  Permitted values of
+     OPT are 'all' and 'best'.
+
+'-fms-extensions'
+     Disable Wpedantic warnings about constructs used in MFC, such as
+     implicit int and getting a pointer to member function via
+     non-standard syntax.
+
+'-fstrict-enums'
+     Allow the compiler to optimize using the assumption that a value of
+     enumerated type can only be one of the values of the enumeration
+     (as defined in the C++ standard; basically, a value that can be
+     represented in the minimum number of bits needed to represent all
+     the enumerators).  This assumption may not be valid if the program
+     uses a cast to convert an arbitrary integer value to the enumerated
+     type.
+
 '-fext-numeric-literals (C++ and Objective-C++ only)'
      Accept imaginary, fixed-point, or machine-defined literal number
      suffixes as GNU extensions.  When this option is turned off these
@@ -2742,15 +2855,35 @@ Clang/LLVM:
      option may be removed in a future release of G++.
 
 '-nostdinc++'
-     *Note -nostdinc++: op nostdinc++.
+     Do not search for header files in the standard directories specific
+     to C++, but do still search the other standard directories.  (This
+     option is used when building the C++ library.)
 
  In addition, these optimization, warning, and code generation options
 have meanings only for C++ programs:
 
- The following GCC options for optimization, warning, and code
-generation of C++ programs are not supported by Clang/LLVM:
-     -Wabi=N  -Wliteral-suffix  -Wstrict-null-sentinel
-     -Wno-non-template-friend  -Wno-pmf-conversions
+'-Wabi (C++ and Objective-C++ only)'
+     Warn when Clang/LLVM it generates code that is probably not
+     compatible with the vendor-neutral C++ ABI.  Normally '-Wabi' will
+     warn only if there is a check added later in a release series for
+     an ABI issue discovered since the initial release.  Unlike GCC,
+     there is no option '-fabi-version=N') to select an older ABI, nor
+     is there an option to warn about an explicit version number,
+     '-Wabi=N'.
+
+     Although an effort has been made to warn about all such cases,
+     there are probably some cases that are not warned about, even
+     though Clang/LLVM is generating incompatible code.  There may also
+     be cases where warnings are emitted even though the code that is
+     generated is compatible.
+
+     You should rewrite your code to avoid these warnings if you are
+     concerned about the fact that code generated by G++ may not be
+     binary compatible with code generated by other compilers.
+
+'-Wno-conversion-null (C++ and Objective-C++ only)'
+     Do not warn for conversions between 'NULL' and non-pointer types.
+     '-Wconversion-null' is enabled by default.
 
 '-Wctor-dtor-privacy (C++ and Objective-C++ only)'
      Warn when a class seems unusable because all the constructors or
@@ -2765,49 +2898,6 @@ generation of C++ programs are not supported by Clang/LLVM:
      delete an instance of a derived class through a pointer to a base
      class if the base class does not have a virtual destructor.  This
      warning is enabled by '-Wall'.
-
-'-Wnarrowing (C++ and Objective-C++ only)'
-     Warn when a narrowing conversion prohibited by C++11 occurs within
-     '{ }', e.g.
-
-          int i = { 2.2 }; // error: narrowing from double to int
-
-     This flag is included in '-Wall' and '-Wc++11-compat'.
-
-     With '-std=c++11', '-Wno-narrowing' suppresses for non-constants
-     the diagnostic required by the standard.  Note that this does not
-     affect the meaning of well-formed code; narrowing conversions are
-     still considered ill-formed in SFINAE context.
-
-'-Wnoexcept (C++ and Objective-C++ only)'
-     Warn when a noexcept-expression evaluates to false because of a
-     call to a function that does not have a non-throwing exception
-     specification (i.e.  'throw()' or 'noexcept') but is known by the
-     compiler to never throw an exception.
-
-'-Wnon-virtual-dtor (C++ and Objective-C++ only)'
-     Warn when a class has virtual functions and an accessible
-     non-virtual destructor itself or in an accessible polymorphic base
-     class, in which case it is possible but unsafe to delete an
-     instance of a derived class through a pointer to the class itself
-     or base class.  This warning is automatically enabled if '-Weffc++'
-     is specified.
-
-'-Wreorder (C++ and Objective-C++ only)'
-     Warn when the order of member initializers given in the code does
-     not match the order in which they must be executed.  For instance:
-
-          struct A {
-            int i;
-            int j;
-            A(): j (0), i (1) { }
-          };
-
-     The compiler rearranges the member initializers for 'i' and 'j' to
-     match the declaration order of the members, emitting a warning to
-     that effect.  This warning is enabled by '-Wall'.
-
- The following '-W...' options are not affected by '-Wall'.
 
 '-Weffc++ (C++ and Objective-C++ only)'
      Warn about violations of the following style guidelines from Scott
@@ -2837,6 +2927,27 @@ generation of C++ programs are not supported by Clang/LLVM:
      headers do not obey all of these guidelines; use 'grep -v' to
      filter out those warnings.
 
+'-Wnarrowing (C++ and Objective-C++ only)'
+     Warn when a narrowing conversion prohibited by C++11 occurs within
+     '{ }', e.g.
+
+          int i = { 2.2 }; // error: narrowing from double to int
+
+     This flag is included in '-Wall' and '-Wc++11-compat'.
+
+     With '-std=c++11', '-Wno-narrowing' suppresses for non-constants
+     the diagnostic required by the standard.  Note that this does not
+     affect the meaning of well-formed code; narrowing conversions are
+     still considered ill-formed in SFINAE context.
+
+'-Wnon-virtual-dtor (C++ and Objective-C++ only)'
+     Warn when a class has virtual functions and an accessible
+     non-virtual destructor itself or in an accessible polymorphic base
+     class, in which case it is possible but unsafe to delete an
+     instance of a derived class through a pointer to the class itself
+     or base class.  This warning is automatically enabled if '-Weffc++'
+     is specified.
+
 '-Wold-style-cast (C++ and Objective-C++ only)'
      Warn if an old-style (C-style) cast to a non-void type is used
      within a C++ program.  The new-style casts ('dynamic_cast',
@@ -2862,6 +2973,20 @@ generation of C++ programs are not supported by Clang/LLVM:
 
      fails to compile.
 
+'-Wreorder (C++ and Objective-C++ only)'
+     Warn when the order of member initializers given in the code does
+     not match the order in which they must be executed.  For instance:
+
+          struct A {
+            int i;
+            int j;
+            A(): j (0), i (1) { }
+          };
+
+     The compiler rearranges the member initializers for 'i' and 'j' to
+     match the declaration order of the members, emitting a warning to
+     that effect.  This warning is enabled by '-Wall'.
+
 '-Wsign-promo (C++ and Objective-C++ only)'
      Warn when overload resolution chooses a promotion from unsigned or
      enumerated type to a signed type, over a conversion to an unsigned
@@ -2874,9 +2999,15 @@ File: llvm.info,  Node: Objective-C and Objective-C++ Dialect Options,  Next: Di
 3.6 Options Controlling Objective-C and Objective-C++ Dialects
 ==============================================================
 
-(_Note:_ This manual does not describe the Objective-C and Objective-C++
-languages themselves.  *Note Language Standards Supported by LLVM:
-Standards, for references.)
+_Note:_ Not all GCC options are supported by Clang/LLVM. *Note Option
+Summary: Option Summary, for details of:
+   * those options supported by both Clang/LLVM and GCC;
+   * those options only supported by Clang/LLVM; and
+   * those options supported only by GCC.
+
+ (_Note:_ This manual does not describe the Objective-C and
+Objective-C++ languages themselves.  *Note Language Standards Supported
+by LLVM: Standards, for references.)
 
  This section describes the command-line options that are only
 meaningful for Objective-C and Objective-C++ programs.  You can also use
@@ -3026,7 +3157,13 @@ File: llvm.info,  Node: Diagnostic Message Formatting Options,  Next: Warning Op
 3.7 Options to Control Diagnostic Messages Formatting
 =====================================================
 
-Traditionally, diagnostic messages have been formatted irrespective of
+_Note:_ Not all GCC options are supported by Clang/LLVM. *Note Option
+Summary: Option Summary, for details of:
+   * those options supported by both Clang/LLVM and GCC;
+   * those options only supported by Clang/LLVM; and
+   * those options supported only by GCC.
+
+ Traditionally, diagnostic messages have been formatted irrespective of
 the output device's aspect (e.g. its width, ...).  You can use the
 options described below to control the formatting algorithm for
 diagnostic messages, e.g. how many characters per line, how often source
@@ -3123,7 +3260,13 @@ File: llvm.info,  Node: Warning Options,  Next: Debugging Options,  Prev: Diagno
 3.8 Options to Request or Suppress Warnings
 ===========================================
 
-Warnings are diagnostic messages that report constructions that are not
+_Note:_ Not all GCC options are supported by Clang/LLVM. *Note Option
+Summary: Option Summary, for details of:
+   * those options supported by both Clang/LLVM and GCC;
+   * those options only supported by Clang/LLVM; and
+   * those options supported only by GCC.
+
+ Warnings are diagnostic messages that report constructions that are not
 inherently erroneous but that are risky or suggest there may have been
 an error.
 
@@ -4293,10 +4436,6 @@ compiler warns that an unrecognized option is present.
      keywords in ISO C++ 2011.  This warning turns on '-Wnarrowing' and
      is enabled by '-Wall'.
 
-'-Wno-conversion-null (C++ and Objective-C++ only)'
-     Do not warn for conversions between 'NULL' and non-pointer types.
-     '-Wconversion-null' is enabled by default.
-
 '-Wdelete-incomplete (C++ and Objective-C++ only)'
      Warn when deleting a pointer to incomplete type, which may cause
      undefined behavior at runtime.  This warning is enabled by default.
@@ -4315,7 +4454,13 @@ File: llvm.info,  Node: Debugging Options,  Next: Optimize Options,  Prev: Warni
 3.9 Options for Debugging Your Program or LLVM
 ==============================================
 
-Clang/LLVM has various special options that are used for debugging
+_Note:_ Not all GCC options are supported by Clang/LLVM. *Note Option
+Summary: Option Summary, for details of:
+   * those options supported by both Clang/LLVM and GCC;
+   * those options only supported by Clang/LLVM; and
+   * those options supported only by GCC.
+
+ Clang/LLVM has various special options that are used for debugging
 either your program or LLVM:
 
  The following GCC options for debugging are not supported by
@@ -4831,7 +4976,13 @@ File: llvm.info,  Node: Optimize Options,  Next: Instrumentation Options,  Prev:
 3.10 Options That Control Optimization
 ======================================
 
-These options control various sorts of optimizations.
+_Note:_ Not all GCC options are supported by Clang/LLVM. *Note Option
+Summary: Option Summary, for details of:
+   * those options supported by both Clang/LLVM and GCC;
+   * those options only supported by Clang/LLVM; and
+   * those options supported only by GCC.
+
+ These options control various sorts of optimizations.
 
  Without any optimization option, the compiler's goal is to reduce the
 cost of compilation and to make debugging produce the expected results.

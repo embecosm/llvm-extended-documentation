@@ -24,7 +24,7 @@ File: llvm-assembler.info,  Node: Top,  Next: Overview,  Up: (dir)
 Using the LLVM integrated assembler
 ***********************************
 
-This file is a user guide to the LLVM integrated assembler version 3.7.
+This file is a user guide to the LLVM integrated assembler version 3.8.
 
    This document is distributed under the terms of the GNU Free
 Documentation License.  A copy of the license is included in the section

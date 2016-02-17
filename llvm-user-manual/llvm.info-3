@@ -69,6 +69,138 @@ Embecosm support introducing others to free and open source software and
 hardware.
 
 
+File: llvm.info,  Node: Floating Types,  Next: Half-Precision,  Prev: Complex,  Up: C Extensions
+
+6.11 Additional Floating Types
+==============================
+
+As an extension, GNU C supports additional floating types, '__float80'
+and '__float128' to support 80-bit ('XFmode') and 128-bit ('TFmode')
+floating types.  Support for additional types includes the arithmetic
+operators: add, subtract, multiply, divide; unary arithmetic operators;
+relational operators; equality operators; and conversions to and from
+integer and other floating types.  Use a suffix 'w' or 'W' in a literal
+constant of type '__float80' and 'q' or 'Q' for '_float128'.  You can
+declare complex types using the corresponding internal complex type,
+'XCmode' for '__float80' type and 'TCmode' for '__float128' type:
+
+     typedef _Complex float __attribute__((mode(TC))) _Complex128;
+     typedef _Complex float __attribute__((mode(XC))) _Complex80;
+
+ Not all targets support additional floating-point types.  '__float80'
+and '__float128' types are supported on x86 and IA-64 targets.  The
+'__float128' type is supported on hppa HP-UX targets.
+
+
+File: llvm.info,  Node: Half-Precision,  Next: Decimal Float,  Prev: Floating Types,  Up: C Extensions
+
+6.12 Half-Precision Floating Point
+==================================
+
+On ARM targets, GCC supports half-precision (16-bit) floating point via
+the '__fp16' type.  You must enable this type explicitly with the
+'-mfp16-format' command-line option in order to use it.
+
+ ARM supports two incompatible representations for half-precision
+floating-point values.  You must choose one of the representations and
+use it consistently in your program.
+
+ Specifying '-mfp16-format=ieee' selects the IEEE 754-2008 format.  This
+format can represent normalized values in the range of 2^{-14} to 65504.
+There are 11 bits of significand precision, approximately 3 decimal
+digits.
+
+ Specifying '-mfp16-format=alternative' selects the ARM alternative
+format.  This representation is similar to the IEEE format, but does not
+support infinities or NaNs.  Instead, the range of exponents is
+extended, so that this format can represent normalized values in the
+range of 2^{-14} to 131008.
+
+ The '__fp16' type is a storage format only.  For purposes of arithmetic
+and other operations, '__fp16' values in C or C++ expressions are
+automatically promoted to 'float'.  In addition, you cannot declare a
+function with a return value or parameters of type '__fp16'.
+
+ Note that conversions from 'double' to '__fp16' involve an intermediate
+conversion to 'float'.  Because of rounding, this can sometimes produce
+a different result than a direct conversion.
+
+ ARM provides hardware support for conversions between '__fp16' and
+'float' values as an extension to VFP and NEON (Advanced SIMD). GCC
+generates code using these hardware instructions if you compile with
+options to select an FPU that provides them; for example,
+'-mfpu=neon-fp16 -mfloat-abi=softfp', in addition to the '-mfp16-format'
+option to select a half-precision format.
+
+ Language-level support for the '__fp16' data type is independent of
+whether GCC generates code using hardware floating-point instructions.
+In cases where hardware support is not specified, GCC implements
+conversions between '__fp16' and 'float' values as library calls.
+
+
+File: llvm.info,  Node: Decimal Float,  Next: Hex Floats,  Prev: Half-Precision,  Up: C Extensions
+
+6.13 Decimal Floating Types
+===========================
+
+As an extension, GNU C supports decimal floating types as defined in the
+N1312 draft of ISO/IEC WDTR24732.  Support for decimal floating types in
+GCC will evolve as the draft technical report changes.  Calling
+conventions for any target might also change.  Not all targets support
+decimal floating types.
+
+ The decimal floating types are '_Decimal32', '_Decimal64', and
+'_Decimal128'.  They use a radix of ten, unlike the floating types
+'float', 'double', and 'long double' whose radix is not specified by the
+C standard but is usually two.
+
+ Support for decimal floating types includes the arithmetic operators
+add, subtract, multiply, divide; unary arithmetic operators; relational
+operators; equality operators; and conversions to and from integer and
+other floating types.  Use a suffix 'df' or 'DF' in a literal constant
+of type '_Decimal32', 'dd' or 'DD' for '_Decimal64', and 'dl' or 'DL'
+for '_Decimal128'.
+
+ GCC support of decimal float as specified by the draft technical report
+is incomplete:
+
+   * When the value of a decimal floating type cannot be represented in
+     the integer type to which it is being converted, the result is
+     undefined rather than the result value specified by the draft
+     technical report.
+
+   * GCC does not provide the C library functionality associated with
+     'math.h', 'fenv.h', 'stdio.h', 'stdlib.h', and 'wchar.h', which
+     must come from a separate C library implementation.  Because of
+     this the GNU C compiler does not define macro '__STDC_DEC_FP__' to
+     indicate that the implementation conforms to the technical report.
+
+ Types '_Decimal32', '_Decimal64', and '_Decimal128' are supported by
+the DWARF 2 debug information format.
+
+
+File: llvm.info,  Node: Hex Floats,  Next: Fixed-Point,  Prev: Decimal Float,  Up: C Extensions
+
+6.14 Hex Floats
+===============
+
+ISO C99 supports floating-point numbers written not only in the usual
+decimal notation, such as '1.55e1', but also numbers such as '0x1.fp3'
+written in hexadecimal format.  As a GNU extension, GCC supports this in
+C90 mode (except in some cases when strictly conforming) and in C++.  In
+that format the '0x' hex introducer and the 'p' or 'P' exponent field
+are mandatory.  The exponent is a decimal number that indicates the
+power of 2 by which the significant part is multiplied.  Thus '0x1.f' is
+1 15/16, 'p3' multiplies it by 8, and the value of '0x1.fp3' is the same
+as '1.55e1'.
+
+ Unlike for floating-point numbers in the decimal notation the exponent
+is always required in the hexadecimal notation.  Otherwise the compiler
+would not be able to resolve the ambiguity of, e.g., '0x1.f'.  This
+could mean '1.0f' or '1.9375' since 'f' is also the extension for
+floating-point constants of type 'float'.
+
+
 File: llvm.info,  Node: Fixed-Point,  Next: Named Address Spaces,  Prev: Hex Floats,  Up: C Extensions
 
 6.15 Fixed-Point Types
