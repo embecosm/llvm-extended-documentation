@@ -1,5 +1,20 @@
 2016-02-18  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
+	Clang/LLVM Options chapter of documentation first draft.
+
+	* llvm-user-manual/invoke.texi (Option Summary): AAP used as
+	target specific reference rather than AArch64.
+	(Assembler Options, Link Options, Directory Options)
+	(Code Gen Options, Developer Options): Details correct for
+	Clang/LLVM.
+	(Submodel Options): Revised to include AAP as reference
+	architecture rather than AArch64.
+	(AAP Options): Node created.
+	(Environment Variables): Added note about uncertainty over
+	meaning.
+
+2016-02-18  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
 	* llvm-user-manual/invoke.texi (Preprocessor Options): Details
 	correct for Clang/LLVM
 	* support-code/opt-check.sh: Add missing option.
