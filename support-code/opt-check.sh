@@ -2325,6 +2325,7 @@ logcon ""
 logcon "Preprocessor options for both LLVM and GCC"
 
 run_both -C -E dummy.c
+run_both -CC -E dummy.cpp
 run_both -DCARMICHAEL_PSEUDO_PRIME dummy.c
 run_both -DFIRST_CARMICHAEL_PSEUDO_PRIME=561 dummy.c
 run_both -dD -E dummy.c
@@ -2392,6 +2393,7 @@ run_gcc -A myassert=myval dummy-assert.c
 run_gcc -A -myassert=myval dummy-noassert.c
 run_gcc -dI dummy.c
 run_gcc -dN dummy.c
+run_gcc -dU dummy.c
 run_gcc -fdebug-cpp -E dummy.c
 run_gcc -fdirectives-only dummy.c
 run_gcc -fno-working-directory dummy.c

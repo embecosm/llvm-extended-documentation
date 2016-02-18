@@ -1,5 +1,12 @@
 2016-02-18  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
+	* llvm-user-manual/invoke.texi (Preprocessor Options): Details
+	correct for Clang/LLVM
+	* support-code/opt-check.sh: Add missing option.
+	* support-code/todo.org: Note -CC not documented.
+
+2016-02-18  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
 	* llvm-user-manual/invoke.texi (Instrumentation Options): Details
 	correct for Clang/LLVM.
 

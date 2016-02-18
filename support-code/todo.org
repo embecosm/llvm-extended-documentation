@@ -232,6 +232,7 @@ The following options appear in the index but not in the documentation
 *** Preprocessor options
 
 The following options are documented, but do not appear in the summary:
+- =-CC=
 - =-iquote=
 - =-fdirectives-only=
 - =-fdollars-in-identifiers=
