@@ -1,3 +1,16 @@
+2016-02-18  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* llvm-assembler-manual/llvm-assembler.info: Regenerated.
+	* llvm-user-manual/invoke.texi: Details correct up to end of
+	Optimization seciton.
+	* llvm-user-manual/llvm.info: Regenerated.
+	* llvm-user-manual/llvm.info-1: Likewise.
+	* llvm-user-manual/llvm.info-2: Likewise.
+	* llvm-user-manual/llvm.info-3: Likewise.
+	* llvm-user-manual/llvm.info-4: Likewise.
+	* llvm-user-manual/llvm.info-5: Likewise.
+	* support-code/opt-check.sh: Corrected -flto.
+
 2016-02-17  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* llvm-assembler-manual/llvm-assembler.info: Regenerated.

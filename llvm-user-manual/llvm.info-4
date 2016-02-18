@@ -1,4 +1,4 @@
-This is llvm.info, produced by makeinfo version 6.0 from llvm.texi.
+This is llvm.info, produced by makeinfo version 5.2 from llvm.texi.
 
 Copyright (C) 2015 Embecosm Limited
 Copyright (C) 1988-2015 Free Software Foundation, Inc.
@@ -67,2018 +67,6 @@ development.
  You have freedom to copy and modify this manual.  Copies published by
 Embecosm support introducing others to free and open source software and
 hardware.
-
-
-File: llvm.info,  Node: Asm Labels,  Next: Explicit Reg Vars,  Prev: Constraints,  Up: Using Assembly Language with C
-
-6.43.4 Controlling Names Used in Assembler Code
------------------------------------------------
-
-You can specify the name to be used in the assembler code for a C
-function or variable by writing the 'asm' (or '__asm__') keyword after
-the declarator as follows:
-
-     int foo asm ("myfoo") = 2;
-
-This specifies that the name to be used for the variable 'foo' in the
-assembler code should be 'myfoo' rather than the usual '_foo'.
-
- On systems where an underscore is normally prepended to the name of a C
-function or variable, this feature allows you to define names for the
-linker that do not start with an underscore.
-
- It does not make sense to use this feature with a non-static local
-variable since such variables do not have assembler names.  If you are
-trying to put the variable in a particular register, see *note Explicit
-Reg Vars::.  GCC presently accepts such code with a warning, but will
-probably be changed to issue an error, rather than a warning, in the
-future.
-
- You cannot use 'asm' in this way in a function _definition_; but you
-can get the same effect by writing a declaration for the function before
-its definition and putting 'asm' there, like this:
-
-     extern func () asm ("FUNC");
-
-     func (x, y)
-          int x, y;
-     /* ... */
-
- It is up to you to make sure that the assembler names you choose do not
-conflict with any other assembler symbols.  Also, you must not use a
-register name; that would produce completely invalid assembler code.
-GCC does not as yet have the ability to store static variables in
-registers.  Perhaps that will be added.
-
-
-File: llvm.info,  Node: Explicit Reg Vars,  Next: Size of an asm,  Prev: Asm Labels,  Up: Using Assembly Language with C
-
-6.43.5 Variables in Specified Registers
----------------------------------------
-
-GNU C allows you to put a few global variables into specified hardware
-registers.  You can also specify the register in which an ordinary
-register variable should be allocated.
-
-   * Global register variables reserve registers throughout the program.
-     This may be useful in programs such as programming language
-     interpreters that have a couple of global variables that are
-     accessed very often.
-
-   * Local register variables in specific registers do not reserve the
-     registers, except at the point where they are used as input or
-     output operands in an 'asm' statement and the 'asm' statement
-     itself is not deleted.  The compiler's data flow analysis is
-     capable of determining where the specified registers contain live
-     values, and where they are available for other uses.  Stores into
-     local register variables may be deleted when they appear to be dead
-     according to dataflow analysis.  References to local register
-     variables may be deleted or moved or simplified.
-
-     These local variables are sometimes convenient for use with the
-     extended 'asm' feature (*note Extended Asm::), if you want to write
-     one output of the assembler instruction directly into a particular
-     register.  (This works provided the register you specify fits the
-     constraints specified for that operand in the 'asm'.)
-
-* Menu:
-
-* Global Reg Vars::
-* Local Reg Vars::
-
-
-File: llvm.info,  Node: Global Reg Vars,  Next: Local Reg Vars,  Up: Explicit Reg Vars
-
-6.43.5.1 Defining Global Register Variables
-...........................................
-
-You can define a global register variable in GNU C like this:
-
-     register int *foo asm ("a5");
-
-Here 'a5' is the name of the register that should be used.  Choose a
-register that is normally saved and restored by function calls on your
-machine, so that library routines will not clobber it.
-
- Naturally the register name is CPU-dependent, so you need to
-conditionalize your program according to CPU type.  The register 'a5' is
-a good choice on a 68000 for a variable of pointer type.  On machines
-with register windows, be sure to choose a "global" register that is not
-affected magically by the function call mechanism.
-
- In addition, different operating systems on the same CPU may differ in
-how they name the registers; then you need additional conditionals.  For
-example, some 68000 operating systems call this register '%a5'.
-
- Eventually there may be a way of asking the compiler to choose a
-register automatically, but first we need to figure out how it should
-choose and how to enable you to guide the choice.  No solution is
-evident.
-
- Defining a global register variable in a certain register reserves that
-register entirely for this use, at least within the current compilation.
-The register is not allocated for any other purpose in the functions in
-the current compilation, and is not saved and restored by these
-functions.  Stores into this register are never deleted even if they
-appear to be dead, but references may be deleted or moved or simplified.
-
- It is not safe to access the global register variables from signal
-handlers, or from more than one thread of control, because the system
-library routines may temporarily use the register for other things
-(unless you recompile them specially for the task at hand).
-
- It is not safe for one function that uses a global register variable to
-call another such function 'foo' by way of a third function 'lose' that
-is compiled without knowledge of this variable (i.e. in a different
-source file in which the variable isn't declared).  This is because
-'lose' might save the register and put some other value there.  For
-example, you can't expect a global register variable to be available in
-the comparison-function that you pass to 'qsort', since 'qsort' might
-have put something else in that register.  (If you are prepared to
-recompile 'qsort' with the same global register variable, you can solve
-this problem.)
-
- If you want to recompile 'qsort' or other source files that do not
-actually use your global register variable, so that they do not use that
-register for any other purpose, then it suffices to specify the compiler
-option '-ffixed-REG'.  You need not actually add a global register
-declaration to their source code.
-
- A function that can alter the value of a global register variable
-cannot safely be called from a function compiled without this variable,
-because it could clobber the value the caller expects to find there on
-return.  Therefore, the function that is the entry point into the part
-of the program that uses the global register variable must explicitly
-save and restore the value that belongs to its caller.
-
- On most machines, 'longjmp' restores to each global register variable
-the value it had at the time of the 'setjmp'.  On some machines,
-however, 'longjmp' does not change the value of global register
-variables.  To be portable, the function that called 'setjmp' should
-make other arrangements to save the values of the global register
-variables, and to restore them in a 'longjmp'.  This way, the same thing
-happens regardless of what 'longjmp' does.
-
- All global register variable declarations must precede all function
-definitions.  If such a declaration could appear after function
-definitions, the declaration would be too late to prevent the register
-from being used for other purposes in the preceding functions.
-
- Global register variables may not have initial values, because an
-executable file has no means to supply initial contents for a register.
-
- On the SPARC, there are reports that g3 ... g7 are suitable registers,
-but certain library functions, such as 'getwd', as well as the
-subroutines for division and remainder, modify g3 and g4.  g1 and g2 are
-local temporaries.
-
- On the 68000, a2 ... a5 should be suitable, as should d2 ... d7.  Of
-course, it does not do to use more than a few of those.
-
-
-File: llvm.info,  Node: Local Reg Vars,  Prev: Global Reg Vars,  Up: Explicit Reg Vars
-
-6.43.5.2 Specifying Registers for Local Variables
-.................................................
-
-You can define a local register variable with a specified register like
-this:
-
-     register int *foo asm ("a5");
-
-Here 'a5' is the name of the register that should be used.  Note that
-this is the same syntax used for defining global register variables, but
-for a local variable it appears within a function.
-
- Naturally the register name is CPU-dependent, but this is not a
-problem, since specific registers are most often useful with explicit
-assembler instructions (*note Extended Asm::).  Both of these things
-generally require that you conditionalize your program according to CPU
-type.
-
- In addition, operating systems on one type of CPU may differ in how
-they name the registers; then you need additional conditionals.  For
-example, some 68000 operating systems call this register '%a5'.
-
- Defining such a register variable does not reserve the register; it
-remains available for other uses in places where flow control determines
-the variable's value is not live.
-
- This option does not guarantee that GCC generates code that has this
-variable in the register you specify at all times.  You may not code an
-explicit reference to this register in the assembler instruction
-template part of an 'asm' statement and assume it always refers to this
-variable.  However, using the variable as an input or output operand to
-the 'asm' guarantees that the specified register is used for that
-operand.  *Note Extended Asm::, for more information.
-
- Stores into local register variables may be deleted when they appear to
-be dead according to dataflow analysis.  References to local register
-variables may be deleted or moved or simplified.
-
- As with global register variables, it is recommended that you choose a
-register that is normally saved and restored by function calls on your
-machine, so that library routines will not clobber it.
-
- Sometimes when writing inline 'asm' code, you need to make an operand
-be a specific register, but there's no matching constraint letter for
-that register.  To force the operand into that register, create a local
-variable and specify the register in the variable's declaration.  Then
-use the local variable for the asm operand and specify any constraint
-letter that matches the register:
-
-     register int *p1 asm ("r0") = ...;
-     register int *p2 asm ("r1") = ...;
-     register int *result asm ("r0");
-     asm ("sysint" : "=r" (result) : "0" (p1), "r" (p2));
-
- _Warning:_ In the above example, be aware that a register (for example
-r0) can be call-clobbered by subsequent code, including function calls
-and library calls for arithmetic operators on other variables (for
-example the initialization of p2).  In this case, use temporary
-variables for expressions between the register assignments:
-
-     int t1 = ...;
-     register int *p1 asm ("r0") = ...;
-     register int *p2 asm ("r1") = t1;
-     register int *result asm ("r0");
-     asm ("sysint" : "=r" (result) : "0" (p1), "r" (p2));
-
-
-File: llvm.info,  Node: Size of an asm,  Prev: Explicit Reg Vars,  Up: Using Assembly Language with C
-
-6.43.6 Size of an 'asm'
------------------------
-
-Some targets require that GCC track the size of each instruction used in
-order to generate correct code.  Because the final length of the code
-produced by an 'asm' statement is only known by the assembler, GCC must
-make an estimate as to how big it will be.  It does this by counting the
-number of instructions in the pattern of the 'asm' and multiplying that
-by the length of the longest instruction supported by that processor.
-(When working out the number of instructions, it assumes that any
-occurrence of a newline or of whatever statement separator character is
-supported by the assembler - typically ';' -- indicates the end of an
-instruction.)
-
- Normally, GCC's estimate is adequate to ensure that correct code is
-generated, but it is possible to confuse the compiler if you use pseudo
-instructions or assembler macros that expand into multiple real
-instructions, or if you use assembler directives that expand to more
-space in the object file than is needed for a single instruction.  If
-this happens then the assembler may produce a diagnostic saying that a
-label is unreachable.
-
-
-File: llvm.info,  Node: Alternate Keywords,  Next: Incomplete Enums,  Prev: Using Assembly Language with C,  Up: C Extensions
-
-6.44 Alternate Keywords
-=======================
-
-'-ansi' and the various '-std' options disable certain keywords.  This
-causes trouble when you want to use GNU C extensions, or a
-general-purpose header file that should be usable by all programs,
-including ISO C programs.  The keywords 'asm', 'typeof' and 'inline' are
-not available in programs compiled with '-ansi' or '-std' (although
-'inline' can be used in a program compiled with '-std=c99' or
-'-std=c11').  The ISO C99 keyword 'restrict' is only available when
-'-std=gnu99' (which will eventually be the default) or '-std=c99' (or
-the equivalent '-std=iso9899:1999'), or an option for a later standard
-version, is used.
-
- The way to solve these problems is to put '__' at the beginning and end
-of each problematical keyword.  For example, use '__asm__' instead of
-'asm', and '__inline__' instead of 'inline'.
-
- Other C compilers won't accept these alternative keywords; if you want
-to compile with another compiler, you can define the alternate keywords
-as macros to replace them with the customary keywords.  It looks like
-this:
-
-     #ifndef __GNUC__
-     #define __asm__ asm
-     #endif
-
- '-pedantic' and other options cause warnings for many GNU C extensions.
-You can prevent such warnings within one expression by writing
-'__extension__' before the expression.  '__extension__' has no effect
-aside from this.
-
-
-File: llvm.info,  Node: Incomplete Enums,  Next: Function Names,  Prev: Alternate Keywords,  Up: C Extensions
-
-6.45 Incomplete 'enum' Types
-============================
-
-You can define an 'enum' tag without specifying its possible values.
-This results in an incomplete type, much like what you get if you write
-'struct foo' without describing the elements.  A later declaration that
-does specify the possible values completes the type.
-
- You can't allocate variables or storage using the type while it is
-incomplete.  However, you can work with pointers to that type.
-
- This extension may not be very useful, but it makes the handling of
-'enum' more consistent with the way 'struct' and 'union' are handled.
-
- This extension is not supported by GNU C++.
-
-
-File: llvm.info,  Node: Function Names,  Next: Return Address,  Prev: Incomplete Enums,  Up: C Extensions
-
-6.46 Function Names as Strings
-==============================
-
-GCC provides three magic variables that hold the name of the current
-function, as a string.  The first of these is '__func__', which is part
-of the C99 standard:
-
- The identifier '__func__' is implicitly declared by the translator as
-if, immediately following the opening brace of each function definition,
-the declaration
-
-     static const char __func__[] = "function-name";
-
-appeared, where function-name is the name of the lexically-enclosing
-function.  This name is the unadorned name of the function.
-
- '__FUNCTION__' is another name for '__func__', provided for backward
-compatibility with old versions of GCC.
-
- In C, '__PRETTY_FUNCTION__' is yet another name for '__func__'.
-However, in C++, '__PRETTY_FUNCTION__' contains the type signature of
-the function as well as its bare name.  For example, this program:
-
-     extern "C" {
-     extern int printf (char *, ...);
-     }
-
-     class a {
-      public:
-       void sub (int i)
-         {
-           printf ("__FUNCTION__ = %s\n", __FUNCTION__);
-           printf ("__PRETTY_FUNCTION__ = %s\n", __PRETTY_FUNCTION__);
-         }
-     };
-
-     int
-     main (void)
-     {
-       a ax;
-       ax.sub (0);
-       return 0;
-     }
-
-gives this output:
-
-     __FUNCTION__ = sub
-     __PRETTY_FUNCTION__ = void a::sub(int)
-
- These identifiers are variables, not preprocessor macros, and may not
-be used to initialize 'char' arrays or be concatenated with other string
-literals.
-
-
-File: llvm.info,  Node: Return Address,  Next: Vector Extensions,  Prev: Function Names,  Up: C Extensions
-
-6.47 Getting the Return or Frame Address of a Function
-======================================================
-
-These functions may be used to get information about the callers of a
-function.
-
- -- Built-in Function: void * __builtin_return_address (unsigned int
-          LEVEL)
-     This function returns the return address of the current function,
-     or of one of its callers.  The LEVEL argument is number of frames
-     to scan up the call stack.  A value of '0' yields the return
-     address of the current function, a value of '1' yields the return
-     address of the caller of the current function, and so forth.  When
-     inlining the expected behavior is that the function returns the
-     address of the function that is returned to.  To work around this
-     behavior use the 'noinline' function attribute.
-
-     The LEVEL argument must be a constant integer.
-
-     On some machines it may be impossible to determine the return
-     address of any function other than the current one; in such cases,
-     or when the top of the stack has been reached, this function
-     returns '0' or a random value.  In addition,
-     '__builtin_frame_address' may be used to determine if the top of
-     the stack has been reached.
-
-     Additional post-processing of the returned value may be needed, see
-     '__builtin_extract_return_addr'.
-
-     This function should only be used with a nonzero argument for
-     debugging purposes.
-
- -- Built-in Function: void * __builtin_extract_return_addr (void *ADDR)
-     The address as returned by '__builtin_return_address' may have to
-     be fed through this function to get the actual encoded address.
-     For example, on the 31-bit S/390 platform the highest bit has to be
-     masked out, or on SPARC platforms an offset has to be added for the
-     true next instruction to be executed.
-
-     If no fixup is needed, this function simply passes through ADDR.
-
- -- Built-in Function: void * __builtin_frob_return_address (void *ADDR)
-     This function does the reverse of '__builtin_extract_return_addr'.
-
- -- Built-in Function: void * __builtin_frame_address (unsigned int
-          LEVEL)
-     This function is similar to '__builtin_return_address', but it
-     returns the address of the function frame rather than the return
-     address of the function.  Calling '__builtin_frame_address' with a
-     value of '0' yields the frame address of the current function, a
-     value of '1' yields the frame address of the caller of the current
-     function, and so forth.
-
-     The frame is the area on the stack that holds local variables and
-     saved registers.  The frame address is normally the address of the
-     first word pushed on to the stack by the function.  However, the
-     exact definition depends upon the processor and the calling
-     convention.  If the processor has a dedicated frame pointer
-     register, and the function has a frame, then
-     '__builtin_frame_address' returns the value of the frame pointer
-     register.
-
-     On some machines it may be impossible to determine the frame
-     address of any function other than the current one; in such cases,
-     or when the top of the stack has been reached, this function
-     returns '0' if the first frame pointer is properly initialized by
-     the startup code.
-
-     This function should only be used with a nonzero argument for
-     debugging purposes.
-
-
-File: llvm.info,  Node: Vector Extensions,  Next: Offsetof,  Prev: Return Address,  Up: C Extensions
-
-6.48 Using Vector Instructions through Built-in Functions
-=========================================================
-
-On some targets, the instruction set contains SIMD vector instructions
-which operate on multiple values contained in one large register at the
-same time.  For example, on the x86 the MMX, 3DNow! and SSE extensions
-can be used this way.
-
- The first step in using these extensions is to provide the necessary
-data types.  This should be done using an appropriate 'typedef':
-
-     typedef int v4si __attribute__ ((vector_size (16)));
-
-The 'int' type specifies the base type, while the attribute specifies
-the vector size for the variable, measured in bytes.  For example, the
-declaration above causes the compiler to set the mode for the 'v4si'
-type to be 16 bytes wide and divided into 'int' sized units.  For a
-32-bit 'int' this means a vector of 4 units of 4 bytes, and the
-corresponding mode of 'foo' is V4SI.
-
- The 'vector_size' attribute is only applicable to integral and float
-scalars, although arrays, pointers, and function return values are
-allowed in conjunction with this construct.  Only sizes that are a power
-of two are currently allowed.
-
- All the basic integer types can be used as base types, both as signed
-and as unsigned: 'char', 'short', 'int', 'long', 'long long'.  In
-addition, 'float' and 'double' can be used to build floating-point
-vector types.
-
- Specifying a combination that is not valid for the current architecture
-causes GCC to synthesize the instructions using a narrower mode.  For
-example, if you specify a variable of type 'V4SI' and your architecture
-does not allow for this specific SIMD type, GCC produces code that uses
-4 'SIs'.
-
- The types defined in this manner can be used with a subset of normal C
-operations.  Currently, GCC allows using the following operators on
-these types: '+, -, *, /, unary minus, ^, |, &, ~, %'.
-
- The operations behave like C++ 'valarrays'.  Addition is defined as the
-addition of the corresponding elements of the operands.  For example, in
-the code below, each of the 4 elements in A is added to the
-corresponding 4 elements in B and the resulting vector is stored in C.
-
-     typedef int v4si __attribute__ ((vector_size (16)));
-
-     v4si a, b, c;
-
-     c = a + b;
-
- Subtraction, multiplication, division, and the logical operations
-operate in a similar manner.  Likewise, the result of using the unary
-minus or complement operators on a vector type is a vector whose
-elements are the negative or complemented values of the corresponding
-elements in the operand.
-
- It is possible to use shifting operators '<<', '>>' on integer-type
-vectors.  The operation is defined as following: '{a0, a1, ..., an} >>
-{b0, b1, ..., bn} == {a0 >> b0, a1 >> b1, ..., an >> bn}'.  Vector
-operands must have the same number of elements.
-
- For convenience, it is allowed to use a binary vector operation where
-one operand is a scalar.  In that case the compiler transforms the
-scalar operand into a vector where each element is the scalar from the
-operation.  The transformation happens only if the scalar could be
-safely converted to the vector-element type.  Consider the following
-code.
-
-     typedef int v4si __attribute__ ((vector_size (16)));
-
-     v4si a, b, c;
-     long l;
-
-     a = b + 1;    /* a = b + {1,1,1,1}; */
-     a = 2 * b;    /* a = {2,2,2,2} * b; */
-
-     a = l + a;    /* Error, cannot convert long to int. */
-
- Vectors can be subscripted as if the vector were an array with the same
-number of elements and base type.  Out of bound accesses invoke
-undefined behavior at run time.  Warnings for out of bound accesses for
-vector subscription can be enabled with '-Warray-bounds'.
-
- Vector comparison is supported with standard comparison operators: '==,
-!=, <, <=, >, >='.  Comparison operands can be vector expressions of
-integer-type or real-type.  Comparison between integer-type vectors and
-real-type vectors are not supported.  The result of the comparison is a
-vector of the same width and number of elements as the comparison
-operands with a signed integral element type.
-
- Vectors are compared element-wise producing 0 when comparison is false
-and -1 (constant of the appropriate type where all bits are set)
-otherwise.  Consider the following example.
-
-     typedef int v4si __attribute__ ((vector_size (16)));
-
-     v4si a = {1,2,3,4};
-     v4si b = {3,2,1,4};
-     v4si c;
-
-     c = a >  b;     /* The result would be {0, 0,-1, 0}  */
-     c = a == b;     /* The result would be {0,-1, 0,-1}  */
-
- In C++, the ternary operator '?:' is available.  'a?b:c', where 'b' and
-'c' are vectors of the same type and 'a' is an integer vector with the
-same number of elements of the same size as 'b' and 'c', computes all
-three arguments and creates a vector '{a[0]?b[0]:c[0], a[1]?b[1]:c[1],
-...}'.  Note that unlike in OpenCL, 'a' is thus interpreted as 'a != 0'
-and not 'a < 0'.  As in the case of binary operations, this syntax is
-also accepted when one of 'b' or 'c' is a scalar that is then
-transformed into a vector.  If both 'b' and 'c' are scalars and the type
-of 'true?b:c' has the same size as the element type of 'a', then 'b' and
-'c' are converted to a vector type whose elements have this type and
-with the same number of elements as 'a'.
-
- In C++, the logic operators '!, &&, ||' are available for vectors.
-'!v' is equivalent to 'v == 0', 'a && b' is equivalent to 'a!=0 & b!=0'
-and 'a || b' is equivalent to 'a!=0 | b!=0'.  For mixed operations
-between a scalar 's' and a vector 'v', 's && v' is equivalent to
-'s?v!=0:0' (the evaluation is short-circuit) and 'v && s' is equivalent
-to 'v!=0 & (s?-1:0)'.
-
- Vector shuffling is available using functions '__builtin_shuffle (vec,
-mask)' and '__builtin_shuffle (vec0, vec1, mask)'.  Both functions
-construct a permutation of elements from one or two vectors and return a
-vector of the same type as the input vector(s).  The MASK is an integral
-vector with the same width (W) and element count (N) as the output
-vector.
-
- The elements of the input vectors are numbered in memory ordering of
-VEC0 beginning at 0 and VEC1 beginning at N.  The elements of MASK are
-considered modulo N in the single-operand case and modulo 2*N in the
-two-operand case.
-
- Consider the following example,
-
-     typedef int v4si __attribute__ ((vector_size (16)));
-
-     v4si a = {1,2,3,4};
-     v4si b = {5,6,7,8};
-     v4si mask1 = {0,1,1,3};
-     v4si mask2 = {0,4,2,5};
-     v4si res;
-
-     res = __builtin_shuffle (a, mask1);       /* res is {1,2,2,4}  */
-     res = __builtin_shuffle (a, b, mask2);    /* res is {1,5,3,6}  */
-
- Note that '__builtin_shuffle' is intentionally semantically compatible
-with the OpenCL 'shuffle' and 'shuffle2' functions.
-
- You can declare variables and use them in function calls and returns,
-as well as in assignments and some casts.  You can specify a vector type
-as a return type for a function.  Vector types can also be used as
-function arguments.  It is possible to cast from one vector type to
-another, provided they are of the same size (in fact, you can also cast
-vectors to and from other datatypes of the same size).
-
- You cannot operate between vectors of different lengths or different
-signedness without a cast.
-
-
-File: llvm.info,  Node: Offsetof,  Next: __sync Builtins,  Prev: Vector Extensions,  Up: C Extensions
-
-6.49 Support for 'offsetof'
-===========================
-
-GCC implements for both C and C++ a syntactic extension to implement the
-'offsetof' macro.
-
-     primary:
-             "__builtin_offsetof" "(" typename "," offsetof_member_designator ")"
-
-     offsetof_member_designator:
-               identifier
-             | offsetof_member_designator "." identifier
-             | offsetof_member_designator "[" expr "]"
-
- This extension is sufficient such that
-
-     #define offsetof(TYPE, MEMBER)  __builtin_offsetof (TYPE, MEMBER)
-
-is a suitable definition of the 'offsetof' macro.  In C++, TYPE may be
-dependent.  In either case, MEMBER may consist of a single identifier,
-or a sequence of member accesses and array references.
-
-
-File: llvm.info,  Node: __sync Builtins,  Next: __atomic Builtins,  Prev: Offsetof,  Up: C Extensions
-
-6.50 Legacy '__sync' Built-in Functions for Atomic Memory Access
-================================================================
-
-The following built-in functions are intended to be compatible with
-those described in the 'Intel Itanium Processor-specific Application
-Binary Interface', section 7.4.  As such, they depart from the normal
-GCC practice of using the '__builtin_' prefix, and further that they are
-overloaded such that they work on multiple types.
-
- The definition given in the Intel documentation allows only for the use
-of the types 'int', 'long', 'long long' as well as their unsigned
-counterparts.  GCC allows any integral scalar or pointer type that is 1,
-2, 4 or 8 bytes in length.
-
- Not all operations are supported by all target processors.  If a
-particular operation cannot be implemented on the target processor, a
-warning is generated and a call an external function is generated.  The
-external function carries the same name as the built-in version, with an
-additional suffix '_N' where N is the size of the data type.
-
- In most cases, these built-in functions are considered a "full
-barrier".  That is, no memory operand is moved across the operation,
-either forward or backward.  Further, instructions are issued as
-necessary to prevent the processor from speculating loads across the
-operation and from queuing stores after the operation.
-
- All of the routines are described in the Intel documentation to take
-"an optional list of variables protected by the memory barrier".  It's
-not clear what is meant by that; it could mean that _only_ the following
-variables are protected, or it could mean that these variables should in
-addition be protected.  At present GCC ignores this list and protects
-all variables that are globally accessible.  If in the future we make
-some use of this list, an empty list will continue to mean all globally
-accessible variables.
-
-'TYPE __sync_fetch_and_add (TYPE *ptr, TYPE value, ...)'
-'TYPE __sync_fetch_and_sub (TYPE *ptr, TYPE value, ...)'
-'TYPE __sync_fetch_and_or (TYPE *ptr, TYPE value, ...)'
-'TYPE __sync_fetch_and_and (TYPE *ptr, TYPE value, ...)'
-'TYPE __sync_fetch_and_xor (TYPE *ptr, TYPE value, ...)'
-'TYPE __sync_fetch_and_nand (TYPE *ptr, TYPE value, ...)'
-     These built-in functions perform the operation suggested by the
-     name, and returns the value that had previously been in memory.
-     That is,
-
-          { tmp = *ptr; *ptr OP= value; return tmp; }
-          { tmp = *ptr; *ptr = ~(tmp & value); return tmp; }   // nand
-
-     _Note:_ GCC 4.4 and later implement '__sync_fetch_and_nand' as
-     '*ptr = ~(tmp & value)' instead of '*ptr = ~tmp & value'.
-
-'TYPE __sync_add_and_fetch (TYPE *ptr, TYPE value, ...)'
-'TYPE __sync_sub_and_fetch (TYPE *ptr, TYPE value, ...)'
-'TYPE __sync_or_and_fetch (TYPE *ptr, TYPE value, ...)'
-'TYPE __sync_and_and_fetch (TYPE *ptr, TYPE value, ...)'
-'TYPE __sync_xor_and_fetch (TYPE *ptr, TYPE value, ...)'
-'TYPE __sync_nand_and_fetch (TYPE *ptr, TYPE value, ...)'
-     These built-in functions perform the operation suggested by the
-     name, and return the new value.  That is,
-
-          { *ptr OP= value; return *ptr; }
-          { *ptr = ~(*ptr & value); return *ptr; }   // nand
-
-     _Note:_ GCC 4.4 and later implement '__sync_nand_and_fetch' as
-     '*ptr = ~(*ptr & value)' instead of '*ptr = ~*ptr & value'.
-
-'bool __sync_bool_compare_and_swap (TYPE *ptr, TYPE oldval, TYPE newval, ...)'
-'TYPE __sync_val_compare_and_swap (TYPE *ptr, TYPE oldval, TYPE newval, ...)'
-     These built-in functions perform an atomic compare and swap.  That
-     is, if the current value of '*PTR' is OLDVAL, then write NEWVAL
-     into '*PTR'.
-
-     The "bool" version returns true if the comparison is successful and
-     NEWVAL is written.  The "val" version returns the contents of
-     '*PTR' before the operation.
-
-'__sync_synchronize (...)'
-     This built-in function issues a full memory barrier.
-
-'TYPE __sync_lock_test_and_set (TYPE *ptr, TYPE value, ...)'
-     This built-in function, as described by Intel, is not a traditional
-     test-and-set operation, but rather an atomic exchange operation.
-     It writes VALUE into '*PTR', and returns the previous contents of
-     '*PTR'.
-
-     Many targets have only minimal support for such locks, and do not
-     support a full exchange operation.  In this case, a target may
-     support reduced functionality here by which the _only_ valid value
-     to store is the immediate constant 1.  The exact value actually
-     stored in '*PTR' is implementation defined.
-
-     This built-in function is not a full barrier, but rather an
-     "acquire barrier".  This means that references after the operation
-     cannot move to (or be speculated to) before the operation, but
-     previous memory stores may not be globally visible yet, and
-     previous memory loads may not yet be satisfied.
-
-'void __sync_lock_release (TYPE *ptr, ...)'
-     This built-in function releases the lock acquired by
-     '__sync_lock_test_and_set'.  Normally this means writing the
-     constant 0 to '*PTR'.
-
-     This built-in function is not a full barrier, but rather a "release
-     barrier".  This means that all previous memory stores are globally
-     visible, and all previous memory loads have been satisfied, but
-     following memory reads are not prevented from being speculated to
-     before the barrier.
-
-
-File: llvm.info,  Node: __atomic Builtins,  Next: Integer Overflow Builtins,  Prev: __sync Builtins,  Up: C Extensions
-
-6.51 Built-in Functions for Memory Model Aware Atomic Operations
-================================================================
-
-The following built-in functions approximately match the requirements
-for C++11 memory model.  Many are similar to the '__sync' prefixed
-built-in functions, but all also have a memory model parameter.  These
-are all identified by being prefixed with '__atomic', and most are
-overloaded such that they work with multiple types.
-
- GCC allows any integral scalar or pointer type that is 1, 2, 4, or 8
-bytes in length.  16-byte integral types are also allowed if '__int128'
-(*note __int128::) is supported by the architecture.
-
- Target architectures are encouraged to provide their own patterns for
-each of these built-in functions.  If no target is provided, the
-original non-memory model set of '__sync' atomic built-in functions are
-utilized, along with any required synchronization fences surrounding it
-in order to achieve the proper behavior.  Execution in this case is
-subject to the same restrictions as those built-in functions.
-
- If there is no pattern or mechanism to provide a lock free instruction
-sequence, a call is made to an external routine with the same parameters
-to be resolved at run time.
-
- The four non-arithmetic functions (load, store, exchange, and
-compare_exchange) all have a generic version as well.  This generic
-version works on any data type.  If the data type size maps to one of
-the integral sizes that may have lock free support, the generic version
-utilizes the lock free built-in function.  Otherwise an external call is
-left to be resolved at run time.  This external call is the same format
-with the addition of a 'size_t' parameter inserted as the first
-parameter indicating the size of the object being pointed to.  All
-objects must be the same size.
-
- There are 6 different memory models that can be specified.  These map
-to the same names in the C++11 standard.  Refer there or to the GCC wiki
-on atomic synchronization
-(http://gcc.gnu.org/wiki/Atomic/GCCMM/AtomicSync) for more detailed
-definitions.  These memory models integrate both barriers to code motion
-as well as synchronization requirements with other threads.  These are
-listed in approximately ascending order of strength.  It is also
-possible to use target specific flags for memory model flags, like
-Hardware Lock Elision.
-
-'__ATOMIC_RELAXED'
-     No barriers or synchronization.
-'__ATOMIC_CONSUME'
-     Data dependency only for both barrier and synchronization with
-     another thread.
-'__ATOMIC_ACQUIRE'
-     Barrier to hoisting of code and synchronizes with release (or
-     stronger) semantic stores from another thread.
-'__ATOMIC_RELEASE'
-     Barrier to sinking of code and synchronizes with acquire (or
-     stronger) semantic loads from another thread.
-'__ATOMIC_ACQ_REL'
-     Full barrier in both directions and synchronizes with acquire loads
-     and release stores in another thread.
-'__ATOMIC_SEQ_CST'
-     Full barrier in both directions and synchronizes with acquire loads
-     and release stores in all threads.
-
- When implementing patterns for these built-in functions, the memory
-model parameter can be ignored as long as the pattern implements the
-most restrictive '__ATOMIC_SEQ_CST' model.  Any of the other memory
-models execute correctly with this memory model but they may not execute
-as efficiently as they could with a more appropriate implementation of
-the relaxed requirements.
-
- Note that the C++11 standard allows for the memory model parameter to
-be determined at run time rather than at compile time.  These built-in
-functions map any run-time value to '__ATOMIC_SEQ_CST' rather than
-invoke a runtime library call or inline a switch statement.  This is
-standard compliant, safe, and the simplest approach for now.
-
- The memory model parameter is a signed int, but only the lower 8 bits
-are reserved for the memory model.  The remainder of the signed int is
-reserved for future use and should be 0.  Use of the predefined atomic
-values ensures proper usage.
-
- -- Built-in Function: TYPE __atomic_load_n (TYPE *ptr, int memmodel)
-     This built-in function implements an atomic load operation.  It
-     returns the contents of '*PTR'.
-
-     The valid memory model variants are '__ATOMIC_RELAXED',
-     '__ATOMIC_SEQ_CST', '__ATOMIC_ACQUIRE', and '__ATOMIC_CONSUME'.
-
- -- Built-in Function: void __atomic_load (TYPE *ptr, TYPE *ret, int
-          memmodel)
-     This is the generic version of an atomic load.  It returns the
-     contents of '*PTR' in '*RET'.
-
- -- Built-in Function: void __atomic_store_n (TYPE *ptr, TYPE val, int
-          memmodel)
-     This built-in function implements an atomic store operation.  It
-     writes 'VAL' into '*PTR'.
-
-     The valid memory model variants are '__ATOMIC_RELAXED',
-     '__ATOMIC_SEQ_CST', and '__ATOMIC_RELEASE'.
-
- -- Built-in Function: void __atomic_store (TYPE *ptr, TYPE *val, int
-          memmodel)
-     This is the generic version of an atomic store.  It stores the
-     value of '*VAL' into '*PTR'.
-
- -- Built-in Function: TYPE __atomic_exchange_n (TYPE *ptr, TYPE val,
-          int memmodel)
-     This built-in function implements an atomic exchange operation.  It
-     writes VAL into '*PTR', and returns the previous contents of
-     '*PTR'.
-
-     The valid memory model variants are '__ATOMIC_RELAXED',
-     '__ATOMIC_SEQ_CST', '__ATOMIC_ACQUIRE', '__ATOMIC_RELEASE', and
-     '__ATOMIC_ACQ_REL'.
-
- -- Built-in Function: void __atomic_exchange (TYPE *ptr, TYPE *val,
-          TYPE *ret, int memmodel)
-     This is the generic version of an atomic exchange.  It stores the
-     contents of '*VAL' into '*PTR'.  The original value of '*PTR' is
-     copied into '*RET'.
-
- -- Built-in Function: bool __atomic_compare_exchange_n (TYPE *ptr, TYPE
-          *expected, TYPE desired, bool weak, int success_memmodel, int
-          failure_memmodel)
-     This built-in function implements an atomic compare and exchange
-     operation.  This compares the contents of '*PTR' with the contents
-     of '*EXPECTED' and if equal, writes DESIRED into '*PTR'.  If they
-     are not equal, the current contents of '*PTR' is written into
-     '*EXPECTED'.  WEAK is true for weak compare_exchange, and false for
-     the strong variation.  Many targets only offer the strong variation
-     and ignore the parameter.  When in doubt, use the strong variation.
-
-     True is returned if DESIRED is written into '*PTR' and the
-     execution is considered to conform to the memory model specified by
-     SUCCESS_MEMMODEL.  There are no restrictions on what memory model
-     can be used here.
-
-     False is returned otherwise, and the execution is considered to
-     conform to FAILURE_MEMMODEL.  This memory model cannot be
-     '__ATOMIC_RELEASE' nor '__ATOMIC_ACQ_REL'.  It also cannot be a
-     stronger model than that specified by SUCCESS_MEMMODEL.
-
- -- Built-in Function: bool __atomic_compare_exchange (TYPE *ptr, TYPE
-          *expected, TYPE *desired, bool weak, int success_memmodel, int
-          failure_memmodel)
-     This built-in function implements the generic version of
-     '__atomic_compare_exchange'.  The function is virtually identical
-     to '__atomic_compare_exchange_n', except the desired value is also
-     a pointer.
-
- -- Built-in Function: TYPE __atomic_add_fetch (TYPE *ptr, TYPE val, int
-          memmodel)
- -- Built-in Function: TYPE __atomic_sub_fetch (TYPE *ptr, TYPE val, int
-          memmodel)
- -- Built-in Function: TYPE __atomic_and_fetch (TYPE *ptr, TYPE val, int
-          memmodel)
- -- Built-in Function: TYPE __atomic_xor_fetch (TYPE *ptr, TYPE val, int
-          memmodel)
- -- Built-in Function: TYPE __atomic_or_fetch (TYPE *ptr, TYPE val, int
-          memmodel)
- -- Built-in Function: TYPE __atomic_nand_fetch (TYPE *ptr, TYPE val,
-          int memmodel)
-     These built-in functions perform the operation suggested by the
-     name, and return the result of the operation.  That is,
-
-          { *ptr OP= val; return *ptr; }
-
-     All memory models are valid.
-
- -- Built-in Function: TYPE __atomic_fetch_add (TYPE *ptr, TYPE val, int
-          memmodel)
- -- Built-in Function: TYPE __atomic_fetch_sub (TYPE *ptr, TYPE val, int
-          memmodel)
- -- Built-in Function: TYPE __atomic_fetch_and (TYPE *ptr, TYPE val, int
-          memmodel)
- -- Built-in Function: TYPE __atomic_fetch_xor (TYPE *ptr, TYPE val, int
-          memmodel)
- -- Built-in Function: TYPE __atomic_fetch_or (TYPE *ptr, TYPE val, int
-          memmodel)
- -- Built-in Function: TYPE __atomic_fetch_nand (TYPE *ptr, TYPE val,
-          int memmodel)
-     These built-in functions perform the operation suggested by the
-     name, and return the value that had previously been in '*PTR'.
-     That is,
-
-          { tmp = *ptr; *ptr OP= val; return tmp; }
-
-     All memory models are valid.
-
- -- Built-in Function: bool __atomic_test_and_set (void *ptr, int
-          memmodel)
-
-     This built-in function performs an atomic test-and-set operation on
-     the byte at '*PTR'.  The byte is set to some implementation defined
-     nonzero "set" value and the return value is 'true' if and only if
-     the previous contents were "set".  It should be only used for
-     operands of type 'bool' or 'char'.  For other types only part of
-     the value may be set.
-
-     All memory models are valid.
-
- -- Built-in Function: void __atomic_clear (bool *ptr, int memmodel)
-
-     This built-in function performs an atomic clear operation on
-     '*PTR'.  After the operation, '*PTR' contains 0.  It should be only
-     used for operands of type 'bool' or 'char' and in conjunction with
-     '__atomic_test_and_set'.  For other types it may only clear
-     partially.  If the type is not 'bool' prefer using
-     '__atomic_store'.
-
-     The valid memory model variants are '__ATOMIC_RELAXED',
-     '__ATOMIC_SEQ_CST', and '__ATOMIC_RELEASE'.
-
- -- Built-in Function: void __atomic_thread_fence (int memmodel)
-
-     This built-in function acts as a synchronization fence between
-     threads based on the specified memory model.
-
-     All memory orders are valid.
-
- -- Built-in Function: void __atomic_signal_fence (int memmodel)
-
-     This built-in function acts as a synchronization fence between a
-     thread and signal handlers based in the same thread.
-
-     All memory orders are valid.
-
- -- Built-in Function: bool __atomic_always_lock_free (size_t size, void
-          *ptr)
-
-     This built-in function returns true if objects of SIZE bytes always
-     generate lock free atomic instructions for the target architecture.
-     SIZE must resolve to a compile-time constant and the result also
-     resolves to a compile-time constant.
-
-     PTR is an optional pointer to the object that may be used to
-     determine alignment.  A value of 0 indicates typical alignment
-     should be used.  The compiler may also ignore this parameter.
-
-          if (_atomic_always_lock_free (sizeof (long long), 0))
-
- -- Built-in Function: bool __atomic_is_lock_free (size_t size, void
-          *ptr)
-
-     This built-in function returns true if objects of SIZE bytes always
-     generate lock free atomic instructions for the target architecture.
-     If it is not known to be lock free a call is made to a runtime
-     routine named '__atomic_is_lock_free'.
-
-     PTR is an optional pointer to the object that may be used to
-     determine alignment.  A value of 0 indicates typical alignment
-     should be used.  The compiler may also ignore this parameter.
-
-
-File: llvm.info,  Node: Integer Overflow Builtins,  Next: x86 specific memory model extensions for transactional memory,  Prev: __atomic Builtins,  Up: C Extensions
-
-6.52 Built-in Functions to Perform Arithmetic with Overflow Checking
-====================================================================
-
-The following built-in functions allow performing simple arithmetic
-operations together with checking whether the operations overflowed.
-
- -- Built-in Function: bool __builtin_add_overflow (TYPE1 a, TYPE2 b,
-          TYPE3 *res)
- -- Built-in Function: bool __builtin_sadd_overflow (int a, int b, int
-          *res)
- -- Built-in Function: bool __builtin_saddl_overflow (long int a, long
-          int b, long int *res)
- -- Built-in Function: bool __builtin_saddll_overflow (long long int a,
-          long long int b, long int *res)
- -- Built-in Function: bool __builtin_uadd_overflow (unsigned int a,
-          unsigned int b, unsigned int *res)
- -- Built-in Function: bool __builtin_uaddl_overflow (unsigned long int
-          a, unsigned long int b, unsigned long int *res)
- -- Built-in Function: bool __builtin_uaddll_overflow (unsigned long
-          long int a, unsigned long long int b, unsigned long int *res)
-
-     These built-in functions promote the first two operands into
-     infinite precision signed type and perform addition on those
-     promoted operands.  The result is then cast to the type the third
-     pointer argument points to and stored there.  If the stored result
-     is equal to the infinite precision result, the built-in functions
-     return false, otherwise they return true.  As the addition is
-     performed in infinite signed precision, these built-in functions
-     have fully defined behavior for all argument values.
-
-     The first built-in function allows arbitrary integral types for
-     operands and the result type must be pointer to some integer type,
-     the rest of the built-in functions have explicit integer types.
-
-     The compiler will attempt to use hardware instructions to implement
-     these built-in functions where possible, like conditional jump on
-     overflow after addition, conditional jump on carry etc.
-
- -- Built-in Function: bool __builtin_sub_overflow (TYPE1 a, TYPE2 b,
-          TYPE3 *res)
- -- Built-in Function: bool __builtin_ssub_overflow (int a, int b, int
-          *res)
- -- Built-in Function: bool __builtin_ssubl_overflow (long int a, long
-          int b, long int *res)
- -- Built-in Function: bool __builtin_ssubll_overflow (long long int a,
-          long long int b, long int *res)
- -- Built-in Function: bool __builtin_usub_overflow (unsigned int a,
-          unsigned int b, unsigned int *res)
- -- Built-in Function: bool __builtin_usubl_overflow (unsigned long int
-          a, unsigned long int b, unsigned long int *res)
- -- Built-in Function: bool __builtin_usubll_overflow (unsigned long
-          long int a, unsigned long long int b, unsigned long int *res)
-
-     These built-in functions are similar to the add overflow checking
-     built-in functions above, except they perform subtraction, subtract
-     the second argument from the first one, instead of addition.
-
- -- Built-in Function: bool __builtin_mul_overflow (TYPE1 a, TYPE2 b,
-          TYPE3 *res)
- -- Built-in Function: bool __builtin_smul_overflow (int a, int b, int
-          *res)
- -- Built-in Function: bool __builtin_smull_overflow (long int a, long
-          int b, long int *res)
- -- Built-in Function: bool __builtin_smulll_overflow (long long int a,
-          long long int b, long int *res)
- -- Built-in Function: bool __builtin_umul_overflow (unsigned int a,
-          unsigned int b, unsigned int *res)
- -- Built-in Function: bool __builtin_umull_overflow (unsigned long int
-          a, unsigned long int b, unsigned long int *res)
- -- Built-in Function: bool __builtin_umulll_overflow (unsigned long
-          long int a, unsigned long long int b, unsigned long int *res)
-
-     These built-in functions are similar to the add overflow checking
-     built-in functions above, except they perform multiplication,
-     instead of addition.
-
-
-File: llvm.info,  Node: x86 specific memory model extensions for transactional memory,  Next: Object Size Checking,  Prev: Integer Overflow Builtins,  Up: C Extensions
-
-6.53 x86-Specific Memory Model Extensions for Transactional Memory
-==================================================================
-
-The x86 architecture supports additional memory ordering flags to mark
-lock critical sections for hardware lock elision.  These must be
-specified in addition to an existing memory model to atomic intrinsics.
-
-'__ATOMIC_HLE_ACQUIRE'
-     Start lock elision on a lock variable.  Memory model must be
-     '__ATOMIC_ACQUIRE' or stronger.
-'__ATOMIC_HLE_RELEASE'
-     End lock elision on a lock variable.  Memory model must be
-     '__ATOMIC_RELEASE' or stronger.
-
- When a lock acquire fails it is required for good performance to abort
-the transaction quickly.  This can be done with a '_mm_pause'
-
-     #include <immintrin.h> // For _mm_pause
-
-     int lockvar;
-
-     /* Acquire lock with lock elision */
-     while (__atomic_exchange_n(&lockvar, 1, __ATOMIC_ACQUIRE|__ATOMIC_HLE_ACQUIRE))
-         _mm_pause(); /* Abort failed transaction */
-     ...
-     /* Free lock with lock elision */
-     __atomic_store_n(&lockvar, 0, __ATOMIC_RELEASE|__ATOMIC_HLE_RELEASE);
-
-
-File: llvm.info,  Node: Object Size Checking,  Next: Pointer Bounds Checker builtins,  Prev: x86 specific memory model extensions for transactional memory,  Up: C Extensions
-
-6.54 Object Size Checking Built-in Functions
-============================================
-
-GCC implements a limited buffer overflow protection mechanism that can
-prevent some buffer overflow attacks.
-
- -- Built-in Function: size_t __builtin_object_size (void * PTR, int
-          TYPE)
-     is a built-in construct that returns a constant number of bytes
-     from PTR to the end of the object PTR pointer points to (if known
-     at compile time).  '__builtin_object_size' never evaluates its
-     arguments for side-effects.  If there are any side-effects in them,
-     it returns '(size_t) -1' for TYPE 0 or 1 and '(size_t) 0' for TYPE
-     2 or 3.  If there are multiple objects PTR can point to and all of
-     them are known at compile time, the returned number is the maximum
-     of remaining byte counts in those objects if TYPE & 2 is 0 and
-     minimum if nonzero.  If it is not possible to determine which
-     objects PTR points to at compile time, '__builtin_object_size'
-     should return '(size_t) -1' for TYPE 0 or 1 and '(size_t) 0' for
-     TYPE 2 or 3.
-
-     TYPE is an integer constant from 0 to 3.  If the least significant
-     bit is clear, objects are whole variables, if it is set, a closest
-     surrounding subobject is considered the object a pointer points to.
-     The second bit determines if maximum or minimum of remaining bytes
-     is computed.
-
-          struct V { char buf1[10]; int b; char buf2[10]; } var;
-          char *p = &var.buf1[1], *q = &var.b;
-
-          /* Here the object p points to is var.  */
-          assert (__builtin_object_size (p, 0) == sizeof (var) - 1);
-          /* The subobject p points to is var.buf1.  */
-          assert (__builtin_object_size (p, 1) == sizeof (var.buf1) - 1);
-          /* The object q points to is var.  */
-          assert (__builtin_object_size (q, 0)
-                  == (char *) (&var + 1) - (char *) &var.b);
-          /* The subobject q points to is var.b.  */
-          assert (__builtin_object_size (q, 1) == sizeof (var.b));
-
- There are built-in functions added for many common string operation
-functions, e.g., for 'memcpy' '__builtin___memcpy_chk' built-in is
-provided.  This built-in has an additional last argument, which is the
-number of bytes remaining in object the DEST argument points to or
-'(size_t) -1' if the size is not known.
-
- The built-in functions are optimized into the normal string functions
-like 'memcpy' if the last argument is '(size_t) -1' or if it is known at
-compile time that the destination object will not be overflown.  If the
-compiler can determine at compile time the object will be always
-overflown, it issues a warning.
-
- The intended use can be e.g.
-
-     #undef memcpy
-     #define bos0(dest) __builtin_object_size (dest, 0)
-     #define memcpy(dest, src, n) \
-       __builtin___memcpy_chk (dest, src, n, bos0 (dest))
-
-     char *volatile p;
-     char buf[10];
-     /* It is unknown what object p points to, so this is optimized
-        into plain memcpy - no checking is possible.  */
-     memcpy (p, "abcde", n);
-     /* Destination is known and length too.  It is known at compile
-        time there will be no overflow.  */
-     memcpy (&buf[5], "abcde", 5);
-     /* Destination is known, but the length is not known at compile time.
-        This will result in __memcpy_chk call that can check for overflow
-        at run time.  */
-     memcpy (&buf[5], "abcde", n);
-     /* Destination is known and it is known at compile time there will
-        be overflow.  There will be a warning and __memcpy_chk call that
-        will abort the program at run time.  */
-     memcpy (&buf[6], "abcde", 5);
-
- Such built-in functions are provided for 'memcpy', 'mempcpy',
-'memmove', 'memset', 'strcpy', 'stpcpy', 'strncpy', 'strcat' and
-'strncat'.
-
- There are also checking built-in functions for formatted output
-functions.
-     int __builtin___sprintf_chk (char *s, int flag, size_t os, const char *fmt, ...);
-     int __builtin___snprintf_chk (char *s, size_t maxlen, int flag, size_t os,
-                                   const char *fmt, ...);
-     int __builtin___vsprintf_chk (char *s, int flag, size_t os, const char *fmt,
-                                   va_list ap);
-     int __builtin___vsnprintf_chk (char *s, size_t maxlen, int flag, size_t os,
-                                    const char *fmt, va_list ap);
-
- The added FLAG argument is passed unchanged to '__sprintf_chk' etc.
-functions and can contain implementation specific flags on what
-additional security measures the checking function might take, such as
-handling '%n' differently.
-
- The OS argument is the object size S points to, like in the other
-built-in functions.  There is a small difference in the behavior though,
-if OS is '(size_t) -1', the built-in functions are optimized into the
-non-checking functions only if FLAG is 0, otherwise the checking
-function is called with OS argument set to '(size_t) -1'.
-
- In addition to this, there are checking built-in functions
-'__builtin___printf_chk', '__builtin___vprintf_chk',
-'__builtin___fprintf_chk' and '__builtin___vfprintf_chk'.  These have
-just one additional argument, FLAG, right before format string FMT.  If
-the compiler is able to optimize them to 'fputc' etc. functions, it
-does, otherwise the checking function is called and the FLAG argument
-passed to it.
-
-
-File: llvm.info,  Node: Pointer Bounds Checker builtins,  Next: Cilk Plus Builtins,  Prev: Object Size Checking,  Up: C Extensions
-
-6.55 Pointer Bounds Checker Built-in Functions
-==============================================
-
-GCC provides a set of built-in functions to control Pointer Bounds
-Checker instrumentation.  Note that all Pointer Bounds Checker builtins
-are allowed to use even if you compile with Pointer Bounds Checker off.
-The builtins behavior may differ in such case as documented below.
-
- -- Built-in Function: void * __builtin___bnd_set_ptr_bounds (const void
-          * Q, size_t SIZE)
-
-     This built-in function returns a new pointer with the value of Q,
-     and associate it with the bounds [Q, Q+SIZE-1].  With Pointer
-     Bounds Checker off built-in function just returns the first
-     argument.
-
-          extern void *__wrap_malloc (size_t n)
-          {
-            void *p = (void *)__real_malloc (n);
-            if (!p) return __builtin___bnd_null_ptr_bounds (p);
-            return __builtin___bnd_set_ptr_bounds (p, n);
-          }
-
- -- Built-in Function: void * __builtin___bnd_narrow_ptr_bounds (const
-          void * P, const void * Q, size_t SIZE)
-
-     This built-in function returns a new pointer with the value of P
-     and associate it with the narrowed bounds formed by the
-     intersection of bounds associated with Q and the [P, P + SIZE - 1].
-     With Pointer Bounds Checker off built-in function just returns the
-     first argument.
-
-          void init_objects (object *objs, size_t size)
-          {
-            size_t i;
-            /* Initialize objects one-by-one passing pointers with bounds of an object,
-               not the full array of objects.  */
-            for (i = 0; i < size; i++)
-              init_object (__builtin___bnd_narrow_ptr_bounds (objs + i, objs, sizeof(object)));
-          }
-
- -- Built-in Function: void * __builtin___bnd_copy_ptr_bounds (const
-          void * Q, const void * R)
-
-     This built-in function returns a new pointer with the value of Q,
-     and associate it with the bounds already associated with pointer R.
-     With Pointer Bounds Checker off built-in function just returns the
-     first argument.
-
-          /* Here is a way to get pointer to object's field but
-             still with the full object's bounds.  */
-          int *field_ptr = __builtin___bnd_copy_ptr_bounds (&objptr->int_filed, objptr);
-
- -- Built-in Function: void * __builtin___bnd_init_ptr_bounds (const
-          void * Q)
-
-     This built-in function returns a new pointer with the value of Q,
-     and associate it with INIT (allowing full memory access) bounds.
-     With Pointer Bounds Checker off built-in function just returns the
-     first argument.
-
- -- Built-in Function: void * __builtin___bnd_null_ptr_bounds (const
-          void * Q)
-
-     This built-in function returns a new pointer with the value of Q,
-     and associate it with NULL (allowing no memory access) bounds.
-     With Pointer Bounds Checker off built-in function just returns the
-     first argument.
-
- -- Built-in Function: void __builtin___bnd_store_ptr_bounds (const void
-          ** PTR_ADDR, const void * PTR_VAL)
-
-     This built-in function stores the bounds associated with pointer
-     PTR_VAL and location PTR_ADDR into Bounds Table.  This can be
-     useful to propagate bounds from legacy code without touching the
-     associated pointer's memory when pointers were copied as integers.
-     With Pointer Bounds Checker off built-in function call is ignored.
-
- -- Built-in Function: void __builtin___bnd_chk_ptr_lbounds (const void
-          * Q)
-
-     This built-in function checks if the pointer Q is within the lower
-     bound of its associated bounds.  With Pointer Bounds Checker off
-     built-in function call is ignored.
-
-          extern void *__wrap_memset (void *dst, int c, size_t len)
-          {
-            if (len > 0)
-              {
-                __builtin___bnd_chk_ptr_lbounds (dst);
-                __builtin___bnd_chk_ptr_ubounds ((char *)dst + len - 1);
-                __real_memset (dst, c, len);
-              }
-            return dst;
-          }
-
- -- Built-in Function: void __builtin___bnd_chk_ptr_ubounds (const void
-          * Q)
-
-     This built-in function checks if the pointer Q is within the upper
-     bound of its associated bounds.  With Pointer Bounds Checker off
-     built-in function call is ignored.
-
- -- Built-in Function: void __builtin___bnd_chk_ptr_bounds (const void *
-          Q, size_t SIZE)
-
-     This built-in function checks if [Q, Q + SIZE - 1] is within the
-     lower and upper bounds associated with Q.  With Pointer Bounds
-     Checker off built-in function call is ignored.
-
-          extern void *__wrap_memcpy (void *dst, const void *src, size_t n)
-          {
-            if (n > 0)
-              {
-                __bnd_chk_ptr_bounds (dst, n);
-                __bnd_chk_ptr_bounds (src, n);
-                __real_memcpy (dst, src, n);
-              }
-            return dst;
-          }
-
- -- Built-in Function: const void * __builtin___bnd_get_ptr_lbound
-          (const void * Q)
-
-     This built-in function returns the lower bound (which is a pointer)
-     associated with the pointer Q.  This is at least useful for
-     debugging using printf.  With Pointer Bounds Checker off built-in
-     function returns 0.
-
-          void *lb = __builtin___bnd_get_ptr_lbound (q);
-          void *ub = __builtin___bnd_get_ptr_ubound (q);
-          printf ("q = %p  lb(q) = %p  ub(q) = %p", q, lb, ub);
-
- -- Built-in Function: const void * __builtin___bnd_get_ptr_ubound
-          (const void * Q)
-
-     This built-in function returns the upper bound (which is a pointer)
-     associated with the pointer Q.  With Pointer Bounds Checker off
-     built-in function returns -1.
-
-
-File: llvm.info,  Node: Cilk Plus Builtins,  Next: Other Builtins,  Prev: Pointer Bounds Checker builtins,  Up: C Extensions
-
-6.56 Cilk Plus C/C++ Language Extension Built-in Functions
-==========================================================
-
-GCC provides support for the following built-in reduction functions if
-Cilk Plus is enabled.  Cilk Plus can be enabled using the '-fcilkplus'
-flag.
-
-   * __sec_implicit_index
-   * __sec_reduce
-   * __sec_reduce_add
-   * __sec_reduce_all_nonzero
-   * __sec_reduce_all_zero
-   * __sec_reduce_any_nonzero
-   * __sec_reduce_any_zero
-   * __sec_reduce_max
-   * __sec_reduce_min
-   * __sec_reduce_max_ind
-   * __sec_reduce_min_ind
-   * __sec_reduce_mul
-   * __sec_reduce_mutating
-
- Further details and examples about these built-in functions are
-described in the Cilk Plus language manual which can be found at
-<http://www.cilkplus.org>.
-
-
-File: llvm.info,  Node: Other Builtins,  Next: Target Builtins,  Prev: Cilk Plus Builtins,  Up: C Extensions
-
-6.57 Other Built-in Functions Provided by GCC
-=============================================
-
-GCC provides a large number of built-in functions other than the ones
-mentioned above.  Some of these are for internal use in the processing
-of exceptions or variable-length argument lists and are not documented
-here because they may change from time to time; we do not recommend
-general use of these functions.
-
- The remaining functions are provided for optimization purposes.
-
- GCC includes built-in versions of many of the functions in the standard
-C library.  The versions prefixed with '__builtin_' are always treated
-as having the same meaning as the C library function even if you specify
-the '-fno-builtin' option.  (*note C Dialect Options::) Many of these
-functions are only optimized in certain cases; if they are not optimized
-in a particular case, a call to the library function is emitted.
-
- Outside strict ISO C mode ('-ansi', '-std=c90', '-std=c99' or
-'-std=c11'), the functions '_exit', 'alloca', 'bcmp', 'bzero',
-'dcgettext', 'dgettext', 'dremf', 'dreml', 'drem', 'exp10f', 'exp10l',
-'exp10', 'ffsll', 'ffsl', 'ffs', 'fprintf_unlocked', 'fputs_unlocked',
-'gammaf', 'gammal', 'gamma', 'gammaf_r', 'gammal_r', 'gamma_r',
-'gettext', 'index', 'isascii', 'j0f', 'j0l', 'j0', 'j1f', 'j1l', 'j1',
-'jnf', 'jnl', 'jn', 'lgammaf_r', 'lgammal_r', 'lgamma_r', 'mempcpy',
-'pow10f', 'pow10l', 'pow10', 'printf_unlocked', 'rindex', 'scalbf',
-'scalbl', 'scalb', 'signbit', 'signbitf', 'signbitl', 'signbitd32',
-'signbitd64', 'signbitd128', 'significandf', 'significandl',
-'significand', 'sincosf', 'sincosl', 'sincos', 'stpcpy', 'stpncpy',
-'strcasecmp', 'strdup', 'strfmon', 'strncasecmp', 'strndup', 'toascii',
-'y0f', 'y0l', 'y0', 'y1f', 'y1l', 'y1', 'ynf', 'ynl' and 'yn' may be
-handled as built-in functions.  All these functions have corresponding
-versions prefixed with '__builtin_', which may be used even in strict
-C90 mode.
-
- The ISO C99 functions '_Exit', 'acoshf', 'acoshl', 'acosh', 'asinhf',
-'asinhl', 'asinh', 'atanhf', 'atanhl', 'atanh', 'cabsf', 'cabsl',
-'cabs', 'cacosf', 'cacoshf', 'cacoshl', 'cacosh', 'cacosl', 'cacos',
-'cargf', 'cargl', 'carg', 'casinf', 'casinhf', 'casinhl', 'casinh',
-'casinl', 'casin', 'catanf', 'catanhf', 'catanhl', 'catanh', 'catanl',
-'catan', 'cbrtf', 'cbrtl', 'cbrt', 'ccosf', 'ccoshf', 'ccoshl', 'ccosh',
-'ccosl', 'ccos', 'cexpf', 'cexpl', 'cexp', 'cimagf', 'cimagl', 'cimag',
-'clogf', 'clogl', 'clog', 'conjf', 'conjl', 'conj', 'copysignf',
-'copysignl', 'copysign', 'cpowf', 'cpowl', 'cpow', 'cprojf', 'cprojl',
-'cproj', 'crealf', 'creall', 'creal', 'csinf', 'csinhf', 'csinhl',
-'csinh', 'csinl', 'csin', 'csqrtf', 'csqrtl', 'csqrt', 'ctanf',
-'ctanhf', 'ctanhl', 'ctanh', 'ctanl', 'ctan', 'erfcf', 'erfcl', 'erfc',
-'erff', 'erfl', 'erf', 'exp2f', 'exp2l', 'exp2', 'expm1f', 'expm1l',
-'expm1', 'fdimf', 'fdiml', 'fdim', 'fmaf', 'fmal', 'fmaxf', 'fmaxl',
-'fmax', 'fma', 'fminf', 'fminl', 'fmin', 'hypotf', 'hypotl', 'hypot',
-'ilogbf', 'ilogbl', 'ilogb', 'imaxabs', 'isblank', 'iswblank',
-'lgammaf', 'lgammal', 'lgamma', 'llabs', 'llrintf', 'llrintl', 'llrint',
-'llroundf', 'llroundl', 'llround', 'log1pf', 'log1pl', 'log1p', 'log2f',
-'log2l', 'log2', 'logbf', 'logbl', 'logb', 'lrintf', 'lrintl', 'lrint',
-'lroundf', 'lroundl', 'lround', 'nearbyintf', 'nearbyintl', 'nearbyint',
-'nextafterf', 'nextafterl', 'nextafter', 'nexttowardf', 'nexttowardl',
-'nexttoward', 'remainderf', 'remainderl', 'remainder', 'remquof',
-'remquol', 'remquo', 'rintf', 'rintl', 'rint', 'roundf', 'roundl',
-'round', 'scalblnf', 'scalblnl', 'scalbln', 'scalbnf', 'scalbnl',
-'scalbn', 'snprintf', 'tgammaf', 'tgammal', 'tgamma', 'truncf',
-'truncl', 'trunc', 'vfscanf', 'vscanf', 'vsnprintf' and 'vsscanf' are
-handled as built-in functions except in strict ISO C90 mode ('-ansi' or
-'-std=c90').
-
- There are also built-in versions of the ISO C99 functions 'acosf',
-'acosl', 'asinf', 'asinl', 'atan2f', 'atan2l', 'atanf', 'atanl',
-'ceilf', 'ceill', 'cosf', 'coshf', 'coshl', 'cosl', 'expf', 'expl',
-'fabsf', 'fabsl', 'floorf', 'floorl', 'fmodf', 'fmodl', 'frexpf',
-'frexpl', 'ldexpf', 'ldexpl', 'log10f', 'log10l', 'logf', 'logl',
-'modfl', 'modf', 'powf', 'powl', 'sinf', 'sinhf', 'sinhl', 'sinl',
-'sqrtf', 'sqrtl', 'tanf', 'tanhf', 'tanhl' and 'tanl' that are
-recognized in any mode since ISO C90 reserves these names for the
-purpose to which ISO C99 puts them.  All these functions have
-corresponding versions prefixed with '__builtin_'.
-
- The ISO C94 functions 'iswalnum', 'iswalpha', 'iswcntrl', 'iswdigit',
-'iswgraph', 'iswlower', 'iswprint', 'iswpunct', 'iswspace', 'iswupper',
-'iswxdigit', 'towlower' and 'towupper' are handled as built-in functions
-except in strict ISO C90 mode ('-ansi' or '-std=c90').
-
- The ISO C90 functions 'abort', 'abs', 'acos', 'asin', 'atan2', 'atan',
-'calloc', 'ceil', 'cosh', 'cos', 'exit', 'exp', 'fabs', 'floor', 'fmod',
-'fprintf', 'fputs', 'frexp', 'fscanf', 'isalnum', 'isalpha', 'iscntrl',
-'isdigit', 'isgraph', 'islower', 'isprint', 'ispunct', 'isspace',
-'isupper', 'isxdigit', 'tolower', 'toupper', 'labs', 'ldexp', 'log10',
-'log', 'malloc', 'memchr', 'memcmp', 'memcpy', 'memset', 'modf', 'pow',
-'printf', 'putchar', 'puts', 'scanf', 'sinh', 'sin', 'snprintf',
-'sprintf', 'sqrt', 'sscanf', 'strcat', 'strchr', 'strcmp', 'strcpy',
-'strcspn', 'strlen', 'strncat', 'strncmp', 'strncpy', 'strpbrk',
-'strrchr', 'strspn', 'strstr', 'tanh', 'tan', 'vfprintf', 'vprintf' and
-'vsprintf' are all recognized as built-in functions unless
-'-fno-builtin' is specified (or '-fno-builtin-FUNCTION' is specified for
-an individual function).  All of these functions have corresponding
-versions prefixed with '__builtin_'.
-
- GCC provides built-in versions of the ISO C99 floating-point comparison
-macros that avoid raising exceptions for unordered operands.  They have
-the same names as the standard macros ( 'isgreater', 'isgreaterequal',
-'isless', 'islessequal', 'islessgreater', and 'isunordered') , with
-'__builtin_' prefixed.  We intend for a library implementor to be able
-to simply '#define' each standard macro to its built-in equivalent.  In
-the same fashion, GCC provides 'fpclassify', 'isfinite', 'isinf_sign'
-and 'isnormal' built-ins used with '__builtin_' prefixed.  The 'isinf'
-and 'isnan' built-in functions appear both with and without the
-'__builtin_' prefix.
-
- -- Built-in Function: int __builtin_types_compatible_p (TYPE1, TYPE2)
-
-     You can use the built-in function '__builtin_types_compatible_p' to
-     determine whether two types are the same.
-
-     This built-in function returns 1 if the unqualified versions of the
-     types TYPE1 and TYPE2 (which are types, not expressions) are
-     compatible, 0 otherwise.  The result of this built-in function can
-     be used in integer constant expressions.
-
-     This built-in function ignores top level qualifiers (e.g., 'const',
-     'volatile').  For example, 'int' is equivalent to 'const int'.
-
-     The type 'int[]' and 'int[5]' are compatible.  On the other hand,
-     'int' and 'char *' are not compatible, even if the size of their
-     types, on the particular architecture are the same.  Also, the
-     amount of pointer indirection is taken into account when
-     determining similarity.  Consequently, 'short *' is not similar to
-     'short **'.  Furthermore, two types that are typedefed are
-     considered compatible if their underlying types are compatible.
-
-     An 'enum' type is not considered to be compatible with another
-     'enum' type even if both are compatible with the same integer type;
-     this is what the C standard specifies.  For example, 'enum {foo,
-     bar}' is not similar to 'enum {hot, dog}'.
-
-     You typically use this function in code whose execution varies
-     depending on the arguments' types.  For example:
-
-          #define foo(x)                                                  \
-            ({                                                           \
-              typeof (x) tmp = (x);                                       \
-              if (__builtin_types_compatible_p (typeof (x), long double)) \
-                tmp = foo_long_double (tmp);                              \
-              else if (__builtin_types_compatible_p (typeof (x), double)) \
-                tmp = foo_double (tmp);                                   \
-              else if (__builtin_types_compatible_p (typeof (x), float))  \
-                tmp = foo_float (tmp);                                    \
-              else                                                        \
-                abort ();                                                 \
-              tmp;                                                        \
-            })
-
-     _Note:_ This construct is only available for C.
-
- -- Built-in Function: TYPE __builtin_call_with_static_chain (CALL_EXP,
-          POINTER_EXP)
-
-     The CALL_EXP expression must be a function call, and the
-     POINTER_EXP expression must be a pointer.  The POINTER_EXP is
-     passed to the function call in the target's static chain location.
-     The result of builtin is the result of the function call.
-
-     _Note:_ This builtin is only available for C.  This builtin can be
-     used to call Go closures from C.
-
- -- Built-in Function: TYPE __builtin_choose_expr (CONST_EXP, EXP1,
-          EXP2)
-
-     You can use the built-in function '__builtin_choose_expr' to
-     evaluate code depending on the value of a constant expression.
-     This built-in function returns EXP1 if CONST_EXP, which is an
-     integer constant expression, is nonzero.  Otherwise it returns
-     EXP2.
-
-     This built-in function is analogous to the '? :' operator in C,
-     except that the expression returned has its type unaltered by
-     promotion rules.  Also, the built-in function does not evaluate the
-     expression that is not chosen.  For example, if CONST_EXP evaluates
-     to true, EXP2 is not evaluated even if it has side-effects.
-
-     This built-in function can return an lvalue if the chosen argument
-     is an lvalue.
-
-     If EXP1 is returned, the return type is the same as EXP1's type.
-     Similarly, if EXP2 is returned, its return type is the same as
-     EXP2.
-
-     Example:
-
-          #define foo(x)                                                    \
-            __builtin_choose_expr (                                         \
-              __builtin_types_compatible_p (typeof (x), double),            \
-              foo_double (x),                                               \
-              __builtin_choose_expr (                                       \
-                __builtin_types_compatible_p (typeof (x), float),           \
-                foo_float (x),                                              \
-                /* The void expression results in a compile-time error  \
-                   when assigning the result to something.  */          \
-                (void)0))
-
-     _Note:_ This construct is only available for C.  Furthermore, the
-     unused expression (EXP1 or EXP2 depending on the value of
-     CONST_EXP) may still generate syntax errors.  This may change in
-     future revisions.
-
- -- Built-in Function: TYPE __builtin_complex (REAL, IMAG)
-
-     The built-in function '__builtin_complex' is provided for use in
-     implementing the ISO C11 macros 'CMPLXF', 'CMPLX' and 'CMPLXL'.
-     REAL and IMAG must have the same type, a real binary floating-point
-     type, and the result has the corresponding complex type with real
-     and imaginary parts REAL and IMAG.  Unlike 'REAL + I * IMAG', this
-     works even when infinities, NaNs and negative zeros are involved.
-
- -- Built-in Function: int __builtin_constant_p (EXP)
-     You can use the built-in function '__builtin_constant_p' to
-     determine if a value is known to be constant at compile time and
-     hence that GCC can perform constant-folding on expressions
-     involving that value.  The argument of the function is the value to
-     test.  The function returns the integer 1 if the argument is known
-     to be a compile-time constant and 0 if it is not known to be a
-     compile-time constant.  A return of 0 does not indicate that the
-     value is _not_ a constant, but merely that GCC cannot prove it is a
-     constant with the specified value of the '-O' option.
-
-     You typically use this function in an embedded application where
-     memory is a critical resource.  If you have some complex
-     calculation, you may want it to be folded if it involves constants,
-     but need to call a function if it does not.  For example:
-
-          #define Scale_Value(X)      \
-            (__builtin_constant_p (X) \
-            ? ((X) * SCALE + OFFSET) : Scale (X))
-
-     You may use this built-in function in either a macro or an inline
-     function.  However, if you use it in an inlined function and pass
-     an argument of the function as the argument to the built-in, GCC
-     never returns 1 when you call the inline function with a string
-     constant or compound literal (*note Compound Literals::) and does
-     not return 1 when you pass a constant numeric value to the inline
-     function unless you specify the '-O' option.
-
-     You may also use '__builtin_constant_p' in initializers for static
-     data.  For instance, you can write
-
-          static const int table[] = {
-             __builtin_constant_p (EXPRESSION) ? (EXPRESSION) : -1,
-             /* ... */
-          };
-
-     This is an acceptable initializer even if EXPRESSION is not a
-     constant expression, including the case where
-     '__builtin_constant_p' returns 1 because EXPRESSION can be folded
-     to a constant but EXPRESSION contains operands that are not
-     otherwise permitted in a static initializer (for example, '0 && foo
-     ()').  GCC must be more conservative about evaluating the built-in
-     in this case, because it has no opportunity to perform
-     optimization.
-
- -- Built-in Function: long __builtin_expect (long EXP, long C)
-     You may use '__builtin_expect' to provide the compiler with branch
-     prediction information.  In general, you should prefer to use
-     actual profile feedback for this ('-fprofile-arcs'), as programmers
-     are notoriously bad at predicting how their programs actually
-     perform.  However, there are applications in which this data is
-     hard to collect.
-
-     The return value is the value of EXP, which should be an integral
-     expression.  The semantics of the built-in are that it is expected
-     that EXP == C.  For example:
-
-          if (__builtin_expect (x, 0))
-            foo ();
-
-     indicates that we do not expect to call 'foo', since we expect 'x'
-     to be zero.  Since you are limited to integral expressions for EXP,
-     you should use constructions such as
-
-          if (__builtin_expect (ptr != NULL, 1))
-            foo (*ptr);
-
-     when testing pointer or floating-point values.
-
- -- Built-in Function: void __builtin_trap (void)
-     This function causes the program to exit abnormally.  GCC
-     implements this function by using a target-dependent mechanism
-     (such as intentionally executing an illegal instruction) or by
-     calling 'abort'.  The mechanism used may vary from release to
-     release so you should not rely on any particular implementation.
-
- -- Built-in Function: void __builtin_unreachable (void)
-     If control flow reaches the point of the '__builtin_unreachable',
-     the program is undefined.  It is useful in situations where the
-     compiler cannot deduce the unreachability of the code.
-
-     One such case is immediately following an 'asm' statement that
-     either never terminates, or one that transfers control elsewhere
-     and never returns.  In this example, without the
-     '__builtin_unreachable', GCC issues a warning that control reaches
-     the end of a non-void function.  It also generates code to return
-     after the 'asm'.
-
-          int f (int c, int v)
-          {
-            if (c)
-              {
-                return v;
-              }
-            else
-              {
-                asm("jmp error_handler");
-                __builtin_unreachable ();
-              }
-          }
-
-     Because the 'asm' statement unconditionally transfers control out
-     of the function, control never reaches the end of the function
-     body.  The '__builtin_unreachable' is in fact unreachable and
-     communicates this fact to the compiler.
-
-     Another use for '__builtin_unreachable' is following a call a
-     function that never returns but that is not declared
-     '__attribute__((noreturn))', as in this example:
-
-          void function_that_never_returns (void);
-
-          int g (int c)
-          {
-            if (c)
-              {
-                return 1;
-              }
-            else
-              {
-                function_that_never_returns ();
-                __builtin_unreachable ();
-              }
-          }
-
- -- Built-in Function: void *__builtin_assume_aligned (const void *EXP,
-          size_t ALIGN, ...)
-     This function returns its first argument, and allows the compiler
-     to assume that the returned pointer is at least ALIGN bytes
-     aligned.  This built-in can have either two or three arguments, if
-     it has three, the third argument should have integer type, and if
-     it is nonzero means misalignment offset.  For example:
-
-          void *x = __builtin_assume_aligned (arg, 16);
-
-     means that the compiler can assume 'x', set to 'arg', is at least
-     16-byte aligned, while:
-
-          void *x = __builtin_assume_aligned (arg, 32, 8);
-
-     means that the compiler can assume for 'x', set to 'arg', that
-     '(char *) x - 8' is 32-byte aligned.
-
- -- Built-in Function: int __builtin_LINE ()
-     This function is the equivalent to the preprocessor '__LINE__'
-     macro and returns the line number of the invocation of the
-     built-in.  In a C++ default argument for a function F, it gets the
-     line number of the call to F.
-
- -- Built-in Function: const char * __builtin_FUNCTION ()
-     This function is the equivalent to the preprocessor '__FUNCTION__'
-     macro and returns the function name the invocation of the built-in
-     is in.
-
- -- Built-in Function: const char * __builtin_FILE ()
-     This function is the equivalent to the preprocessor '__FILE__'
-     macro and returns the file name the invocation of the built-in is
-     in.  In a C++ default argument for a function F, it gets the file
-     name of the call to F.
-
- -- Built-in Function: void __builtin___clear_cache (char *BEGIN, char
-          *END)
-     This function is used to flush the processor's instruction cache
-     for the region of memory between BEGIN inclusive and END exclusive.
-     Some targets require that the instruction cache be flushed, after
-     modifying memory containing code, in order to obtain deterministic
-     behavior.
-
-     If the target does not require instruction cache flushes,
-     '__builtin___clear_cache' has no effect.  Otherwise either
-     instructions are emitted in-line to clear the instruction cache or
-     a call to the '__clear_cache' function in libgcc is made.
-
- -- Built-in Function: void __builtin_prefetch (const void *ADDR, ...)
-     This function is used to minimize cache-miss latency by moving data
-     into a cache before it is accessed.  You can insert calls to
-     '__builtin_prefetch' into code for which you know addresses of data
-     in memory that is likely to be accessed soon.  If the target
-     supports them, data prefetch instructions are generated.  If the
-     prefetch is done early enough before the access then the data will
-     be in the cache by the time it is accessed.
-
-     The value of ADDR is the address of the memory to prefetch.  There
-     are two optional arguments, RW and LOCALITY.  The value of RW is a
-     compile-time constant one or zero; one means that the prefetch is
-     preparing for a write to the memory address and zero, the default,
-     means that the prefetch is preparing for a read.  The value
-     LOCALITY must be a compile-time constant integer between zero and
-     three.  A value of zero means that the data has no temporal
-     locality, so it need not be left in the cache after the access.  A
-     value of three means that the data has a high degree of temporal
-     locality and should be left in all levels of cache possible.
-     Values of one and two mean, respectively, a low or moderate degree
-     of temporal locality.  The default is three.
-
-          for (i = 0; i < n; i++)
-            {
-              a[i] = a[i] + b[i];
-              __builtin_prefetch (&a[i+j], 1, 1);
-              __builtin_prefetch (&b[i+j], 0, 1);
-              /* ... */
-            }
-
-     Data prefetch does not generate faults if ADDR is invalid, but the
-     address expression itself must be valid.  For example, a prefetch
-     of 'p->next' does not fault if 'p->next' is not a valid address,
-     but evaluation faults if 'p' is not a valid address.
-
-     If the target does not support data prefetch, the address
-     expression is evaluated if it includes side effects but no other
-     code is generated and GCC does not issue a warning.
-
- -- Built-in Function: double __builtin_huge_val (void)
-     Returns a positive infinity, if supported by the floating-point
-     format, else 'DBL_MAX'.  This function is suitable for implementing
-     the ISO C macro 'HUGE_VAL'.
-
- -- Built-in Function: float __builtin_huge_valf (void)
-     Similar to '__builtin_huge_val', except the return type is 'float'.
-
- -- Built-in Function: long double __builtin_huge_vall (void)
-     Similar to '__builtin_huge_val', except the return type is 'long
-     double'.
-
- -- Built-in Function: int __builtin_fpclassify (int, int, int, int,
-          int, ...)
-     This built-in implements the C99 fpclassify functionality.  The
-     first five int arguments should be the target library's notion of
-     the possible FP classes and are used for return values.  They must
-     be constant values and they must appear in this order: 'FP_NAN',
-     'FP_INFINITE', 'FP_NORMAL', 'FP_SUBNORMAL' and 'FP_ZERO'.  The
-     ellipsis is for exactly one floating-point value to classify.  GCC
-     treats the last argument as type-generic, which means it does not
-     do default promotion from float to double.
-
- -- Built-in Function: double __builtin_inf (void)
-     Similar to '__builtin_huge_val', except a warning is generated if
-     the target floating-point format does not support infinities.
-
- -- Built-in Function: _Decimal32 __builtin_infd32 (void)
-     Similar to '__builtin_inf', except the return type is '_Decimal32'.
-
- -- Built-in Function: _Decimal64 __builtin_infd64 (void)
-     Similar to '__builtin_inf', except the return type is '_Decimal64'.
-
- -- Built-in Function: _Decimal128 __builtin_infd128 (void)
-     Similar to '__builtin_inf', except the return type is
-     '_Decimal128'.
-
- -- Built-in Function: float __builtin_inff (void)
-     Similar to '__builtin_inf', except the return type is 'float'.
-     This function is suitable for implementing the ISO C99 macro
-     'INFINITY'.
-
- -- Built-in Function: long double __builtin_infl (void)
-     Similar to '__builtin_inf', except the return type is 'long
-     double'.
-
- -- Built-in Function: int __builtin_isinf_sign (...)
-     Similar to 'isinf', except the return value is -1 for an argument
-     of '-Inf' and 1 for an argument of '+Inf'.  Note while the
-     parameter list is an ellipsis, this function only accepts exactly
-     one floating-point argument.  GCC treats this parameter as
-     type-generic, which means it does not do default promotion from
-     float to double.
-
- -- Built-in Function: double __builtin_nan (const char *str)
-     This is an implementation of the ISO C99 function 'nan'.
-
-     Since ISO C99 defines this function in terms of 'strtod', which we
-     do not implement, a description of the parsing is in order.  The
-     string is parsed as by 'strtol'; that is, the base is recognized by
-     leading '0' or '0x' prefixes.  The number parsed is placed in the
-     significand such that the least significant bit of the number is at
-     the least significant bit of the significand.  The number is
-     truncated to fit the significand field provided.  The significand
-     is forced to be a quiet NaN.
-
-     This function, if given a string literal all of which would have
-     been consumed by 'strtol', is evaluated early enough that it is
-     considered a compile-time constant.
-
- -- Built-in Function: _Decimal32 __builtin_nand32 (const char *str)
-     Similar to '__builtin_nan', except the return type is '_Decimal32'.
-
- -- Built-in Function: _Decimal64 __builtin_nand64 (const char *str)
-     Similar to '__builtin_nan', except the return type is '_Decimal64'.
-
- -- Built-in Function: _Decimal128 __builtin_nand128 (const char *str)
-     Similar to '__builtin_nan', except the return type is
-     '_Decimal128'.
-
- -- Built-in Function: float __builtin_nanf (const char *str)
-     Similar to '__builtin_nan', except the return type is 'float'.
-
- -- Built-in Function: long double __builtin_nanl (const char *str)
-     Similar to '__builtin_nan', except the return type is 'long
-     double'.
-
- -- Built-in Function: double __builtin_nans (const char *str)
-     Similar to '__builtin_nan', except the significand is forced to be
-     a signaling NaN.  The 'nans' function is proposed by WG14 N965.
-
- -- Built-in Function: float __builtin_nansf (const char *str)
-     Similar to '__builtin_nans', except the return type is 'float'.
-
- -- Built-in Function: long double __builtin_nansl (const char *str)
-     Similar to '__builtin_nans', except the return type is 'long
-     double'.
-
- -- Built-in Function: int __builtin_ffs (int x)
-     Returns one plus the index of the least significant 1-bit of X, or
-     if X is zero, returns zero.
-
- -- Built-in Function: int __builtin_clz (unsigned int x)
-     Returns the number of leading 0-bits in X, starting at the most
-     significant bit position.  If X is 0, the result is undefined.
-
- -- Built-in Function: int __builtin_ctz (unsigned int x)
-     Returns the number of trailing 0-bits in X, starting at the least
-     significant bit position.  If X is 0, the result is undefined.
-
- -- Built-in Function: int __builtin_clrsb (int x)
-     Returns the number of leading redundant sign bits in X, i.e. the
-     number of bits following the most significant bit that are
-     identical to it.  There are no special cases for 0 or other values.
-
- -- Built-in Function: int __builtin_popcount (unsigned int x)
-     Returns the number of 1-bits in X.
-
- -- Built-in Function: int __builtin_parity (unsigned int x)
-     Returns the parity of X, i.e. the number of 1-bits in X modulo 2.
-
- -- Built-in Function: int __builtin_ffsl (long)
-     Similar to '__builtin_ffs', except the argument type is 'long'.
-
- -- Built-in Function: int __builtin_clzl (unsigned long)
-     Similar to '__builtin_clz', except the argument type is 'unsigned
-     long'.
-
- -- Built-in Function: int __builtin_ctzl (unsigned long)
-     Similar to '__builtin_ctz', except the argument type is 'unsigned
-     long'.
-
- -- Built-in Function: int __builtin_clrsbl (long)
-     Similar to '__builtin_clrsb', except the argument type is 'long'.
-
- -- Built-in Function: int __builtin_popcountl (unsigned long)
-     Similar to '__builtin_popcount', except the argument type is
-     'unsigned long'.
-
- -- Built-in Function: int __builtin_parityl (unsigned long)
-     Similar to '__builtin_parity', except the argument type is
-     'unsigned long'.
-
- -- Built-in Function: int __builtin_ffsll (long long)
-     Similar to '__builtin_ffs', except the argument type is 'long
-     long'.
-
- -- Built-in Function: int __builtin_clzll (unsigned long long)
-     Similar to '__builtin_clz', except the argument type is 'unsigned
-     long long'.
-
- -- Built-in Function: int __builtin_ctzll (unsigned long long)
-     Similar to '__builtin_ctz', except the argument type is 'unsigned
-     long long'.
-
- -- Built-in Function: int __builtin_clrsbll (long long)
-     Similar to '__builtin_clrsb', except the argument type is 'long
-     long'.
-
- -- Built-in Function: int __builtin_popcountll (unsigned long long)
-     Similar to '__builtin_popcount', except the argument type is
-     'unsigned long long'.
-
- -- Built-in Function: int __builtin_parityll (unsigned long long)
-     Similar to '__builtin_parity', except the argument type is
-     'unsigned long long'.
-
- -- Built-in Function: double __builtin_powi (double, int)
-     Returns the first argument raised to the power of the second.
-     Unlike the 'pow' function no guarantees about precision and
-     rounding are made.
-
- -- Built-in Function: float __builtin_powif (float, int)
-     Similar to '__builtin_powi', except the argument and return types
-     are 'float'.
-
- -- Built-in Function: long double __builtin_powil (long double, int)
-     Similar to '__builtin_powi', except the argument and return types
-     are 'long double'.
-
- -- Built-in Function: uint16_t __builtin_bswap16 (uint16_t x)
-     Returns X with the order of the bytes reversed; for example,
-     '0xaabb' becomes '0xbbaa'.  Byte here always means exactly 8 bits.
-
- -- Built-in Function: uint32_t __builtin_bswap32 (uint32_t x)
-     Similar to '__builtin_bswap16', except the argument and return
-     types are 32 bit.
-
- -- Built-in Function: uint64_t __builtin_bswap64 (uint64_t x)
-     Similar to '__builtin_bswap32', except the argument and return
-     types are 64 bit.
 
 
 File: llvm.info,  Node: Target Builtins,  Next: Target Format Checks,  Prev: Other Builtins,  Up: C Extensions
@@ -6668,4 +4656,2031 @@ and VECTOR __UINT128_T types, but the index value must be 0.
 __BUILTIN_CRYPTO_VSHASIGMAW builtin functions must be a constant integer
 that is 0 or 1.  The third argument to these builtin functions must be a
 constant integer in the range of 0 to 15.
+
+
+File: llvm.info,  Node: PowerPC Hardware Transactional Memory Built-in Functions,  Next: RX Built-in Functions,  Prev: PowerPC AltiVec/VSX Built-in Functions,  Up: Target Builtins
+
+6.58.21 PowerPC Hardware Transactional Memory Built-in Functions
+----------------------------------------------------------------
+
+GCC provides two interfaces for accessing the Hardware Transactional
+Memory (HTM) instructions available on some of the PowerPC family of
+processors (eg, POWER8).  The two interfaces come in a low level
+interface, consisting of built-in functions specific to PowerPC and a
+higher level interface consisting of inline functions that are common
+between PowerPC and S/390.
+
+6.58.21.1 PowerPC HTM Low Level Built-in Functions
+..................................................
+
+The following low level built-in functions are available with '-mhtm' or
+'-mcpu=CPU' where CPU is 'power8' or later.  They all generate the
+machine instruction that is part of the name.
+
+ The HTM built-ins return true or false depending on their success and
+their arguments match exactly the type and order of the associated
+hardware instruction's operands.  Refer to the ISA manual for a
+description of each instruction's operands.
+
+     unsigned int __builtin_tbegin (unsigned int)
+     unsigned int __builtin_tend (unsigned int)
+
+     unsigned int __builtin_tabort (unsigned int)
+     unsigned int __builtin_tabortdc (unsigned int, unsigned int, unsigned int)
+     unsigned int __builtin_tabortdci (unsigned int, unsigned int, int)
+     unsigned int __builtin_tabortwc (unsigned int, unsigned int, unsigned int)
+     unsigned int __builtin_tabortwci (unsigned int, unsigned int, int)
+
+     unsigned int __builtin_tcheck (unsigned int)
+     unsigned int __builtin_treclaim (unsigned int)
+     unsigned int __builtin_trechkpt (void)
+     unsigned int __builtin_tsr (unsigned int)
+
+ In addition to the above HTM built-ins, we have added built-ins for
+some common extended mnemonics of the HTM instructions:
+
+     unsigned int __builtin_tendall (void)
+     unsigned int __builtin_tresume (void)
+     unsigned int __builtin_tsuspend (void)
+
+ The following set of built-in functions are available to gain access to
+the HTM specific special purpose registers.
+
+     unsigned long __builtin_get_texasr (void)
+     unsigned long __builtin_get_texasru (void)
+     unsigned long __builtin_get_tfhar (void)
+     unsigned long __builtin_get_tfiar (void)
+
+     void __builtin_set_texasr (unsigned long);
+     void __builtin_set_texasru (unsigned long);
+     void __builtin_set_tfhar (unsigned long);
+     void __builtin_set_tfiar (unsigned long);
+
+ Example usage of these low level built-in functions may look like:
+
+     #include <htmintrin.h>
+
+     int num_retries = 10;
+
+     while (1)
+       {
+         if (__builtin_tbegin (0))
+           {
+             /* Transaction State Initiated.  */
+             if (is_locked (lock))
+               __builtin_tabort (0);
+             ... transaction code...
+             __builtin_tend (0);
+             break;
+           }
+         else
+           {
+             /* Transaction State Failed.  Use locks if the transaction
+                failure is "persistent" or we've tried too many times.  */
+             if (num_retries-- <= 0
+                 || _TEXASRU_FAILURE_PERSISTENT (__builtin_get_texasru ()))
+               {
+                 acquire_lock (lock);
+                 ... non transactional fallback path...
+                 release_lock (lock);
+                 break;
+               }
+           }
+       }
+
+ One final built-in function has been added that returns the value of
+the 2-bit Transaction State field of the Machine Status Register (MSR)
+as stored in 'CR0'.
+
+     unsigned long __builtin_ttest (void)
+
+ This built-in can be used to determine the current transaction state
+using the following code example:
+
+     #include <htmintrin.h>
+
+     unsigned char tx_state = _HTM_STATE (__builtin_ttest ());
+
+     if (tx_state == _HTM_TRANSACTIONAL)
+       {
+         /* Code to use in transactional state.  */
+       }
+     else if (tx_state == _HTM_NONTRANSACTIONAL)
+       {
+         /* Code to use in non-transactional state.  */
+       }
+     else if (tx_state == _HTM_SUSPENDED)
+       {
+         /* Code to use in transaction suspended state.  */
+       }
+
+6.58.21.2 PowerPC HTM High Level Inline Functions
+.................................................
+
+The following high level HTM interface is made available by including
+'<htmxlintrin.h>' and using '-mhtm' or '-mcpu=CPU' where CPU is 'power8'
+or later.  This interface is common between PowerPC and S/390, allowing
+users to write one HTM source implementation that can be compiled and
+executed on either system.
+
+     long __TM_simple_begin (void)
+     long __TM_begin (void* const TM_buff)
+     long __TM_end (void)
+     void __TM_abort (void)
+     void __TM_named_abort (unsigned char const code)
+     void __TM_resume (void)
+     void __TM_suspend (void)
+
+     long __TM_is_user_abort (void* const TM_buff)
+     long __TM_is_named_user_abort (void* const TM_buff, unsigned char *code)
+     long __TM_is_illegal (void* const TM_buff)
+     long __TM_is_footprint_exceeded (void* const TM_buff)
+     long __TM_nesting_depth (void* const TM_buff)
+     long __TM_is_nested_too_deep(void* const TM_buff)
+     long __TM_is_conflict(void* const TM_buff)
+     long __TM_is_failure_persistent(void* const TM_buff)
+     long __TM_failure_address(void* const TM_buff)
+     long long __TM_failure_code(void* const TM_buff)
+
+ Using these common set of HTM inline functions, we can create a more
+portable version of the HTM example in the previous section that will
+work on either PowerPC or S/390:
+
+     #include <htmxlintrin.h>
+
+     int num_retries = 10;
+     TM_buff_type TM_buff;
+
+     while (1)
+       {
+         if (__TM_begin (TM_buff))
+           {
+             /* Transaction State Initiated.  */
+             if (is_locked (lock))
+               __TM_abort ();
+             ... transaction code...
+             __TM_end ();
+             break;
+           }
+         else
+           {
+             /* Transaction State Failed.  Use locks if the transaction
+                failure is "persistent" or we've tried too many times.  */
+             if (num_retries-- <= 0
+                 || __TM_is_failure_persistent (TM_buff))
+               {
+                 acquire_lock (lock);
+                 ... non transactional fallback path...
+                 release_lock (lock);
+                 break;
+               }
+           }
+       }
+
+
+File: llvm.info,  Node: RX Built-in Functions,  Next: S/390 System z Built-in Functions,  Prev: PowerPC Hardware Transactional Memory Built-in Functions,  Up: Target Builtins
+
+6.58.22 RX Built-in Functions
+-----------------------------
+
+GCC supports some of the RX instructions which cannot be expressed in
+the C programming language via the use of built-in functions.  The
+following functions are supported:
+
+ -- Built-in Function: void __builtin_rx_brk (void)
+     Generates the 'brk' machine instruction.
+
+ -- Built-in Function: void __builtin_rx_clrpsw (int)
+     Generates the 'clrpsw' machine instruction to clear the specified
+     bit in the processor status word.
+
+ -- Built-in Function: void __builtin_rx_int (int)
+     Generates the 'int' machine instruction to generate an interrupt
+     with the specified value.
+
+ -- Built-in Function: void __builtin_rx_machi (int, int)
+     Generates the 'machi' machine instruction to add the result of
+     multiplying the top 16 bits of the two arguments into the
+     accumulator.
+
+ -- Built-in Function: void __builtin_rx_maclo (int, int)
+     Generates the 'maclo' machine instruction to add the result of
+     multiplying the bottom 16 bits of the two arguments into the
+     accumulator.
+
+ -- Built-in Function: void __builtin_rx_mulhi (int, int)
+     Generates the 'mulhi' machine instruction to place the result of
+     multiplying the top 16 bits of the two arguments into the
+     accumulator.
+
+ -- Built-in Function: void __builtin_rx_mullo (int, int)
+     Generates the 'mullo' machine instruction to place the result of
+     multiplying the bottom 16 bits of the two arguments into the
+     accumulator.
+
+ -- Built-in Function: int __builtin_rx_mvfachi (void)
+     Generates the 'mvfachi' machine instruction to read the top 32 bits
+     of the accumulator.
+
+ -- Built-in Function: int __builtin_rx_mvfacmi (void)
+     Generates the 'mvfacmi' machine instruction to read the middle 32
+     bits of the accumulator.
+
+ -- Built-in Function: int __builtin_rx_mvfc (int)
+     Generates the 'mvfc' machine instruction which reads the control
+     register specified in its argument and returns its value.
+
+ -- Built-in Function: void __builtin_rx_mvtachi (int)
+     Generates the 'mvtachi' machine instruction to set the top 32 bits
+     of the accumulator.
+
+ -- Built-in Function: void __builtin_rx_mvtaclo (int)
+     Generates the 'mvtaclo' machine instruction to set the bottom 32
+     bits of the accumulator.
+
+ -- Built-in Function: void __builtin_rx_mvtc (int reg, int val)
+     Generates the 'mvtc' machine instruction which sets control
+     register number 'reg' to 'val'.
+
+ -- Built-in Function: void __builtin_rx_mvtipl (int)
+     Generates the 'mvtipl' machine instruction set the interrupt
+     priority level.
+
+ -- Built-in Function: void __builtin_rx_racw (int)
+     Generates the 'racw' machine instruction to round the accumulator
+     according to the specified mode.
+
+ -- Built-in Function: int __builtin_rx_revw (int)
+     Generates the 'revw' machine instruction which swaps the bytes in
+     the argument so that bits 0-7 now occupy bits 8-15 and vice versa,
+     and also bits 16-23 occupy bits 24-31 and vice versa.
+
+ -- Built-in Function: void __builtin_rx_rmpa (void)
+     Generates the 'rmpa' machine instruction which initiates a repeated
+     multiply and accumulate sequence.
+
+ -- Built-in Function: void __builtin_rx_round (float)
+     Generates the 'round' machine instruction which returns the
+     floating-point argument rounded according to the current rounding
+     mode set in the floating-point status word register.
+
+ -- Built-in Function: int __builtin_rx_sat (int)
+     Generates the 'sat' machine instruction which returns the saturated
+     value of the argument.
+
+ -- Built-in Function: void __builtin_rx_setpsw (int)
+     Generates the 'setpsw' machine instruction to set the specified bit
+     in the processor status word.
+
+ -- Built-in Function: void __builtin_rx_wait (void)
+     Generates the 'wait' machine instruction.
+
+
+File: llvm.info,  Node: S/390 System z Built-in Functions,  Next: SH Built-in Functions,  Prev: RX Built-in Functions,  Up: Target Builtins
+
+6.58.23 S/390 System z Built-in Functions
+-----------------------------------------
+
+ -- Built-in Function: int __builtin_tbegin (void*)
+     Generates the 'tbegin' machine instruction starting a
+     non-constraint hardware transaction.  If the parameter is non-NULL
+     the memory area is used to store the transaction diagnostic buffer
+     and will be passed as first operand to 'tbegin'.  This buffer can
+     be defined using the 'struct __htm_tdb' C struct defined in
+     'htmintrin.h' and must reside on a double-word boundary.  The
+     second tbegin operand is set to '0xff0c'.  This enables
+     save/restore of all GPRs and disables aborts for FPR and AR
+     manipulations inside the transaction body.  The condition code set
+     by the tbegin instruction is returned as integer value.  The tbegin
+     instruction by definition overwrites the content of all FPRs.  The
+     compiler will generate code which saves and restores the FPRs.  For
+     soft-float code it is recommended to used the '*_nofloat' variant.
+     In order to prevent a TDB from being written it is required to pass
+     an constant zero value as parameter.  Passing the zero value
+     through a variable is not sufficient.  Although modifications of
+     access registers inside the transaction will not trigger an
+     transaction abort it is not supported to actually modify them.
+     Access registers do not get saved when entering a transaction.
+     They will have undefined state when reaching the abort code.
+
+ Macros for the possible return codes of tbegin are defined in the
+'htmintrin.h' header file:
+
+'_HTM_TBEGIN_STARTED'
+     'tbegin' has been executed as part of normal processing.  The
+     transaction body is supposed to be executed.
+'_HTM_TBEGIN_INDETERMINATE'
+     The transaction was aborted due to an indeterminate condition which
+     might be persistent.
+'_HTM_TBEGIN_TRANSIENT'
+     The transaction aborted due to a transient failure.  The
+     transaction should be re-executed in that case.
+'_HTM_TBEGIN_PERSISTENT'
+     The transaction aborted due to a persistent failure.  Re-execution
+     under same circumstances will not be productive.
+
+ -- Macro: _HTM_FIRST_USER_ABORT_CODE
+     The '_HTM_FIRST_USER_ABORT_CODE' defined in 'htmintrin.h' specifies
+     the first abort code which can be used for '__builtin_tabort'.
+     Values below this threshold are reserved for machine use.
+
+ -- Data type: struct __htm_tdb
+     The 'struct __htm_tdb' defined in 'htmintrin.h' describes the
+     structure of the transaction diagnostic block as specified in the
+     Principles of Operation manual chapter 5-91.
+
+ -- Built-in Function: int __builtin_tbegin_nofloat (void*)
+     Same as '__builtin_tbegin' but without FPR saves and restores.
+     Using this variant in code making use of FPRs will leave the FPRs
+     in undefined state when entering the transaction abort handler
+     code.
+
+ -- Built-in Function: int __builtin_tbegin_retry (void*, int)
+     In addition to '__builtin_tbegin' a loop for transient failures is
+     generated.  If tbegin returns a condition code of 2 the transaction
+     will be retried as often as specified in the second argument.  The
+     perform processor assist instruction is used to tell the CPU about
+     the number of fails so far.
+
+ -- Built-in Function: int __builtin_tbegin_retry_nofloat (void*, int)
+     Same as '__builtin_tbegin_retry' but without FPR saves and
+     restores.  Using this variant in code making use of FPRs will leave
+     the FPRs in undefined state when entering the transaction abort
+     handler code.
+
+ -- Built-in Function: void __builtin_tbeginc (void)
+     Generates the 'tbeginc' machine instruction starting a constraint
+     hardware transaction.  The second operand is set to '0xff08'.
+
+ -- Built-in Function: int __builtin_tend (void)
+     Generates the 'tend' machine instruction finishing a transaction
+     and making the changes visible to other threads.  The condition
+     code generated by tend is returned as integer value.
+
+ -- Built-in Function: void __builtin_tabort (int)
+     Generates the 'tabort' machine instruction with the specified abort
+     code.  Abort codes from 0 through 255 are reserved and will result
+     in an error message.
+
+ -- Built-in Function: void __builtin_tx_assist (int)
+     Generates the 'ppa rX,rY,1' machine instruction.  Where the integer
+     parameter is loaded into rX and a value of zero is loaded into rY.
+     The integer parameter specifies the number of times the transaction
+     repeatedly aborted.
+
+ -- Built-in Function: int __builtin_tx_nesting_depth (void)
+     Generates the 'etnd' machine instruction.  The current nesting
+     depth is returned as integer value.  For a nesting depth of 0 the
+     code is not executed as part of an transaction.
+
+ -- Built-in Function: void __builtin_non_tx_store (uint64_t *,
+          uint64_t)
+
+     Generates the 'ntstg' machine instruction.  The second argument is
+     written to the first arguments location.  The store operation will
+     not be rolled-back in case of an transaction abort.
+
+
+File: llvm.info,  Node: SH Built-in Functions,  Next: SPARC VIS Built-in Functions,  Prev: S/390 System z Built-in Functions,  Up: Target Builtins
+
+6.58.24 SH Built-in Functions
+-----------------------------
+
+The following built-in functions are supported on the SH1, SH2, SH3 and
+SH4 families of processors:
+
+ -- Built-in Function: void __builtin_set_thread_pointer (void *PTR)
+     Sets the 'GBR' register to the specified value PTR.  This is
+     usually used by system code that manages threads and execution
+     contexts.  The compiler normally does not generate code that
+     modifies the contents of 'GBR' and thus the value is preserved
+     across function calls.  Changing the 'GBR' value in user code must
+     be done with caution, since the compiler might use 'GBR' in order
+     to access thread local variables.
+
+ -- Built-in Function: void * __builtin_thread_pointer (void)
+     Returns the value that is currently set in the 'GBR' register.
+     Memory loads and stores that use the thread pointer as a base
+     address are turned into 'GBR' based displacement loads and stores,
+     if possible.  For example:
+          struct my_tcb
+          {
+             int a, b, c, d, e;
+          };
+
+          int get_tcb_value (void)
+          {
+            // Generate 'mov.l @(8,gbr),r0' instruction
+            return ((my_tcb*)__builtin_thread_pointer ())->c;
+          }
+
+
+ -- Built-in Function: unsigned int __builtin_sh_get_fpscr (void)
+     Returns the value that is currently set in the 'FPSCR' register.
+
+ -- Built-in Function: void __builtin_sh_set_fpscr (unsigned int VAL)
+     Sets the 'FPSCR' register to the specified value VAL, while
+     preserving the current values of the FR, SZ and PR bits.
+
+
+File: llvm.info,  Node: SPARC VIS Built-in Functions,  Next: SPU Built-in Functions,  Prev: SH Built-in Functions,  Up: Target Builtins
+
+6.58.25 SPARC VIS Built-in Functions
+------------------------------------
+
+GCC supports SIMD operations on the SPARC using both the generic vector
+extensions (*note Vector Extensions::) as well as built-in functions for
+the SPARC Visual Instruction Set (VIS). When you use the '-mvis' switch,
+the VIS extension is exposed as the following built-in functions:
+
+     typedef int v1si __attribute__ ((vector_size (4)));
+     typedef int v2si __attribute__ ((vector_size (8)));
+     typedef short v4hi __attribute__ ((vector_size (8)));
+     typedef short v2hi __attribute__ ((vector_size (4)));
+     typedef unsigned char v8qi __attribute__ ((vector_size (8)));
+     typedef unsigned char v4qi __attribute__ ((vector_size (4)));
+
+     void __builtin_vis_write_gsr (int64_t);
+     int64_t __builtin_vis_read_gsr (void);
+
+     void * __builtin_vis_alignaddr (void *, long);
+     void * __builtin_vis_alignaddrl (void *, long);
+     int64_t __builtin_vis_faligndatadi (int64_t, int64_t);
+     v2si __builtin_vis_faligndatav2si (v2si, v2si);
+     v4hi __builtin_vis_faligndatav4hi (v4si, v4si);
+     v8qi __builtin_vis_faligndatav8qi (v8qi, v8qi);
+
+     v4hi __builtin_vis_fexpand (v4qi);
+
+     v4hi __builtin_vis_fmul8x16 (v4qi, v4hi);
+     v4hi __builtin_vis_fmul8x16au (v4qi, v2hi);
+     v4hi __builtin_vis_fmul8x16al (v4qi, v2hi);
+     v4hi __builtin_vis_fmul8sux16 (v8qi, v4hi);
+     v4hi __builtin_vis_fmul8ulx16 (v8qi, v4hi);
+     v2si __builtin_vis_fmuld8sux16 (v4qi, v2hi);
+     v2si __builtin_vis_fmuld8ulx16 (v4qi, v2hi);
+
+     v4qi __builtin_vis_fpack16 (v4hi);
+     v8qi __builtin_vis_fpack32 (v2si, v8qi);
+     v2hi __builtin_vis_fpackfix (v2si);
+     v8qi __builtin_vis_fpmerge (v4qi, v4qi);
+
+     int64_t __builtin_vis_pdist (v8qi, v8qi, int64_t);
+
+     long __builtin_vis_edge8 (void *, void *);
+     long __builtin_vis_edge8l (void *, void *);
+     long __builtin_vis_edge16 (void *, void *);
+     long __builtin_vis_edge16l (void *, void *);
+     long __builtin_vis_edge32 (void *, void *);
+     long __builtin_vis_edge32l (void *, void *);
+
+     long __builtin_vis_fcmple16 (v4hi, v4hi);
+     long __builtin_vis_fcmple32 (v2si, v2si);
+     long __builtin_vis_fcmpne16 (v4hi, v4hi);
+     long __builtin_vis_fcmpne32 (v2si, v2si);
+     long __builtin_vis_fcmpgt16 (v4hi, v4hi);
+     long __builtin_vis_fcmpgt32 (v2si, v2si);
+     long __builtin_vis_fcmpeq16 (v4hi, v4hi);
+     long __builtin_vis_fcmpeq32 (v2si, v2si);
+
+     v4hi __builtin_vis_fpadd16 (v4hi, v4hi);
+     v2hi __builtin_vis_fpadd16s (v2hi, v2hi);
+     v2si __builtin_vis_fpadd32 (v2si, v2si);
+     v1si __builtin_vis_fpadd32s (v1si, v1si);
+     v4hi __builtin_vis_fpsub16 (v4hi, v4hi);
+     v2hi __builtin_vis_fpsub16s (v2hi, v2hi);
+     v2si __builtin_vis_fpsub32 (v2si, v2si);
+     v1si __builtin_vis_fpsub32s (v1si, v1si);
+
+     long __builtin_vis_array8 (long, long);
+     long __builtin_vis_array16 (long, long);
+     long __builtin_vis_array32 (long, long);
+
+ When you use the '-mvis2' switch, the VIS version 2.0 built-in
+functions also become available:
+
+     long __builtin_vis_bmask (long, long);
+     int64_t __builtin_vis_bshuffledi (int64_t, int64_t);
+     v2si __builtin_vis_bshufflev2si (v2si, v2si);
+     v4hi __builtin_vis_bshufflev2si (v4hi, v4hi);
+     v8qi __builtin_vis_bshufflev2si (v8qi, v8qi);
+
+     long __builtin_vis_edge8n (void *, void *);
+     long __builtin_vis_edge8ln (void *, void *);
+     long __builtin_vis_edge16n (void *, void *);
+     long __builtin_vis_edge16ln (void *, void *);
+     long __builtin_vis_edge32n (void *, void *);
+     long __builtin_vis_edge32ln (void *, void *);
+
+ When you use the '-mvis3' switch, the VIS version 3.0 built-in
+functions also become available:
+
+     void __builtin_vis_cmask8 (long);
+     void __builtin_vis_cmask16 (long);
+     void __builtin_vis_cmask32 (long);
+
+     v4hi __builtin_vis_fchksm16 (v4hi, v4hi);
+
+     v4hi __builtin_vis_fsll16 (v4hi, v4hi);
+     v4hi __builtin_vis_fslas16 (v4hi, v4hi);
+     v4hi __builtin_vis_fsrl16 (v4hi, v4hi);
+     v4hi __builtin_vis_fsra16 (v4hi, v4hi);
+     v2si __builtin_vis_fsll16 (v2si, v2si);
+     v2si __builtin_vis_fslas16 (v2si, v2si);
+     v2si __builtin_vis_fsrl16 (v2si, v2si);
+     v2si __builtin_vis_fsra16 (v2si, v2si);
+
+     long __builtin_vis_pdistn (v8qi, v8qi);
+
+     v4hi __builtin_vis_fmean16 (v4hi, v4hi);
+
+     int64_t __builtin_vis_fpadd64 (int64_t, int64_t);
+     int64_t __builtin_vis_fpsub64 (int64_t, int64_t);
+
+     v4hi __builtin_vis_fpadds16 (v4hi, v4hi);
+     v2hi __builtin_vis_fpadds16s (v2hi, v2hi);
+     v4hi __builtin_vis_fpsubs16 (v4hi, v4hi);
+     v2hi __builtin_vis_fpsubs16s (v2hi, v2hi);
+     v2si __builtin_vis_fpadds32 (v2si, v2si);
+     v1si __builtin_vis_fpadds32s (v1si, v1si);
+     v2si __builtin_vis_fpsubs32 (v2si, v2si);
+     v1si __builtin_vis_fpsubs32s (v1si, v1si);
+
+     long __builtin_vis_fucmple8 (v8qi, v8qi);
+     long __builtin_vis_fucmpne8 (v8qi, v8qi);
+     long __builtin_vis_fucmpgt8 (v8qi, v8qi);
+     long __builtin_vis_fucmpeq8 (v8qi, v8qi);
+
+     float __builtin_vis_fhadds (float, float);
+     double __builtin_vis_fhaddd (double, double);
+     float __builtin_vis_fhsubs (float, float);
+     double __builtin_vis_fhsubd (double, double);
+     float __builtin_vis_fnhadds (float, float);
+     double __builtin_vis_fnhaddd (double, double);
+
+     int64_t __builtin_vis_umulxhi (int64_t, int64_t);
+     int64_t __builtin_vis_xmulx (int64_t, int64_t);
+     int64_t __builtin_vis_xmulxhi (int64_t, int64_t);
+
+
+File: llvm.info,  Node: SPU Built-in Functions,  Next: TI C6X Built-in Functions,  Prev: SPARC VIS Built-in Functions,  Up: Target Builtins
+
+6.58.26 SPU Built-in Functions
+------------------------------
+
+GCC provides extensions for the SPU processor as described in the
+Sony/Toshiba/IBM SPU Language Extensions Specification, which can be
+found at <http://cell.scei.co.jp/> or
+<http://www.ibm.com/developerworks/power/cell/>.  GCC's implementation
+differs in several ways.
+
+   * The optional extension of specifying vector constants in
+     parentheses is not supported.
+
+   * A vector initializer requires no cast if the vector constant is of
+     the same type as the variable it is initializing.
+
+   * If 'signed' or 'unsigned' is omitted, the signedness of the vector
+     type is the default signedness of the base type.  The default
+     varies depending on the operating system, so a portable program
+     should always specify the signedness.
+
+   * By default, the keyword '__vector' is added.  The macro 'vector' is
+     defined in '<spu_intrinsics.h>' and can be undefined.
+
+   * GCC allows using a 'typedef' name as the type specifier for a
+     vector type.
+
+   * For C, overloaded functions are implemented with macros so the
+     following does not work:
+
+            spu_add ((vector signed int){1, 2, 3, 4}, foo);
+
+     Since 'spu_add' is a macro, the vector constant in the example is
+     treated as four separate arguments.  Wrap the entire argument in
+     parentheses for this to work.
+
+   * The extended version of '__builtin_expect' is not supported.
+
+ _Note:_ Only the interface described in the aforementioned
+specification is supported.  Internally, GCC uses built-in functions to
+implement the required functionality, but these are not supported and
+are subject to change without notice.
+
+
+File: llvm.info,  Node: TI C6X Built-in Functions,  Next: TILE-Gx Built-in Functions,  Prev: SPU Built-in Functions,  Up: Target Builtins
+
+6.58.27 TI C6X Built-in Functions
+---------------------------------
+
+GCC provides intrinsics to access certain instructions of the TI C6X
+processors.  These intrinsics, listed below, are available after
+inclusion of the 'c6x_intrinsics.h' header file.  They map directly to
+C6X instructions.
+
+
+     int _sadd (int, int)
+     int _ssub (int, int)
+     int _sadd2 (int, int)
+     int _ssub2 (int, int)
+     long long _mpy2 (int, int)
+     long long _smpy2 (int, int)
+     int _add4 (int, int)
+     int _sub4 (int, int)
+     int _saddu4 (int, int)
+
+     int _smpy (int, int)
+     int _smpyh (int, int)
+     int _smpyhl (int, int)
+     int _smpylh (int, int)
+
+     int _sshl (int, int)
+     int _subc (int, int)
+
+     int _avg2 (int, int)
+     int _avgu4 (int, int)
+
+     int _clrr (int, int)
+     int _extr (int, int)
+     int _extru (int, int)
+     int _abs (int)
+     int _abs2 (int)
+
+
+
+File: llvm.info,  Node: TILE-Gx Built-in Functions,  Next: TILEPro Built-in Functions,  Prev: TI C6X Built-in Functions,  Up: Target Builtins
+
+6.58.28 TILE-Gx Built-in Functions
+----------------------------------
+
+GCC provides intrinsics to access every instruction of the TILE-Gx
+processor.  The intrinsics are of the form:
+
+
+     unsigned long long __insn_OP (...)
+
+
+ Where OP is the name of the instruction.  Refer to the ISA manual for
+the complete list of instructions.
+
+ GCC also provides intrinsics to directly access the network registers.
+The intrinsics are:
+
+
+     unsigned long long __tile_idn0_receive (void)
+     unsigned long long __tile_idn1_receive (void)
+     unsigned long long __tile_udn0_receive (void)
+     unsigned long long __tile_udn1_receive (void)
+     unsigned long long __tile_udn2_receive (void)
+     unsigned long long __tile_udn3_receive (void)
+     void __tile_idn_send (unsigned long long)
+     void __tile_udn_send (unsigned long long)
+
+
+ The intrinsic 'void __tile_network_barrier (void)' is used to guarantee
+that no network operations before it are reordered with those after it.
+
+
+File: llvm.info,  Node: TILEPro Built-in Functions,  Next: x86 Built-in Functions,  Prev: TILE-Gx Built-in Functions,  Up: Target Builtins
+
+6.58.29 TILEPro Built-in Functions
+----------------------------------
+
+GCC provides intrinsics to access every instruction of the TILEPro
+processor.  The intrinsics are of the form:
+
+
+     unsigned __insn_OP (...)
+
+
+where OP is the name of the instruction.  Refer to the ISA manual for
+the complete list of instructions.
+
+ GCC also provides intrinsics to directly access the network registers.
+The intrinsics are:
+
+
+     unsigned __tile_idn0_receive (void)
+     unsigned __tile_idn1_receive (void)
+     unsigned __tile_sn_receive (void)
+     unsigned __tile_udn0_receive (void)
+     unsigned __tile_udn1_receive (void)
+     unsigned __tile_udn2_receive (void)
+     unsigned __tile_udn3_receive (void)
+     void __tile_idn_send (unsigned)
+     void __tile_sn_send (unsigned)
+     void __tile_udn_send (unsigned)
+
+
+ The intrinsic 'void __tile_network_barrier (void)' is used to guarantee
+that no network operations before it are reordered with those after it.
+
+
+File: llvm.info,  Node: x86 Built-in Functions,  Next: x86 transactional memory intrinsics,  Prev: TILEPro Built-in Functions,  Up: Target Builtins
+
+6.58.30 x86 Built-in Functions
+------------------------------
+
+These built-in functions are available for the x86-32 and x86-64 family
+of computers, depending on the command-line switches used.
+
+ If you specify command-line switches such as '-msse', the compiler
+could use the extended instruction sets even if the built-ins are not
+used explicitly in the program.  For this reason, applications that
+perform run-time CPU detection must compile separate files for each
+supported architecture, using the appropriate flags.  In particular, the
+file containing the CPU detection code should be compiled without these
+options.
+
+ The following machine modes are available for use with MMX built-in
+functions (*note Vector Extensions::): 'V2SI' for a vector of two 32-bit
+integers, 'V4HI' for a vector of four 16-bit integers, and 'V8QI' for a
+vector of eight 8-bit integers.  Some of the built-in functions operate
+on MMX registers as a whole 64-bit entity, these use 'V1DI' as their
+mode.
+
+ If 3DNow! extensions are enabled, 'V2SF' is used as a mode for a vector
+of two 32-bit floating-point values.
+
+ If SSE extensions are enabled, 'V4SF' is used for a vector of four
+32-bit floating-point values.  Some instructions use a vector of four
+32-bit integers, these use 'V4SI'.  Finally, some instructions operate
+on an entire vector register, interpreting it as a 128-bit integer,
+these use mode 'TI'.
+
+ In 64-bit mode, the x86-64 family of processors uses additional
+built-in functions for efficient use of 'TF' ('__float128') 128-bit
+floating point and 'TC' 128-bit complex floating-point values.
+
+ The following floating-point built-in functions are available in 64-bit
+mode.  All of them implement the function that is part of the name.
+
+     __float128 __builtin_fabsq (__float128)
+     __float128 __builtin_copysignq (__float128, __float128)
+
+ The following built-in function is always available.
+
+'void __builtin_ia32_pause (void)'
+     Generates the 'pause' machine instruction with a compiler memory
+     barrier.
+
+ The following floating-point built-in functions are made available in
+the 64-bit mode.
+
+'__float128 __builtin_infq (void)'
+     Similar to '__builtin_inf', except the return type is '__float128'.
+
+'__float128 __builtin_huge_valq (void)'
+     Similar to '__builtin_huge_val', except the return type is
+     '__float128'.
+
+ The following built-in functions are always available and can be used
+to check the target platform type.
+
+ -- Built-in Function: void __builtin_cpu_init (void)
+     This function runs the CPU detection code to check the type of CPU
+     and the features supported.  This built-in function needs to be
+     invoked along with the built-in functions to check CPU type and
+     features, '__builtin_cpu_is' and '__builtin_cpu_supports', only
+     when used in a function that is executed before any constructors
+     are called.  The CPU detection code is automatically executed in a
+     very high priority constructor.
+
+     For example, this function has to be used in 'ifunc' resolvers that
+     check for CPU type using the built-in functions '__builtin_cpu_is'
+     and '__builtin_cpu_supports', or in constructors on targets that
+     don't support constructor priority.
+
+          static void (*resolve_memcpy (void)) (void)
+          {
+            // ifunc resolvers fire before constructors, explicitly call the init
+            // function.
+            __builtin_cpu_init ();
+            if (__builtin_cpu_supports ("ssse3"))
+              return ssse3_memcpy; // super fast memcpy with ssse3 instructions.
+            else
+              return default_memcpy;
+          }
+
+          void *memcpy (void *, const void *, size_t)
+               __attribute__ ((ifunc ("resolve_memcpy")));
+
+ -- Built-in Function: int __builtin_cpu_is (const char *CPUNAME)
+     This function returns a positive integer if the run-time CPU is of
+     type CPUNAME and returns '0' otherwise.  The following CPU names
+     can be detected:
+
+     'intel'
+          Intel CPU.
+
+     'atom'
+          Intel Atom CPU.
+
+     'core2'
+          Intel Core 2 CPU.
+
+     'corei7'
+          Intel Core i7 CPU.
+
+     'nehalem'
+          Intel Core i7 Nehalem CPU.
+
+     'westmere'
+          Intel Core i7 Westmere CPU.
+
+     'sandybridge'
+          Intel Core i7 Sandy Bridge CPU.
+
+     'amd'
+          AMD CPU.
+
+     'amdfam10h'
+          AMD Family 10h CPU.
+
+     'barcelona'
+          AMD Family 10h Barcelona CPU.
+
+     'shanghai'
+          AMD Family 10h Shanghai CPU.
+
+     'istanbul'
+          AMD Family 10h Istanbul CPU.
+
+     'btver1'
+          AMD Family 14h CPU.
+
+     'amdfam15h'
+          AMD Family 15h CPU.
+
+     'bdver1'
+          AMD Family 15h Bulldozer version 1.
+
+     'bdver2'
+          AMD Family 15h Bulldozer version 2.
+
+     'bdver3'
+          AMD Family 15h Bulldozer version 3.
+
+     'bdver4'
+          AMD Family 15h Bulldozer version 4.
+
+     'btver2'
+          AMD Family 16h CPU.
+
+     Here is an example:
+          if (__builtin_cpu_is ("corei7"))
+            {
+               do_corei7 (); // Core i7 specific implementation.
+            }
+          else
+            {
+               do_generic (); // Generic implementation.
+            }
+
+ -- Built-in Function: int __builtin_cpu_supports (const char *FEATURE)
+     This function returns a positive integer if the run-time CPU
+     supports FEATURE and returns '0' otherwise.  The following features
+     can be detected:
+
+     'cmov'
+          CMOV instruction.
+     'mmx'
+          MMX instructions.
+     'popcnt'
+          POPCNT instruction.
+     'sse'
+          SSE instructions.
+     'sse2'
+          SSE2 instructions.
+     'sse3'
+          SSE3 instructions.
+     'ssse3'
+          SSSE3 instructions.
+     'sse4.1'
+          SSE4.1 instructions.
+     'sse4.2'
+          SSE4.2 instructions.
+     'avx'
+          AVX instructions.
+     'avx2'
+          AVX2 instructions.
+     'avx512f'
+          AVX512F instructions.
+
+     Here is an example:
+          if (__builtin_cpu_supports ("popcnt"))
+            {
+               asm("popcnt %1,%0" : "=r"(count) : "rm"(n) : "cc");
+            }
+          else
+            {
+               count = generic_countbits (n); //generic implementation.
+            }
+
+ The following built-in functions are made available by '-mmmx'.  All of
+them generate the machine instruction that is part of the name.
+
+     v8qi __builtin_ia32_paddb (v8qi, v8qi)
+     v4hi __builtin_ia32_paddw (v4hi, v4hi)
+     v2si __builtin_ia32_paddd (v2si, v2si)
+     v8qi __builtin_ia32_psubb (v8qi, v8qi)
+     v4hi __builtin_ia32_psubw (v4hi, v4hi)
+     v2si __builtin_ia32_psubd (v2si, v2si)
+     v8qi __builtin_ia32_paddsb (v8qi, v8qi)
+     v4hi __builtin_ia32_paddsw (v4hi, v4hi)
+     v8qi __builtin_ia32_psubsb (v8qi, v8qi)
+     v4hi __builtin_ia32_psubsw (v4hi, v4hi)
+     v8qi __builtin_ia32_paddusb (v8qi, v8qi)
+     v4hi __builtin_ia32_paddusw (v4hi, v4hi)
+     v8qi __builtin_ia32_psubusb (v8qi, v8qi)
+     v4hi __builtin_ia32_psubusw (v4hi, v4hi)
+     v4hi __builtin_ia32_pmullw (v4hi, v4hi)
+     v4hi __builtin_ia32_pmulhw (v4hi, v4hi)
+     di __builtin_ia32_pand (di, di)
+     di __builtin_ia32_pandn (di,di)
+     di __builtin_ia32_por (di, di)
+     di __builtin_ia32_pxor (di, di)
+     v8qi __builtin_ia32_pcmpeqb (v8qi, v8qi)
+     v4hi __builtin_ia32_pcmpeqw (v4hi, v4hi)
+     v2si __builtin_ia32_pcmpeqd (v2si, v2si)
+     v8qi __builtin_ia32_pcmpgtb (v8qi, v8qi)
+     v4hi __builtin_ia32_pcmpgtw (v4hi, v4hi)
+     v2si __builtin_ia32_pcmpgtd (v2si, v2si)
+     v8qi __builtin_ia32_punpckhbw (v8qi, v8qi)
+     v4hi __builtin_ia32_punpckhwd (v4hi, v4hi)
+     v2si __builtin_ia32_punpckhdq (v2si, v2si)
+     v8qi __builtin_ia32_punpcklbw (v8qi, v8qi)
+     v4hi __builtin_ia32_punpcklwd (v4hi, v4hi)
+     v2si __builtin_ia32_punpckldq (v2si, v2si)
+     v8qi __builtin_ia32_packsswb (v4hi, v4hi)
+     v4hi __builtin_ia32_packssdw (v2si, v2si)
+     v8qi __builtin_ia32_packuswb (v4hi, v4hi)
+
+     v4hi __builtin_ia32_psllw (v4hi, v4hi)
+     v2si __builtin_ia32_pslld (v2si, v2si)
+     v1di __builtin_ia32_psllq (v1di, v1di)
+     v4hi __builtin_ia32_psrlw (v4hi, v4hi)
+     v2si __builtin_ia32_psrld (v2si, v2si)
+     v1di __builtin_ia32_psrlq (v1di, v1di)
+     v4hi __builtin_ia32_psraw (v4hi, v4hi)
+     v2si __builtin_ia32_psrad (v2si, v2si)
+     v4hi __builtin_ia32_psllwi (v4hi, int)
+     v2si __builtin_ia32_pslldi (v2si, int)
+     v1di __builtin_ia32_psllqi (v1di, int)
+     v4hi __builtin_ia32_psrlwi (v4hi, int)
+     v2si __builtin_ia32_psrldi (v2si, int)
+     v1di __builtin_ia32_psrlqi (v1di, int)
+     v4hi __builtin_ia32_psrawi (v4hi, int)
+     v2si __builtin_ia32_psradi (v2si, int)
+
+
+ The following built-in functions are made available either with
+'-msse', or with a combination of '-m3dnow' and '-march=athlon'.  All of
+them generate the machine instruction that is part of the name.
+
+     v4hi __builtin_ia32_pmulhuw (v4hi, v4hi)
+     v8qi __builtin_ia32_pavgb (v8qi, v8qi)
+     v4hi __builtin_ia32_pavgw (v4hi, v4hi)
+     v1di __builtin_ia32_psadbw (v8qi, v8qi)
+     v8qi __builtin_ia32_pmaxub (v8qi, v8qi)
+     v4hi __builtin_ia32_pmaxsw (v4hi, v4hi)
+     v8qi __builtin_ia32_pminub (v8qi, v8qi)
+     v4hi __builtin_ia32_pminsw (v4hi, v4hi)
+     int __builtin_ia32_pmovmskb (v8qi)
+     void __builtin_ia32_maskmovq (v8qi, v8qi, char *)
+     void __builtin_ia32_movntq (di *, di)
+     void __builtin_ia32_sfence (void)
+
+ The following built-in functions are available when '-msse' is used.
+All of them generate the machine instruction that is part of the name.
+
+     int __builtin_ia32_comieq (v4sf, v4sf)
+     int __builtin_ia32_comineq (v4sf, v4sf)
+     int __builtin_ia32_comilt (v4sf, v4sf)
+     int __builtin_ia32_comile (v4sf, v4sf)
+     int __builtin_ia32_comigt (v4sf, v4sf)
+     int __builtin_ia32_comige (v4sf, v4sf)
+     int __builtin_ia32_ucomieq (v4sf, v4sf)
+     int __builtin_ia32_ucomineq (v4sf, v4sf)
+     int __builtin_ia32_ucomilt (v4sf, v4sf)
+     int __builtin_ia32_ucomile (v4sf, v4sf)
+     int __builtin_ia32_ucomigt (v4sf, v4sf)
+     int __builtin_ia32_ucomige (v4sf, v4sf)
+     v4sf __builtin_ia32_addps (v4sf, v4sf)
+     v4sf __builtin_ia32_subps (v4sf, v4sf)
+     v4sf __builtin_ia32_mulps (v4sf, v4sf)
+     v4sf __builtin_ia32_divps (v4sf, v4sf)
+     v4sf __builtin_ia32_addss (v4sf, v4sf)
+     v4sf __builtin_ia32_subss (v4sf, v4sf)
+     v4sf __builtin_ia32_mulss (v4sf, v4sf)
+     v4sf __builtin_ia32_divss (v4sf, v4sf)
+     v4sf __builtin_ia32_cmpeqps (v4sf, v4sf)
+     v4sf __builtin_ia32_cmpltps (v4sf, v4sf)
+     v4sf __builtin_ia32_cmpleps (v4sf, v4sf)
+     v4sf __builtin_ia32_cmpgtps (v4sf, v4sf)
+     v4sf __builtin_ia32_cmpgeps (v4sf, v4sf)
+     v4sf __builtin_ia32_cmpunordps (v4sf, v4sf)
+     v4sf __builtin_ia32_cmpneqps (v4sf, v4sf)
+     v4sf __builtin_ia32_cmpnltps (v4sf, v4sf)
+     v4sf __builtin_ia32_cmpnleps (v4sf, v4sf)
+     v4sf __builtin_ia32_cmpngtps (v4sf, v4sf)
+     v4sf __builtin_ia32_cmpngeps (v4sf, v4sf)
+     v4sf __builtin_ia32_cmpordps (v4sf, v4sf)
+     v4sf __builtin_ia32_cmpeqss (v4sf, v4sf)
+     v4sf __builtin_ia32_cmpltss (v4sf, v4sf)
+     v4sf __builtin_ia32_cmpless (v4sf, v4sf)
+     v4sf __builtin_ia32_cmpunordss (v4sf, v4sf)
+     v4sf __builtin_ia32_cmpneqss (v4sf, v4sf)
+     v4sf __builtin_ia32_cmpnltss (v4sf, v4sf)
+     v4sf __builtin_ia32_cmpnless (v4sf, v4sf)
+     v4sf __builtin_ia32_cmpordss (v4sf, v4sf)
+     v4sf __builtin_ia32_maxps (v4sf, v4sf)
+     v4sf __builtin_ia32_maxss (v4sf, v4sf)
+     v4sf __builtin_ia32_minps (v4sf, v4sf)
+     v4sf __builtin_ia32_minss (v4sf, v4sf)
+     v4sf __builtin_ia32_andps (v4sf, v4sf)
+     v4sf __builtin_ia32_andnps (v4sf, v4sf)
+     v4sf __builtin_ia32_orps (v4sf, v4sf)
+     v4sf __builtin_ia32_xorps (v4sf, v4sf)
+     v4sf __builtin_ia32_movss (v4sf, v4sf)
+     v4sf __builtin_ia32_movhlps (v4sf, v4sf)
+     v4sf __builtin_ia32_movlhps (v4sf, v4sf)
+     v4sf __builtin_ia32_unpckhps (v4sf, v4sf)
+     v4sf __builtin_ia32_unpcklps (v4sf, v4sf)
+     v4sf __builtin_ia32_cvtpi2ps (v4sf, v2si)
+     v4sf __builtin_ia32_cvtsi2ss (v4sf, int)
+     v2si __builtin_ia32_cvtps2pi (v4sf)
+     int __builtin_ia32_cvtss2si (v4sf)
+     v2si __builtin_ia32_cvttps2pi (v4sf)
+     int __builtin_ia32_cvttss2si (v4sf)
+     v4sf __builtin_ia32_rcpps (v4sf)
+     v4sf __builtin_ia32_rsqrtps (v4sf)
+     v4sf __builtin_ia32_sqrtps (v4sf)
+     v4sf __builtin_ia32_rcpss (v4sf)
+     v4sf __builtin_ia32_rsqrtss (v4sf)
+     v4sf __builtin_ia32_sqrtss (v4sf)
+     v4sf __builtin_ia32_shufps (v4sf, v4sf, int)
+     void __builtin_ia32_movntps (float *, v4sf)
+     int __builtin_ia32_movmskps (v4sf)
+
+ The following built-in functions are available when '-msse' is used.
+
+'v4sf __builtin_ia32_loadups (float *)'
+     Generates the 'movups' machine instruction as a load from memory.
+'void __builtin_ia32_storeups (float *, v4sf)'
+     Generates the 'movups' machine instruction as a store to memory.
+'v4sf __builtin_ia32_loadss (float *)'
+     Generates the 'movss' machine instruction as a load from memory.
+'v4sf __builtin_ia32_loadhps (v4sf, const v2sf *)'
+     Generates the 'movhps' machine instruction as a load from memory.
+'v4sf __builtin_ia32_loadlps (v4sf, const v2sf *)'
+     Generates the 'movlps' machine instruction as a load from memory
+'void __builtin_ia32_storehps (v2sf *, v4sf)'
+     Generates the 'movhps' machine instruction as a store to memory.
+'void __builtin_ia32_storelps (v2sf *, v4sf)'
+     Generates the 'movlps' machine instruction as a store to memory.
+
+ The following built-in functions are available when '-msse2' is used.
+All of them generate the machine instruction that is part of the name.
+
+     int __builtin_ia32_comisdeq (v2df, v2df)
+     int __builtin_ia32_comisdlt (v2df, v2df)
+     int __builtin_ia32_comisdle (v2df, v2df)
+     int __builtin_ia32_comisdgt (v2df, v2df)
+     int __builtin_ia32_comisdge (v2df, v2df)
+     int __builtin_ia32_comisdneq (v2df, v2df)
+     int __builtin_ia32_ucomisdeq (v2df, v2df)
+     int __builtin_ia32_ucomisdlt (v2df, v2df)
+     int __builtin_ia32_ucomisdle (v2df, v2df)
+     int __builtin_ia32_ucomisdgt (v2df, v2df)
+     int __builtin_ia32_ucomisdge (v2df, v2df)
+     int __builtin_ia32_ucomisdneq (v2df, v2df)
+     v2df __builtin_ia32_cmpeqpd (v2df, v2df)
+     v2df __builtin_ia32_cmpltpd (v2df, v2df)
+     v2df __builtin_ia32_cmplepd (v2df, v2df)
+     v2df __builtin_ia32_cmpgtpd (v2df, v2df)
+     v2df __builtin_ia32_cmpgepd (v2df, v2df)
+     v2df __builtin_ia32_cmpunordpd (v2df, v2df)
+     v2df __builtin_ia32_cmpneqpd (v2df, v2df)
+     v2df __builtin_ia32_cmpnltpd (v2df, v2df)
+     v2df __builtin_ia32_cmpnlepd (v2df, v2df)
+     v2df __builtin_ia32_cmpngtpd (v2df, v2df)
+     v2df __builtin_ia32_cmpngepd (v2df, v2df)
+     v2df __builtin_ia32_cmpordpd (v2df, v2df)
+     v2df __builtin_ia32_cmpeqsd (v2df, v2df)
+     v2df __builtin_ia32_cmpltsd (v2df, v2df)
+     v2df __builtin_ia32_cmplesd (v2df, v2df)
+     v2df __builtin_ia32_cmpunordsd (v2df, v2df)
+     v2df __builtin_ia32_cmpneqsd (v2df, v2df)
+     v2df __builtin_ia32_cmpnltsd (v2df, v2df)
+     v2df __builtin_ia32_cmpnlesd (v2df, v2df)
+     v2df __builtin_ia32_cmpordsd (v2df, v2df)
+     v2di __builtin_ia32_paddq (v2di, v2di)
+     v2di __builtin_ia32_psubq (v2di, v2di)
+     v2df __builtin_ia32_addpd (v2df, v2df)
+     v2df __builtin_ia32_subpd (v2df, v2df)
+     v2df __builtin_ia32_mulpd (v2df, v2df)
+     v2df __builtin_ia32_divpd (v2df, v2df)
+     v2df __builtin_ia32_addsd (v2df, v2df)
+     v2df __builtin_ia32_subsd (v2df, v2df)
+     v2df __builtin_ia32_mulsd (v2df, v2df)
+     v2df __builtin_ia32_divsd (v2df, v2df)
+     v2df __builtin_ia32_minpd (v2df, v2df)
+     v2df __builtin_ia32_maxpd (v2df, v2df)
+     v2df __builtin_ia32_minsd (v2df, v2df)
+     v2df __builtin_ia32_maxsd (v2df, v2df)
+     v2df __builtin_ia32_andpd (v2df, v2df)
+     v2df __builtin_ia32_andnpd (v2df, v2df)
+     v2df __builtin_ia32_orpd (v2df, v2df)
+     v2df __builtin_ia32_xorpd (v2df, v2df)
+     v2df __builtin_ia32_movsd (v2df, v2df)
+     v2df __builtin_ia32_unpckhpd (v2df, v2df)
+     v2df __builtin_ia32_unpcklpd (v2df, v2df)
+     v16qi __builtin_ia32_paddb128 (v16qi, v16qi)
+     v8hi __builtin_ia32_paddw128 (v8hi, v8hi)
+     v4si __builtin_ia32_paddd128 (v4si, v4si)
+     v2di __builtin_ia32_paddq128 (v2di, v2di)
+     v16qi __builtin_ia32_psubb128 (v16qi, v16qi)
+     v8hi __builtin_ia32_psubw128 (v8hi, v8hi)
+     v4si __builtin_ia32_psubd128 (v4si, v4si)
+     v2di __builtin_ia32_psubq128 (v2di, v2di)
+     v8hi __builtin_ia32_pmullw128 (v8hi, v8hi)
+     v8hi __builtin_ia32_pmulhw128 (v8hi, v8hi)
+     v2di __builtin_ia32_pand128 (v2di, v2di)
+     v2di __builtin_ia32_pandn128 (v2di, v2di)
+     v2di __builtin_ia32_por128 (v2di, v2di)
+     v2di __builtin_ia32_pxor128 (v2di, v2di)
+     v16qi __builtin_ia32_pavgb128 (v16qi, v16qi)
+     v8hi __builtin_ia32_pavgw128 (v8hi, v8hi)
+     v16qi __builtin_ia32_pcmpeqb128 (v16qi, v16qi)
+     v8hi __builtin_ia32_pcmpeqw128 (v8hi, v8hi)
+     v4si __builtin_ia32_pcmpeqd128 (v4si, v4si)
+     v16qi __builtin_ia32_pcmpgtb128 (v16qi, v16qi)
+     v8hi __builtin_ia32_pcmpgtw128 (v8hi, v8hi)
+     v4si __builtin_ia32_pcmpgtd128 (v4si, v4si)
+     v16qi __builtin_ia32_pmaxub128 (v16qi, v16qi)
+     v8hi __builtin_ia32_pmaxsw128 (v8hi, v8hi)
+     v16qi __builtin_ia32_pminub128 (v16qi, v16qi)
+     v8hi __builtin_ia32_pminsw128 (v8hi, v8hi)
+     v16qi __builtin_ia32_punpckhbw128 (v16qi, v16qi)
+     v8hi __builtin_ia32_punpckhwd128 (v8hi, v8hi)
+     v4si __builtin_ia32_punpckhdq128 (v4si, v4si)
+     v2di __builtin_ia32_punpckhqdq128 (v2di, v2di)
+     v16qi __builtin_ia32_punpcklbw128 (v16qi, v16qi)
+     v8hi __builtin_ia32_punpcklwd128 (v8hi, v8hi)
+     v4si __builtin_ia32_punpckldq128 (v4si, v4si)
+     v2di __builtin_ia32_punpcklqdq128 (v2di, v2di)
+     v16qi __builtin_ia32_packsswb128 (v8hi, v8hi)
+     v8hi __builtin_ia32_packssdw128 (v4si, v4si)
+     v16qi __builtin_ia32_packuswb128 (v8hi, v8hi)
+     v8hi __builtin_ia32_pmulhuw128 (v8hi, v8hi)
+     void __builtin_ia32_maskmovdqu (v16qi, v16qi)
+     v2df __builtin_ia32_loadupd (double *)
+     void __builtin_ia32_storeupd (double *, v2df)
+     v2df __builtin_ia32_loadhpd (v2df, double const *)
+     v2df __builtin_ia32_loadlpd (v2df, double const *)
+     int __builtin_ia32_movmskpd (v2df)
+     int __builtin_ia32_pmovmskb128 (v16qi)
+     void __builtin_ia32_movnti (int *, int)
+     void __builtin_ia32_movnti64 (long long int *, long long int)
+     void __builtin_ia32_movntpd (double *, v2df)
+     void __builtin_ia32_movntdq (v2df *, v2df)
+     v4si __builtin_ia32_pshufd (v4si, int)
+     v8hi __builtin_ia32_pshuflw (v8hi, int)
+     v8hi __builtin_ia32_pshufhw (v8hi, int)
+     v2di __builtin_ia32_psadbw128 (v16qi, v16qi)
+     v2df __builtin_ia32_sqrtpd (v2df)
+     v2df __builtin_ia32_sqrtsd (v2df)
+     v2df __builtin_ia32_shufpd (v2df, v2df, int)
+     v2df __builtin_ia32_cvtdq2pd (v4si)
+     v4sf __builtin_ia32_cvtdq2ps (v4si)
+     v4si __builtin_ia32_cvtpd2dq (v2df)
+     v2si __builtin_ia32_cvtpd2pi (v2df)
+     v4sf __builtin_ia32_cvtpd2ps (v2df)
+     v4si __builtin_ia32_cvttpd2dq (v2df)
+     v2si __builtin_ia32_cvttpd2pi (v2df)
+     v2df __builtin_ia32_cvtpi2pd (v2si)
+     int __builtin_ia32_cvtsd2si (v2df)
+     int __builtin_ia32_cvttsd2si (v2df)
+     long long __builtin_ia32_cvtsd2si64 (v2df)
+     long long __builtin_ia32_cvttsd2si64 (v2df)
+     v4si __builtin_ia32_cvtps2dq (v4sf)
+     v2df __builtin_ia32_cvtps2pd (v4sf)
+     v4si __builtin_ia32_cvttps2dq (v4sf)
+     v2df __builtin_ia32_cvtsi2sd (v2df, int)
+     v2df __builtin_ia32_cvtsi642sd (v2df, long long)
+     v4sf __builtin_ia32_cvtsd2ss (v4sf, v2df)
+     v2df __builtin_ia32_cvtss2sd (v2df, v4sf)
+     void __builtin_ia32_clflush (const void *)
+     void __builtin_ia32_lfence (void)
+     void __builtin_ia32_mfence (void)
+     v16qi __builtin_ia32_loaddqu (const char *)
+     void __builtin_ia32_storedqu (char *, v16qi)
+     v1di __builtin_ia32_pmuludq (v2si, v2si)
+     v2di __builtin_ia32_pmuludq128 (v4si, v4si)
+     v8hi __builtin_ia32_psllw128 (v8hi, v8hi)
+     v4si __builtin_ia32_pslld128 (v4si, v4si)
+     v2di __builtin_ia32_psllq128 (v2di, v2di)
+     v8hi __builtin_ia32_psrlw128 (v8hi, v8hi)
+     v4si __builtin_ia32_psrld128 (v4si, v4si)
+     v2di __builtin_ia32_psrlq128 (v2di, v2di)
+     v8hi __builtin_ia32_psraw128 (v8hi, v8hi)
+     v4si __builtin_ia32_psrad128 (v4si, v4si)
+     v2di __builtin_ia32_pslldqi128 (v2di, int)
+     v8hi __builtin_ia32_psllwi128 (v8hi, int)
+     v4si __builtin_ia32_pslldi128 (v4si, int)
+     v2di __builtin_ia32_psllqi128 (v2di, int)
+     v2di __builtin_ia32_psrldqi128 (v2di, int)
+     v8hi __builtin_ia32_psrlwi128 (v8hi, int)
+     v4si __builtin_ia32_psrldi128 (v4si, int)
+     v2di __builtin_ia32_psrlqi128 (v2di, int)
+     v8hi __builtin_ia32_psrawi128 (v8hi, int)
+     v4si __builtin_ia32_psradi128 (v4si, int)
+     v4si __builtin_ia32_pmaddwd128 (v8hi, v8hi)
+     v2di __builtin_ia32_movq128 (v2di)
+
+ The following built-in functions are available when '-msse3' is used.
+All of them generate the machine instruction that is part of the name.
+
+     v2df __builtin_ia32_addsubpd (v2df, v2df)
+     v4sf __builtin_ia32_addsubps (v4sf, v4sf)
+     v2df __builtin_ia32_haddpd (v2df, v2df)
+     v4sf __builtin_ia32_haddps (v4sf, v4sf)
+     v2df __builtin_ia32_hsubpd (v2df, v2df)
+     v4sf __builtin_ia32_hsubps (v4sf, v4sf)
+     v16qi __builtin_ia32_lddqu (char const *)
+     void __builtin_ia32_monitor (void *, unsigned int, unsigned int)
+     v4sf __builtin_ia32_movshdup (v4sf)
+     v4sf __builtin_ia32_movsldup (v4sf)
+     void __builtin_ia32_mwait (unsigned int, unsigned int)
+
+ The following built-in functions are available when '-mssse3' is used.
+All of them generate the machine instruction that is part of the name.
+
+     v2si __builtin_ia32_phaddd (v2si, v2si)
+     v4hi __builtin_ia32_phaddw (v4hi, v4hi)
+     v4hi __builtin_ia32_phaddsw (v4hi, v4hi)
+     v2si __builtin_ia32_phsubd (v2si, v2si)
+     v4hi __builtin_ia32_phsubw (v4hi, v4hi)
+     v4hi __builtin_ia32_phsubsw (v4hi, v4hi)
+     v4hi __builtin_ia32_pmaddubsw (v8qi, v8qi)
+     v4hi __builtin_ia32_pmulhrsw (v4hi, v4hi)
+     v8qi __builtin_ia32_pshufb (v8qi, v8qi)
+     v8qi __builtin_ia32_psignb (v8qi, v8qi)
+     v2si __builtin_ia32_psignd (v2si, v2si)
+     v4hi __builtin_ia32_psignw (v4hi, v4hi)
+     v1di __builtin_ia32_palignr (v1di, v1di, int)
+     v8qi __builtin_ia32_pabsb (v8qi)
+     v2si __builtin_ia32_pabsd (v2si)
+     v4hi __builtin_ia32_pabsw (v4hi)
+
+ The following built-in functions are available when '-mssse3' is used.
+All of them generate the machine instruction that is part of the name.
+
+     v4si __builtin_ia32_phaddd128 (v4si, v4si)
+     v8hi __builtin_ia32_phaddw128 (v8hi, v8hi)
+     v8hi __builtin_ia32_phaddsw128 (v8hi, v8hi)
+     v4si __builtin_ia32_phsubd128 (v4si, v4si)
+     v8hi __builtin_ia32_phsubw128 (v8hi, v8hi)
+     v8hi __builtin_ia32_phsubsw128 (v8hi, v8hi)
+     v8hi __builtin_ia32_pmaddubsw128 (v16qi, v16qi)
+     v8hi __builtin_ia32_pmulhrsw128 (v8hi, v8hi)
+     v16qi __builtin_ia32_pshufb128 (v16qi, v16qi)
+     v16qi __builtin_ia32_psignb128 (v16qi, v16qi)
+     v4si __builtin_ia32_psignd128 (v4si, v4si)
+     v8hi __builtin_ia32_psignw128 (v8hi, v8hi)
+     v2di __builtin_ia32_palignr128 (v2di, v2di, int)
+     v16qi __builtin_ia32_pabsb128 (v16qi)
+     v4si __builtin_ia32_pabsd128 (v4si)
+     v8hi __builtin_ia32_pabsw128 (v8hi)
+
+ The following built-in functions are available when '-msse4.1' is used.
+All of them generate the machine instruction that is part of the name.
+
+     v2df __builtin_ia32_blendpd (v2df, v2df, const int)
+     v4sf __builtin_ia32_blendps (v4sf, v4sf, const int)
+     v2df __builtin_ia32_blendvpd (v2df, v2df, v2df)
+     v4sf __builtin_ia32_blendvps (v4sf, v4sf, v4sf)
+     v2df __builtin_ia32_dppd (v2df, v2df, const int)
+     v4sf __builtin_ia32_dpps (v4sf, v4sf, const int)
+     v4sf __builtin_ia32_insertps128 (v4sf, v4sf, const int)
+     v2di __builtin_ia32_movntdqa (v2di *);
+     v16qi __builtin_ia32_mpsadbw128 (v16qi, v16qi, const int)
+     v8hi __builtin_ia32_packusdw128 (v4si, v4si)
+     v16qi __builtin_ia32_pblendvb128 (v16qi, v16qi, v16qi)
+     v8hi __builtin_ia32_pblendw128 (v8hi, v8hi, const int)
+     v2di __builtin_ia32_pcmpeqq (v2di, v2di)
+     v8hi __builtin_ia32_phminposuw128 (v8hi)
+     v16qi __builtin_ia32_pmaxsb128 (v16qi, v16qi)
+     v4si __builtin_ia32_pmaxsd128 (v4si, v4si)
+     v4si __builtin_ia32_pmaxud128 (v4si, v4si)
+     v8hi __builtin_ia32_pmaxuw128 (v8hi, v8hi)
+     v16qi __builtin_ia32_pminsb128 (v16qi, v16qi)
+     v4si __builtin_ia32_pminsd128 (v4si, v4si)
+     v4si __builtin_ia32_pminud128 (v4si, v4si)
+     v8hi __builtin_ia32_pminuw128 (v8hi, v8hi)
+     v4si __builtin_ia32_pmovsxbd128 (v16qi)
+     v2di __builtin_ia32_pmovsxbq128 (v16qi)
+     v8hi __builtin_ia32_pmovsxbw128 (v16qi)
+     v2di __builtin_ia32_pmovsxdq128 (v4si)
+     v4si __builtin_ia32_pmovsxwd128 (v8hi)
+     v2di __builtin_ia32_pmovsxwq128 (v8hi)
+     v4si __builtin_ia32_pmovzxbd128 (v16qi)
+     v2di __builtin_ia32_pmovzxbq128 (v16qi)
+     v8hi __builtin_ia32_pmovzxbw128 (v16qi)
+     v2di __builtin_ia32_pmovzxdq128 (v4si)
+     v4si __builtin_ia32_pmovzxwd128 (v8hi)
+     v2di __builtin_ia32_pmovzxwq128 (v8hi)
+     v2di __builtin_ia32_pmuldq128 (v4si, v4si)
+     v4si __builtin_ia32_pmulld128 (v4si, v4si)
+     int __builtin_ia32_ptestc128 (v2di, v2di)
+     int __builtin_ia32_ptestnzc128 (v2di, v2di)
+     int __builtin_ia32_ptestz128 (v2di, v2di)
+     v2df __builtin_ia32_roundpd (v2df, const int)
+     v4sf __builtin_ia32_roundps (v4sf, const int)
+     v2df __builtin_ia32_roundsd (v2df, v2df, const int)
+     v4sf __builtin_ia32_roundss (v4sf, v4sf, const int)
+
+ The following built-in functions are available when '-msse4.1' is used.
+
+'v4sf __builtin_ia32_vec_set_v4sf (v4sf, float, const int)'
+     Generates the 'insertps' machine instruction.
+'int __builtin_ia32_vec_ext_v16qi (v16qi, const int)'
+     Generates the 'pextrb' machine instruction.
+'v16qi __builtin_ia32_vec_set_v16qi (v16qi, int, const int)'
+     Generates the 'pinsrb' machine instruction.
+'v4si __builtin_ia32_vec_set_v4si (v4si, int, const int)'
+     Generates the 'pinsrd' machine instruction.
+'v2di __builtin_ia32_vec_set_v2di (v2di, long long, const int)'
+     Generates the 'pinsrq' machine instruction in 64bit mode.
+
+ The following built-in functions are changed to generate new SSE4.1
+instructions when '-msse4.1' is used.
+
+'float __builtin_ia32_vec_ext_v4sf (v4sf, const int)'
+     Generates the 'extractps' machine instruction.
+'int __builtin_ia32_vec_ext_v4si (v4si, const int)'
+     Generates the 'pextrd' machine instruction.
+'long long __builtin_ia32_vec_ext_v2di (v2di, const int)'
+     Generates the 'pextrq' machine instruction in 64bit mode.
+
+ The following built-in functions are available when '-msse4.2' is used.
+All of them generate the machine instruction that is part of the name.
+
+     v16qi __builtin_ia32_pcmpestrm128 (v16qi, int, v16qi, int, const int)
+     int __builtin_ia32_pcmpestri128 (v16qi, int, v16qi, int, const int)
+     int __builtin_ia32_pcmpestria128 (v16qi, int, v16qi, int, const int)
+     int __builtin_ia32_pcmpestric128 (v16qi, int, v16qi, int, const int)
+     int __builtin_ia32_pcmpestrio128 (v16qi, int, v16qi, int, const int)
+     int __builtin_ia32_pcmpestris128 (v16qi, int, v16qi, int, const int)
+     int __builtin_ia32_pcmpestriz128 (v16qi, int, v16qi, int, const int)
+     v16qi __builtin_ia32_pcmpistrm128 (v16qi, v16qi, const int)
+     int __builtin_ia32_pcmpistri128 (v16qi, v16qi, const int)
+     int __builtin_ia32_pcmpistria128 (v16qi, v16qi, const int)
+     int __builtin_ia32_pcmpistric128 (v16qi, v16qi, const int)
+     int __builtin_ia32_pcmpistrio128 (v16qi, v16qi, const int)
+     int __builtin_ia32_pcmpistris128 (v16qi, v16qi, const int)
+     int __builtin_ia32_pcmpistriz128 (v16qi, v16qi, const int)
+     v2di __builtin_ia32_pcmpgtq (v2di, v2di)
+
+ The following built-in functions are available when '-msse4.2' is used.
+
+'unsigned int __builtin_ia32_crc32qi (unsigned int, unsigned char)'
+     Generates the 'crc32b' machine instruction.
+'unsigned int __builtin_ia32_crc32hi (unsigned int, unsigned short)'
+     Generates the 'crc32w' machine instruction.
+'unsigned int __builtin_ia32_crc32si (unsigned int, unsigned int)'
+     Generates the 'crc32l' machine instruction.
+'unsigned long long __builtin_ia32_crc32di (unsigned long long, unsigned long long)'
+     Generates the 'crc32q' machine instruction.
+
+ The following built-in functions are changed to generate new SSE4.2
+instructions when '-msse4.2' is used.
+
+'int __builtin_popcount (unsigned int)'
+     Generates the 'popcntl' machine instruction.
+'int __builtin_popcountl (unsigned long)'
+     Generates the 'popcntl' or 'popcntq' machine instruction, depending
+     on the size of 'unsigned long'.
+'int __builtin_popcountll (unsigned long long)'
+     Generates the 'popcntq' machine instruction.
+
+ The following built-in functions are available when '-mavx' is used.
+All of them generate the machine instruction that is part of the name.
+
+     v4df __builtin_ia32_addpd256 (v4df,v4df)
+     v8sf __builtin_ia32_addps256 (v8sf,v8sf)
+     v4df __builtin_ia32_addsubpd256 (v4df,v4df)
+     v8sf __builtin_ia32_addsubps256 (v8sf,v8sf)
+     v4df __builtin_ia32_andnpd256 (v4df,v4df)
+     v8sf __builtin_ia32_andnps256 (v8sf,v8sf)
+     v4df __builtin_ia32_andpd256 (v4df,v4df)
+     v8sf __builtin_ia32_andps256 (v8sf,v8sf)
+     v4df __builtin_ia32_blendpd256 (v4df,v4df,int)
+     v8sf __builtin_ia32_blendps256 (v8sf,v8sf,int)
+     v4df __builtin_ia32_blendvpd256 (v4df,v4df,v4df)
+     v8sf __builtin_ia32_blendvps256 (v8sf,v8sf,v8sf)
+     v2df __builtin_ia32_cmppd (v2df,v2df,int)
+     v4df __builtin_ia32_cmppd256 (v4df,v4df,int)
+     v4sf __builtin_ia32_cmpps (v4sf,v4sf,int)
+     v8sf __builtin_ia32_cmpps256 (v8sf,v8sf,int)
+     v2df __builtin_ia32_cmpsd (v2df,v2df,int)
+     v4sf __builtin_ia32_cmpss (v4sf,v4sf,int)
+     v4df __builtin_ia32_cvtdq2pd256 (v4si)
+     v8sf __builtin_ia32_cvtdq2ps256 (v8si)
+     v4si __builtin_ia32_cvtpd2dq256 (v4df)
+     v4sf __builtin_ia32_cvtpd2ps256 (v4df)
+     v8si __builtin_ia32_cvtps2dq256 (v8sf)
+     v4df __builtin_ia32_cvtps2pd256 (v4sf)
+     v4si __builtin_ia32_cvttpd2dq256 (v4df)
+     v8si __builtin_ia32_cvttps2dq256 (v8sf)
+     v4df __builtin_ia32_divpd256 (v4df,v4df)
+     v8sf __builtin_ia32_divps256 (v8sf,v8sf)
+     v8sf __builtin_ia32_dpps256 (v8sf,v8sf,int)
+     v4df __builtin_ia32_haddpd256 (v4df,v4df)
+     v8sf __builtin_ia32_haddps256 (v8sf,v8sf)
+     v4df __builtin_ia32_hsubpd256 (v4df,v4df)
+     v8sf __builtin_ia32_hsubps256 (v8sf,v8sf)
+     v32qi __builtin_ia32_lddqu256 (pcchar)
+     v32qi __builtin_ia32_loaddqu256 (pcchar)
+     v4df __builtin_ia32_loadupd256 (pcdouble)
+     v8sf __builtin_ia32_loadups256 (pcfloat)
+     v2df __builtin_ia32_maskloadpd (pcv2df,v2df)
+     v4df __builtin_ia32_maskloadpd256 (pcv4df,v4df)
+     v4sf __builtin_ia32_maskloadps (pcv4sf,v4sf)
+     v8sf __builtin_ia32_maskloadps256 (pcv8sf,v8sf)
+     void __builtin_ia32_maskstorepd (pv2df,v2df,v2df)
+     void __builtin_ia32_maskstorepd256 (pv4df,v4df,v4df)
+     void __builtin_ia32_maskstoreps (pv4sf,v4sf,v4sf)
+     void __builtin_ia32_maskstoreps256 (pv8sf,v8sf,v8sf)
+     v4df __builtin_ia32_maxpd256 (v4df,v4df)
+     v8sf __builtin_ia32_maxps256 (v8sf,v8sf)
+     v4df __builtin_ia32_minpd256 (v4df,v4df)
+     v8sf __builtin_ia32_minps256 (v8sf,v8sf)
+     v4df __builtin_ia32_movddup256 (v4df)
+     int __builtin_ia32_movmskpd256 (v4df)
+     int __builtin_ia32_movmskps256 (v8sf)
+     v8sf __builtin_ia32_movshdup256 (v8sf)
+     v8sf __builtin_ia32_movsldup256 (v8sf)
+     v4df __builtin_ia32_mulpd256 (v4df,v4df)
+     v8sf __builtin_ia32_mulps256 (v8sf,v8sf)
+     v4df __builtin_ia32_orpd256 (v4df,v4df)
+     v8sf __builtin_ia32_orps256 (v8sf,v8sf)
+     v2df __builtin_ia32_pd_pd256 (v4df)
+     v4df __builtin_ia32_pd256_pd (v2df)
+     v4sf __builtin_ia32_ps_ps256 (v8sf)
+     v8sf __builtin_ia32_ps256_ps (v4sf)
+     int __builtin_ia32_ptestc256 (v4di,v4di,ptest)
+     int __builtin_ia32_ptestnzc256 (v4di,v4di,ptest)
+     int __builtin_ia32_ptestz256 (v4di,v4di,ptest)
+     v8sf __builtin_ia32_rcpps256 (v8sf)
+     v4df __builtin_ia32_roundpd256 (v4df,int)
+     v8sf __builtin_ia32_roundps256 (v8sf,int)
+     v8sf __builtin_ia32_rsqrtps_nr256 (v8sf)
+     v8sf __builtin_ia32_rsqrtps256 (v8sf)
+     v4df __builtin_ia32_shufpd256 (v4df,v4df,int)
+     v8sf __builtin_ia32_shufps256 (v8sf,v8sf,int)
+     v4si __builtin_ia32_si_si256 (v8si)
+     v8si __builtin_ia32_si256_si (v4si)
+     v4df __builtin_ia32_sqrtpd256 (v4df)
+     v8sf __builtin_ia32_sqrtps_nr256 (v8sf)
+     v8sf __builtin_ia32_sqrtps256 (v8sf)
+     void __builtin_ia32_storedqu256 (pchar,v32qi)
+     void __builtin_ia32_storeupd256 (pdouble,v4df)
+     void __builtin_ia32_storeups256 (pfloat,v8sf)
+     v4df __builtin_ia32_subpd256 (v4df,v4df)
+     v8sf __builtin_ia32_subps256 (v8sf,v8sf)
+     v4df __builtin_ia32_unpckhpd256 (v4df,v4df)
+     v8sf __builtin_ia32_unpckhps256 (v8sf,v8sf)
+     v4df __builtin_ia32_unpcklpd256 (v4df,v4df)
+     v8sf __builtin_ia32_unpcklps256 (v8sf,v8sf)
+     v4df __builtin_ia32_vbroadcastf128_pd256 (pcv2df)
+     v8sf __builtin_ia32_vbroadcastf128_ps256 (pcv4sf)
+     v4df __builtin_ia32_vbroadcastsd256 (pcdouble)
+     v4sf __builtin_ia32_vbroadcastss (pcfloat)
+     v8sf __builtin_ia32_vbroadcastss256 (pcfloat)
+     v2df __builtin_ia32_vextractf128_pd256 (v4df,int)
+     v4sf __builtin_ia32_vextractf128_ps256 (v8sf,int)
+     v4si __builtin_ia32_vextractf128_si256 (v8si,int)
+     v4df __builtin_ia32_vinsertf128_pd256 (v4df,v2df,int)
+     v8sf __builtin_ia32_vinsertf128_ps256 (v8sf,v4sf,int)
+     v8si __builtin_ia32_vinsertf128_si256 (v8si,v4si,int)
+     v4df __builtin_ia32_vperm2f128_pd256 (v4df,v4df,int)
+     v8sf __builtin_ia32_vperm2f128_ps256 (v8sf,v8sf,int)
+     v8si __builtin_ia32_vperm2f128_si256 (v8si,v8si,int)
+     v2df __builtin_ia32_vpermil2pd (v2df,v2df,v2di,int)
+     v4df __builtin_ia32_vpermil2pd256 (v4df,v4df,v4di,int)
+     v4sf __builtin_ia32_vpermil2ps (v4sf,v4sf,v4si,int)
+     v8sf __builtin_ia32_vpermil2ps256 (v8sf,v8sf,v8si,int)
+     v2df __builtin_ia32_vpermilpd (v2df,int)
+     v4df __builtin_ia32_vpermilpd256 (v4df,int)
+     v4sf __builtin_ia32_vpermilps (v4sf,int)
+     v8sf __builtin_ia32_vpermilps256 (v8sf,int)
+     v2df __builtin_ia32_vpermilvarpd (v2df,v2di)
+     v4df __builtin_ia32_vpermilvarpd256 (v4df,v4di)
+     v4sf __builtin_ia32_vpermilvarps (v4sf,v4si)
+     v8sf __builtin_ia32_vpermilvarps256 (v8sf,v8si)
+     int __builtin_ia32_vtestcpd (v2df,v2df,ptest)
+     int __builtin_ia32_vtestcpd256 (v4df,v4df,ptest)
+     int __builtin_ia32_vtestcps (v4sf,v4sf,ptest)
+     int __builtin_ia32_vtestcps256 (v8sf,v8sf,ptest)
+     int __builtin_ia32_vtestnzcpd (v2df,v2df,ptest)
+     int __builtin_ia32_vtestnzcpd256 (v4df,v4df,ptest)
+     int __builtin_ia32_vtestnzcps (v4sf,v4sf,ptest)
+     int __builtin_ia32_vtestnzcps256 (v8sf,v8sf,ptest)
+     int __builtin_ia32_vtestzpd (v2df,v2df,ptest)
+     int __builtin_ia32_vtestzpd256 (v4df,v4df,ptest)
+     int __builtin_ia32_vtestzps (v4sf,v4sf,ptest)
+     int __builtin_ia32_vtestzps256 (v8sf,v8sf,ptest)
+     void __builtin_ia32_vzeroall (void)
+     void __builtin_ia32_vzeroupper (void)
+     v4df __builtin_ia32_xorpd256 (v4df,v4df)
+     v8sf __builtin_ia32_xorps256 (v8sf,v8sf)
+
+ The following built-in functions are available when '-mavx2' is used.
+All of them generate the machine instruction that is part of the name.
+
+     v32qi __builtin_ia32_mpsadbw256 (v32qi,v32qi,int)
+     v32qi __builtin_ia32_pabsb256 (v32qi)
+     v16hi __builtin_ia32_pabsw256 (v16hi)
+     v8si __builtin_ia32_pabsd256 (v8si)
+     v16hi __builtin_ia32_packssdw256 (v8si,v8si)
+     v32qi __builtin_ia32_packsswb256 (v16hi,v16hi)
+     v16hi __builtin_ia32_packusdw256 (v8si,v8si)
+     v32qi __builtin_ia32_packuswb256 (v16hi,v16hi)
+     v32qi __builtin_ia32_paddb256 (v32qi,v32qi)
+     v16hi __builtin_ia32_paddw256 (v16hi,v16hi)
+     v8si __builtin_ia32_paddd256 (v8si,v8si)
+     v4di __builtin_ia32_paddq256 (v4di,v4di)
+     v32qi __builtin_ia32_paddsb256 (v32qi,v32qi)
+     v16hi __builtin_ia32_paddsw256 (v16hi,v16hi)
+     v32qi __builtin_ia32_paddusb256 (v32qi,v32qi)
+     v16hi __builtin_ia32_paddusw256 (v16hi,v16hi)
+     v4di __builtin_ia32_palignr256 (v4di,v4di,int)
+     v4di __builtin_ia32_andsi256 (v4di,v4di)
+     v4di __builtin_ia32_andnotsi256 (v4di,v4di)
+     v32qi __builtin_ia32_pavgb256 (v32qi,v32qi)
+     v16hi __builtin_ia32_pavgw256 (v16hi,v16hi)
+     v32qi __builtin_ia32_pblendvb256 (v32qi,v32qi,v32qi)
+     v16hi __builtin_ia32_pblendw256 (v16hi,v16hi,int)
+     v32qi __builtin_ia32_pcmpeqb256 (v32qi,v32qi)
+     v16hi __builtin_ia32_pcmpeqw256 (v16hi,v16hi)
+     v8si __builtin_ia32_pcmpeqd256 (c8si,v8si)
+     v4di __builtin_ia32_pcmpeqq256 (v4di,v4di)
+     v32qi __builtin_ia32_pcmpgtb256 (v32qi,v32qi)
+     v16hi __builtin_ia32_pcmpgtw256 (16hi,v16hi)
+     v8si __builtin_ia32_pcmpgtd256 (v8si,v8si)
+     v4di __builtin_ia32_pcmpgtq256 (v4di,v4di)
+     v16hi __builtin_ia32_phaddw256 (v16hi,v16hi)
+     v8si __builtin_ia32_phaddd256 (v8si,v8si)
+     v16hi __builtin_ia32_phaddsw256 (v16hi,v16hi)
+     v16hi __builtin_ia32_phsubw256 (v16hi,v16hi)
+     v8si __builtin_ia32_phsubd256 (v8si,v8si)
+     v16hi __builtin_ia32_phsubsw256 (v16hi,v16hi)
+     v32qi __builtin_ia32_pmaddubsw256 (v32qi,v32qi)
+     v16hi __builtin_ia32_pmaddwd256 (v16hi,v16hi)
+     v32qi __builtin_ia32_pmaxsb256 (v32qi,v32qi)
+     v16hi __builtin_ia32_pmaxsw256 (v16hi,v16hi)
+     v8si __builtin_ia32_pmaxsd256 (v8si,v8si)
+     v32qi __builtin_ia32_pmaxub256 (v32qi,v32qi)
+     v16hi __builtin_ia32_pmaxuw256 (v16hi,v16hi)
+     v8si __builtin_ia32_pmaxud256 (v8si,v8si)
+     v32qi __builtin_ia32_pminsb256 (v32qi,v32qi)
+     v16hi __builtin_ia32_pminsw256 (v16hi,v16hi)
+     v8si __builtin_ia32_pminsd256 (v8si,v8si)
+     v32qi __builtin_ia32_pminub256 (v32qi,v32qi)
+     v16hi __builtin_ia32_pminuw256 (v16hi,v16hi)
+     v8si __builtin_ia32_pminud256 (v8si,v8si)
+     int __builtin_ia32_pmovmskb256 (v32qi)
+     v16hi __builtin_ia32_pmovsxbw256 (v16qi)
+     v8si __builtin_ia32_pmovsxbd256 (v16qi)
+     v4di __builtin_ia32_pmovsxbq256 (v16qi)
+     v8si __builtin_ia32_pmovsxwd256 (v8hi)
+     v4di __builtin_ia32_pmovsxwq256 (v8hi)
+     v4di __builtin_ia32_pmovsxdq256 (v4si)
+     v16hi __builtin_ia32_pmovzxbw256 (v16qi)
+     v8si __builtin_ia32_pmovzxbd256 (v16qi)
+     v4di __builtin_ia32_pmovzxbq256 (v16qi)
+     v8si __builtin_ia32_pmovzxwd256 (v8hi)
+     v4di __builtin_ia32_pmovzxwq256 (v8hi)
+     v4di __builtin_ia32_pmovzxdq256 (v4si)
+     v4di __builtin_ia32_pmuldq256 (v8si,v8si)
+     v16hi __builtin_ia32_pmulhrsw256 (v16hi, v16hi)
+     v16hi __builtin_ia32_pmulhuw256 (v16hi,v16hi)
+     v16hi __builtin_ia32_pmulhw256 (v16hi,v16hi)
+     v16hi __builtin_ia32_pmullw256 (v16hi,v16hi)
+     v8si __builtin_ia32_pmulld256 (v8si,v8si)
+     v4di __builtin_ia32_pmuludq256 (v8si,v8si)
+     v4di __builtin_ia32_por256 (v4di,v4di)
+     v16hi __builtin_ia32_psadbw256 (v32qi,v32qi)
+     v32qi __builtin_ia32_pshufb256 (v32qi,v32qi)
+     v8si __builtin_ia32_pshufd256 (v8si,int)
+     v16hi __builtin_ia32_pshufhw256 (v16hi,int)
+     v16hi __builtin_ia32_pshuflw256 (v16hi,int)
+     v32qi __builtin_ia32_psignb256 (v32qi,v32qi)
+     v16hi __builtin_ia32_psignw256 (v16hi,v16hi)
+     v8si __builtin_ia32_psignd256 (v8si,v8si)
+     v4di __builtin_ia32_pslldqi256 (v4di,int)
+     v16hi __builtin_ia32_psllwi256 (16hi,int)
+     v16hi __builtin_ia32_psllw256(v16hi,v8hi)
+     v8si __builtin_ia32_pslldi256 (v8si,int)
+     v8si __builtin_ia32_pslld256(v8si,v4si)
+     v4di __builtin_ia32_psllqi256 (v4di,int)
+     v4di __builtin_ia32_psllq256(v4di,v2di)
+     v16hi __builtin_ia32_psrawi256 (v16hi,int)
+     v16hi __builtin_ia32_psraw256 (v16hi,v8hi)
+     v8si __builtin_ia32_psradi256 (v8si,int)
+     v8si __builtin_ia32_psrad256 (v8si,v4si)
+     v4di __builtin_ia32_psrldqi256 (v4di, int)
+     v16hi __builtin_ia32_psrlwi256 (v16hi,int)
+     v16hi __builtin_ia32_psrlw256 (v16hi,v8hi)
+     v8si __builtin_ia32_psrldi256 (v8si,int)
+     v8si __builtin_ia32_psrld256 (v8si,v4si)
+     v4di __builtin_ia32_psrlqi256 (v4di,int)
+     v4di __builtin_ia32_psrlq256(v4di,v2di)
+     v32qi __builtin_ia32_psubb256 (v32qi,v32qi)
+     v32hi __builtin_ia32_psubw256 (v16hi,v16hi)
+     v8si __builtin_ia32_psubd256 (v8si,v8si)
+     v4di __builtin_ia32_psubq256 (v4di,v4di)
+     v32qi __builtin_ia32_psubsb256 (v32qi,v32qi)
+     v16hi __builtin_ia32_psubsw256 (v16hi,v16hi)
+     v32qi __builtin_ia32_psubusb256 (v32qi,v32qi)
+     v16hi __builtin_ia32_psubusw256 (v16hi,v16hi)
+     v32qi __builtin_ia32_punpckhbw256 (v32qi,v32qi)
+     v16hi __builtin_ia32_punpckhwd256 (v16hi,v16hi)
+     v8si __builtin_ia32_punpckhdq256 (v8si,v8si)
+     v4di __builtin_ia32_punpckhqdq256 (v4di,v4di)
+     v32qi __builtin_ia32_punpcklbw256 (v32qi,v32qi)
+     v16hi __builtin_ia32_punpcklwd256 (v16hi,v16hi)
+     v8si __builtin_ia32_punpckldq256 (v8si,v8si)
+     v4di __builtin_ia32_punpcklqdq256 (v4di,v4di)
+     v4di __builtin_ia32_pxor256 (v4di,v4di)
+     v4di __builtin_ia32_movntdqa256 (pv4di)
+     v4sf __builtin_ia32_vbroadcastss_ps (v4sf)
+     v8sf __builtin_ia32_vbroadcastss_ps256 (v4sf)
+     v4df __builtin_ia32_vbroadcastsd_pd256 (v2df)
+     v4di __builtin_ia32_vbroadcastsi256 (v2di)
+     v4si __builtin_ia32_pblendd128 (v4si,v4si)
+     v8si __builtin_ia32_pblendd256 (v8si,v8si)
+     v32qi __builtin_ia32_pbroadcastb256 (v16qi)
+     v16hi __builtin_ia32_pbroadcastw256 (v8hi)
+     v8si __builtin_ia32_pbroadcastd256 (v4si)
+     v4di __builtin_ia32_pbroadcastq256 (v2di)
+     v16qi __builtin_ia32_pbroadcastb128 (v16qi)
+     v8hi __builtin_ia32_pbroadcastw128 (v8hi)
+     v4si __builtin_ia32_pbroadcastd128 (v4si)
+     v2di __builtin_ia32_pbroadcastq128 (v2di)
+     v8si __builtin_ia32_permvarsi256 (v8si,v8si)
+     v4df __builtin_ia32_permdf256 (v4df,int)
+     v8sf __builtin_ia32_permvarsf256 (v8sf,v8sf)
+     v4di __builtin_ia32_permdi256 (v4di,int)
+     v4di __builtin_ia32_permti256 (v4di,v4di,int)
+     v4di __builtin_ia32_extract128i256 (v4di,int)
+     v4di __builtin_ia32_insert128i256 (v4di,v2di,int)
+     v8si __builtin_ia32_maskloadd256 (pcv8si,v8si)
+     v4di __builtin_ia32_maskloadq256 (pcv4di,v4di)
+     v4si __builtin_ia32_maskloadd (pcv4si,v4si)
+     v2di __builtin_ia32_maskloadq (pcv2di,v2di)
+     void __builtin_ia32_maskstored256 (pv8si,v8si,v8si)
+     void __builtin_ia32_maskstoreq256 (pv4di,v4di,v4di)
+     void __builtin_ia32_maskstored (pv4si,v4si,v4si)
+     void __builtin_ia32_maskstoreq (pv2di,v2di,v2di)
+     v8si __builtin_ia32_psllv8si (v8si,v8si)
+     v4si __builtin_ia32_psllv4si (v4si,v4si)
+     v4di __builtin_ia32_psllv4di (v4di,v4di)
+     v2di __builtin_ia32_psllv2di (v2di,v2di)
+     v8si __builtin_ia32_psrav8si (v8si,v8si)
+     v4si __builtin_ia32_psrav4si (v4si,v4si)
+     v8si __builtin_ia32_psrlv8si (v8si,v8si)
+     v4si __builtin_ia32_psrlv4si (v4si,v4si)
+     v4di __builtin_ia32_psrlv4di (v4di,v4di)
+     v2di __builtin_ia32_psrlv2di (v2di,v2di)
+     v2df __builtin_ia32_gathersiv2df (v2df, pcdouble,v4si,v2df,int)
+     v4df __builtin_ia32_gathersiv4df (v4df, pcdouble,v4si,v4df,int)
+     v2df __builtin_ia32_gatherdiv2df (v2df, pcdouble,v2di,v2df,int)
+     v4df __builtin_ia32_gatherdiv4df (v4df, pcdouble,v4di,v4df,int)
+     v4sf __builtin_ia32_gathersiv4sf (v4sf, pcfloat,v4si,v4sf,int)
+     v8sf __builtin_ia32_gathersiv8sf (v8sf, pcfloat,v8si,v8sf,int)
+     v4sf __builtin_ia32_gatherdiv4sf (v4sf, pcfloat,v2di,v4sf,int)
+     v4sf __builtin_ia32_gatherdiv4sf256 (v4sf, pcfloat,v4di,v4sf,int)
+     v2di __builtin_ia32_gathersiv2di (v2di, pcint64,v4si,v2di,int)
+     v4di __builtin_ia32_gathersiv4di (v4di, pcint64,v4si,v4di,int)
+     v2di __builtin_ia32_gatherdiv2di (v2di, pcint64,v2di,v2di,int)
+     v4di __builtin_ia32_gatherdiv4di (v4di, pcint64,v4di,v4di,int)
+     v4si __builtin_ia32_gathersiv4si (v4si, pcint,v4si,v4si,int)
+     v8si __builtin_ia32_gathersiv8si (v8si, pcint,v8si,v8si,int)
+     v4si __builtin_ia32_gatherdiv4si (v4si, pcint,v2di,v4si,int)
+     v4si __builtin_ia32_gatherdiv4si256 (v4si, pcint,v4di,v4si,int)
+
+ The following built-in functions are available when '-maes' is used.
+All of them generate the machine instruction that is part of the name.
+
+     v2di __builtin_ia32_aesenc128 (v2di, v2di)
+     v2di __builtin_ia32_aesenclast128 (v2di, v2di)
+     v2di __builtin_ia32_aesdec128 (v2di, v2di)
+     v2di __builtin_ia32_aesdeclast128 (v2di, v2di)
+     v2di __builtin_ia32_aeskeygenassist128 (v2di, const int)
+     v2di __builtin_ia32_aesimc128 (v2di)
+
+ The following built-in function is available when '-mpclmul' is used.
+
+'v2di __builtin_ia32_pclmulqdq128 (v2di, v2di, const int)'
+     Generates the 'pclmulqdq' machine instruction.
+
+ The following built-in function is available when '-mfsgsbase' is used.
+All of them generate the machine instruction that is part of the name.
+
+     unsigned int __builtin_ia32_rdfsbase32 (void)
+     unsigned long long __builtin_ia32_rdfsbase64 (void)
+     unsigned int __builtin_ia32_rdgsbase32 (void)
+     unsigned long long __builtin_ia32_rdgsbase64 (void)
+     void _writefsbase_u32 (unsigned int)
+     void _writefsbase_u64 (unsigned long long)
+     void _writegsbase_u32 (unsigned int)
+     void _writegsbase_u64 (unsigned long long)
+
+ The following built-in function is available when '-mrdrnd' is used.
+All of them generate the machine instruction that is part of the name.
+
+     unsigned int __builtin_ia32_rdrand16_step (unsigned short *)
+     unsigned int __builtin_ia32_rdrand32_step (unsigned int *)
+     unsigned int __builtin_ia32_rdrand64_step (unsigned long long *)
+
+ The following built-in functions are available when '-msse4a' is used.
+All of them generate the machine instruction that is part of the name.
+
+     void __builtin_ia32_movntsd (double *, v2df)
+     void __builtin_ia32_movntss (float *, v4sf)
+     v2di __builtin_ia32_extrq  (v2di, v16qi)
+     v2di __builtin_ia32_extrqi (v2di, const unsigned int, const unsigned int)
+     v2di __builtin_ia32_insertq (v2di, v2di)
+     v2di __builtin_ia32_insertqi (v2di, v2di, const unsigned int, const unsigned int)
+
+ The following built-in functions are available when '-mxop' is used.
+     v2df __builtin_ia32_vfrczpd (v2df)
+     v4sf __builtin_ia32_vfrczps (v4sf)
+     v2df __builtin_ia32_vfrczsd (v2df)
+     v4sf __builtin_ia32_vfrczss (v4sf)
+     v4df __builtin_ia32_vfrczpd256 (v4df)
+     v8sf __builtin_ia32_vfrczps256 (v8sf)
+     v2di __builtin_ia32_vpcmov (v2di, v2di, v2di)
+     v2di __builtin_ia32_vpcmov_v2di (v2di, v2di, v2di)
+     v4si __builtin_ia32_vpcmov_v4si (v4si, v4si, v4si)
+     v8hi __builtin_ia32_vpcmov_v8hi (v8hi, v8hi, v8hi)
+     v16qi __builtin_ia32_vpcmov_v16qi (v16qi, v16qi, v16qi)
+     v2df __builtin_ia32_vpcmov_v2df (v2df, v2df, v2df)
+     v4sf __builtin_ia32_vpcmov_v4sf (v4sf, v4sf, v4sf)
+     v4di __builtin_ia32_vpcmov_v4di256 (v4di, v4di, v4di)
+     v8si __builtin_ia32_vpcmov_v8si256 (v8si, v8si, v8si)
+     v16hi __builtin_ia32_vpcmov_v16hi256 (v16hi, v16hi, v16hi)
+     v32qi __builtin_ia32_vpcmov_v32qi256 (v32qi, v32qi, v32qi)
+     v4df __builtin_ia32_vpcmov_v4df256 (v4df, v4df, v4df)
+     v8sf __builtin_ia32_vpcmov_v8sf256 (v8sf, v8sf, v8sf)
+     v16qi __builtin_ia32_vpcomeqb (v16qi, v16qi)
+     v8hi __builtin_ia32_vpcomeqw (v8hi, v8hi)
+     v4si __builtin_ia32_vpcomeqd (v4si, v4si)
+     v2di __builtin_ia32_vpcomeqq (v2di, v2di)
+     v16qi __builtin_ia32_vpcomequb (v16qi, v16qi)
+     v4si __builtin_ia32_vpcomequd (v4si, v4si)
+     v2di __builtin_ia32_vpcomequq (v2di, v2di)
+     v8hi __builtin_ia32_vpcomequw (v8hi, v8hi)
+     v8hi __builtin_ia32_vpcomeqw (v8hi, v8hi)
+     v16qi __builtin_ia32_vpcomfalseb (v16qi, v16qi)
+     v4si __builtin_ia32_vpcomfalsed (v4si, v4si)
+     v2di __builtin_ia32_vpcomfalseq (v2di, v2di)
+     v16qi __builtin_ia32_vpcomfalseub (v16qi, v16qi)
+     v4si __builtin_ia32_vpcomfalseud (v4si, v4si)
+     v2di __builtin_ia32_vpcomfalseuq (v2di, v2di)
+     v8hi __builtin_ia32_vpcomfalseuw (v8hi, v8hi)
+     v8hi __builtin_ia32_vpcomfalsew (v8hi, v8hi)
+     v16qi __builtin_ia32_vpcomgeb (v16qi, v16qi)
+     v4si __builtin_ia32_vpcomged (v4si, v4si)
+     v2di __builtin_ia32_vpcomgeq (v2di, v2di)
+     v16qi __builtin_ia32_vpcomgeub (v16qi, v16qi)
+     v4si __builtin_ia32_vpcomgeud (v4si, v4si)
+     v2di __builtin_ia32_vpcomgeuq (v2di, v2di)
+     v8hi __builtin_ia32_vpcomgeuw (v8hi, v8hi)
+     v8hi __builtin_ia32_vpcomgew (v8hi, v8hi)
+     v16qi __builtin_ia32_vpcomgtb (v16qi, v16qi)
+     v4si __builtin_ia32_vpcomgtd (v4si, v4si)
+     v2di __builtin_ia32_vpcomgtq (v2di, v2di)
+     v16qi __builtin_ia32_vpcomgtub (v16qi, v16qi)
+     v4si __builtin_ia32_vpcomgtud (v4si, v4si)
+     v2di __builtin_ia32_vpcomgtuq (v2di, v2di)
+     v8hi __builtin_ia32_vpcomgtuw (v8hi, v8hi)
+     v8hi __builtin_ia32_vpcomgtw (v8hi, v8hi)
+     v16qi __builtin_ia32_vpcomleb (v16qi, v16qi)
+     v4si __builtin_ia32_vpcomled (v4si, v4si)
+     v2di __builtin_ia32_vpcomleq (v2di, v2di)
+     v16qi __builtin_ia32_vpcomleub (v16qi, v16qi)
+     v4si __builtin_ia32_vpcomleud (v4si, v4si)
+     v2di __builtin_ia32_vpcomleuq (v2di, v2di)
+     v8hi __builtin_ia32_vpcomleuw (v8hi, v8hi)
+     v8hi __builtin_ia32_vpcomlew (v8hi, v8hi)
+     v16qi __builtin_ia32_vpcomltb (v16qi, v16qi)
+     v4si __builtin_ia32_vpcomltd (v4si, v4si)
+     v2di __builtin_ia32_vpcomltq (v2di, v2di)
+     v16qi __builtin_ia32_vpcomltub (v16qi, v16qi)
+     v4si __builtin_ia32_vpcomltud (v4si, v4si)
+     v2di __builtin_ia32_vpcomltuq (v2di, v2di)
+     v8hi __builtin_ia32_vpcomltuw (v8hi, v8hi)
+     v8hi __builtin_ia32_vpcomltw (v8hi, v8hi)
+     v16qi __builtin_ia32_vpcomneb (v16qi, v16qi)
+     v4si __builtin_ia32_vpcomned (v4si, v4si)
+     v2di __builtin_ia32_vpcomneq (v2di, v2di)
+     v16qi __builtin_ia32_vpcomneub (v16qi, v16qi)
+     v4si __builtin_ia32_vpcomneud (v4si, v4si)
+     v2di __builtin_ia32_vpcomneuq (v2di, v2di)
+     v8hi __builtin_ia32_vpcomneuw (v8hi, v8hi)
+     v8hi __builtin_ia32_vpcomnew (v8hi, v8hi)
+     v16qi __builtin_ia32_vpcomtrueb (v16qi, v16qi)
+     v4si __builtin_ia32_vpcomtrued (v4si, v4si)
+     v2di __builtin_ia32_vpcomtrueq (v2di, v2di)
+     v16qi __builtin_ia32_vpcomtrueub (v16qi, v16qi)
+     v4si __builtin_ia32_vpcomtrueud (v4si, v4si)
+     v2di __builtin_ia32_vpcomtrueuq (v2di, v2di)
+     v8hi __builtin_ia32_vpcomtrueuw (v8hi, v8hi)
+     v8hi __builtin_ia32_vpcomtruew (v8hi, v8hi)
+     v4si __builtin_ia32_vphaddbd (v16qi)
+     v2di __builtin_ia32_vphaddbq (v16qi)
+     v8hi __builtin_ia32_vphaddbw (v16qi)
+     v2di __builtin_ia32_vphadddq (v4si)
+     v4si __builtin_ia32_vphaddubd (v16qi)
+     v2di __builtin_ia32_vphaddubq (v16qi)
+     v8hi __builtin_ia32_vphaddubw (v16qi)
+     v2di __builtin_ia32_vphaddudq (v4si)
+     v4si __builtin_ia32_vphadduwd (v8hi)
+     v2di __builtin_ia32_vphadduwq (v8hi)
+     v4si __builtin_ia32_vphaddwd (v8hi)
+     v2di __builtin_ia32_vphaddwq (v8hi)
+     v8hi __builtin_ia32_vphsubbw (v16qi)
+     v2di __builtin_ia32_vphsubdq (v4si)
+     v4si __builtin_ia32_vphsubwd (v8hi)
+     v4si __builtin_ia32_vpmacsdd (v4si, v4si, v4si)
+     v2di __builtin_ia32_vpmacsdqh (v4si, v4si, v2di)
+     v2di __builtin_ia32_vpmacsdql (v4si, v4si, v2di)
+     v4si __builtin_ia32_vpmacssdd (v4si, v4si, v4si)
+     v2di __builtin_ia32_vpmacssdqh (v4si, v4si, v2di)
+     v2di __builtin_ia32_vpmacssdql (v4si, v4si, v2di)
+     v4si __builtin_ia32_vpmacsswd (v8hi, v8hi, v4si)
+     v8hi __builtin_ia32_vpmacssww (v8hi, v8hi, v8hi)
+     v4si __builtin_ia32_vpmacswd (v8hi, v8hi, v4si)
+     v8hi __builtin_ia32_vpmacsww (v8hi, v8hi, v8hi)
+     v4si __builtin_ia32_vpmadcsswd (v8hi, v8hi, v4si)
+     v4si __builtin_ia32_vpmadcswd (v8hi, v8hi, v4si)
+     v16qi __builtin_ia32_vpperm (v16qi, v16qi, v16qi)
+     v16qi __builtin_ia32_vprotb (v16qi, v16qi)
+     v4si __builtin_ia32_vprotd (v4si, v4si)
+     v2di __builtin_ia32_vprotq (v2di, v2di)
+     v8hi __builtin_ia32_vprotw (v8hi, v8hi)
+     v16qi __builtin_ia32_vpshab (v16qi, v16qi)
+     v4si __builtin_ia32_vpshad (v4si, v4si)
+     v2di __builtin_ia32_vpshaq (v2di, v2di)
+     v8hi __builtin_ia32_vpshaw (v8hi, v8hi)
+     v16qi __builtin_ia32_vpshlb (v16qi, v16qi)
+     v4si __builtin_ia32_vpshld (v4si, v4si)
+     v2di __builtin_ia32_vpshlq (v2di, v2di)
+     v8hi __builtin_ia32_vpshlw (v8hi, v8hi)
+
+ The following built-in functions are available when '-mfma4' is used.
+All of them generate the machine instruction that is part of the name.
+
+     v2df __builtin_ia32_vfmaddpd (v2df, v2df, v2df)
+     v4sf __builtin_ia32_vfmaddps (v4sf, v4sf, v4sf)
+     v2df __builtin_ia32_vfmaddsd (v2df, v2df, v2df)
+     v4sf __builtin_ia32_vfmaddss (v4sf, v4sf, v4sf)
+     v2df __builtin_ia32_vfmsubpd (v2df, v2df, v2df)
+     v4sf __builtin_ia32_vfmsubps (v4sf, v4sf, v4sf)
+     v2df __builtin_ia32_vfmsubsd (v2df, v2df, v2df)
+     v4sf __builtin_ia32_vfmsubss (v4sf, v4sf, v4sf)
+     v2df __builtin_ia32_vfnmaddpd (v2df, v2df, v2df)
+     v4sf __builtin_ia32_vfnmaddps (v4sf, v4sf, v4sf)
+     v2df __builtin_ia32_vfnmaddsd (v2df, v2df, v2df)
+     v4sf __builtin_ia32_vfnmaddss (v4sf, v4sf, v4sf)
+     v2df __builtin_ia32_vfnmsubpd (v2df, v2df, v2df)
+     v4sf __builtin_ia32_vfnmsubps (v4sf, v4sf, v4sf)
+     v2df __builtin_ia32_vfnmsubsd (v2df, v2df, v2df)
+     v4sf __builtin_ia32_vfnmsubss (v4sf, v4sf, v4sf)
+     v2df __builtin_ia32_vfmaddsubpd  (v2df, v2df, v2df)
+     v4sf __builtin_ia32_vfmaddsubps  (v4sf, v4sf, v4sf)
+     v2df __builtin_ia32_vfmsubaddpd  (v2df, v2df, v2df)
+     v4sf __builtin_ia32_vfmsubaddps  (v4sf, v4sf, v4sf)
+     v4df __builtin_ia32_vfmaddpd256 (v4df, v4df, v4df)
+     v8sf __builtin_ia32_vfmaddps256 (v8sf, v8sf, v8sf)
+     v4df __builtin_ia32_vfmsubpd256 (v4df, v4df, v4df)
+     v8sf __builtin_ia32_vfmsubps256 (v8sf, v8sf, v8sf)
+     v4df __builtin_ia32_vfnmaddpd256 (v4df, v4df, v4df)
+     v8sf __builtin_ia32_vfnmaddps256 (v8sf, v8sf, v8sf)
+     v4df __builtin_ia32_vfnmsubpd256 (v4df, v4df, v4df)
+     v8sf __builtin_ia32_vfnmsubps256 (v8sf, v8sf, v8sf)
+     v4df __builtin_ia32_vfmaddsubpd256 (v4df, v4df, v4df)
+     v8sf __builtin_ia32_vfmaddsubps256 (v8sf, v8sf, v8sf)
+     v4df __builtin_ia32_vfmsubaddpd256 (v4df, v4df, v4df)
+     v8sf __builtin_ia32_vfmsubaddps256 (v8sf, v8sf, v8sf)
+
+
+ The following built-in functions are available when '-mlwp' is used.
+
+     void __builtin_ia32_llwpcb16 (void *);
+     void __builtin_ia32_llwpcb32 (void *);
+     void __builtin_ia32_llwpcb64 (void *);
+     void * __builtin_ia32_llwpcb16 (void);
+     void * __builtin_ia32_llwpcb32 (void);
+     void * __builtin_ia32_llwpcb64 (void);
+     void __builtin_ia32_lwpval16 (unsigned short, unsigned int, unsigned short)
+     void __builtin_ia32_lwpval32 (unsigned int, unsigned int, unsigned int)
+     void __builtin_ia32_lwpval64 (unsigned __int64, unsigned int, unsigned int)
+     unsigned char __builtin_ia32_lwpins16 (unsigned short, unsigned int, unsigned short)
+     unsigned char __builtin_ia32_lwpins32 (unsigned int, unsigned int, unsigned int)
+     unsigned char __builtin_ia32_lwpins64 (unsigned __int64, unsigned int, unsigned int)
+
+ The following built-in functions are available when '-mbmi' is used.
+All of them generate the machine instruction that is part of the name.
+     unsigned int __builtin_ia32_bextr_u32(unsigned int, unsigned int);
+     unsigned long long __builtin_ia32_bextr_u64 (unsigned long long, unsigned long long);
+
+ The following built-in functions are available when '-mbmi2' is used.
+All of them generate the machine instruction that is part of the name.
+     unsigned int _bzhi_u32 (unsigned int, unsigned int)
+     unsigned int _pdep_u32 (unsigned int, unsigned int)
+     unsigned int _pext_u32 (unsigned int, unsigned int)
+     unsigned long long _bzhi_u64 (unsigned long long, unsigned long long)
+     unsigned long long _pdep_u64 (unsigned long long, unsigned long long)
+     unsigned long long _pext_u64 (unsigned long long, unsigned long long)
+
+ The following built-in functions are available when '-mlzcnt' is used.
+All of them generate the machine instruction that is part of the name.
+     unsigned short __builtin_ia32_lzcnt_16(unsigned short);
+     unsigned int __builtin_ia32_lzcnt_u32(unsigned int);
+     unsigned long long __builtin_ia32_lzcnt_u64 (unsigned long long);
+
+ The following built-in functions are available when '-mfxsr' is used.
+All of them generate the machine instruction that is part of the name.
+     void __builtin_ia32_fxsave (void *)
+     void __builtin_ia32_fxrstor (void *)
+     void __builtin_ia32_fxsave64 (void *)
+     void __builtin_ia32_fxrstor64 (void *)
+
+ The following built-in functions are available when '-mxsave' is used.
+All of them generate the machine instruction that is part of the name.
+     void __builtin_ia32_xsave (void *, long long)
+     void __builtin_ia32_xrstor (void *, long long)
+     void __builtin_ia32_xsave64 (void *, long long)
+     void __builtin_ia32_xrstor64 (void *, long long)
+
+ The following built-in functions are available when '-mxsaveopt' is
+used.  All of them generate the machine instruction that is part of the
+name.
+     void __builtin_ia32_xsaveopt (void *, long long)
+     void __builtin_ia32_xsaveopt64 (void *, long long)
+
+ The following built-in functions are available when '-mtbm' is used.
+Both of them generate the immediate form of the bextr machine
+instruction.
+     unsigned int __builtin_ia32_bextri_u32 (unsigned int, const unsigned int);
+     unsigned long long __builtin_ia32_bextri_u64 (unsigned long long, const unsigned long long);
+
+ The following built-in functions are available when '-m3dnow' is used.
+All of them generate the machine instruction that is part of the name.
+
+     void __builtin_ia32_femms (void)
+     v8qi __builtin_ia32_pavgusb (v8qi, v8qi)
+     v2si __builtin_ia32_pf2id (v2sf)
+     v2sf __builtin_ia32_pfacc (v2sf, v2sf)
+     v2sf __builtin_ia32_pfadd (v2sf, v2sf)
+     v2si __builtin_ia32_pfcmpeq (v2sf, v2sf)
+     v2si __builtin_ia32_pfcmpge (v2sf, v2sf)
+     v2si __builtin_ia32_pfcmpgt (v2sf, v2sf)
+     v2sf __builtin_ia32_pfmax (v2sf, v2sf)
+     v2sf __builtin_ia32_pfmin (v2sf, v2sf)
+     v2sf __builtin_ia32_pfmul (v2sf, v2sf)
+     v2sf __builtin_ia32_pfrcp (v2sf)
+     v2sf __builtin_ia32_pfrcpit1 (v2sf, v2sf)
+     v2sf __builtin_ia32_pfrcpit2 (v2sf, v2sf)
+     v2sf __builtin_ia32_pfrsqrt (v2sf)
+     v2sf __builtin_ia32_pfsub (v2sf, v2sf)
+     v2sf __builtin_ia32_pfsubr (v2sf, v2sf)
+     v2sf __builtin_ia32_pi2fd (v2si)
+     v4hi __builtin_ia32_pmulhrw (v4hi, v4hi)
+
+ The following built-in functions are available when both '-m3dnow' and
+'-march=athlon' are used.  All of them generate the machine instruction
+that is part of the name.
+
+     v2si __builtin_ia32_pf2iw (v2sf)
+     v2sf __builtin_ia32_pfnacc (v2sf, v2sf)
+     v2sf __builtin_ia32_pfpnacc (v2sf, v2sf)
+     v2sf __builtin_ia32_pi2fw (v2si)
+     v2sf __builtin_ia32_pswapdsf (v2sf)
+     v2si __builtin_ia32_pswapdsi (v2si)
+
+ The following built-in functions are available when '-mrtm' is used
+They are used for restricted transactional memory.  These are the
+internal low level functions.  Normally the functions in *note x86
+transactional memory intrinsics:: should be used instead.
+
+     int __builtin_ia32_xbegin ()
+     void __builtin_ia32_xend ()
+     void __builtin_ia32_xabort (status)
+     int __builtin_ia32_xtest ()
 

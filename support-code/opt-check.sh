@@ -1770,6 +1770,8 @@ run_gcc -floop-parallelize-all dummy.c
 run_gcc -floop-strip-mine dummy.c
 run_gcc -floop-unroll-and-jam dummy.c
 run_gcc -flra-remat dummy.c
+run_gcc -flto=2 dummy.c
+run_gcc -flto=jobserver dummy.c
 run_gcc -flto-compression-level=5 dummy.c
 run_gcc -flto-partition=1to1 dummy.c
 run_gcc -flto-partition=balanced dummy.c
