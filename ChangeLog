@@ -1,5 +1,10 @@
 2016-02-18  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
+	* llvm-user-manual/invoke.texi (Instrumentation Options): Details
+	correct for Clang/LLVM.
+
+2016-02-18  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
 	* llvm-assembler-manual/llvm-assembler.info: Regenerated.
 	* llvm-user-manual/invoke.texi: Details correct up to end of
 	Optimization seciton.
