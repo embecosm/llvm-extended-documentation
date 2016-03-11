@@ -1641,6 +1641,7 @@ _Preprocessor Options_
 
      _Options supported by both LLVM and GCC_
           -C
+              -CC
               -DMACRO[=DEFN]
               -dD
               -dM
@@ -1703,6 +1704,7 @@ _Preprocessor Options_
               -A-QUESTION[=ANSWER]
               -dI
               -dN
+              -dU
               -fdebug-cpp
            -fdirectives-only
               -fpch-deps
@@ -1746,16 +1748,15 @@ _Linker Options_
               -shared
               -static
               -static-libgcc
-           -Wl,OPTION
+           -u SYMBOL
+              -Wl,OPTION
               -Xlinker OPTION
-              -u SYMBOL
               -z KEYWORD
 
 
      _Options only supported by LLVM_
           -fno-autolink
               -fno-use-init-array
-              -fuse-init-array
               -fveclib=LIB
            -mincremental-linker-compatible
               -stdlib=LIB
@@ -1804,20 +1805,19 @@ _Code Generation Options_
               -fexceptions
               -fno-ident
            -fnon-call-exceptions
-              -fshort-wchar
               -fpack-struct[=N]
-           -fPIC
+              -fPIC
               -fpic
-              -fPIE
+           -fPIE
               -fpie
               -fshort-enums
+              -fshort-wchar
               -ftls-model=MODEL
            -ftrapv
               -funwind-tables
               -fverbose-asm
            -fvisibility=[default|internal|hidden|protected]
               -fwrapv
-           --target=TRIPLET
 
 
      _Options only supported by LLVM_
@@ -1868,7 +1868,7 @@ _Developer Options_
               -print-multi-lib
               -print-prog-name=PROGRAM
            -print-search-dirs
-              -save-temps -save-temps=[cwd|obj]
+              -save-temps[=cwd|obj]
 
 
      _Options only supported by LLVM_
@@ -1944,18 +1944,11 @@ _Machine Dependent Options_
      *Note Hardware Models and Configurations: Submodel Options.
 
      _At the time of writing, this section is a placeholder.  There has
-     been no attempt to verify which AAarch64 options are valid with
-     LLVM._
+     been no attempt to verify which AAP options are valid with
+     Clang/LLVM._
 
-     _AArch64 Options_
-          -mabi=NAME  -mbig-endian  -mlittle-endian
-          -mgeneral-regs-only
-          -mcmodel=tiny  -mcmodel=small  -mcmodel=large
-          -mstrict-align
-          -momit-leaf-frame-pointer  -mno-omit-leaf-frame-pointer
-          -mtls-dialect=desc  -mtls-dialect=traditional
-          -mfix-cortex-a53-835769  -mno-fix-cortex-a53-835769
-          -march=NAME  -mcpu=NAME  -mtune=NAME
+     _AAP Options_
+          -maapopt=VAL
 
 
 File: llvm.info,  Node: Overall Options,  Next: Invoking Clang/LLVM for C++,  Prev: Option Summary,  Up: Invoking LLVM
@@ -5918,7 +5911,7 @@ Summary: Option Summary, for details of:
      triggered by '-fprofile-use' are not directly available to the
      user, so not listed here.  They can be accessed directly in the
      underlying 'opt' and 'llc' components using the '-mllvm' option
-     (*note op mllvm::).
+     (*note '-mllvm': op mllvm.).
 
      By default, Clang/LLVM emits an error message if the feedback
      profiles do not match the source code.
@@ -6207,13 +6200,7 @@ File: llvm.info,  Node: Instrumentation Options,  Next: Preprocessor Options,  P
 3.11 Program Instrumentation Options
 ====================================
 
-_Note:_ Not all GCC options are supported by Clang/LLVM. *Note Option
-Summary: Option Summary, for details of:
-   * those options supported by both Clang/LLVM and GCC;
-   * those options only supported by Clang/LLVM; and
-   * those options supported only by GCC.
-
- GCC supports a number of command-line options that control adding
+GCC supports a number of command-line options that control adding
 run-time instrumentation to the code it normally generates.  For
 example, one purpose of instrumentation is collect profiling statistics
 for use in finding program hot spots, code coverage analysis, or
@@ -6225,76 +6212,16 @@ hijacking.  There is also a general hook which can be used to implement
 other forms of tracing or function-level instrumentation for debug or
 program analysis purposes.
 
-'-fstack-protector'
-     Emit extra code to check for buffer overflows, such as stack
-     smashing attacks.  This is done by adding a guard variable to
-     functions with vulnerable objects.  This includes functions that
-     call 'alloca', and functions with buffers larger than 8 bytes.  The
-     guards are initialized when a function is entered and then checked
-     when the function exits.  If a guard check fails, an error message
-     is printed and the program exits.
+ _Note:_ Not all GCC options are supported by Clang/LLVM. *Note Option
+Summary: Option Summary, for details of:
+   * those options supported by both Clang/LLVM and GCC;
+   * those options only supported by Clang/LLVM; and
+   * those options supported only by GCC.
 
-'-fstack-protector-all'
-     Like '-fstack-protector' except that all functions are protected.
+ The following Clang/LLVM options facilitate program instrumentation.
 
-'-fstack-protector-strong'
-     Like '-fstack-protector' but includes additional functions to be
-     protected -- those that have local array definitions, or have
-     references to local frame addresses.
-
-'-fstack-protector-explicit'
-     Like '-fstack-protector' but only protects those functions which
-     have the 'stack_protect' attribute
-
-'-fprofile-dir=PATH'
-
-     Set the directory to search for the profile data files in to PATH.
-     This option affects only the profile data generated by
-     '-fprofile-generate', '-ftest-coverage', '-fprofile-arcs' and used
-     by '-fprofile-use' and '-fbranch-probabilities' and its related
-     options.  Both absolute and relative paths can be used.  By
-     default, LLVM uses the current directory as PATH, thus the profile
-     data file appears in the same directory as the object file.
-
-'-fprofile-generate'
-'-fprofile-generate=PATH'
-
-     Enable options usually used for instrumenting application to
-     produce profile useful for later recompilation with profile
-     feedback based optimization.  You must use '-fprofile-generate'
-     both when compiling and when linking your program.
-
-     The following options are enabled: '-fprofile-arcs',
-     '-fprofile-values', '-fvpt'.
-
-     If PATH is specified, LLVM looks at the PATH to find the profile
-     feedback data files.  See '-fprofile-dir'.
-
-'-fcheck-data-deps'
-     Compare the results of several data dependence analyzers.  This
-     option is used for debugging the data dependence analyzers.
-
-'-ftest-coverage'
-     Produce a notes file that the 'gcov' code-coverage utility can use
-     to show program coverage.  Each source file's note file is called
-     'AUXNAME.gcno'.  Refer to the '-fprofile-arcs' option above for a
-     description of AUXNAME and instructions on how to generate test
-     coverage data.  Coverage data matches the source files more closely
-     if you do not optimize.
-
-'-fprofile-arcs'
-     Add code so that program flow "arcs" are instrumented.  During
-     execution the program records how many times each branch and call
-     is executed and how many times it is taken or returns.  When the
-     compiled program exits it saves this data to a file called
-     'AUXNAME.gcda' for each source file.  The data may be used for
-     profile-directed optimizations ('-fbranch-probabilities'), or for
-     test coverage analysis ('-ftest-coverage').  Each object file's
-     AUXNAME is generated from the name of the output file, if
-     explicitly specified and it is not the final executable, otherwise
-     it is the basename of the source file.  In both cases any suffix is
-     removed (e.g. 'foo.gcda' for input file 'dir/foo.c', or
-     'dir/foo.gcda' for output file specified as '-o dir/foo.o').
+'--analyze'
+     Clang/LLVM option for future documentation.
 
 '--coverage'
 
@@ -6336,184 +6263,43 @@ program analysis purposes.
      block; otherwise, a new basic block must be created to hold the
      instrumentation code.
 
-'-pg'
-     Generate extra code to write profile information suitable for the
-     analysis program 'gprof'.  You must use this option when compiling
-     the source files you want data about, and you must also use it when
-     linking.
+'-fcoverage-mapping'
+     Clang/LLVM option for future documentation.
 
-'-p'
-     Generate extra code to write profile information suitable for the
-     analysis program 'prof'.  You must use this option when compiling
-     the source files you want data about, and you must also use it when
-     linking.
+'-finstrument-functions'
+     Generate instrumentation calls for entry and exit to functions.
+     Just after function entry and just before function exit, the
+     following profiling functions are called with the address of the
+     current function and its call site.  (On some platforms,
+     '__builtin_return_address' does not work beyond the current
+     function, so the call site information may not be available to the
+     profiling functions otherwise.)
 
-'-fsanitize=address'
-     Enable AddressSanitizer, a fast memory error detector.  Memory
-     access instructions are instrumented to detect out-of-bounds and
-     use-after-free bugs.  See
-     <http://code.google.com/p/address-sanitizer/> for more details.
-     The run-time behavior can be influenced using the 'ASAN_OPTIONS'
-     environment variable; see
-     <https://code.google.com/p/address-sanitizer/wiki/Flags#Run-time_flags>
-     for a list of supported options.
+          void __cyg_profile_func_enter (void *this_fn,
+                                         void *call_site);
+          void __cyg_profile_func_exit  (void *this_fn,
+                                         void *call_site);
 
-'-fsanitize=kernel-address'
-     Enable AddressSanitizer for Linux kernel.  See
-     <http://code.google.com/p/address-sanitizer/wiki/AddressSanitizerForKernel>
-     for more details.
+     The first argument is the address of the start of the current
+     function, which may be looked up exactly in the symbol table.
 
-'-fsanitize=thread'
-     Enable ThreadSanitizer, a fast data race detector.  Memory access
-     instructions are instrumented to detect data race bugs.  See
-     <http://code.google.com/p/thread-sanitizer/> for more details.  The
-     run-time behavior can be influenced using the 'TSAN_OPTIONS'
-     environment variable; see
-     <https://code.google.com/p/thread-sanitizer/wiki/Flags> for a list
-     of supported options.
+     This instrumentation is also done for functions expanded inline in
+     other functions.  The profiling calls indicate where, conceptually,
+     the inline function is entered and exited.  This means that
+     addressable versions of such functions must be available.  If all
+     your uses of a function are expanded inline, this may mean an
+     additional expansion of code size.  If you use 'extern inline' in
+     your C code, an addressable version of such functions must be
+     provided.  (This is normally the case anyway, but if you get lucky
+     and the optimizer always expands the functions inline, you might
+     have gotten away without providing static copies.)
 
-'-fsanitize=leak'
-     Enable LeakSanitizer, a memory leak detector.  This option only
-     matters for linking of executables and if neither
-     '-fsanitize=address' nor '-fsanitize=thread' is used.  In that case
-     the executable is linked against a library that overrides 'malloc'
-     and other allocator functions.  See
-     <https://code.google.com/p/address-sanitizer/wiki/LeakSanitizer>
-     for more details.  The run-time behavior can be influenced using
-     the 'LSAN_OPTIONS' environment variable.
-
-'-fsanitize=undefined'
-     Enable UndefinedBehaviorSanitizer, a fast undefined behavior
-     detector.  Various computations are instrumented to detect
-     undefined behavior at runtime.  Current suboptions are:
-
-     '-fsanitize=shift'
-          This option enables checking that the result of a shift
-          operation is not undefined.  Note that what exactly is
-          considered undefined differs slightly between C and C++, as
-          well as between ISO C90 and C99, etc.
-
-     '-fsanitize=integer-divide-by-zero'
-          Detect integer division by zero as well as 'INT_MIN / -1'
-          division.
-
-     '-fsanitize=unreachable'
-          With this option, the compiler turns the
-          '__builtin_unreachable' call into a diagnostics message call
-          instead.  When reaching the '__builtin_unreachable' call, the
-          behavior is undefined.
-
-     '-fsanitize=vla-bound'
-          This option instructs the compiler to check that the size of a
-          variable length array is positive.
-
-     '-fsanitize=null'
-          This option enables pointer checking.  Particularly, the
-          application built with this option turned on will issue an
-          error message when it tries to dereference a NULL pointer, or
-          if a reference (possibly an rvalue reference) is bound to a
-          NULL pointer, or if a method is invoked on an object pointed
-          by a NULL pointer.
-
-     '-fsanitize=return'
-          This option enables return statement checking.  Programs built
-          with this option turned on will issue an error message when
-          the end of a non-void function is reached without actually
-          returning a value.  This option works in C++ only.
-
-     '-fsanitize=signed-integer-overflow'
-          This option enables signed integer overflow checking.  We
-          check that the result of '+', '*', and both unary and binary
-          '-' does not overflow in the signed arithmetics.  Note,
-          integer promotion rules must be taken into account.  That is,
-          the following is not an overflow:
-               signed char a = SCHAR_MAX;
-               a++;
-
-     '-fsanitize=bounds'
-          This option enables instrumentation of array bounds.  Various
-          out of bounds accesses are detected.  Flexible array members,
-          flexible array member-like arrays, and initializers of
-          variables with static storage are not instrumented.
-
-     '-fsanitize=alignment'
-
-          This option enables checking of alignment of pointers when
-          they are dereferenced, or when a reference is bound to
-          insufficiently aligned target, or when a method or constructor
-          is invoked on insufficiently aligned object.
-
-     '-fsanitize=object-size'
-          This option enables instrumentation of memory references using
-          the '__builtin_object_size' function.  Various out of bounds
-          pointer accesses are detected.
-
-     '-fsanitize=float-divide-by-zero'
-          Detect floating-point division by zero.  Unlike other similar
-          options, '-fsanitize=float-divide-by-zero' is not enabled by
-          '-fsanitize=undefined', since floating-point division by zero
-          can be a legitimate way of obtaining infinities and NaNs.
-
-     '-fsanitize=float-cast-overflow'
-          This option enables floating-point type to integer conversion
-          checking.  We check that the result of the conversion does not
-          overflow.  Unlike other similar options,
-          '-fsanitize=float-cast-overflow' is not enabled by
-          '-fsanitize=undefined'.  This option does not work well with
-          'FE_INVALID' exceptions enabled.
-
-     '-fsanitize=nonnull-attribute'
-
-          This option enables instrumentation of calls, checking whether
-          null values are not passed to arguments marked as requiring a
-          non-null value by the 'nonnull' function attribute.
-
-     '-fsanitize=returns-nonnull-attribute'
-
-          This option enables instrumentation of return statements in
-          functions marked with 'returns_nonnull' function attribute, to
-          detect returning of null values from such functions.
-
-     '-fsanitize=bool'
-
-          This option enables instrumentation of loads from bool.  If a
-          value other than 0/1 is loaded, a run-time error is issued.
-
-     '-fsanitize=enum'
-
-          This option enables instrumentation of loads from an enum
-          type.  If a value outside the range of values for the enum
-          type is loaded, a run-time error is issued.
-
-     '-fsanitize=vptr'
-
-          This option enables instrumentation of C++ member function
-          calls, member accesses and some conversions between pointers
-          to base and derived classes, to verify the referenced object
-          has the correct dynamic type.
-
-     While '-ftrapv' causes traps for signed overflows to be emitted,
-     '-fsanitize=undefined' gives a diagnostic message.  This currently
-     works only for the C family of languages.
-
-'-fno-sanitize=all'
-
-     This option disables all previously enabled sanitizers.
-     '-fsanitize=all' is not allowed, as some sanitizers cannot be used
-     together.
-
-'-fsanitize-undefined-trap-on-error'
-     The '-fsanitize-undefined-trap-on-error' instructs the compiler to
-     report undefined behavior using '__builtin_trap' rather than a
-     'libubsan' library routine.  The advantage of this is that the
-     'libubsan' library is not needed and is not linked in, so this is
-     usable even in freestanding environments.
-
-'-pg'
-     Generate extra code to write profile information suitable for the
-     analysis program 'gprof'.  You must use this option when compiling
-     the source files you want data about, and you must also use it when
-     linking.
+     A function may be given the attribute 'no_instrument_function', in
+     which case this instrumentation is not done.  This can be used, for
+     example, for the profiling functions listed above, high-priority
+     interrupt routines, and any functions from which the profiling
+     functions cannot safely be called (perhaps signal handlers, if the
+     profiling routines generate output or allocate memory).
 
 '-fprofile-arcs'
      Add code so that program flow "arcs" are instrumented.  During
@@ -6529,64 +6315,6 @@ program analysis purposes.
      removed (e.g. 'foo.gcda' for input file 'dir/foo.c', or
      'dir/foo.gcda' for output file specified as '-o dir/foo.o').
 
-'--coverage'
-
-     This option is used to compile and link code instrumented for
-     coverage analysis.  The option is a synonym for '-fprofile-arcs'
-     '-ftest-coverage' (when compiling) and '-lgcov' (when linking).
-     See the documentation for those options for more details.
-
-        * Compile the source files with '-fprofile-arcs' plus
-          optimization and code generation options.  For test coverage
-          analysis, use the additional '-ftest-coverage' option.  You do
-          not need to profile every source file in a program.
-
-        * Link your object files with '-lgcov' or '-fprofile-arcs' (the
-          latter implies the former).
-
-        * Run the program on a representative workload to generate the
-          arc profile information.  This may be repeated any number of
-          times.  You can run concurrent instances of your program, and
-          provided that the file system supports locking, the data files
-          will be correctly updated.  Also 'fork' calls are detected and
-          correctly handled (double counting will not happen).
-
-        * For profile-directed optimizations, compile the source files
-          again with the same optimization and code generation options
-          plus '-fbranch-probabilities' (*note Options that Control
-          Optimization: Optimize Options.).
-
-        * For test coverage analysis, use 'gcov' to produce human
-          readable information from the '.gcno' and '.gcda' files.
-          Refer to the 'gcov' documentation for further information.
-
-     With '-fprofile-arcs', for each function of your program GCC
-     creates a program flow graph, then finds a spanning tree for the
-     graph.  Only arcs that are not on the spanning tree have to be
-     instrumented: the compiler adds code to count the number of times
-     that these arcs are executed.  When an arc is the only exit or only
-     entrance to a block, the instrumentation code can be added to the
-     block; otherwise, a new basic block must be created to hold the
-     instrumentation code.
-
-'-ftest-coverage'
-     Produce a notes file that the 'gcov' code-coverage utility can use
-     to show program coverage.  Each source file's note file is called
-     'AUXNAME.gcno'.  Refer to the '-fprofile-arcs' option above for a
-     description of AUXNAME and instructions on how to generate test
-     coverage data.  Coverage data matches the source files more closely
-     if you do not optimize.
-
-'-fprofile-dir=PATH'
-
-     Set the directory to search for the profile data files in to PATH.
-     This option affects only the profile data generated by
-     '-fprofile-generate', '-ftest-coverage', '-fprofile-arcs' and used
-     by '-fprofile-use' and '-fbranch-probabilities' and its related
-     options.  Both absolute and relative paths can be used.  By
-     default, GCC uses the current directory as PATH, thus the profile
-     data file appears in the same directory as the object file.
-
 '-fprofile-generate'
 '-fprofile-generate=PATH'
 
@@ -6595,31 +6323,177 @@ program analysis purposes.
      feedback based optimization.  You must use '-fprofile-generate'
      both when compiling and when linking your program.
 
-     The following options are enabled: '-fprofile-arcs',
-     '-fprofile-values', '-fvpt'.
+     The following option is enabled: '-fprofile-arcs'.
 
-     If PATH is specified, GCC looks at the PATH to find the profile
-     feedback data files.  See '-fprofile-dir'.
+     If PATH is specified, Clang/LLVM looks at the PATH to store the
+     profile feedback data files.
 
-     To optimize the program based on the collected profile information,
-     use '-fprofile-use'.  *Note Optimize Options::, for more
-     information.
+'-fprofile-instr-generate[=FILE]'
+     Clang/LLVM option for future documentation.
+
+'-fprofile-instr-use[=FILE]'
+     Clang/LLVM option for future documentation.
+
+'-fprofile-sample-use=FILE'
+     Clang/LLVM option for future documentation.
+
+'-fno-sanitize=all'
+     This option disables all previously enabled sanitizers.
+     '-fsanitize=all' is not allowed, as some sanitizers cannot be used
+     together.
 
 '-fsanitize=address'
      Enable AddressSanitizer, a fast memory error detector.  Memory
      access instructions are instrumented to detect out-of-bounds and
      use-after-free bugs.  See
-     <https://github.com/google/sanitizers/wiki/AddressSanitizer> for
-     more details.  The run-time behavior can be influenced using the
-     'ASAN_OPTIONS' environment variable.  When set to 'help=1', the
-     available options are shown at startup of the instrumented program.
-     See
-     <https://github.com/google/sanitizers/wiki/AddressSanitizerFlags#run-time-flags>
+     <http://code.google.com/p/address-sanitizer/> for more details.
+     The run-time behavior can be influenced using the 'ASAN_OPTIONS'
+     environment variable; see
+     <https://code.google.com/p/address-sanitizer/wiki/Flags#Run-time_flags>
      for a list of supported options.
+
+'-fsanitize=alignment'
+     This option enables checking of alignment of pointers when they are
+     dereferenced, or when a reference is bound to insufficiently
+     aligned target, or when a method or constructor is invoked on
+     insufficiently aligned object.
+
+     This is a sub-option of the UndefinedBehaviorSanitizer (*note
+     '-fsanitize=undefined': op fsanitize=undefined.).
+
+'-fsanitize=bool'
+     This option enables instrumentation of loads from bool.  If a value
+     other than 0/1 is loaded, a run-time error is issued.
+
+     This is a sub-option of the UndefinedBehaviorSanitizer (*note
+     '-fsanitize=undefined': op fsanitize=undefined.).
+
+'-fsanitize=bounds'
+     This option enables instrumentation of array bounds.  Various out
+     of bounds accesses are detected.  Flexible array members, flexible
+     array member-like arrays, and initializers of variables with static
+     storage are not instrumented.
+
+     This is a sub-option of the UndefinedBehaviorSanitizer (*note
+     '-fsanitize=undefined': op fsanitize=undefined.).
+
+'-fsanitize=cfi'
+     Clang/LLVM option for future documentation.
+
+'-fsanitize=enum'
+     This option enables instrumentation of loads from an enum type.  If
+     a value outside the range of values for the enum type is loaded, a
+     run-time error is issued.
+
+     This is a sub-option of the UndefinedBehaviorSanitizer (*note
+     '-fsanitize=undefined': op fsanitize=undefined.).
+
+'-fsanitize=float-cast-overflow'
+     This option enables floating-point type to integer conversion
+     checking.  We check that the result of the conversion does not
+     overflow.  Unlike other similar options,
+     '-fsanitize=float-cast-overflow' is not enabled by
+     '-fsanitize=undefined'.  This option does not work well with
+     'FE_INVALID' exceptions enabled.
+
+     This is a sub-option of the UndefinedBehaviorSanitizer (*note
+     '-fsanitize=undefined': op fsanitize=undefined.).
+
+'-fsanitize=float-divide-by-zero'
+     Detect floating-point division by zero.  Unlike other similar
+     options, '-fsanitize=float-divide-by-zero' is not enabled by
+     '-fsanitize=undefined', since floating-point division by zero can
+     be a legitimate way of obtaining infinities and NaNs.
+
+     This is a sub-option of the UndefinedBehaviorSanitizer (*note
+     '-fsanitize=undefined': op fsanitize=undefined.).
+
+'-fsanitize=integer-divide-by-zero'
+     Detect integer division by zero as well as 'INT_MIN / -1' division.
+
+     This is a sub-option of the UndefinedBehaviorSanitizer (*note
+     '-fsanitize=undefined': op fsanitize=undefined.).
 
 '-fsanitize=kernel-address'
      Enable AddressSanitizer for Linux kernel.  See
      <https://github.com/google/kasan/wiki> for more details.
+
+'-fsanitize=leak'
+     Enable LeakSanitizer, a memory leak detector.  This option only
+     matters for linking of executables and if neither
+     '-fsanitize=address' nor '-fsanitize=thread' is used.  In that case
+     the executable is linked against a library that overrides 'malloc'
+     and other allocator functions.  See
+     <https://code.google.com/p/address-sanitizer/wiki/LeakSanitizer>
+     for more details.  The run-time behavior can be influenced using
+     the 'LSAN_OPTIONS' environment variable.
+
+'-fsanitize=nonnull-attribute'
+
+     This option enables instrumentation of calls, checking whether null
+     values are not passed to arguments marked as requiring a non-null
+     value by the 'nonnull' function attribute.
+
+     This is a sub-option of the UndefinedBehaviorSanitizer (*note
+     '-fsanitize=undefined': op fsanitize=undefined.).
+
+'-fsanitize=null'
+     This option enables pointer checking.  Particularly, the
+     application built with this option turned on will issue an error
+     message when it tries to dereference a NULL pointer, or if a
+     reference (possibly an rvalue reference) is bound to a NULL
+     pointer, or if a method is invoked on an object pointed by a NULL
+     pointer.
+
+     This is a sub-option of the UndefinedBehaviorSanitizer (*note
+     '-fsanitize=undefined': op fsanitize=undefined.).
+
+'-fsanitize=object-size'
+     This option enables instrumentation of memory references using the
+     '__builtin_object_size' function.  Various out of bounds pointer
+     accesses are detected.
+
+     This is a sub-option of the UndefinedBehaviorSanitizer (*note
+     '-fsanitize=undefined': op fsanitize=undefined.).
+
+'-fsanitize=return'
+     This option enables return statement checking.  Programs built with
+     this option turned on will issue an error message when the end of a
+     non-void function is reached without actually returning a value.
+     This option works in C++ only.
+
+     This is a sub-option of the UndefinedBehaviorSanitizer (*note
+     '-fsanitize=undefined': op fsanitize=undefined.).
+
+'-fsanitize=returns-nonnull-attribute'
+
+     This option enables instrumentation of return statements in
+     functions marked with 'returns_nonnull' function attribute, to
+     detect returning of null values from such functions.
+
+     This is a sub-option of the UndefinedBehaviorSanitizer (*note
+     '-fsanitize=undefined': op fsanitize=undefined.).
+
+'-fsanitize=shift'
+     This option enables checking that the result of a shift operation
+     is not undefined.  Note that what exactly is considered undefined
+     differs slightly between C and C++, as well as between ISO C90 and
+     C99, etc.
+
+     This is a sub-option of the UndefinedBehaviorSanitizer (*note
+     '-fsanitize=undefined': op fsanitize=undefined.).
+
+'-fsanitize=signed-integer-overflow'
+     This option enables signed integer overflow checking.  We check
+     that the result of '+', '*', and both unary and binary '-' does not
+     overflow in the signed arithmetics.  Note, integer promotion rules
+     must be taken into account.  That is, the following is not an
+     overflow:
+          signed char a = SCHAR_MAX;
+          a++;
+
+     This is a sub-option of the UndefinedBehaviorSanitizer (*note
+     '-fsanitize=undefined': op fsanitize=undefined.).
 
 '-fsanitize=thread'
      Enable ThreadSanitizer, a fast data race detector.  Memory access
@@ -6630,151 +6504,100 @@ program analysis purposes.
      <https://github.com/google/sanitizers/wiki/ThreadSanitizerFlags>
      for a list of supported options.
 
-'-fsanitize=leak'
-     Enable LeakSanitizer, a memory leak detector.  This option only
-     matters for linking of executables and if neither
-     '-fsanitize=address' nor '-fsanitize=thread' is used.  In that case
-     the executable is linked against a library that overrides 'malloc'
-     and other allocator functions.  See
-     <https://github.com/google/sanitizers/wiki/AddressSanitizerLeakSanitizer>
-     for more details.  The run-time behavior can be influenced using
-     the 'LSAN_OPTIONS' environment variable.
-
 '-fsanitize=undefined'
      Enable UndefinedBehaviorSanitizer, a fast undefined behavior
      detector.  Various computations are instrumented to detect
      undefined behavior at runtime.  Current suboptions are:
 
-     '-fsanitize=shift'
-          This option enables checking that the result of a shift
-          operation is not undefined.  Note that what exactly is
-          considered undefined differs slightly between C and C++, as
-          well as between ISO C90 and C99, etc.
+        * '-fsanitize=alignment'
 
-     '-fsanitize=integer-divide-by-zero'
-          Detect integer division by zero as well as 'INT_MIN / -1'
-          division.
+        * '-fsanitize=bool'
 
-     '-fsanitize=unreachable'
-          With this option, the compiler turns the
-          '__builtin_unreachable' call into a diagnostics message call
-          instead.  When reaching the '__builtin_unreachable' call, the
-          behavior is undefined.
+        * '-fsanitize=bounds'
 
-     '-fsanitize=vla-bound'
-          This option instructs the compiler to check that the size of a
-          variable length array is positive.
+        * '-fsanitize=enum'
 
-     '-fsanitize=null'
-          This option enables pointer checking.  Particularly, the
-          application built with this option turned on will issue an
-          error message when it tries to dereference a NULL pointer, or
-          if a reference (possibly an rvalue reference) is bound to a
-          NULL pointer, or if a method is invoked on an object pointed
-          by a NULL pointer.
+        * '-fsanitize=float-cast-overflow'
 
-     '-fsanitize=return'
-          This option enables return statement checking.  Programs built
-          with this option turned on will issue an error message when
-          the end of a non-void function is reached without actually
-          returning a value.  This option works in C++ only.
+        * '-fsanitize=float-divide-by-zero'
 
-     '-fsanitize=signed-integer-overflow'
-          This option enables signed integer overflow checking.  We
-          check that the result of '+', '*', and both unary and binary
-          '-' does not overflow in the signed arithmetics.  Note,
-          integer promotion rules must be taken into account.  That is,
-          the following is not an overflow:
-               signed char a = SCHAR_MAX;
-               a++;
+        * '-fsanitize=integer-divide-by-zero'
 
-     '-fsanitize=bounds'
-          This option enables instrumentation of array bounds.  Various
-          out of bounds accesses are detected.  Flexible array members,
-          flexible array member-like arrays, and initializers of
-          variables with static storage are not instrumented.
+        * '-fsanitize=nonnull-attribute'
 
-     '-fsanitize=bounds-strict'
-          This option enables strict instrumentation of array bounds.
-          Most out of bounds accesses are detected, including flexible
-          array members and flexible array member-like arrays.
-          Initializers of variables with static storage are not
-          instrumented.
+        * '-fsanitize=null'
 
-     '-fsanitize=alignment'
+        * '-fsanitize=object-size'
 
-          This option enables checking of alignment of pointers when
-          they are dereferenced, or when a reference is bound to
-          insufficiently aligned target, or when a method or constructor
-          is invoked on insufficiently aligned object.
+        * '-fsanitize=return'
 
-     '-fsanitize=object-size'
-          This option enables instrumentation of memory references using
-          the '__builtin_object_size' function.  Various out of bounds
-          pointer accesses are detected.
+        * '-fsanitize=returns-nonnull-attribute'
 
-     '-fsanitize=float-divide-by-zero'
-          Detect floating-point division by zero.  Unlike other similar
-          options, '-fsanitize=float-divide-by-zero' is not enabled by
-          '-fsanitize=undefined', since floating-point division by zero
-          can be a legitimate way of obtaining infinities and NaNs.
+        * '-fsanitize=shift'
 
-     '-fsanitize=float-cast-overflow'
-          This option enables floating-point type to integer conversion
-          checking.  We check that the result of the conversion does not
-          overflow.  Unlike other similar options,
-          '-fsanitize=float-cast-overflow' is not enabled by
-          '-fsanitize=undefined'.  This option does not work well with
-          'FE_INVALID' exceptions enabled.
+        * '-fsanitize=signed-integer-overflow'
 
-     '-fsanitize=nonnull-attribute'
+        * '-fsanitize=unreachable'
 
-          This option enables instrumentation of calls, checking whether
-          null values are not passed to arguments marked as requiring a
-          non-null value by the 'nonnull' function attribute.
+        * '-fsanitize=vla-bound'
 
-     '-fsanitize=returns-nonnull-attribute'
-
-          This option enables instrumentation of return statements in
-          functions marked with 'returns_nonnull' function attribute, to
-          detect returning of null values from such functions.
-
-     '-fsanitize=bool'
-
-          This option enables instrumentation of loads from bool.  If a
-          value other than 0/1 is loaded, a run-time error is issued.
-
-     '-fsanitize=enum'
-
-          This option enables instrumentation of loads from an enum
-          type.  If a value outside the range of values for the enum
-          type is loaded, a run-time error is issued.
-
-     '-fsanitize=vptr'
-
-          This option enables instrumentation of C++ member function
-          calls, member accesses and some conversions between pointers
-          to base and derived classes, to verify the referenced object
-          has the correct dynamic type.
+        * '-fsanitize=vptr'
 
      While '-ftrapv' causes traps for signed overflows to be emitted,
      '-fsanitize=undefined' gives a diagnostic message.  This currently
      works only for the C family of languages.
 
-'-fno-sanitize=all'
+'-fsanitize=unreachable'
+     With this option, the compiler turns the '__builtin_unreachable'
+     call into a diagnostics message call instead.  When reaching the
+     '__builtin_unreachable' call, the behavior is undefined.
 
-     This option disables all previously enabled sanitizers.
-     '-fsanitize=all' is not allowed, as some sanitizers cannot be used
-     together.
+     This is a sub-option of the UndefinedBehaviorSanitizer (*note
+     '-fsanitize=undefined': op fsanitize=undefined.).
 
-'-fasan-shadow-offset=NUMBER'
-     This option forces GCC to use custom shadow offset in
-     AddressSanitizer checks.  It is useful for experimenting with
-     different shadow memory layouts in Kernel AddressSanitizer.
+'-fsanitize=vla-bound'
+     This option instructs the compiler to check that the size of a
+     variable length array is positive.
 
-'-fsanitize-sections=S1,S2,...'
-     Sanitize global variables in selected user-defined sections.  SI
-     may contain wildcards.
+     This is a sub-option of the UndefinedBehaviorSanitizer (*note
+     '-fsanitize=undefined': op fsanitize=undefined.).
+
+'-fsanitize=vptr'
+
+     This option enables instrumentation of C++ member function calls,
+     member accesses and some conversions between pointers to base and
+     derived classes, to verify the referenced object has the correct
+     dynamic type.
+
+     This is a sub-option of the UndefinedBehaviorSanitizer (*note
+     '-fsanitize=undefined': op fsanitize=undefined.).
+
+'-fsanitize-address-field-padding=N'
+     Clang/LLVM option for future documentation.
+
+'-fsanitize-blacklist=FILE'
+     Clang/LLVM option for future documentation.
+
+'-fsanitize-cfi-cross-dso'
+     Clang/LLVM option for future documentation.
+
+'-fsanitize-coverage=bb'
+     Clang/LLVM option for future documentation.
+
+'-fsanitize-coverage=edge'
+     Clang/LLVM option for future documentation.
+
+'-fsanitize-coverage=func'
+     Clang/LLVM option for future documentation.
+
+'-fsanitize-coverage=indirect-calls'
+     Clang/LLVM option for future documentation.
+
+'-fsanitize-memory-track-origins[N]'
+     Clang/LLVM option for future documentation.
+
+'-fsanitize-memory-use-after-dtor'
+     Clang/LLVM option for future documentation.
 
 '-fsanitize-recover[=OPTS]'
      '-fsanitize-recover=' controls error recovery mode for sanitizers
@@ -6787,22 +6610,59 @@ program analysis purposes.
      this behavior: only the first detected error is reported and
      program then exits with a non-zero exit code.
 
-     Currently this feature only works for '-fsanitize=undefined' (and
-     its suboptions except for '-fsanitize=unreachable' and
-     '-fsanitize=return'), '-fsanitize=float-cast-overflow',
-     '-fsanitize=float-divide-by-zero', '-fsanitize=kernel-address' and
-     '-fsanitize=address'.  For these sanitizers error recovery is
-     turned on by default, except '-fsanitize=address', for which this
-     feature is experimental.  '-fsanitize-recover=all' and
-     '-fno-sanitize-recover=all' is also accepted, the former enables
-     recovery for all sanitizers that support it, the latter disables
-     recovery for all sanitizers that support it.
+     Currently this feature only works for:
+
+        * '-fsanitize-recover=address'
+
+        * '=alignment'
+
+        * '-fsanitize-recover==bool'
+
+        * '-fsanitize-recover==bounds'
+
+        * '-fsanitize-recover==enum'
+
+        * '-fsanitize-recover==float-cast-overflow'
+
+        * '-fsanitize-recover==float-divide-by-zero'
+
+        * '-fsanitize-recover==integer-divide-by-zero'
+
+        * '-fsanitize-recover==kernel-address'
+
+        * '-fsanitize-recover==leak'
+
+        * '-fsanitize-recover==nonnull-attribute'
+
+        * '-fsanitize-recover==null'
+
+        * '-fsanitize-recover==object-size'
+
+        * '-fsanitize-recover==returns-nonnull-attribute'
+
+        * '-fsanitize-recover==shift'
+
+        * '-fsanitize-recover==signed-integer-overflow'
+
+        * '-fsanitize-recover==thread'
+
+        * '-fsanitize-recover==undefined'
+
+        * '-fsanitize-recover==vla-bound'
+
+        * '-fsanitize-recover==vptr'
 
      Syntax without explicit OPTS parameter is deprecated.  It is
      equivalent to
           -fsanitize-recover=undefined,float-cast-overflow,float-divide-by-zero
      Similarly '-fno-sanitize-recover' is equivalent to
           -fno-sanitize-recover=undefined,float-cast-overflow,float-divide-by-zero
+
+'-fsanitize-stats'
+     Clang/LLVM option for future documentation.
+
+'-fsanitize-trap=STYLE'
+     Clang/LLVM option for future documentation.
 
 '-fsanitize-undefined-trap-on-error'
      The '-fsanitize-undefined-trap-on-error' option instructs the
@@ -6811,152 +6671,23 @@ program analysis purposes.
      the 'libubsan' library is not needed and is not linked in, so this
      is usable even in freestanding environments.
 
-'-fsanitize-coverage=trace-pc'
-     Enable coverage-guided fuzzing code instrumentation.  Inserts a
-     call to '__sanitizer_cov_trace_pc' into every basic block.
+'-fsplit-stack'
+     Generate code to automatically split the stack before it overflows.
+     The resulting program has a discontiguous stack which can only
+     overflow if the program is unable to allocate any more memory.
+     This is most useful when running threaded programs, as it is no
+     longer necessary to calculate a good stack size to use for each
+     thread.  This is currently only implemented for the x86 targets
+     running GNU/Linux.
 
-'-fbounds-check'
-     For front ends that support it, generate additional code to check
-     that indices used to access arrays are within the declared range.
-     This is currently only supported by the Java and Fortran front
-     ends, where this option defaults to true and false respectively.
-
-'-fcheck-pointer-bounds'
-     Enable Pointer Bounds Checker instrumentation.  Each memory
-     reference is instrumented with checks of the pointer used for
-     memory access against bounds associated with that pointer.
-
-     Currently there is only an implementation for Intel MPX available,
-     thus x86 GNU/Linux target and '-mmpx' are required to enable this
-     feature.  MPX-based instrumentation requires a runtime library to
-     enable MPX in hardware and handle bounds violation signals.  By
-     default when '-fcheck-pointer-bounds' and '-mmpx' options are used
-     to link a program, the GCC driver links against the 'libmpx' and
-     'libmpxwrappers' libraries.  Bounds checking on calls to dynamic
-     libraries requires a linker with '-z bndplt' support; if GCC was
-     configured with a linker without support for this option (including
-     the Gold linker and older versions of ld), a warning is given if
-     you link with '-mmpx' without also specifying '-static', since the
-     overall effectiveness of the bounds checking protection is reduced.
-     See also '-static-libmpxwrappers'.
-
-     MPX-based instrumentation may be used for debugging and also may be
-     included in production code to increase program security.
-     Depending on usage, you may have different requirements for the
-     runtime library.  The current version of the MPX runtime library is
-     more oriented for use as a debugging tool.  MPX runtime library
-     usage implies '-lpthread'.  See also '-static-libmpx'.  The runtime
-     library behavior can be influenced using various 'CHKP_RT_*'
-     environment variables.  See
-     <https://gcc.gnu.org/wiki/Intel%20MPX%20support%20in%20the%20GCC%20compiler>
-     for more details.
-
-     Generated instrumentation may be controlled by various '-fchkp-*'
-     options and by the 'bnd_variable_size' structure field attribute
-     (*note Type Attributes::) and 'bnd_legacy', and 'bnd_instrument'
-     function attributes (*note Function Attributes::).  GCC also
-     provides a number of built-in functions for controlling the Pointer
-     Bounds Checker.  *Note Pointer Bounds Checker builtins::, for more
-     information.
-
-'-fchkp-check-incomplete-type'
-     Generate pointer bounds checks for variables with incomplete type.
-     Enabled by default.
-
-'-fchkp-narrow-bounds'
-     Controls bounds used by Pointer Bounds Checker for pointers to
-     object fields.  If narrowing is enabled then field bounds are used.
-     Otherwise object bounds are used.  See also
-     '-fchkp-narrow-to-innermost-array' and
-     '-fchkp-first-field-has-own-bounds'.  Enabled by default.
-
-'-fchkp-first-field-has-own-bounds'
-     Forces Pointer Bounds Checker to use narrowed bounds for the
-     address of the first field in the structure.  By default a pointer
-     to the first field has the same bounds as a pointer to the whole
-     structure.
-
-'-fchkp-narrow-to-innermost-array'
-     Forces Pointer Bounds Checker to use bounds of the innermost arrays
-     in case of nested static array access.  By default this option is
-     disabled and bounds of the outermost array are used.
-
-'-fchkp-optimize'
-     Enables Pointer Bounds Checker optimizations.  Enabled by default
-     at optimization levels '-O', '-O2', '-O3'.
-
-'-fchkp-use-fast-string-functions'
-     Enables use of '*_nobnd' versions of string functions (not copying
-     bounds) by Pointer Bounds Checker.  Disabled by default.
-
-'-fchkp-use-nochk-string-functions'
-     Enables use of '*_nochk' versions of string functions (not checking
-     bounds) by Pointer Bounds Checker.  Disabled by default.
-
-'-fchkp-use-static-bounds'
-     Allow Pointer Bounds Checker to generate static bounds holding
-     bounds of static variables.  Enabled by default.
-
-'-fchkp-use-static-const-bounds'
-     Use statically-initialized bounds for constant bounds instead of
-     generating them each time they are required.  By default enabled
-     when '-fchkp-use-static-bounds' is enabled.
-
-'-fchkp-treat-zero-dynamic-size-as-infinite'
-     With this option, objects with incomplete type whose
-     dynamically-obtained size is zero are treated as having infinite
-     size instead by Pointer Bounds Checker.  This option may be helpful
-     if a program is linked with a library missing size information for
-     some symbols.  Disabled by default.
-
-'-fchkp-check-read'
-     Instructs Pointer Bounds Checker to generate checks for all read
-     accesses to memory.  Enabled by default.
-
-'-fchkp-check-write'
-     Instructs Pointer Bounds Checker to generate checks for all write
-     accesses to memory.  Enabled by default.
-
-'-fchkp-store-bounds'
-     Instructs Pointer Bounds Checker to generate bounds stores for
-     pointer writes.  Enabled by default.
-
-'-fchkp-instrument-calls'
-     Instructs Pointer Bounds Checker to pass pointer bounds to calls.
-     Enabled by default.
-
-'-fchkp-instrument-marked-only'
-     Instructs Pointer Bounds Checker to instrument only functions
-     marked with the 'bnd_instrument' attribute (*note Function
-     Attributes::).  Disabled by default.
-
-'-fchkp-use-wrappers'
-     Allows Pointer Bounds Checker to replace calls to built-in
-     functions with calls to wrapper functions.  When
-     '-fchkp-use-wrappers' is used to link a program, the GCC driver
-     automatically links against 'libmpxwrappers'.  See also
-     '-static-libmpxwrappers'.  Enabled by default.
-
-'-fstack-protector'
-     Emit extra code to check for buffer overflows, such as stack
-     smashing attacks.  This is done by adding a guard variable to
-     functions with vulnerable objects.  This includes functions that
-     call 'alloca', and functions with buffers larger than 8 bytes.  The
-     guards are initialized when a function is entered and then checked
-     when the function exits.  If a guard check fails, an error message
-     is printed and the program exits.
-
-'-fstack-protector-all'
-     Like '-fstack-protector' except that all functions are protected.
-
-'-fstack-protector-strong'
-     Like '-fstack-protector' but includes additional functions to be
-     protected -- those that have local array definitions, or have
-     references to local frame addresses.
-
-'-fstack-protector-explicit'
-     Like '-fstack-protector' but only protects those functions which
-     have the 'stack_protect' attribute.
+     When code compiled with '-fsplit-stack' calls code compiled without
+     '-fsplit-stack', there may not be much stack space available for
+     the latter code to run.  If compiling all code, including library
+     code, with '-fsplit-stack' is not an option, then the linker can
+     fix up these calls so that the code compiled without
+     '-fsplit-stack' always has a large stack.  Support for this is
+     implemented in the gold linker in GNU binutils release 2.21 and
+     later.
 
 '-fstack-check'
      Generate code to verify that you do not go beyond the boundary of
@@ -6994,163 +6725,36 @@ program analysis purposes.
      Note that old-style stack checking is also the fallback method for
      'specific' if no target support has been added in the compiler.
 
-'-fstack-limit-register=REG'
-'-fstack-limit-symbol=SYM'
-'-fno-stack-limit'
-     Generate code to ensure that the stack does not grow beyond a
-     certain value, either the value of a register or the address of a
-     symbol.  If a larger stack is required, a signal is raised at run
-     time.  For most targets, the signal is raised before the stack
-     overruns the boundary, so it is possible to catch the signal
-     without taking special precautions.
+'-fstack-protector'
+     Emit extra code to check for buffer overflows, such as stack
+     smashing attacks.  This is done by adding a guard variable to
+     functions with vulnerable objects.  This includes functions that
+     call 'alloca', and functions with buffers larger than 8 bytes.  The
+     guards are initialized when a function is entered and then checked
+     when the function exits.  If a guard check fails, an error message
+     is printed and the program exits.
 
-     For instance, if the stack starts at absolute address '0x80000000'
-     and grows downwards, you can use the flags
-     '-fstack-limit-symbol=__stack_limit' and
-     '-Wl,--defsym,__stack_limit=0x7ffe0000' to enforce a stack limit of
-     128KB.  Note that this may only work with the GNU linker.
+'-fstack-protector-all'
+     Like '-fstack-protector' except that all functions are protected.
 
-     You can locally override stack limit checking by using the
-     'no_stack_limit' function attribute (*note Function Attributes::).
+'-fstack-protector-strong'
+     Like '-fstack-protector' but includes additional functions to be
+     protected -- those that have local array definitions, or have
+     references to local frame addresses.
 
-'-fsplit-stack'
-     Generate code to automatically split the stack before it overflows.
-     The resulting program has a discontiguous stack which can only
-     overflow if the program is unable to allocate any more memory.
-     This is most useful when running threaded programs, as it is no
-     longer necessary to calculate a good stack size to use for each
-     thread.  This is currently only implemented for the x86 targets
-     running GNU/Linux.
+'-ftest-coverage'
+     Produce a notes file that the 'gcov' code-coverage utility can use
+     to show program coverage.  Each source file's note file is called
+     'AUXNAME.gcno'.  Refer to the '-fprofile-arcs' option above for a
+     description of AUXNAME and instructions on how to generate test
+     coverage data.  Coverage data matches the source files more closely
+     if you do not optimize.
 
-     When code compiled with '-fsplit-stack' calls code compiled without
-     '-fsplit-stack', there may not be much stack space available for
-     the latter code to run.  If compiling all code, including library
-     code, with '-fsplit-stack' is not an option, then the linker can
-     fix up these calls so that the code compiled without
-     '-fsplit-stack' always has a large stack.  Support for this is
-     implemented in the gold linker in GNU binutils release 2.21 and
-     later.
-
-'-fvtable-verify=[std|preinit|none]'
-     This option is only available when compiling C++ code.  It turns on
-     (or off, if using '-fvtable-verify=none') the security feature that
-     verifies at run time, for every virtual call, that the vtable
-     pointer through which the call is made is valid for the type of the
-     object, and has not been corrupted or overwritten.  If an invalid
-     vtable pointer is detected at run time, an error is reported and
-     execution of the program is immediately halted.
-
-     This option causes run-time data structures to be built at program
-     startup, which are used for verifying the vtable pointers.  The
-     options 'std' and 'preinit' control the timing of when these data
-     structures are built.  In both cases the data structures are built
-     before execution reaches 'main'.  Using '-fvtable-verify=std'
-     causes the data structures to be built after shared libraries have
-     been loaded and initialized.  '-fvtable-verify=preinit' causes them
-     to be built before shared libraries have been loaded and
-     initialized.
-
-     If this option appears multiple times in the command line with
-     different values specified, 'none' takes highest priority over both
-     'std' and 'preinit'; 'preinit' takes priority over 'std'.
-
-'-fvtv-debug'
-     When used in conjunction with '-fvtable-verify=std' or
-     '-fvtable-verify=preinit', causes debug versions of the runtime
-     functions for the vtable verification feature to be called.  This
-     flag also causes the compiler to log information about which vtable
-     pointers it finds for each class.  This information is written to a
-     file named 'vtv_set_ptr_data.log' in the directory named by the
-     environment variable 'VTV_LOGS_DIR' if that is defined or the
-     current working directory otherwise.
-
-     Note: This feature _appends_ data to the log file.  If you want a
-     fresh log file, be sure to delete any existing one.
-
-'-fvtv-counts'
-     This is a debugging flag.  When used in conjunction with
-     '-fvtable-verify=std' or '-fvtable-verify=preinit', this causes the
-     compiler to keep track of the total number of virtual calls it
-     encounters and the number of verifications it inserts.  It also
-     counts the number of calls to certain run-time library functions
-     that it inserts and logs this information for each compilation
-     unit.  The compiler writes this information to a file named
-     'vtv_count_data.log' in the directory named by the environment
-     variable 'VTV_LOGS_DIR' if that is defined or the current working
-     directory otherwise.  It also counts the size of the vtable pointer
-     sets for each class, and writes this information to
-     'vtv_class_set_sizes.log' in the same directory.
-
-     Note: This feature _appends_ data to the log files.  To get fresh
-     log files, be sure to delete any existing ones.
-
-'-finstrument-functions'
-     Generate instrumentation calls for entry and exit to functions.
-     Just after function entry and just before function exit, the
-     following profiling functions are called with the address of the
-     current function and its call site.  (On some platforms,
-     '__builtin_return_address' does not work beyond the current
-     function, so the call site information may not be available to the
-     profiling functions otherwise.)
-
-          void __cyg_profile_func_enter (void *this_fn,
-                                         void *call_site);
-          void __cyg_profile_func_exit  (void *this_fn,
-                                         void *call_site);
-
-     The first argument is the address of the start of the current
-     function, which may be looked up exactly in the symbol table.
-
-     This instrumentation is also done for functions expanded inline in
-     other functions.  The profiling calls indicate where, conceptually,
-     the inline function is entered and exited.  This means that
-     addressable versions of such functions must be available.  If all
-     your uses of a function are expanded inline, this may mean an
-     additional expansion of code size.  If you use 'extern inline' in
-     your C code, an addressable version of such functions must be
-     provided.  (This is normally the case anyway, but if you get lucky
-     and the optimizer always expands the functions inline, you might
-     have gotten away without providing static copies.)
-
-     A function may be given the attribute 'no_instrument_function', in
-     which case this instrumentation is not done.  This can be used, for
-     example, for the profiling functions listed above, high-priority
-     interrupt routines, and any functions from which the profiling
-     functions cannot safely be called (perhaps signal handlers, if the
-     profiling routines generate output or allocate memory).
-
-'-finstrument-functions-exclude-file-list=FILE,FILE,...'
-
-     Set the list of functions that are excluded from instrumentation
-     (see the description of '-finstrument-functions').  If the file
-     that contains a function definition matches with one of FILE, then
-     that function is not instrumented.  The match is done on
-     substrings: if the FILE parameter is a substring of the file name,
-     it is considered to be a match.
-
-     For example:
-
-          -finstrument-functions-exclude-file-list=/bits/stl,include/sys
-
-     excludes any inline function defined in files whose pathnames
-     contain '/bits/stl' or 'include/sys'.
-
-     If, for some reason, you want to include letter ',' in one of SYM,
-     write '\,'.  For example,
-     '-finstrument-functions-exclude-file-list='\,\,tmp'' (note the
-     single quote surrounding the option).
-
-'-finstrument-functions-exclude-function-list=SYM,SYM,...'
-
-     This is similar to '-finstrument-functions-exclude-file-list', but
-     this option sets the list of function names to be excluded from
-     instrumentation.  The function name to be matched is its
-     user-visible name, such as 'vector<int> blah(const vector<int> &)',
-     not the internal mangled name (e.g., '_Z4blahRSt6vectorIiSaIiEE').
-     The match is done on substrings: if the SYM parameter is a
-     substring of the function name, it is considered to be a match.
-     For C99 and C++ extended identifiers, the function name must be
-     given in UTF-8, not using universal character names.
+'-pg'
+     Generate extra code to write profile information suitable for the
+     analysis program 'gprof'.  You must use this option when compiling
+     the source files you want data about, and you must also use it when
+     linking.
 
 
 File: llvm.info,  Node: Preprocessor Options,  Next: Assembler Options,  Prev: Instrumentation Options,  Up: Invoking LLVM
@@ -7158,80 +6762,56 @@ File: llvm.info,  Node: Preprocessor Options,  Next: Assembler Options,  Prev: I
 3.12 Options Controlling the Preprocessor
 =========================================
 
-_Note:_ Not all GCC options are supported by Clang/LLVM. *Note Option
+These options control the C preprocessor, which is run on each C source
+file before actual compilation.
+
+ _Note:_ Not all GCC options are supported by Clang/LLVM. *Note Option
 Summary: Option Summary, for details of:
    * those options supported by both Clang/LLVM and GCC;
    * those options only supported by Clang/LLVM; and
    * those options supported only by GCC.
 
- These options control the C preprocessor, which is run on each C source
-file before actual compilation.
-
  If you use the '-E' option, nothing is done except preprocessing.  Some
-of these options make sense only together with '-E' because they cause
-the preprocessor output to be unsuitable for actual compilation.
+of these Clang/LLVM options make sense only together with '-E' because
+they cause the preprocessor output to be unsuitable for actual
+compilation.
 
- The following options have LLVM behavior which differs from GCC:
-     -C
+'-C'
+     Do not discard comments.  All comments are passed through to the
+     output file, except for comments in processed directives, which are
+     deleted along with the directive.
 
- The following GCC options are accepted by LLVM, but have no effect and
-by default will generate a warning:
-     -AQUESTION=ANSWER
-     -A-QUESTION[=ANSWER]
+     You should be prepared for side effects when using '-C'; it causes
+     the preprocessor to treat comments as tokens in their own right.
+     For example, comments appearing at the start of what would be a
+     directive line have the effect of turning that line into an
+     ordinary source line, since the first token on the line is no
+     longer a '#'.
 
- The following GCC options are not accepted by LLVM:
-     -AQUESTION=ANSWER
-     -A-QUESTION[=ANSWER]
-     -C  -dD  -dI  -dM  -dN -dU
-     -DMACRO[=DEFN]  -E  -H
-     -idirafter DIR
-     -include FILE  -imacros FILE
-     -iprefix FILE  -iwithprefix DIR
-     -iwithprefixbefore DIR  -isystem DIR
-     -imultilib DIR -isysroot DIR
-     -M  -MM  -MF  -MG  -MP  -MQ  -MT  -nostdinc
-     -P  -fdebug-cpp -ftrack-macro-expansion -fworking-directory
-     -remap -trigraphs  -undef  -UMACRO
-     -Wp,OPTION -Xpreprocessor OPTION -no-integrated-cpp
+'-CC'
+     Do not discard comments, including during macro expansion.  This is
+     like '-C', except that comments contained within macros are also
+     passed through to the output file where the macro is expanded.
 
-'-Wp,OPTION'
-     You can use '-Wp,OPTION' to bypass the compiler driver and pass
-     OPTION directly through to the preprocessor.  If OPTION contains
-     commas, it is split into multiple options at the commas.  However,
-     many options are modified, translated or interpreted by the
-     compiler driver before being passed to the preprocessor, and '-Wp'
-     forcibly bypasses this phase.  The preprocessor's direct interface
-     is undocumented and subject to change, so whenever possible you
-     should avoid using '-Wp' and let the driver handle the options
-     instead.
+     In addition to the side-effects of the '-C' option, the '-CC'
+     option causes all C++-style comments inside a macro to be converted
+     to C-style comments.  This is to prevent later use of that macro
+     from inadvertently commenting out the remainder of the source line.
 
-'-Xpreprocessor OPTION'
-     Pass OPTION as an option to the preprocessor.  You can use this to
-     supply system-specific preprocessor options that LLVM does not
-     recognize.
+     The '-CC' option is generally used to support lint comments.
 
-     If you want to pass an option that takes an argument, you must use
-     '-Xpreprocessor' twice, once for the option and once for the
-     argument.
+'-cxx-isystem=FILE'
+     Clang/LLVM option for future documentation.
 
-'-no-integrated-cpp'
-     Perform preprocessing as a separate pass before compilation.  By
-     default, LLVM performs preprocessing as an integrated part of input
-     tokenization and parsing.  If this option is provided, 'clang' is
-     instead invoked twice, once for preprocessing only and once for
-     actual compilation of the preprocessed input.  This option may be
-     useful in conjunction with the '-B' or '-wrapper' options to
-     specify an alternate preprocessor or perform additional processing
-     of the program source between normal preprocessing and compilation.
-
+'-D NAME[=DEFINITION]'
 '-D NAME'
-     Predefine NAME as a macro, with definition '1'.
+     If DEFINITION is nor proved, predefine NAME as a macro, with
+     definition '1'.
 
-'-D NAME=DEFINITION'
-     The contents of DEFINITION are tokenized and processed as if they
-     appeared during translation phase three in a '#define' directive.
-     In particular, the definition will be truncated by embedded newline
-     characters.
+     Otherwise, the contents of DEFINITION are tokenized and processed
+     as if they appeared during translation phase three in a '#define'
+     directive.  In particular, the definition will be truncated by
+     embedded newline characters.
 
      If you are invoking the preprocessor from a shell or shell-like
      program you may need to use the shell's quoting syntax to protect
@@ -7247,78 +6827,160 @@ by default will generate a warning:
      the command line.  All '-imacros FILE' and '-include FILE' options
      are processed after all '-D' and '-U' options.
 
-'-U NAME'
-     Cancel any previous definition of NAME, either built in or provided
-     with a '-D' option.
+'-dM'
+     Instead of the normal output, generate a list of '#define'
+     directives for all the macros defined during the execution of the
+     preprocessor, including predefined macros.  This gives you a way of
+     finding out what is predefined in your version of the preprocessor.
+     Assuming you have no file 'foo.h', the command
 
-'-undef'
-     Do not predefine any system-specific or LLVM-specific macros.  The
-     standard predefined macros remain defined.
+          touch foo.h; cpp -dM foo.h
 
-'-I DIR'
-     Add the directory DIR to the list of directories to be searched for
-     header files.  Directories named by '-I' are searched before the
-     standard system include directories.  If the directory DIR is a
-     standard system include directory, the option is ignored to ensure
-     that the default search order for system directories and the
-     special treatment of system headers are not defeated.  If DIR
+     will show all the predefined macros.
+
+     If you use '-dM' without the '-E' option, '-dM' is interpreted as a
+     synonym for '-fdump-rtl-mach'.  *Note (gcc)Debugging Options::.
+
+'-dD'
+     Like 'M' except in two respects: it does _not_ include the
+     predefined macros, and it outputs _both_ the '#define' directives
+     and the result of preprocessing.  Both kinds of output go to the
+     standard output file.
+
+'-E'
+     Documented in the section on options controlling output.  *Note
+     '-E': op E.
+
+'-fcomment-block-commands=CMD'
+     Clang/LLVM option for future documentation.
+
+'-fdeclspec'
+     Clang/LLVM option for future documentation.
+
+'-fdollars-in-identifiers'
+     Accept '$' in identifiers.
+
+'-fexec-charset=CHARSET'
+     Set the execution character set, used for string and character
+     constants.  The default is UTF-8.  CHARSET can be any encoding
+     supported by the system's 'iconv' library routine.
+
+'-fextended-identifiers'
+     Accept universal character names in identifiers.  This option is
+     enabled by default for C99 (and later C standard versions) and C++.
+
+'-finput-charset=CHARSET'
+     Set the input character set, used for translation from the
+     character set of the input file to the source character set used by
+     LLVM.  If the locale does not specify, or LLVM cannot get this
+     information from the locale, the default is UTF-8.  This can be
+     overridden by either the locale or this command line option.
+     Currently the command line option takes precedence if there's a
+     conflict.  CHARSET can be any encoding supported by the system's
+     'iconv' library routine.
+
+'-fpch-preprocess'
+     This option allows use of a precompiled header (*note Precompiled
+     Headers::) together with '-E'.  It inserts a special '#pragma',
+     '#pragma GCC pch_preprocess "FILENAME"' in the output to mark the
+     place where the precompiled header was found, and its FILENAME.
+     When '-fpreprocessed' is in use, LLVM recognizes this '#pragma' and
+     loads the PCH.
+
+     This option is off by default, because the resulting preprocessed
+     output is only really suitable as input to LLVM.  It is switched on
+     by '-save-temps'.
+
+     You should not write this '#pragma' in your own code, but it is
+     safe to edit the filename if the PCH file is available in a
+     different location.  The filename may be absolute or it may be
+     relative to LLVM's current directory.
+
+'-fno-show-column'
+     Do not print column numbers in diagnostics.  This may be necessary
+     if diagnostics are being scanned by a program that does not
+     understand the column numbers, such as 'dejagnu'.
+
+'-ftabstop=WIDTH'
+     Set the distance between tab stops.  This helps the preprocessor
+     report correct column numbers in warnings or errors, even if tabs
+     appear on the line.  If the value is less than 1 or greater than
+     100, the option is ignored.  The default is 8.
+
+'-ftrigraphs'
+     Clang/LLVM option for future documentation.
+
+'-H'
+     Print the name of each header file used, in addition to other
+     normal activities.  Each name is indented to show how deep in the
+     '#include' stack it is.  Precompiled header files are also printed,
+     even if they are found to be invalid; an invalid precompiled header
+     file is printed with '...x' and a valid one with '...!' .
+
+'-idirafter DIR'
+     Search DIR for header files, but do it _after_ all directories
+     specified with '-I' and the standard system directories have been
+     exhausted.  DIR is treated as a system include directory.  If DIR
      begins with '=', then the '=' will be replaced by the sysroot
      prefix; see '--sysroot' and '-isysroot'.
 
-'-Wundef'
-     *Note op Wundef::.
+'-iframeworkDIR'
+     Clang/LLVM option for future documentation.
 
-'-Wunused-macros'
-     Warn about macros defined in the main file that are unused.  A
-     macro is "used" if it is expanded or tested for existence at least
-     once.  The preprocessor will also warn if the macro has not been
-     used at the time it is redefined or undefined.
+'-imacros FILE'
+     Exactly like '-include', except that any output produced by
+     scanning FILE is thrown away.  Macros it defines remain defined.
+     This allows you to acquire all the macros from a header without
+     also processing its declarations.
 
-     Built-in macros, macros defined on the command line, and macros
-     defined in include files are not warned about.
+     All files specified by '-imacros' are processed before all files
+     specified by '-include'.
 
-     _Note:_ If a macro is actually used, but only used in skipped
-     conditional blocks, then CPP will report it as unused.  To avoid
-     the warning in such a case, you might improve the scope of the
-     macro's definition by, for example, moving it into the first
-     skipped block.  Alternatively, you could provide a dummy use with
-     something like:
+'-include FILE'
+     Process FILE as if '#include "file"' appeared as the first line of
+     the primary source file.  However, the first directory searched for
+     FILE is the preprocessor's working directory _instead of_ the
+     directory containing the main source file.  If not found there, it
+     is searched for in the remainder of the '#include "..."' search
+     chain as normal.
 
-          #if defined the_macro_causing_the_warning
-          #endif
+     If multiple '-include' options are given, the files are included in
+     the order they appear on the command line.
 
-'-Wendif-labels'
-     Warn whenever an '#else' or an '#endif' is followed by text.  This
-     usually happens in code of the form:
+'-include-pch FILE'
+     Clang/LLVM option for future documentation.
 
-          #if FOO
-          ...
-          #else FOO
-          ...
-          #endif FOO
+'-index-header-map'
+     Clang/LLVM option for future documentation.
 
-     The second and third 'FOO' should be in comments, but often are not
-     in older programs.  This warning is on by default.
+'-iprefix PREFIX'
+     Specify PREFIX as the prefix for subsequent '-iwithprefix' options.
+     If the prefix represents a directory, you should include the final
+     '/'.
 
-'-Wsystem-headers'
-     Issue warnings for code in system headers.  These are normally
-     unhelpful in finding bugs in your own code, therefore suppressed.
-     If you are responsible for the system library, you may want to see
-     them.
+'-isysroot DIR'
+     This option is like the '--sysroot' option, but applies only to
+     header files (except for Darwin targets, where it applies to both
+     header files and libraries).  See the '--sysroot' option for more
+     information.
 
-'-w'
-     Suppress all warnings, including those which GNU CPP issues by
-     default.
+'-isystem DIR'
+     Search DIR for header files, after all directories specified by
+     '-I' but before the standard system directories.  Mark it as a
+     system directory, so that it gets the same special treatment as is
+     applied to the standard system directories.  If DIR begins with
+     '=', then the '=' will be replaced by the sysroot prefix; see
+     '--sysroot' and '-isysroot'.
 
-'-pedantic'
-     Issue all the mandatory diagnostics listed in the C standard.  Some
-     of them are left out by default, since they trigger frequently on
-     harmless code.
+'-iwithprefix DIR'
+'-iwithprefixbefore DIR'
+     Append DIR to the prefix specified previously with '-iprefix', and
+     add the resulting directory to the include search path.
+     '-iwithprefixbefore' puts it in the same place '-I' would;
+     '-iwithprefix' puts it where '-idirafter' would.
 
-'-pedantic-errors'
-     Issue all the mandatory diagnostics, and make all mandatory
-     diagnostics into errors.  This includes mandatory diagnostics that
-     LLVM issues without '-pedantic' but treats as warnings.
+'-iwithsysroot DIR'
+     Clang/LLVM option for future documentation.
 
 '-M'
      Instead of outputting the result of preprocessing, output a rule
@@ -7345,15 +7007,21 @@ by default will generate a warning:
      Passing '-M' to the driver implies '-E', and suppresses warnings
      with an implicit '-w'.
 
-'-MM'
-     Like '-M' but do not mention header files that are found in system
-     header directories, nor header files that are included, directly or
-     indirectly, from such a header.
+'-MD'
+     '-MD' is equivalent to '-M -MF FILE', except that '-E' is not
+     implied.  The driver determines FILE based on whether an '-o'
+     option is given.  If it is, the driver uses its argument but with a
+     suffix of '.d', otherwise it takes the name of the input file,
+     removes any directory components and suffix, and applies a '.d'
+     suffix.
 
-     This implies that the choice of angle brackets or double quotes in
-     an '#include' directive does not in itself determine whether that
-     header will appear in '-MM' dependency output.  This is a slight
-     change in semantics from GCC versions 3.0 and earlier.
+     If '-MD' is used in conjunction with '-E', any '-o' switch is
+     understood to specify the dependency output file (*note -MF:
+     dashMF.), but if used without '-E', each '-o' is understood to
+     specify a target object file.
+
+     Since '-E' is not implied, '-MD' can be used to generate a
+     dependency output file as a side-effect of the compilation process.
 
 '-MF FILE'
      When used with '-M' or '-MM', specifies a file to write the
@@ -7374,6 +7042,23 @@ by default will generate a warning:
 
      This feature is used in automatic updating of makefiles.
 
+'--migrate'
+     Clang/LLVM option for future documentation.
+
+'-MM'
+     Like '-M' but do not mention header files that are found in system
+     header directories, nor header files that are included, directly or
+     indirectly, from such a header.
+
+     This implies that the choice of angle brackets or double quotes in
+     an '#include' directive does not in itself determine whether that
+     header will appear in '-MM' dependency output.  This is a slight
+     change in semantics from GCC versions 3.0 and earlier.
+
+'-MMD'
+     Like '-MD' except mention only user header files, not system header
+     files.
+
 '-MP'
      This option instructs CPP to add a phony target for each dependency
      other than the main file, causing each to depend on nothing.  These
@@ -7385,6 +7070,16 @@ by default will generate a warning:
           test.o: test.c test.h
 
           test.h:
+
+'-MQ TARGET'
+
+     Same as '-MT', but it quotes any characters which are special to
+     Make.  '-MQ '$(objpfx)foo.o'' gives
+
+          $$(objpfx)foo.o: foo.c
+
+     The default target is automatically quoted, as if it were given
+     with '-MQ'.
 
 '-MT TARGET'
 
@@ -7401,316 +7096,29 @@ by default will generate a warning:
 
           $(objpfx)foo.o: foo.c
 
-'-MQ TARGET'
+'-MV'
+     Clang/LLVM option for future documentation.
 
-     Same as '-MT', but it quotes any characters which are special to
-     Make.  '-MQ '$(objpfx)foo.o'' gives
-
-          $$(objpfx)foo.o: foo.c
-
-     The default target is automatically quoted, as if it were given
-     with '-MQ'.
-
-'-MD'
-     '-MD' is equivalent to '-M -MF FILE', except that '-E' is not
-     implied.  The driver determines FILE based on whether an '-o'
-     option is given.  If it is, the driver uses its argument but with a
-     suffix of '.d', otherwise it takes the name of the input file,
-     removes any directory components and suffix, and applies a '.d'
-     suffix.
-
-     If '-MD' is used in conjunction with '-E', any '-o' switch is
-     understood to specify the dependency output file (*note -MF:
-     dashMF.), but if used without '-E', each '-o' is understood to
-     specify a target object file.
-
-     Since '-E' is not implied, '-MD' can be used to generate a
-     dependency output file as a side-effect of the compilation process.
-
-'-MMD'
-     Like '-MD' except mention only user header files, not system header
-     files.
-
-'-fpch-deps'
-     When using precompiled headers (*note Precompiled Headers::), this
-     flag will cause the dependency-output flags to also list the files
-     from the precompiled header's dependencies.  If not specified only
-     the precompiled header would be listed and not the files that were
-     used to create it because those files are not consulted when a
-     precompiled header is used.
-
-'-fpch-preprocess'
-     This option allows use of a precompiled header (*note Precompiled
-     Headers::) together with '-E'.  It inserts a special '#pragma',
-     '#pragma GCC pch_preprocess "FILENAME"' in the output to mark the
-     place where the precompiled header was found, and its FILENAME.
-     When '-fpreprocessed' is in use, LLVM recognizes this '#pragma' and
-     loads the PCH.
-
-     This option is off by default, because the resulting preprocessed
-     output is only really suitable as input to LLVM.  It is switched on
-     by '-save-temps'.
-
-     You should not write this '#pragma' in your own code, but it is
-     safe to edit the filename if the PCH file is available in a
-     different location.  The filename may be absolute or it may be
-     relative to LLVM's current directory.
-
-'-x c'
-'-x c++'
-'-x objective-c'
-'-x assembler-with-cpp'
-     Specify the source language: C, C++, Objective-C, or assembly.
-     This has nothing to do with standards conformance or extensions; it
-     merely selects which base syntax to expect.  If you give none of
-     these options, cpp will deduce the language from the extension of
-     the source file: '.c', '.cc', '.m', or '.S'.  Some other common
-     extensions for C++ and assembly are also recognized.  If cpp does
-     not recognize the extension, it will treat the file as C; this is
-     the most generic mode.
-
-     _Note:_ Previous versions of cpp accepted a '-lang' option which
-     selected both the language and the standards conformance level.
-     This option has been removed, because it conflicts with the '-l'
-     option.
+'-no-integrated-cpp'
+     Perform preprocessing as a separate pass before compilation.  By
+     default, LLVM performs preprocessing as an integrated part of input
+     tokenization and parsing.  If this option is provided, 'clang' is
+     instead invoked twice, once for preprocessing only and once for
+     actual compilation of the preprocessed input.  This option may be
+     useful in conjunction with the '-B' or '-wrapper' options to
+     specify an alternate preprocessor or perform additional processing
+     of the program source between normal preprocessing and compilation.
 
 '-nostdinc'
      Do not search the standard system directories for header files.
      Only the directories you have specified with '-I' options (and the
      directory of the current file, if appropriate) are searched.
 
-'-nostdinc++'
-     Do not search for header files in the standard directories specific
-     to C++, but do still search the other standard directories.  (This
-     option is used when building the C++ library.)
+'--no-system-header-prefix=PREFIX'
+     Clang/LLVM option for future documentation.
 
-'-include FILE'
-     Process FILE as if '#include "file"' appeared as the first line of
-     the primary source file.  However, the first directory searched for
-     FILE is the preprocessor's working directory _instead of_ the
-     directory containing the main source file.  If not found there, it
-     is searched for in the remainder of the '#include "..."' search
-     chain as normal.
-
-     If multiple '-include' options are given, the files are included in
-     the order they appear on the command line.
-
-'-imacros FILE'
-     Exactly like '-include', except that any output produced by
-     scanning FILE is thrown away.  Macros it defines remain defined.
-     This allows you to acquire all the macros from a header without
-     also processing its declarations.
-
-     All files specified by '-imacros' are processed before all files
-     specified by '-include'.
-
-'-idirafter DIR'
-     Search DIR for header files, but do it _after_ all directories
-     specified with '-I' and the standard system directories have been
-     exhausted.  DIR is treated as a system include directory.  If DIR
-     begins with '=', then the '=' will be replaced by the sysroot
-     prefix; see '--sysroot' and '-isysroot'.
-
-'-iprefix PREFIX'
-     Specify PREFIX as the prefix for subsequent '-iwithprefix' options.
-     If the prefix represents a directory, you should include the final
-     '/'.
-
-'-iwithprefix DIR'
-'-iwithprefixbefore DIR'
-     Append DIR to the prefix specified previously with '-iprefix', and
-     add the resulting directory to the include search path.
-     '-iwithprefixbefore' puts it in the same place '-I' would;
-     '-iwithprefix' puts it where '-idirafter' would.
-
-'-isysroot DIR'
-     This option is like the '--sysroot' option, but applies only to
-     header files (except for Darwin targets, where it applies to both
-     header files and libraries).  See the '--sysroot' option for more
-     information.
-
-'-imultilib DIR'
-     Use DIR as a subdirectory of the directory containing
-     target-specific C++ headers.
-
-'-isystem DIR'
-     Search DIR for header files, after all directories specified by
-     '-I' but before the standard system directories.  Mark it as a
-     system directory, so that it gets the same special treatment as is
-     applied to the standard system directories.  If DIR begins with
-     '=', then the '=' will be replaced by the sysroot prefix; see
-     '--sysroot' and '-isysroot'.
-
-'-fdirectives-only'
-     When preprocessing, handle directives, but do not expand macros.
-
-     The option's behavior depends on the '-E' and '-fpreprocessed'
-     options.
-
-     With '-E', preprocessing is limited to the handling of directives
-     such as '#define', '#ifdef', and '#error'.  Other preprocessor
-     operations, such as macro expansion and trigraph conversion are not
-     performed.  In addition, the '-dD' option is implicitly enabled.
-
-     With '-fpreprocessed', predefinition of command line and most
-     builtin macros is disabled.  Macros such as '__LINE__', which are
-     contextually dependent, are handled normally.  This enables
-     compilation of files previously preprocessed with '-E
-     -fdirectives-only'.
-
-     With both '-E' and '-fpreprocessed', the rules for '-fpreprocessed'
-     take precedence.  This enables full preprocessing of files
-     previously preprocessed with '-E -fdirectives-only'.
-
-'-fdollars-in-identifiers'
-     Accept '$' in identifiers.
-
-'-fextended-identifiers'
-     Accept universal character names in identifiers.  This option is
-     enabled by default for C99 (and later C standard versions) and C++.
-
-'-fno-canonical-system-headers'
-     When preprocessing, do not shorten system header paths with
-     canonicalization.
-
-'-fpreprocessed'
-     Indicate to the preprocessor that the input file has already been
-     preprocessed.  This suppresses things like macro expansion,
-     trigraph conversion, escaped newline splicing, and processing of
-     most directives.  The preprocessor still recognizes and removes
-     comments, so that you can pass a file preprocessed with '-C' to the
-     compiler without problems.  In this mode the integrated
-     preprocessor is little more than a tokenizer for the front ends.
-
-     '-fpreprocessed' is implicit if the input file has one of the
-     extensions '.i', '.ii' or '.mi'.  These are the extensions that
-     LLVM uses for preprocessed files created by '-save-temps'.
-
-'-ftabstop=WIDTH'
-     Set the distance between tab stops.  This helps the preprocessor
-     report correct column numbers in warnings or errors, even if tabs
-     appear on the line.  If the value is less than 1 or greater than
-     100, the option is ignored.  The default is 8.
-
-'-fdebug-cpp'
-     This option is only useful for debugging LLVM. When used with '-E',
-     dumps debugging information about location maps.  Every token in
-     the output is preceded by the dump of the map its location belongs
-     to.  The dump of the map holding the location of a token would be:
-          {'P':/file/path;'F':/includer/path;'L':LINE_NUM;'C':COL_NUM;'S':SYSTEM_HEADER_P;'M':MAP_ADDRESS;'E':MACRO_EXPANSION_P,'loc':LOCATION}
-
-     When used without '-E', this option has no effect.
-
-'-ftrack-macro-expansion[=LEVEL]'
-     Track locations of tokens across macro expansions.  This allows the
-     compiler to emit diagnostic about the current macro expansion stack
-     when a compilation error occurs in a macro expansion.  Using this
-     option makes the preprocessor and the compiler consume more memory.
-     The LEVEL parameter can be used to choose the level of precision of
-     token location tracking thus decreasing the memory consumption if
-     necessary.  Value '0' of LEVEL de-activates this option just as if
-     no '-ftrack-macro-expansion' was present on the command line.
-     Value '1' tracks tokens locations in a degraded mode for the sake
-     of minimal memory overhead.  In this mode all tokens resulting from
-     the expansion of an argument of a function-like macro have the same
-     location.  Value '2' tracks tokens locations completely.  This
-     value is the most memory hungry.  When this option is given no
-     argument, the default parameter value is '2'.
-
-     Note that '-ftrack-macro-expansion=2' is activated by default.
-
-'-fexec-charset=CHARSET'
-     Set the execution character set, used for string and character
-     constants.  The default is UTF-8.  CHARSET can be any encoding
-     supported by the system's 'iconv' library routine.
-
-'-fwide-exec-charset=CHARSET'
-     Set the wide execution character set, used for wide string and
-     character constants.  The default is UTF-32 or UTF-16, whichever
-     corresponds to the width of 'wchar_t'.  As with '-fexec-charset',
-     CHARSET can be any encoding supported by the system's 'iconv'
-     library routine; however, you will have problems with encodings
-     that do not fit exactly in 'wchar_t'.
-
-'-finput-charset=CHARSET'
-     Set the input character set, used for translation from the
-     character set of the input file to the source character set used by
-     LLVM.  If the locale does not specify, or LLVM cannot get this
-     information from the locale, the default is UTF-8.  This can be
-     overridden by either the locale or this command line option.
-     Currently the command line option takes precedence if there's a
-     conflict.  CHARSET can be any encoding supported by the system's
-     'iconv' library routine.
-
-'-fworking-directory'
-     Enable generation of linemarkers in the preprocessor output that
-     will let the compiler know the current working directory at the
-     time of preprocessing.  When this option is enabled, the
-     preprocessor will emit, after the initial linemarker, a second
-     linemarker with the current working directory followed by two
-     slashes.  LLVM will use this directory, when it's present in the
-     preprocessed input, as the directory emitted as the current working
-     directory in some debugging information formats.  This option is
-     implicitly enabled if debugging information is enabled, but this
-     can be inhibited with the negated form '-fno-working-directory'.
-     If the '-P' flag is present in the command line, this option has no
-     effect, since no '#line' directives are emitted whatsoever.
-
-'-fno-show-column'
-     Do not print column numbers in diagnostics.  This may be necessary
-     if diagnostics are being scanned by a program that does not
-     understand the column numbers, such as 'dejagnu'.
-
-'-A PREDICATE=ANSWER'
-     Make an assertion with the predicate PREDICATE and answer ANSWER.
-     This form is preferred to the older form '-A PREDICATE(ANSWER)',
-     which is still supported, because it does not use shell special
-     characters.
-
-'-A -PREDICATE=ANSWER'
-     Cancel an assertion with the predicate PREDICATE and answer ANSWER.
-
-'-dCHARS'
-     CHARS is a sequence of one or more of the following characters, and
-     must not be preceded by a space.  Other characters are interpreted
-     by the compiler proper, or reserved for future versions of LLVM,
-     and so are silently ignored.  If you specify characters whose
-     behavior conflicts, the result is undefined.
-
-     'M'
-          Instead of the normal output, generate a list of '#define'
-          directives for all the macros defined during the execution of
-          the preprocessor, including predefined macros.  This gives you
-          a way of finding out what is predefined in your version of the
-          preprocessor.  Assuming you have no file 'foo.h', the command
-
-               touch foo.h; cpp -dM foo.h
-
-          will show all the predefined macros.
-
-          If you use '-dM' without the '-E' option, '-dM' is interpreted
-          as a synonym for '-fdump-rtl-mach'.  *Note (gcc)Debugging
-          Options::.
-
-     'D'
-          Like 'M' except in two respects: it does _not_ include the
-          predefined macros, and it outputs _both_ the '#define'
-          directives and the result of preprocessing.  Both kinds of
-          output go to the standard output file.
-
-     'N'
-          Like 'D', but emit only the macro names, not their expansions.
-
-     'I'
-          Output '#include' directives in addition to the result of
-          preprocessing.
-
-     'U'
-          Like 'D' except that only macros that are expanded, or whose
-          definedness is tested in preprocessor directives, are output;
-          the output is delayed until the use or test of the macro; and
-          '#undef' directives are also output for macros tested but
-          undefined at the time.
+'-nobuiltininc'
+     Clang/LLVM option for future documentation.
 
 '-P'
      Inhibit generation of linemarkers in the output from the
@@ -7718,38 +7126,619 @@ by default will generate a warning:
      on something that is not C code, and will be sent to a program
      which might be confused by the linemarkers.
 
-'-C'
-     Do not discard comments.  All comments are passed through to the
-     output file, except for comments in processed directives, which are
-     deleted along with the directive.
+'-relocatable-pch'
+     Clang/LLVM option for future documentation.
 
-     You should be prepared for side effects when using '-C'; it causes
-     the preprocessor to treat comments as tokens in their own right.
-     For example, comments appearing at the start of what would be a
-     directive line have the effect of turning that line into an
-     ordinary source line, since the first token on the line is no
-     longer a '#'.
+'-trigraphs'
 
-'-CC'
-     Do not discard comments, including during macro expansion.  This is
-     like '-C', except that comments contained within macros are also
-     passed through to the output file where the macro is expanded.
+     This is documented as a C language specific option.  *Note
+     '-trigraphs': op trigraphs.
 
-     In addition to the side-effects of the '-C' option, the '-CC'
-     option causes all C++-style comments inside a macro to be converted
-     to C-style comments.  This is to prevent later use of that macro
-     from inadvertently commenting out the remainder of the source line.
+'--system-header-prefix=PREFIX'
+     Clang/LLVM option for future documentation.
 
-     The '-CC' option is generally used to support lint comments.
+'-U NAME'
+     Cancel any previous definition of NAME, either built in or provided
+     with a '-D' option.
 
-'-remap'
-     Enable special code to work around file systems which only permit
-     very short file names, such as MS-DOS.
+'-undef'
+     Do not predefine any system-specific or LLVM-specific macros.  The
+     standard predefined macros remain defined.
 
-'-H'
-     Print the name of each header file used, in addition to other
-     normal activities.  Each name is indented to show how deep in the
-     '#include' stack it is.  Precompiled header files are also printed,
-     even if they are found to be invalid; an invalid precompiled header
-     file is printed with '...x' and a valid one with '...!' .
+'-verify-pch'
+     Clang/LLVM option for future documentation.
+
+'-Wp,OPTION'
+     You can use '-Wp,OPTION' to bypass the compiler driver and pass
+     OPTION directly through to the preprocessor.  If OPTION contains
+     commas, it is split into multiple options at the commas.  However,
+     many options are modified, translated or interpreted by the
+     compiler driver before being passed to the preprocessor, and '-Wp'
+     forcibly bypasses this phase.  The preprocessor's direct interface
+     is undocumented and subject to change, so whenever possible you
+     should avoid using '-Wp' and let the driver handle the options
+     instead.
+
+'-Xpreprocessor OPTION'
+     Pass OPTION as an option to the preprocessor.  You can use this to
+     supply system-specific preprocessor options that LLVM does not
+     recognize.
+
+     If you want to pass an option that takes an argument, you must use
+     '-Xpreprocessor' twice, once for the option and once for the
+     argument.
+
+
+File: llvm.info,  Node: Assembler Options,  Next: Link Options,  Prev: Preprocessor Options,  Up: Invoking LLVM
+
+3.13 Passing Options to the Assembler
+=====================================
+
+_Note:_ Not all GCC options are supported by Clang/LLVM. *Note Option
+Summary: Option Summary, for details of:
+   * those options supported by both Clang/LLVM and GCC;
+   * those options only supported by Clang/LLVM; and
+   * those options supported only by GCC.
+
+ You can pass options to the assembler.
+
+'-Wa,OPTION'
+     Pass OPTION as an option to the assembler.  If OPTION contains
+     commas, it is split into multiple options at the commas.
+
+'-Xassembler OPTION'
+     Pass OPTION as an option to the assembler.  You can use this to
+     supply system-specific assembler options that Clang/LLVM does not
+     recognize.
+
+     If you want to pass an option that takes an argument, you must use
+     '-Xassembler' twice, once for the option and once for the argument.
+
+'-fno-integrated-as'
+     Clang/LLVM option for future documentation.
+
+
+File: llvm.info,  Node: Link Options,  Next: Directory Options,  Prev: Assembler Options,  Up: Invoking LLVM
+
+3.14 Options for Linking
+========================
+
+These options come into play when the compiler links object files into
+an executable output file.  They are meaningless if the compiler is not
+doing a link step.
+
+ _Note:_ Not all GCC options are supported by Clang/LLVM. *Note Option
+Summary: Option Summary, for details of:
+   * those options supported by both Clang/LLVM and GCC;
+   * those options only supported by Clang/LLVM; and
+   * those options supported only by GCC.
+
+ A file name that does not end in a special recognized suffix is
+considered to name an object file or library.  (Object files are
+distinguished from libraries by the linker according to the file
+contents.)  If linking is done, these object files are used as input to
+the linker.
+
+ If any of these options '-c', '-E' or '-S' is used, then the linker is
+not run, and object file names should not be used as arguments.  *Note
+Overall Options::.
+
+ The following Clang/LLVM options control the linker.
+
+'-fno-autolink'
+     Clang/LLVM option for future documentation.
+
+'-fno-use-init-array'
+     Clang/LLVM option for future documentation.
+
+'-fuse-ld=bfd'
+     Use the 'bfd' linker instead of the default linker.
+
+'-fuse-ld=gold'
+     Use the 'gold' linker instead of the default linker.
+
+'-fveclib=LIB'
+     Clang/LLVM option for future documentation.
+
+'-lLIBRARY'
+'-l LIBRARY'
+     Search the library named LIBRARY when linking.  (The second
+     alternative with the library as a separate argument is only for
+     POSIX compliance and is not recommended.)
+
+     It makes a difference where in the command you write this option;
+     the linker searches and processes libraries and object files in the
+     order they are specified.  Thus, 'foo.o -lz bar.o' searches library
+     'z' after file 'foo.o' but before 'bar.o'.  If 'bar.o' refers to
+     functions in 'z', those functions may not be loaded.
+
+     The linker searches a standard list of directories for the library,
+     which is actually a file named 'libLIBRARY.a'.  The linker then
+     uses this file as if it had been specified precisely by name.
+
+     The directories searched include several standard system
+     directories plus any that you specify with '-L'.
+
+     Normally the files found this way are library files--archive files
+     whose members are object files.  The linker handles an archive file
+     by scanning through it for members which define symbols that have
+     so far been referenced but not defined.  But if the file that is
+     found is an ordinary object file, it is linked in the usual
+     fashion.  The only difference between using an '-l' option and
+     specifying a file name is that '-l' surrounds LIBRARY with 'lib'
+     and '.a' and searches several directories.
+
+'-lobjc'
+     You need this special case of the '-l' option in order to link an
+     Objective-C or Objective-C++ program.
+
+'-mincremental-linker-compatible'
+     Clang/LLVM option for future documentation.
+
+'-nodefaultlibs'
+     Do not use the standard system libraries when linking.  Only the
+     libraries you specify are passed to the linker, and options
+     specifying linkage of the system libraries, such as
+     '-static-libgcc' or '-shared-libgcc', are ignored.  The standard
+     startup files are used normally, unless '-nostartfiles' is used.
+
+     The compiler may generate calls to 'memcmp', 'memset', 'memcpy' and
+     'memmove'.  These entries are usually resolved by entries in libc.
+     These entry points should be supplied through some other mechanism
+     when this option is specified.
+
+'-nostartfiles'
+     Do not use the standard system startup files when linking.  The
+     standard system libraries are used normally, unless '-nostdlib' or
+     '-nodefaultlibs' is used.
+
+'-nostdlib'
+     Do not use the standard system startup files or libraries when
+     linking.  No startup files and only the libraries you specify are
+     passed to the linker, and options specifying linkage of the system
+     libraries, such as '-static-libgcc' or '-shared-libgcc', are
+     ignored.
+
+     The compiler may generate calls to 'memcmp', 'memset', 'memcpy' and
+     'memmove'.  These entries are usually resolved by entries in libc.
+     These entry points should be supplied through some other mechanism
+     when this option is specified.
+
+     One of the standard libraries bypassed by '-nostdlib' and
+     '-nodefaultlibs' is 'libgcc.a', a library of internal subroutines
+     which LLVM uses to overcome shortcomings of particular machines, or
+     special needs for some languages.  (*Note Interfacing to GCC
+     Output: (gccint)Interface, for more discussion of 'libgcc.a'.)  In
+     most cases, you need 'libgcc.a' even when you want to avoid other
+     standard libraries.  In other words, when you specify '-nostdlib'
+     or '-nodefaultlibs' you should usually specify '-lgcc' as well.
+     This ensures that you have no unresolved references to internal
+     LLVM library subroutines.  (An example of such an internal
+     subroutine is '__main', used to ensure C++ constructors are called;
+     *note 'collect2': (gccint)Collect2.)
+
+'-pie'
+     Produce a position independent executable on targets that support
+     it.  For predictable results, you must also specify the same set of
+     options used for compilation ('-fpie', '-fPIE', or model
+     suboptions) when you specify this linker option.
+
+'-rdynamic'
+     Pass the flag '-export-dynamic' to the ELF linker, on targets that
+     support it.  This instructs the linker to add all symbols, not only
+     used ones, to the dynamic symbol table.  This option is needed for
+     some uses of 'dlopen' or to allow obtaining backtraces from within
+     a program.
+
+'-s'
+     Remove all symbol table and relocation information from the
+     executable.
+
+'-static'
+     On systems that support dynamic linking, this prevents linking with
+     the shared libraries.  On other systems, this option has no effect.
+
+'-shared'
+     Produce a shared object which can then be linked with other objects
+     to form an executable.  Not all systems support this option.  For
+     predictable results, you must also specify the same set of options
+     used for compilation ('-fpic', '-fPIC', or model suboptions) when
+     you specify this linker option.(1)
+
+'-static-libgcc'
+     This option is accepted by Clang/LLVM, although it is not clear
+     that it has any effect.  Clang/LLVM, does not use 'libgcc', instead
+     it has 'CompilerRT'.
+
+'-stdlib=LIB'
+     Clang/LLVM option for future documentation.
+
+'-Wl,OPTION'
+     Pass OPTION as an option to the linker.  If OPTION contains commas,
+     it is split into multiple options at the commas.  You can use this
+     syntax to pass an argument to the option.  For example,
+     '-Wl,-Map,output.map' passes '-Map output.map' to the linker.  When
+     using the GNU linker, you can also get the same effect with
+     '-Wl,-Map=output.map'.
+
+'-u SYMBOL'
+     Pretend the symbol SYMBOL is undefined, to force linking of library
+     modules to define it.  You can use '-u' multiple times with
+     different symbols to force loading of additional library modules.
+
+'-Xlinker OPTION'
+     Pass OPTION as an option to the linker.  You can use this to supply
+     system-specific linker options that LLVM does not recognize.
+
+     If you want to pass an option that takes a separate argument, you
+     must use '-Xlinker' twice, once for the option and once for the
+     argument.  For example, to pass '-assert definitions', you must
+     write '-Xlinker -assert -Xlinker definitions'.  It does not work to
+     write '-Xlinker "-assert definitions"', because this passes the
+     entire string as a single argument, which is not what the linker
+     expects.
+
+     When using the GNU linker, it is usually more convenient to pass
+     arguments to linker options using the 'OPTION=VALUE' syntax than as
+     separate arguments.  For example, you can specify '-Xlinker
+     -Map=output.map' rather than '-Xlinker -Map -Xlinker output.map'.
+     Other linkers may not support this syntax for command-line options.
+
+'-z KEYWORD'
+     '-z' is passed directly on to the linker along with the keyword
+     KEYWORD.  See the section in the documentation of your linker for
+     permitted values and their meanings.
+
+   ---------- Footnotes ----------
+
+   (1) On some systems, 'gcc -shared' needs to build supplementary stub
+code for constructors to work.  On multi-libbed systems, 'gcc -shared'
+must select the correct support libraries to link against.  Failing to
+supply the correct flags may lead to subtle defects.  Supplying them in
+cases where they are not necessary is innocuous.
+
+
+File: llvm.info,  Node: Directory Options,  Next: Code Gen Options,  Prev: Link Options,  Up: Invoking LLVM
+
+3.15 Options for Directory Search
+=================================
+
+These Clang/LLVM options specify directories to search for header files,
+for libraries and for parts of the compiler:
+
+ _Note:_ Not all GCC options are supported by Clang/LLVM. *Note Option
+Summary: Option Summary, for details of:
+   * those options supported by both Clang/LLVM and GCC;
+   * those options only supported by Clang/LLVM; and
+   * those options supported only by GCC.
+
+'-IDIR'
+     Add the directory DIR to the head of the list of directories to be
+     searched for header files.  This can be used to override a system
+     header file, substituting your own version, since these directories
+     are searched before the system header file directories.  However,
+     you should not use this option to add directories that contain
+     vendor-supplied system header files (use '-isystem' for that).  If
+     you use more than one '-I' option, the directories are scanned in
+     left-to-right order; the standard system directories come after.
+
+     If a standard system include directory, or a directory specified
+     with '-isystem', is also specified with '-I', the '-I' option is
+     ignored.  The directory is still searched but as a system directory
+     at its normal position in the system include chain.  This is to
+     ensure that LLVM's procedure to fix buggy system headers and the
+     ordering for the 'include_next' directive are not inadvertently
+     changed.  If you really need to change the search order for system
+     directories, use the '-nostdinc' and/or '-isystem' options.
+
+'-iquoteDIR'
+     Add the directory DIR to the head of the list of directories to be
+     searched for header files only for the case of '#include "FILE"';
+     they are not searched for '#include <FILE>', otherwise just like
+     '-I'.
+
+'-LDIR'
+     Add directory DIR to the list of directories to be searched for
+     '-l'.
+
+'--sysroot=DIR'
+     Use DIR as the logical root directory for headers and libraries.
+     For example, if the compiler normally searches for headers in
+     '/usr/include' and libraries in '/usr/lib', it instead searches
+     'DIR/usr/include' and 'DIR/usr/lib'.
+
+     If you use both this option and the '-isysroot' option, then the
+     '--sysroot' option applies to libraries, but the '-isysroot' option
+     applies to header files.
+
+     The GNU linker (beginning with version 2.16) has the necessary
+     support for this option.  If your linker does not support this
+     option, the header file aspect of '--sysroot' still works, but the
+     library aspect does not.
+
+
+File: llvm.info,  Node: Code Gen Options,  Next: Developer Options,  Prev: Directory Options,  Up: Invoking LLVM
+
+3.16 Options for Code Generation Conventions
+============================================
+
+These machine-independent options control the interface conventions used
+in code generation.
+
+ _Note:_ Not all GCC options are supported by Clang/LLVM. *Note Option
+Summary: Option Summary, for details of:
+   * those options supported by both Clang/LLVM and GCC;
+   * those options only supported by Clang/LLVM; and
+   * those options supported only by GCC.
+
+ Most of these Clang/LLVM options have both positive and negative forms;
+the negative form of '-ffoo' is '-fno-foo'.  In the table below, only
+one of the forms is listed--the one that is not the default.  You can
+figure out the other form by either removing 'no-' or adding it.
+
+'-fapple-kext'
+     Clang/LLVM option for future documentation.
+
+'-fapple-pragma-pack'
+     Clang/LLVM option for future documentation.
+
+'-fapplication-extension'
+     Clang/LLVM option for future documentation.
+
+'-fasynchronous-unwind-tables'
+     Generate unwind table in DWARF 2 format, if supported by target
+     machine.  The table is exact at each instruction boundary, so it
+     can be used for stack unwinding from asynchronous events (such as
+     debugger or garbage collector).
+
+'-fno-common'
+     In C code, controls the placement of uninitialized global
+     variables.  Unix C compilers have traditionally permitted multiple
+     definitions of such variables in different compilation units by
+     placing the variables in a common block.  This is the behavior
+     specified by '-fcommon', and is the default for LLVM on most
+     targets.  On the other hand, this behavior is not required by ISO
+     C, and on some targets may carry a speed or code size penalty on
+     variable references.  The '-fno-common' option specifies that the
+     compiler should place uninitialized global variables in the data
+     section of the object file, rather than generating them as common
+     blocks.  This has the effect that if the same variable is declared
+     (without 'extern') in two different compilations, you get a
+     multiple-definition error when you link them.  In this case, you
+     must compile with '-fcommon' instead.  Compiling with '-fno-common'
+     is useful on targets for which it provides better performance, or
+     if you wish to verify that the program will work on other systems
+     that always treat uninitialized variable declarations this way.
+
+'-fexceptions'
+     Enable exception handling.  Generates extra code needed to
+     propagate exceptions.  For some targets, this implies LLVM
+     generates frame unwind information for all functions, which can
+     produce significant data size overhead, although it does not affect
+     execution.  If you do not specify this option, LLVM enables it by
+     default for languages like C++ that normally require exception
+     handling, and disables it for languages like C that do not normally
+     require it.  However, you may need to enable this option when
+     compiling C code that needs to interoperate properly with exception
+     handlers written in C++.  You may also wish to disable this option
+     if you are compiling older C++ programs that don't use exception
+     handling.
+
+'-fno-ident'
+     Ignore the '#ident' directive.
+
+'-fmax-type-align=N'
+     Clang/LLVM option for future documentation.
+
+'-fnon-call-exceptions'
+     Generate code that allows trapping instructions to throw
+     exceptions.  Note that this requires platform-specific runtime
+     support that does not exist everywhere.  Moreover, it only allows
+     _trapping_ instructions to throw exceptions, i.e. memory references
+     or floating-point instructions.  It does not allow exceptions to be
+     thrown from arbitrary signal handlers such as 'SIGALRM'.
+
+'-fpack-struct[=N]'
+     Without a value specified, pack all structure members together
+     without holes.  When a value is specified (which must be a small
+     power of two), pack structure members according to this value,
+     representing the maximum alignment (that is, objects with default
+     alignment requirements larger than this are output potentially
+     unaligned at the next fitting location.
+
+     *Warning:* the '-fpack-struct' switch causes LLVM to generate code
+     that is not binary compatible with code generated without that
+     switch.  Additionally, it makes the code suboptimal.  Use it to
+     conform to a non-default application binary interface.
+
+'-fPIC'
+     If supported for the target machine, emit position-independent
+     code, suitable for dynamic linking and avoiding any limit on the
+     size of the global offset table.  This option makes a difference on
+     the m68k, PowerPC and SPARC.
+
+     Position-independent code requires special support, and therefore
+     works only on certain machines.
+
+     When this flag is set, the macros '__pic__' and '__PIC__' are
+     defined to 2.
+
+'-fpic'
+     Generate position-independent code (PIC) suitable for use in a
+     shared library, if supported for the target machine.  Such code
+     accesses all constant addresses through a global offset table
+     (GOT).  The dynamic loader resolves the GOT entries when the
+     program starts (the dynamic loader is not part of LLVM; it is part
+     of the operating system).  If the GOT size for the linked
+     executable exceeds a machine-specific maximum size, you get an
+     error message from the linker indicating that '-fpic' does not
+     work; in that case, recompile with '-fPIC' instead.  (These
+     maximums are 8k on the SPARC and 32k on the m68k and RS/6000.  The
+     x86 has no such limit.)
+
+     Position-independent code requires special support, and therefore
+     works only on certain machines.  For the x86, LLVM supports PIC for
+     System V but not for the Sun 386i.  Code generated for the IBM
+     RS/6000 is always position-independent.
+
+     When this flag is set, the macros '__pic__' and '__PIC__' are
+     defined to 1.
+
+'-fPIE'
+'-fpie'
+     These options are similar to '-fpic' and '-fPIC', but generated
+     position independent code can be only linked into executables.
+     Usually these options are used when '-pie' LLVM option is used
+     during linking.
+
+     '-fpie' and '-fPIE' both define the macros '__pie__' and '__PIE__'.
+     The macros have the value 1 for '-fpie' and 2 for '-fPIE'.
+
+'-fshort-enums'
+     Allocate to an 'enum' type only as many bytes as it needs for the
+     declared range of possible values.  Specifically, the 'enum' type
+     is equivalent to the smallest integer type that has enough room.
+
+     *Warning:* the '-fshort-enums' switch causes LLVM to generate code
+     that is not binary compatible with code generated without that
+     switch.  Use it to conform to a non-default application binary
+     interface.
+
+'-fshort-wchar'
+     Override the underlying type for 'wchar_t' to be 'short unsigned
+     int' instead of the default for the target.  This option is useful
+     for building programs to run under WINE.
+
+     *Warning:* the '-fshort-wchar' switch causes LLVM to generate code
+     that is not binary compatible with code generated without that
+     switch.  Use it to conform to a non-default application binary
+     interface.
+
+'-ftls-model=MODEL'
+     Alter the thread-local storage model to be used (*note
+     Thread-Local::).  The MODEL argument should be one of
+     'global-dynamic', 'local-dynamic', 'initial-exec' or 'local-exec'.
+     Note that the choice is subject to optimization: the compiler may
+     use a more efficient model for symbols not visible outside of the
+     translation unit, or if '-fpic' is not given on the command line.
+
+     The default without '-fpic' is 'initial-exec'; with '-fpic' the
+     default is 'global-dynamic'.
+
+'-ftrap-function=FUNCTION'
+     Clang/LLVM option for future documentation.
+
+'-ftrapv'
+     This option generates traps for signed overflow on addition,
+     subtraction, multiplication operations.
+
+'-ftrapv-handler=HANDLER'
+     Clang/LLVM option for future documentation.
+
+'-funwind-tables'
+     Similar to '-fexceptions', except that it just generates any needed
+     static data, but does not affect the generated code in any other
+     way.  You normally do not need to enable this option; instead, a
+     language processor that needs this handling enables it on your
+     behalf.
+
+'-fverbose-asm'
+     Put extra commentary information in the generated assembly code to
+     make it more readable.  This option is generally only of use to
+     those who actually need to read the generated assembly code
+     (perhaps while debugging the compiler itself).
+
+     '-fno-verbose-asm', the default, causes the extra information to be
+     omitted and is useful when comparing two assembler files.
+
+'-fvisibility=[default|internal|hidden|protected]'
+     Set the default ELF image symbol visibility to the specified
+     option--all symbols are marked with this unless overridden within
+     the code.  Using this feature can very substantially improve
+     linking and load times of shared object libraries, produce more
+     optimized code, provide near-perfect API export and prevent symbol
+     clashes.  It is *strongly* recommended that you use this in any
+     shared objects you distribute.
+
+     Despite the nomenclature, 'default' always means public; i.e.,
+     available to be linked against from outside the shared object.
+     'protected' and 'internal' are pretty useless in real-world usage
+     so the only other commonly used option is 'hidden'.  The default if
+     '-fvisibility' isn't specified is 'default', i.e., make every
+     symbol public.
+
+     A good explanation of the benefits offered by ensuring ELF symbols
+     have the correct visibility is given by "How To Write Shared
+     Libraries" by Ulrich Drepper (which can be found at
+     <http://www.akkadia.org/drepper/>)--however a superior solution
+     made possible by this option to marking things hidden when the
+     default is public is to make the default hidden and mark things
+     public.  This is the norm with DLLs on Windows and with
+     '-fvisibility=hidden' and '__attribute__ ((visibility("default")))'
+     instead of '__declspec(dllexport)' you get almost identical
+     semantics with identical syntax.  This is a great boon to those
+     working with cross-platform projects.
+
+     For those adding visibility support to existing code, you may find
+     '#pragma GCC visibility' of use.  This works by you enclosing the
+     declarations you wish to set visibility for with (for example)
+     '#pragma GCC visibility push(hidden)' and '#pragma GCC visibility
+     pop'.  Bear in mind that symbol visibility should be viewed *as
+     part of the API interface contract* and thus all new code should
+     always specify visibility when it is not the default; i.e.,
+     declarations only for use within the local DSO should *always* be
+     marked explicitly as hidden as so to avoid PLT indirection
+     overheads--making this abundantly clear also aids readability and
+     self-documentation of the code.  Note that due to ISO C++
+     specification requirements, 'operator new' and 'operator delete'
+     must always be of default visibility.
+
+     Be aware that headers from outside your project, in particular
+     system headers and headers from any other library you use, may not
+     be expecting to be compiled with visibility other than the default.
+     You may need to explicitly say '#pragma GCC visibility
+     push(default)' before including any such headers.
+
+     'extern' declarations are not affected by '-fvisibility', so a lot
+     of code can be recompiled with '-fvisibility=hidden' with no
+     modifications.  However, this means that calls to 'extern'
+     functions with no explicit visibility use the PLT, so it is more
+     effective to use '__attribute ((visibility))' and/or '#pragma GCC
+     visibility' to tell the compiler which 'extern' declarations should
+     be treated as hidden.
+
+     Note that '-fvisibility' does affect C++ vague linkage entities.
+     This means that, for instance, an exception class that is be thrown
+     between DSOs must be explicitly marked with default visibility so
+     that the 'type_info' nodes are unified between the DSOs.
+
+     An overview of these techniques, their benefits and how to use them
+     is at <http://gcc.gnu.org/wiki/Visibility>.
+
+'-fwrapv'
+     This option instructs the compiler to assume that signed arithmetic
+     overflow of addition, subtraction and multiplication wraps around
+     using twos-complement representation.  This flag enables some
+     optimizations and disables others.  This option is enabled by
+     default for the Java front end, as required by the Java language
+     specification.
+
+'-mllvm OPTION'
+     This option is documented in the section on Optimization Options.
+     *Note '-mllvm': op mllvm.
+
+'-mstack-alignment=N'
+     Clang/LLVM option for future documentation.
+
+'-mstack-probe-size=N'
+     Clang/LLVM option for future documentation.
+
+'-mthread-model MODEL'
+     Clang/LLVM option for future documentation.
+
+'-resource-dir=DIR'
+     Clang/LLVM option for future documentation.
+
+'-target TRIPLET'
+     Clang/LLVM option for future documentation.
 

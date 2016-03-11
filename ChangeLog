@@ -1,5 +1,17 @@
 2016-02-18  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
+	* llvm-user-manual/invoke.texi: Correct all uses of @option on
+	line where @opindex should have been used.
+	(Link Options): Correct standalone use of @itemx to @item.
+	* llvm-user-manual/llvm.info: Regenerated.
+	* llvm-user-manual/llvm.info-1: Likewise.
+	* llvm-user-manual/llvm.info-2: Likewise.
+	* llvm-user-manual/llvm.info-3: Likewise.
+	* llvm-user-manual/llvm.info-4: Likewise.
+	* llvm-user-manual/llvm.info-5: Likewise.
+
+2016-02-18  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
 	Clang/LLVM Options chapter of documentation first draft.
 
 	* llvm-user-manual/invoke.texi (Option Summary): AAP used as

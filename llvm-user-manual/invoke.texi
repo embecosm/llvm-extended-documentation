@@ -7680,7 +7680,7 @@ E,,@option{-E}}.
 Clang/LLVM option for future documentation.
 
 @item -fdeclspec
-@option fdeclspec
+@opindex fdeclspec
 Clang/LLVM option for future documentation.
 
 @item -fdollars-in-identifiers
@@ -7743,7 +7743,7 @@ line.  If the value is less than 1 or greater than 100, the option is
 ignored.  The default is 8.
 
 @item -ftrigraphs
-@option ftrigraphs
+@opindex ftrigraphs
 Clang/LLVM option for future documentation.
 
 @item -H
@@ -7763,7 +7763,7 @@ If @var{dir} begins with @code{=}, then the @code{=} will be replaced
 by the sysroot prefix; see @option{--sysroot} and @option{-isysroot}.
 
 @item -iframework@var{dir}
-@option iframework
+@opindex iframework
 Clang/LLVM option for future documentation.
 
 @item -imacros @var{file}
@@ -7789,11 +7789,11 @@ If multiple @option{-include} options are given, the files are included
 in the order they appear on the command line.
 
 @item -include-pch @var{file}
-@option include-pch
+@opindex include-pch
 Clang/LLVM option for future documentation.
 
 @item -index-header-map
-@option index-header-map
+@opindex index-header-map
 Clang/LLVM option for future documentation.
 
 @item -iprefix @var{prefix}
@@ -7828,7 +7828,7 @@ path.  @option{-iwithprefixbefore} puts it in the same place @option{-I}
 would; @option{-iwithprefix} puts it where @option{-idirafter} would.
 
 @item -iwithsysroot @var{dir}
-@option iwithsysroot
+@opindex iwithsysroot
 Clang/LLVM option for future documentation.
 
 @item -M
@@ -7900,7 +7900,7 @@ this useless.
 This feature is used in automatic updating of makefiles.
 
 @item --migrate
-@option -migrate
+@opindex -migrate
 Clang/LLVM option for future documentation.
 
 @item -MM
@@ -7966,7 +7966,7 @@ $(objpfx)foo.o: foo.c
 @end smallexample
 
 @item -MV
-@option MV
+@opindex MV
 Clang/LLVM option for future documentation.
 
 @item -no-integrated-cpp
@@ -7988,11 +7988,11 @@ Only the directories you have specified with @option{-I} options
 (and the directory of the current file, if appropriate) are searched.
 
 @item --no-system-header-prefix=@var{prefix}
-@option -no-system-header-prefix=@var{prefix}
+@opindex -no-system-header-prefix=@var{prefix}
 Clang/LLVM option for future documentation.
 
 @item -nobuiltininc
-@option nobuiltininc
+@opindex nobuiltininc
 Clang/LLVM option for future documentation.
 
 @item -P
@@ -8003,7 +8003,7 @@ not C code, and will be sent to a program which might be confused by the
 linemarkers.
 
 @item -relocatable-pch
-@option relocatable-pch
+@opindex relocatable-pch
 Clang/LLVM option for future documentation.
 
 @item -trigraphs
@@ -8013,7 +8013,7 @@ This is documented as a C language specific option.  @xref{op
 trigraphs,,@option{-trigraphs}}.
 
 @item --system-header-prefix=@var{prefix}
-@option -system-header-prefix=@var{prefix}
+@opindex -system-header-prefix=@var{prefix}
 Clang/LLVM option for future documentation.
 
 @item -U @var{name}
@@ -8027,7 +8027,7 @@ Do not predefine any system-specific or LLVM-specific macros.  The
 standard predefined macros remain defined.
 
 @item -verify-pch
-@option verify-pch
+@opindex verify-pch
 Clang/LLVM option for future documentation.
 
 @item -Wp,@var{option}
@@ -8086,7 +8086,7 @@ If you want to pass an option that takes an argument, you must use
 @option{-Xassembler} twice, once for the option and once for the argument.
 
 @item -fno-integrated-as
-@option fno-integrated-as
+@opindex fno-integrated-as
 Clang/LLVM option for future documentation.
 
 @end table
@@ -8129,12 +8129,12 @@ The following Clang/LLVM options control the linker.
 
 @table @gcctabopt
 @item -fno-autolink
-@option fno-autolink
+@opindex fno-autolink
 Clang/LLVM option for future documentation.
 
 @item -fno-use-init-array
-@option fno-use-init-array
-@option fuse-init-array
+@opindex fno-use-init-array
+@opindex fuse-init-array
 Clang/LLVM option for future documentation.
 
 @item -fuse-ld=bfd
@@ -8146,7 +8146,7 @@ Use the @command{bfd} linker instead of the default linker.
 Use the @command{gold} linker instead of the default linker.
 
 @item -fveclib=@var{lib}
-@option fveclib
+@opindex fveclib
 Clang/LLVM option for future documentation.
 
 @cindex Libraries
@@ -8185,7 +8185,7 @@ You need this special case of the @option{-l} option in order to
 link an Objective-C or Objective-C++ program.
 
 @item -mincremental-linker-compatible
-@option mincremental-linker-compatible
+@opindex mincremental-linker-compatible
 Clang/LLVM option for future documentation.
 
 @item -nodefaultlibs
@@ -8281,14 +8281,14 @@ libraries to link against.  Failing to supply the correct flags may lead
 to subtle defects.  Supplying them in cases where they are not necessary
 is innocuous.}
 
-@itemx -static-libgcc
+@item -static-libgcc
 @opindex static-libgcc
 This option is accepted by Clang/LLVM, although it is not clear that
 it has any effect.  Clang/LLVM, does not use @file{libgcc}, instead
 it has @file{CompilerRT}.
 
 @item -stdlib=@var{lib}
-@option stdlib
+@opindex stdlib
 Clang/LLVM option for future documentation.
 
 @item -Wl,@var{option}
@@ -8435,15 +8435,15 @@ default.  You can figure out the other form by either removing
 
 @table @gcctabopt
 @item -fapple-kext
-@option fapple-kext
+@opindex fapple-kext
 Clang/LLVM option for future documentation.
 
 @item -fapple-pragma-pack
-@option fapple-pragma-pack
+@opindex fapple-pragma-pack
 Clang/LLVM option for future documentation.
 
 @item -fapplication-extension
-@option fapplication-extension
+@opindex fapplication-extension
 Clang/LLVM option for future documentation.
 
 @item -fasynchronous-unwind-tables
@@ -8493,7 +8493,7 @@ use exception handling.
 Ignore the @code{#ident} directive.
 
 @item -fmax-type-align=@var{n}
-@option fmax-type-align
+@opindex fmax-type-align
 Clang/LLVM option for future documentation.
 
 @item -fnon-call-exceptions
@@ -8600,7 +8600,7 @@ The default without @option{-fpic} is @samp{initial-exec}; with
 @option{-fpic} the default is @samp{global-dynamic}.
 
 @item -ftrap-function=@var{function}
-@option ftrap-function
+@opindex ftrap-function
 Clang/LLVM option for future documentation.
 
 @item -ftrapv
@@ -8609,7 +8609,7 @@ This option generates traps for signed overflow on addition, subtraction,
 multiplication operations.
 
 @item -ftrapv-handler=@var{handler}
-@option ftrapv-handler
+@opindex ftrapv-handler
 Clang/LLVM option for future documentation.
 
 @item -funwind-tables
@@ -8705,28 +8705,28 @@ and disables others.  This option is enabled by default for the Java
 front end, as required by the Java language specification.
 
 @item -mllvm @var{option}
-@option mllvm
+@opindex mllvm
 This option is documented in the section on Optimization Options.
 @xref{op mllvm,,@option{-mllvm}}.
 
 @item -mstack-alignment=@var{n}
-@option mstack-alignment
+@opindex mstack-alignment
 Clang/LLVM option for future documentation.
 
 @item -mstack-probe-size=@var{n}
-@option mstack-probe-size
+@opindex mstack-probe-size
 Clang/LLVM option for future documentation.
 
 @item -mthread-model @var{model}
-@option mthread-model
+@opindex mthread-model
 Clang/LLVM option for future documentation.
 
 @item -resource-dir=@var{dir}
-@option resource-dir
+@opindex resource-dir
 Clang/LLVM option for future documentation.
 
 @item -target @var{triplet}
-@option target
+@opindex target
 Clang/LLVM option for future documentation.
 
 @end table
@@ -8762,47 +8762,47 @@ those options supported only by GCC.
 
 @table @gcctabopt
 @item -ccc-arcmt-check
-@option ccc-arcmt-check
+@opindex ccc-arcmt-check
 Clang/LLVM option for future documentation.
 
 @item -ccc-arcmt-migrate @var{dir}
-@option ccc-arcmt-migrate
+@opindex ccc-arcmt-migrate
 Clang/LLVM option for future documentation.
 
 @item -ccc-arcmt-modify
-@option ccc-arcmt-modify
+@opindex ccc-arcmt-modify
 Clang/LLVM option for future documentation.
 
 @item -ccc-gcc-name @var{file}
-@option ccc-gcc-name
+@opindex ccc-gcc-name
 Clang/LLVM option for future documentation.
 
 @item -ccc-install-dir @var{dir}
-@option ccc-install-dir
+@opindex ccc-install-dir
 Clang/LLVM option for future documentation.
 
 @item -ccc-objcmt-migrate @var{dir}
-@option ccc-objcmt-migrate
+@opindex ccc-objcmt-migrate
 Clang/LLVM option for future documentation.
 
 @item -ccc-pch-is-pch
-@option ccc-pch-is-pch
+@opindex ccc-pch-is-pch
 Clang/LLVM option for future documentation.
 
 @item -ccc-pch-is-pth
-@option ccc-pch-is-pth
+@opindex ccc-pch-is-pth
 Clang/LLVM option for future documentation.
 
 @item -ccc-print-bindings
-@option ccc-print-bindings
+@opindex ccc-print-bindings
 Clang/LLVM option for future documentation.
 
 @item -ccc-print-phases
-@option ccc-print-phases
+@opindex ccc-print-phases
 Clang/LLVM option for future documentation.
 
 @item --driver-mode=@var{mode}
-@option -driver-mode
+@opindex -driver-mode
 Clang/LLVM option for future documentation.
 
 @item -dumpmachine
@@ -8839,7 +8839,7 @@ option, Clang/LLVM does not compile or link anything; it just prints the
 file name.
 
 @item -print-ivar-layout
-@option print-ivar-layout
+@opindex print-ivar-layout
 Clang/LLVM option for future documentation.
 
 @item -print-libgcc-file-name
@@ -8881,19 +8881,19 @@ Don't forget the trailing @samp{/}.
 @xref{Environment Variables}.
 
 @item -Reverything
-@option Reverything
+@opindex Reverything
 Clang/LLVM option for future documentation.
 
 @item -Rpass=@var{pass}
-@option Rpass
+@opindex Rpass
 Clang/LLVM option for future documentation.
 
 @item -Rpass-analysis=@var{pass}
-@option Rpass-analysis
+@opindex Rpass-analysis
 Clang/LLVM option for future documentation.
 
 @item -Rpass-missed=@var{pass}
-@option Rpass-missed
+@opindex Rpass-missed
 Clang/LLVM option for future documentation.
 
 @item -save-temps
@@ -8947,11 +8947,11 @@ creates @file{foo.i}, @file{foo.s}, @file{dir/xbar.i},
 @file{dir2/yfoobar.o}.
 
 @item -Xanalyzer
-@option Xanalyzer
+@opindex Xanalyzer
 Clang/LLVM option for future documentation.
 
 @item -via-file-asm
-@option via-file-asm
+@opindex via-file-asm
 Clang/LLVM option for future documentation.
 
 @end table
