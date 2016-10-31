@@ -1,5 +1,5 @@
 @c Copyright (C) 2009-2015 Free Software Foundation, Inc.
-@c This is part of the GCC manual.
+@c This is part of the Clang/LLVM manual.
 @c For copying conditions, see the file llvm.texi.
 
 @node C++ Implementation
@@ -14,7 +14,7 @@ along with the section numbers from the ISO/IEC 14882:1998 and ISO/IEC
 one version of the standard.
 
 Some choices depend on the externally determined ABI for the platform
-(including standard character encodings) which GCC follows; these are
+(including standard character encodings) which Clang/LLVM follows; these are
 listed as ``determined by ABI'' below.  @xref{Compatibility, , Binary
 Compatibility}, and @uref{http://gcc.gnu.org/readings.html}.  Some
 choices are documented in the preprocessor manual.

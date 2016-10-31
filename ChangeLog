@@ -1,5 +1,10 @@
 2016-10-31  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
+	* llvm-user-manual/implement-cxx.texi: Reference to GCC replaced
+	by Clang/LLVM.
+
+2016-10-31  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
 	* llvm-user-manual/extend.texi (Pragmas accepted by Clang/LLVM):
 	Node and all reference renamed from "Pragmas accepted by GCC".
 	* llvm-user-manual/implement-c.texi: All references to GCC replace
