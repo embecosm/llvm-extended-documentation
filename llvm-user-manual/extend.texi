@@ -87,7 +87,7 @@ extensions, accepted by GCC in C90 mode and in C++.
 * Other Builtins::      Other built-in functions.
 * Target Builtins::     Built-in functions specific to particular targets.
 * Target Format Checks:: Format checks specific to particular targets.
-* Pragmas::             Pragmas accepted by GCC.
+* Pragmas::             Pragmas accepted by Clang/LLVM.
 * Unnamed Fields::      Unnamed struct/union fields within structs/unions.
 * Thread-Local::        Per-thread variables.
 * Binary constants::    Binary constants using the @samp{0b} prefix.
@@ -4537,7 +4537,7 @@ namespace is now in use for GCC-specific pragmas.  However, it has been
 found convenient to use @code{__attribute__} to achieve a natural
 attachment of attributes to their corresponding declarations, whereas
 @code{#pragma GCC} is of use for constructs that do not naturally form
-part of the grammar.  @xref{Pragmas,,Pragmas Accepted by GCC}.
+part of the grammar.  @xref{Pragmas,,Pragmas Accepted by Clang/LLVM}.
 
 @node Label Attributes
 @section Label Attributes
@@ -17279,7 +17279,7 @@ documentation provide descriptions of @code{CFString}, @code{CFStringRefs} and
 associated functions.
 
 @node Pragmas
-@section Pragmas Accepted by GCC
+@section Pragmas Accepted by Clang/LLVM
 @cindex pragmas
 @cindex @code{#pragma}
 
