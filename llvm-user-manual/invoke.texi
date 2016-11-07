@@ -6212,11 +6212,11 @@ Most optimizations are only enabled if an @option{-O} level is set on
 the command line.  Otherwise they are disabled, even if individual
 optimization flags are specified.
 
-Depending on the target and how Clang/LLVM was configured, a slightly different
-set of optimizations may be enabled at each @option{-O} level than
-those listed here.  You can invoke Clang/LLVM with @option{-Q --help=optimizers}
-to find out the exact set of optimizations that are enabled at each level.
-@xref{Overall Options}, for examples.
+Depending on the target and how Clang/LLVM was configured, a slightly
+different set of optimizations may be enabled at each @option{-O}
+level than those listed here.  You can invoke Clang/LLVM with
+@option{-mllvm -debug-pass=Structure} to find out the exact set of
+optimizations that are enabled at each level.
 
 @emph{Note:} Not all GCC options are supported by Clang/LLVM.
 @xref{Option Summary,,Option Summary}, for details of:
