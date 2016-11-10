@@ -1,3 +1,19 @@
+2016-11-10  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	Work in progress on C extensions.
+
+	* llvm-user-manual/implement-cxx.texi (C Extensions) Updated for
+	Clang/LLVM. Replace GCC by Clang/LLVM throughout.  Note that
+	nested functions are not supported and remove contents of that
+	section.  Note that builtins for constructing calls are not
+	generically supported by LLVM.  Note that additional floating
+	types are not supported.  Note differences in half-precision
+	floating point support.  Note that decimal floating types are not
+	supported.  Note taht fixed point types are not supported.  Note
+	that AVR support of named address spaces is at an early stage of
+	development and remove references to non-LLVM targest, M32C, RL78
+	and SPU.
+
 2016-10-31  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* llvm-user-manual/implement-cxx.texi: Reference to GCC replaced
